@@ -48,6 +48,8 @@ public class Main {
         IdentifiersTable idT = new IdentifiersTable();
         parser.liss(idT);
 
+        System.out.println("blablabla");
+
         //Type st = new Type(new Integer(0),new Integer(1));
         /*System.out.println("Category: "+st.getCategory()+"\t");
         System.out.println("Level: "+st.getLevel()+"\t");
