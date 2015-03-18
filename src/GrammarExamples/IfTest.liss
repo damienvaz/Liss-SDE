@@ -1,0 +1,30 @@
+
+program Teste {
+
+declarations
+
+	a = 4, b -> integer;
+	d = true, flag = false, flag2, bool -> boolean;
+	c = [1,2,3], vector -> array size 8;
+
+
+statements
+
+	if (d)  then{ if( flag ) then { a = 6;} }
+	if (d == true) then{ if( flag ) then { a = 6;} else { b = 9; }}
+
+	if( !(c[2]==0) ) //problema em meter o signal do '!'
+	then{
+		a = 5;
+		write(a);
+	}
+	else {
+		b=7;
+		c[5] = 5;
+		write(b);
+	}
+	if(!c[2])
+	then{
+		b=7;
+	}
+}

@@ -1,0 +1,25 @@
+program Errors
+{
+declarations
+
+	a = 4, b -> integer;
+	d = true, flag   -> boolean;
+	array1 = [[1,2],[2,3]], vector -> array size 4,3;
+ 	seq1 =<<1,2,3,4>> -> sequence;
+
+statements
+
+	// here we can't make "8/d", because "d" is boolean type
+	b = 6 + 8 * 5 - 8/d;
+
+	// "array1" it's a vector bi-dimensional,
+        // so we can't only give one index
+	a = array1[1];
+
+	// we can't give a boolean type to result of
+	// indexing array1
+	d = array1[0,0];
+
+	// must flag an error because final tail will be empty
+ 	a = head(tail(tail(tail(tail(seq1)))));
+}

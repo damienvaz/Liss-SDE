@@ -1,0 +1,14 @@
+program Seq
+{
+declarations
+
+		a = -1, int1 = -2, int2 = -3, int3 -> integer;
+		b = false, flag = true -> boolean;
+	 	seq1 = <<10,20,30,40,50>>, seq3 = <<1,2,3,4,5>>, seq2, seq4 -> sequence;
+
+
+statements
+
+		copy(seq1,seq2);
+		writeln(seq2);
+}

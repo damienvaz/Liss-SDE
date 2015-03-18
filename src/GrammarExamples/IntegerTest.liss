@@ -1,0 +1,22 @@
+
+program IntegerTest {
+
+declarations
+
+    intA = 4, intB, intC = 6 -> integer;
+    c = [1,2,3], vector -> array size 8;
+    bool, flag = false -> boolean;
+
+
+statements
+
+    intA = -3 + intC * (7 + c[1]);
+    bool = c[2] < 8;
+    writeln(c);
+    c[5] = 1;
+
+/* logic operations */
+
+    flag = (intB != intA) && (intA > 7) || bool;
+    bool = !( (intA == intB) || (intA != intC) && (c[1] < 6) ) || flag;
+}

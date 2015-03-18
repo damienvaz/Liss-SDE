@@ -1,0 +1,27 @@
+program ForTeste
+{
+declarations
+
+	a = 4, b = 1 , c = 10-> integer;
+	vector = [10,20,30] -> array size 5;
+	flag = false, bool -> boolean;
+
+statements
+
+
+	for (a in b..c) stepDown 1 satisfying vector[0] == a
+	{
+		write(a);
+	}
+
+	for (a in 1..10) stepUp 2 satisfying vector[0] == a
+	{
+		write(a);
+	}
+
+	for (b inArray vector)
+	{
+		a = a + b;
+	}
+
+}

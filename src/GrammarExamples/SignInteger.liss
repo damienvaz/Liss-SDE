@@ -1,0 +1,11 @@
+program test{
+  declarations
+    a, b = -4, c = +3, d, e, f, g, h -> integer;
+  statements
+    a = +2;
+    d = +3*-4;
+    e = -2-3;
+    f = -2 - +3;
+    g = 2 * -3 * 4;
+    h = 2 * (-3 / 4);
+}

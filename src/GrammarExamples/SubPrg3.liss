@@ -1,0 +1,53 @@
+
+program Test {
+
+declarations
+
+	a = 4, b= 5, c= 5 -> integer;
+	array1 = [10,20,30,40], array2, array3 -> array size 4;
+
+
+
+	subprogram calculate(m -> array size 4) -> array size 4
+	{
+	  declarations
+		fac = 6 -> integer;
+
+		subprogram factorial(n -> integer) -> integer
+		{
+		  declarations
+				res = 1 -> integer;
+
+			statements
+				while (n > 0)
+				{
+					res = res * n;
+					n = n -1;
+				}
+				return res;
+		}
+
+	  statements
+
+			for (a in 0..3) stepUp 1
+			{
+			  m[a] = factorial(fac + a);
+			}
+
+		return m;
+	}
+
+	subprogram writeArray(z -> array size 4)
+	{
+		declarations 																					
+			//q=0 -> integer;
+	  statements
+			writeln(z);
+	}
+
+
+statements
+
+	array2 = calculate(array1);
+	writeArray(array2);
+}

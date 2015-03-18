@@ -1,0 +1,7 @@
+program test01{
+  declarations
+    a = { x | x<10} -> set ;
+    c = { y | y > 4 && y < 20} -> set;
+  statements
+    a = a ++ 10;
+}
