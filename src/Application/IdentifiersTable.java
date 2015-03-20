@@ -1,5 +1,6 @@
 package Application;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.lang.String;
 import java.util.LinkedList;
@@ -17,6 +18,7 @@ import java.util.LinkedList;
 public class IdentifiersTable {
 
     private HashMap<String, InfoIdentifiersTable> idTable;
+    private int address;
 
     /* *** Constructor *** */
 
@@ -33,10 +35,14 @@ public class IdentifiersTable {
         Type seq = new Type(0,1);
         Type bool = new Type(0,1);
 
+
+        //Put the primitive types to the Identifier Table
         this.idTable.put("integer",integer);
         this.idTable.put("set",set);
         this.idTable.put("sequence",seq);
         this.idTable.put("boolean",bool);
+
+        this.address = 0;
 
     }
 
@@ -51,6 +57,10 @@ public class IdentifiersTable {
         return this.idTable;
     }
 
+    public int getAddress(){
+        return this.address;
+    }
+
     /**
      *
      * This method add all the information of {@link InfoIdentifiersTable} to the referred identifier.
@@ -62,6 +72,66 @@ public class IdentifiersTable {
      */
     public void addIdentifiersTable(String identifier, InfoIdentifiersTable infoIdTbl){
         this.idTable.put(identifier,infoIdTbl);
+    }
+
+    public void addElementsIdentifiersTables( ArrayList<String> arrayVar, String type,int level, ArrayList<Integer> arrayDimension){
+        Type typeSpace;
+
+        //System.out.println(type);
+
+
+        switch(type) {
+            case "integer":
+                Int i = new Int(new String("VAR"),new Integer(level),this.address);
+                typeSpace = (Type) this.idTable.get(type);
+
+                for(String id : arrayVar){
+                    this.idTable.put(id,i.clone());
+
+                    this.address = this.address + typeSpace.getSpace();
+                    i.setAddress(this.address);
+                }
+
+                break;
+            case "boolean":
+                Bool b = new Bool(new String("VAR"),new Integer(level),this.address);
+                typeSpace = (Type) this.idTable.get(type);
+
+                for(String id : arrayVar){
+                    this.idTable.put(id, b.clone());
+
+                    this.address = this.address + typeSpace.getSpace();
+                    b.setAddress(this.address);
+                }
+                break;
+            case "array":
+                Array a = new Array(new String("VAR"),new Integer(level),new Integer(arrayDimension.size()),arrayDimension,this.address);
+                typeSpace = (Type) this.idTable.get("integer"); //porque os elementos do array sao inteiros
+
+                for(String id : arrayVar){
+                    this.idTable.put(id, a.clone());
+
+                    this.address = this.address + (a.getMemorySize()*typeSpace.getSpace());
+                    a.setAddress(this.address);
+                }
+                break;
+            case "sequence":
+                Sequence s = new Sequence(new String("VAR"),new Integer(level),this.address,"integer");
+                typeSpace = (Type) this.idTable.get(type);
+
+                for(String id : arrayVar){
+                    this.idTable.put(id, s.clone());
+
+                    this.address = this.address + typeSpace.getSpace();
+                    s.setAddress(this.address);
+                }
+                break;
+            default:
+                System.out.println("This type doesn't exist");
+                break;
+        }
+
+
     }
 
 

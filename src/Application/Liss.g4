@@ -7,7 +7,6 @@ grammar Liss;
 
 @members{
     int level=0;
-    int address = 0;
 }
 
 /* ****** Program ****** */
@@ -18,7 +17,7 @@ liss [IdentifiersTable idTH]
 
 body[IdentifiersTable idTH]
      : '{'
-       'declarations' declarations[idTH] {System.out.println("VM exclusive: "+address+"\n");}
+       'declarations' declarations[idTH]
        'statements' statements
        '}'
      ;
@@ -38,56 +37,8 @@ declaration [IdentifiersTable idTH]
 
 variable_declaration [IdentifiersTable idTH]
                      : vars '->' type ';' {
-                            ArrayList<String> array = $vars.arrayS;
-                            Type typeSpace;
-                            if($type.typeS == "integer"){
-                                Int i = new Int(new String("VAR"),new Integer(level),address);
-                                typeSpace = (Type) $idTH.getIdentifiersTable().get("integer");
-
-                                for(String id : array){
-                                    $idTH.addIdentifiersTable(id,i.clone());
-
-                                    address = address + typeSpace.getSpace();
-                                    i.setAddress(address);
-                                }
-                            }else if($type.typeS == "boolean"){
-                                Bool b = new Bool(new String("VAR"),new Integer(level),address);
-                                typeSpace = (Type) $idTH.getIdentifiersTable().get("boolean");
-
-                                for(String id : array){
-                                    $idTH.addIdentifiersTable(id,b.clone());
-
-                                    address = address + typeSpace.getSpace();
-                                    b.setAddress(address);
-                                }
-                            }else if($type.typeS == "array"){
-                                Array a = new Array(new String("VAR"),new Integer(level),new Integer($type.arrayDimension.size()),$type.arrayDimension,address);
-                                typeSpace = (Type) $idTH.getIdentifiersTable().get("integer"); //inteiro porque guarda, supostamente, o endereço do array (nao o conteudo)
-
-                                for(String id : array){
-                                    $idTH.addIdentifiersTable(id,a.clone());
-
-                                    address = address + (a.getMemorySize()*typeSpace.getSpace());
-                                    a.setAddress(address);
-                                }
-
-                            }
-                            else if($type.typeS == "sequence"){
-                                Sequence s = new Sequence(new String("VAR"),new Integer(level),address,"integer");
-                                typeSpace = (Type) $idTH.getIdentifiersTable().get("sequence");
-
-                                for(String id : array){
-                                    $idTH.addIdentifiersTable(id,s.clone());
-
-                                    address = address + typeSpace.getSpace();
-                                    s.setAddress(address);
-                                }
-
-                            }
-
-
-
-
+                            ArrayList<String> arrayVar = $vars.arrayS;
+                            $idTH.addElementsIdentifiersTables(arrayVar,$type.typeS,level,$type.arrayDimension);
 
                      }
                      ;
