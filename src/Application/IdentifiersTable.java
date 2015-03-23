@@ -74,22 +74,25 @@ public class IdentifiersTable {
         this.idTable.put(identifier,infoIdTbl);
     }
 
-    public void addElementsIdentifiersTables( ArrayList<String> arrayVar, String type,int level, ArrayList<Integer> arrayDimension){
+    public void addElementsIdentifiersTables( HashMap<String, HashMap<String, Object>> hashmapVar, String type,int level){
         Type typeSpace;
-
-        //System.out.println(type);
-
 
         switch(type) {
             case "integer":
                 Int i = new Int(new String("VAR"),new Integer(level),this.address);
                 typeSpace = (Type) this.idTable.get(type);
 
-                for(String id : arrayVar){
-                    this.idTable.put(id,i.clone());
+                for(String id : hashmapVar.keySet()){
+                    //Pré-Condição : Verificar se as variaveis (do HashMap) ja existem na tabela de identificadores
+                        if(!this.idTable.containsKey(id)) {
+                            this.idTable.put(id, i.clone());
 
-                    this.address = this.address + typeSpace.getSpace();
-                    i.setAddress(this.address);
+                            this.address = this.address + typeSpace.getSpace();
+                            i.setAddress(this.address);
+                        }else{
+                            Debug.errorSemantic(id,(int)hashmapVar.get(id).get("line"),(int)hashmapVar.get(id).get("pos"),Debug.errorDeclarations);
+                        }
+
                 }
 
                 break;
@@ -97,33 +100,52 @@ public class IdentifiersTable {
                 Bool b = new Bool(new String("VAR"),new Integer(level),this.address);
                 typeSpace = (Type) this.idTable.get(type);
 
-                for(String id : arrayVar){
-                    this.idTable.put(id, b.clone());
+                for(String id : hashmapVar.keySet()){
+                    //Pré-Condição : Verificar se as variaveis (do HashMap) ja existem na tabela de identificadores
+                    if(!this.idTable.containsKey(id)) {
+                        this.idTable.put(id, b.clone());
 
-                    this.address = this.address + typeSpace.getSpace();
-                    b.setAddress(this.address);
+                        this.address = this.address + typeSpace.getSpace();
+                        b.setAddress(this.address);
+                    }else{
+                        Debug.errorSemantic(id, (int) hashmapVar.get(id).get("line"), (int) hashmapVar.get(id).get("pos"),Debug.errorDeclarations);
+                    }
                 }
                 break;
             case "array":
-                Array a = new Array(new String("VAR"),new Integer(level),new Integer(arrayDimension.size()),arrayDimension,this.address);
+                Array a ;
                 typeSpace = (Type) this.idTable.get("integer"); //porque os elementos do array sao inteiros
 
-                for(String id : arrayVar){
-                    this.idTable.put(id, a.clone());
+                for(String id : hashmapVar.keySet()){
+                    //Pré-Condição : Verificar se as variaveis (do HashMap) ja existem na tabela de identificadores
+                    if(!this.idTable.containsKey(id)) {
+                        ArrayList<Integer> arrayDimension = (ArrayList<Integer>) hashmapVar.get(id).get("dimension");
+                        a = new Array(new String("VAR"), new Integer(level), new Integer(arrayDimension.size()), arrayDimension, this.address);
+                        this.idTable.put(id, a.clone());
 
-                    this.address = this.address + (a.getMemorySize()*typeSpace.getSpace());
-                    a.setAddress(this.address);
+                        this.address = this.address + (a.getMemorySize() * typeSpace.getSpace());
+                        a.setAddress(this.address);
+                    }else{
+                        Debug.errorSemantic(id, (int) hashmapVar.get(id).get("line"), (int) hashmapVar.get(id).get("pos"),Debug.errorDeclarations);
+                    }
                 }
+
                 break;
             case "sequence":
                 Sequence s = new Sequence(new String("VAR"),new Integer(level),this.address,"integer");
                 typeSpace = (Type) this.idTable.get(type);
 
-                for(String id : arrayVar){
-                    this.idTable.put(id, s.clone());
+                for(String id : hashmapVar.keySet()){
+                    //Pré-Condição : Verificar se as variaveis (do HashMap) ja existem na tabela de identificadores
+                    if(!this.idTable.containsKey(id)) {
 
-                    this.address = this.address + typeSpace.getSpace();
-                    s.setAddress(this.address);
+                        this.idTable.put(id, s.clone());
+
+                        this.address = this.address + typeSpace.getSpace();
+                        s.setAddress(this.address);
+                    }else{
+                        Debug.errorSemantic(id, (int) hashmapVar.get(id).get("line"), (int) hashmapVar.get(id).get("pos"),Debug.errorDeclarations);
+                    }
                 }
                 break;
             default:

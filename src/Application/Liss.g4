@@ -5,6 +5,10 @@
  */
 grammar Liss;
 
+@header{
+    import java.util.HashMap;
+}
+
 @members{
     int level=0;
 }
@@ -18,7 +22,7 @@ liss [IdentifiersTable idTH]
 body[IdentifiersTable idTH]
      : '{'
        'declarations' declarations[idTH]
-       'statements' statements
+       'statements' statements[idTH]
        '}'
      ;
 
@@ -36,33 +40,74 @@ declaration [IdentifiersTable idTH]
 /* ****** Variables ****** */
 
 variable_declaration [IdentifiersTable idTH]
-                     : vars '->' type ';' {
-                            ArrayList<String> arrayVar = $vars.arrayS;
-                            $idTH.addElementsIdentifiersTables(arrayVar,$type.typeS,level,$type.arrayDimension);
+                     : vars[idTH] '->' type ';' {
+                            HashMap<String, HashMap<String,Object>> varsH = $vars.varsS;
+                            if($type.typeS == "array" ){
+                                for(String i : varsH.keySet()){
+                                    varsH.get(i).put("dimension",$type.arrayDimension);
+                                }
+                            }
+
+                            //Print the HashMap<String, HashMap<String,Object>> varsH
+                            /*for(String i : varsH.keySet()){
+                                System.out.println("Variable: "+i+" "+varsH.get(i).toString());
+                            }
+                            */
+
+                            $idTH.addElementsIdentifiersTables(varsH,$type.typeS,level);
 
                      }
                      ;
 
-vars returns [ArrayList<String> arrayS]
+vars [IdentifiersTable idTH]
+     returns [HashMap<String, HashMap<String,Object>> varsS]
      @init{
-        ArrayList<String> vars = new ArrayList<String>();
+        HashMap<String, HashMap<String,Object>> info = new HashMap<String, HashMap<String,Object>>();
      }
-     : var { vars.add($var.idS);}
-       (',' var {vars.add($var.idS);})* {$arrayS = vars;}
+     : var[idTH]  {
+                if(!info.containsKey($var.text)){
+                    info.put($var.idS,$var.infoVarS);
+                }else{
+                    Debug.errorSemantic($var.text,(int)$var.infoVarS.get("line"), (int)$var.infoVarS.get("pos"),Debug.errorDeclarations);
+                }
+            }
+       (',' var[idTH] {
+                    if(!info.containsKey($var.text)){
+                        info.put($var.idS,$var.infoVarS);
+                    }else{
+                        Debug.errorSemantic($var.text,(int)$var.infoVarS.get("line"), (int)$var.infoVarS.get("pos"),Debug.errorDeclarations);
+                    }
+                }
+       )*
+
+
+       {
+            $varsS = info;
+       }
 
      ;
 
-var returns[String idS]
-    : identifier value_var {$idS = $identifier.text;}
+var [IdentifiersTable idTH]
+    returns[String idS, HashMap<String,Object> infoVarS]
+    @init{
+        HashMap<String, Object> info = new HashMap<String, Object>();
+    }
+    : identifier value_var[idTH] {
+                            info.put("pos",$identifier.pos);
+                            info.put("line",$identifier.line);
+
+                            $idS = $identifier.text;
+                            $infoVarS = info;
+                            }
     ;
 
-value_var
+value_var [IdentifiersTable idTH]
           :
-          | '=' inic_var
+          | '=' inic_var[idTH]
           ;
 
 type returns[String typeS, ArrayList<Integer> arrayDimension]
-     : 'integer' {$typeS = "integer";}
+     : 'integer' {$typeS = "integer"; }
      | 'boolean' {$typeS = "boolean";}
      | 'set'     {$typeS = "set";}
      | 'sequence'{$typeS = "sequence";}
@@ -77,10 +122,10 @@ dimension returns [ArrayList<Integer> arrayDimension]
             (',' number {vars.add($number.numberS);} )*  { $arrayDimension = vars;}
           ;
 
-inic_var
+inic_var [IdentifiersTable idTH]
          : constant
          | array_definition
-         | set_definition
+         | set_definition[idTH]
          | sequence_definition
          ;
 
@@ -120,13 +165,15 @@ values : number (',' number)*
 
 /* ****** Set definition ****** */
 
-set_definition : '{'
-                 set_initialization
+set_definition [IdentifiersTable idTH]
+               : '{'
+                 set_initialization[idTH]
                  '}'
                ;
 
-set_initialization :
-                   | identifier '|' expression
+set_initialization [IdentifiersTable idTH]
+                   :
+                   | identifier '|' expression[idTH]
                    ;
 
 /* ****** SubProgram definition ****** */
@@ -142,8 +189,8 @@ subprogram_definition[IdentifiersTable idTH]
 f_body[IdentifiersTable idTH]
        : '{'
          'declarations' declarations[idTH]
-         'statements' statements
-         returnSubPrg
+         'statements' statements[idTH]
+         returnSubPrg[idTH]
          '}'
        ;
 
@@ -167,21 +214,24 @@ return_type :
 
 /* ****** Return ****** */
 
-returnSubPrg :
-       | 'return' expression ';'
-       ;
+returnSubPrg [IdentifiersTable idTH]
+             :
+             | 'return' expression[idTH] ';'
+             ;
 
 /* ****** Statements ****** */
 
-statements : statement*
-           ;
+statements [IdentifiersTable idTH]
+            : statement[idTH]*
+            ;
 
-statement : assignment ';'
-          | write_statement ';'
+statement [IdentifiersTable idTH]
+          : assignment[idTH] ';'
+          | write_statement[idTH] ';'
           | read_statement ';'
-          | conditional_statement
-          | iterative_statement
-          | function_call ';'
+          | conditional_statement[idTH]
+          | iterative_statement[idTH]
+          | function_call[idTH] ';'
           | succ_or_pred ';'
           | copy_statement ';'
           | cat_statement ';' // conjuntos de sequencias
@@ -189,65 +239,86 @@ statement : assignment ';'
 
 /* ****** Assignment ****** */
 
-assignment : designator '=' expression
+assignment [IdentifiersTable idTH]
+           : designator[idTH] '=' expression[idTH]
            ;
 
 /* ****** Designator ****** */
 
-designator : identifier array_access
+designator [IdentifiersTable idTH]
+           : identifier array_access[idTH] {
+                                if(!$array_access.response){
+                                    if(!$idTH.getIdentifiersTable().containsKey($identifier.text)){
+                                        Debug.errorSemantic($identifier.text,$identifier.line,$identifier.pos,Debug.errorStatements);
+                                    }
+                                }else{ //significa que é um array
+
+                                }
+                    }
            ;
 
-array_access :
-             | '[' elem_array ']'
+array_access [IdentifiersTable idTH]
+             returns [boolean response]//response variable => if array_access exists or not
+             :                          {$response = false;}
+             | '[' elem_array[idTH] ']' {$response = true;}
              ;
 
-elem_array : expression (',' expression)*
+elem_array [IdentifiersTable idTH]
+           : expression[idTH] (',' expression[idTH])*
            ;
 
 /* ****** Function call ****** */
 
-function_call : identifier '(' sub_prg_args ')'
+function_call [IdentifiersTable idTH]
+              : identifier '(' sub_prg_args[idTH] ')'
               ;
 
-sub_prg_args :
-             | args
+sub_prg_args [IdentifiersTable idTH]
+             :
+             | args[idTH]
              ;
 
-args : expression (',' expression)*
+args [IdentifiersTable idTH]
+     : expression[idTH] (',' expression[idTH])*
      ;
 
 /* ****** Expression ****** */
 
-expression : single_expression (rel_op single_expression)?
+expression [IdentifiersTable idTH]
+           : single_expression[idTH] (rel_op single_expression[idTH])?
            ;
 
 /* ****** Single expression ****** */
 
-single_expression : term (add_op term)*
+single_expression [IdentifiersTable idTH]
+                  : term[idTH] (add_op term[idTH])*
                   ;
 
 /* ****** Term ****** */
 
-term : factor (mul_op factor)*
+term [IdentifiersTable idTH]
+     : factor[idTH] (mul_op factor[idTH])*
      ;
 
 /* ****** Factor ****** */
 
-factor : inic_var
-       | designator
-       | function_call
-       | '(' expression ')'
-       | '!' factor
-       | specialFunctions //criado para ser usado na situação do NT 'statement'
+factor [IdentifiersTable idTH]
+       : inic_var[idTH]
+       | designator[idTH]
+       | function_call[idTH]
+       | '(' expression[idTH] ')'
+       | '!' factor[idTH]
+       | specialFunctions[idTH] //criado para ser usado na situação do NT 'statement'
        ;
 
-specialFunctions : tail
-                 | head
-                 | cons
-                 | member
-                 | is_empty
-                 | length
-                 | delete
+specialFunctions [IdentifiersTable idTH]
+                 : tail[idTH]
+                 | head[idTH]
+                 | cons[idTH]
+                 | member[idTH]
+                 | is_empty[idTH]
+                 | length[idTH]
+                 | delete[idTH]
                  ;
 
 /* ****** add_op, mul_op, rel_op ****** */
@@ -277,15 +348,17 @@ rel_op : '=='
 
 /* ****** Write statement ****** */
 
-write_statement : write_expr '(' print_what ')'
+write_statement [IdentifiersTable idTH]
+                : write_expr '(' print_what[idTH] ')'
                 ;
 
 write_expr : 'write'
            | 'writeln'
            ;
 
-print_what :
-           | expression
+print_what [IdentifiersTable idTH]
+           :
+           | expression[idTH]
            ;
 
 /* ****** Read statement ****** */
@@ -295,28 +368,33 @@ read_statement : 'input' '(' identifier ')'
 
 /* ****** Conditional & Iterative ****** */
 
-conditional_statement : if_then_else_stat
+conditional_statement [IdentifiersTable idTH]
+                      : if_then_else_stat[idTH]
                       ;
 
-iterative_statement : for_stat
-                    | while_stat
+iterative_statement [IdentifiersTable idTH]
+                    : for_stat[idTH]
+                    | while_stat[idTH]
                     ;
 
 /* ****** if_then_else_stat ****** */
 
-if_then_else_stat : 'if' '(' expression ')'
-                    'then' '{' statements '}'
-                    else_expression
+if_then_else_stat [IdentifiersTable idTH]
+                  : 'if' '(' expression[idTH] ')'
+                    'then' '{' statements[idTH] '}'
+                    else_expression[idTH]
                   ;
 
-else_expression :
-                | 'else' '{' statements '}'
+else_expression [IdentifiersTable idTH]
+                :
+                | 'else' '{' statements[idTH] '}'
                 ;
 
 /* ****** for_stat ****** */
 
-for_stat : 'for' '(' interval ')' step satisfy
-           '{' statements '}'
+for_stat [IdentifiersTable idTH]
+         : 'for' '(' interval ')' step satisfy[idTH]
+           '{' statements[idTH] '}'
          ;
 
 interval : identifier type_interval
@@ -346,14 +424,16 @@ up_down : 'stepUp'
         | 'stepDown'
         ;
 
-satisfy :
-        | 'satisfying' expression //boolean expression
+satisfy [IdentifiersTable idTH]
+        :
+        | 'satisfying' expression[idTH] //boolean expression
         ;
 
 /* ****** While_Stat ****** */
 
-while_stat : 'while' '(' expression ')'
-             '{' statements '}'
+while_stat [IdentifiersTable idTH]
+           : 'while' '(' expression[idTH] ')'
+             '{' statements[idTH] '}'
            ;
 
 /* ****** Succ_Or_Predd ****** */
@@ -367,33 +447,42 @@ succ_pred : 'succ'
 
 /* ****** SequenceOper ****** */
 
-tail : 'tail' '(' expression ')'
+tail [IdentifiersTable idTH]
+     : 'tail' '(' expression[idTH] ')'
      ;
 
-head : 'head' '(' expression ')'
+head [IdentifiersTable idTH]
+     : 'head' '(' expression[idTH] ')'
      ;
 
-cons : 'cons' '(' expression ',' expression ')'
+cons [IdentifiersTable idTH]
+     : 'cons' '(' expression[idTH] ',' expression[idTH] ')'
      ;
 
-delete : 'del' '(' expression ',' expression ')'
+delete [IdentifiersTable idTH]
+       : 'del' '(' expression[idTH] ',' expression[idTH] ')'
        ;
 
-copy_statement : 'copy' '(' identifier ',' identifier ')'
+copy_statement
+               : 'copy' '(' identifier ',' identifier ')'
                ;
 
-cat_statement : 'cat' '(' identifier ',' identifier ')'
+cat_statement
+              : 'cat' '(' identifier ',' identifier ')'
               ;
 
-is_empty : 'isEmpty' '(' expression ')'
+is_empty [IdentifiersTable idTH]
+         : 'isEmpty' '(' expression[idTH] ')'
          ;
 
-length : 'length' '(' expression ')'
+length [IdentifiersTable idTH]
+       : 'length' '(' expression[idTH] ')'
        ;
 
 /* ****** set_oper ****** */
 
-member : 'isMember' '(' expression ',' identifier ')'
+member [IdentifiersTable idTH]
+       : 'isMember' '(' expression[idTH] ',' identifier ')'
        ;
 
 
@@ -405,8 +494,8 @@ string : STR ; /* verificar se é mesmo assim sintaticamente a nivel de lexer !*
 number  returns [Integer numberS]
         : NBR {$numberS = Integer.parseInt($NBR.text);};
 
-identifier
-           : ID
+identifier returns [int line, int pos]
+           : ID {$line = $ID.line;$pos = $ID.pos;}
            ;
 /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
 
@@ -424,6 +513,7 @@ WS  :   ( [ \t\r\n] | COMMENT) -> skip
 
 STR :  '"' ( ESC_SEQ | ~('"') )* '"'
     ;
+
 
 fragment
 COMMENT

@@ -1,11 +1,27 @@
 package Application;
 
-/**
- * Created by damienvaz on 3/20/15.
- */
+import java.util.HashMap;
+
 public class TypeChecking {
 
-    public static void variable_declaration(){
-        System.out.println("See Type Checking of variable_declaration");
+    public static boolean semantic(HashMap<String, InfoIdentifiersTable> idT, String id){
+        boolean bool=false;
+
+        if(!idT.containsKey(id)){
+            bool = true;
+        }
+        else {
+
+        }
+
+        return bool;
+    }
+
+    public static boolean doIt(){
+        boolean bool=true;
+
+
+
+        return bool;
     }
 }
