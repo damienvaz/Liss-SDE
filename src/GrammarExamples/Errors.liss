@@ -13,6 +13,8 @@ statements
 	// here we can't make "8/d", because "d" is boolean type
 	b = 6 + 8 * 5 - 8/d + li;
 
+	c = 2*5 < 2*6;
+
 	// "array1" it's a vector bi-dimensional,
         // so we can't only give one index
 	a = array1[1];
@@ -21,7 +23,7 @@ statements
 
 	// we can't give a boolean type to result of
 	// indexing array1
-	d = array1[0,0];
+	d = array1[seq1,0];
 
 	// must flag an error because final tail will be empty
  	a = head(tail(tail(tail(tail(seq1)))));

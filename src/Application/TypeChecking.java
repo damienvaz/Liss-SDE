@@ -17,11 +17,5 @@ public class TypeChecking {
         return bool;
     }
 
-    public static boolean doIt(){
-        boolean bool=true;
 
-
-
-        return bool;
-    }
 }

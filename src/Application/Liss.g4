@@ -123,15 +123,17 @@ dimension returns [ArrayList<Integer> arrayDimension]
           ;
 
 inic_var [IdentifiersTable idTH]
-         : constant
-         | array_definition
-         | set_definition[idTH]
-         | sequence_definition
+         returns [String typeS]
+         : constant              {$typeS = $constant.typeS;}
+         | array_definition      {$typeS = "integer";}
+         | set_definition[idTH]  {$typeS = "set";}
+         | sequence_definition   {$typeS = "sequence";}
          ;
 
-constant : sign number
-         | 'true'
-         | 'false'
+constant returns [String typeS]
+         : sign number {$typeS = "integer";}
+         | 'true'      {$typeS = "boolean";}
+         | 'false'     {$typeS = "boolean";}
          ;
 
 sign :
@@ -246,15 +248,48 @@ assignment [IdentifiersTable idTH]
 /* ****** Designator ****** */
 
 designator [IdentifiersTable idTH]
-           : identifier array_access[idTH] {
+            returns [String typeS, int line, int pos]
+           : identifier array_access[idTH]
+           {
+                                $line = $identifier.line;
+                                $pos = $identifier.pos;
+                                //Pre-Condicao: é um identificador
                                 if(!$array_access.response){
+                                    //Pre-Condicao: ver se existe na tabela de identificador
                                     if(!$idTH.getIdentifiersTable().containsKey($identifier.text)){
                                         Debug.errorSemantic($identifier.text,$identifier.line,$identifier.pos,Debug.errorStatements);
+
+                                    }else{
+                                        if(!$idTH.getIdentifiersTable().get($identifier.text).getCategory().equals(new String("TYPE"))){
+                                            Var v = (Var) $idTH.getIdentifiersTable().get($identifier.text);
+                                            $typeS = v.getInfoType();
+                                        }
                                     }
-                                }else{ //significa que é um array
+                                }
+                                //Pre-Condicao: é um array
+                                else{
+                                    //Pre-Condicao: se existe na tabela de identificador
+                                    if(!$idTH.getIdentifiersTable().containsKey($identifier.text)){
+                                        Debug.errorSemantic($identifier.text,$identifier.line,$identifier.pos,Debug.errorStatements);
+
+                                    }else{
+                                        Var v = (Var) $idTH.getIdentifiersTable().get($identifier.text);
+
+                                        if(v.getCategory().equals(new String("TYPE"))){
+                                            Debug.errorSemantic($identifier.text,$identifier.line,$identifier.pos,Debug.errorStatements);
+
+                                        }else{
+                                            if(!v.getInfoType().equals(new String("array"))){
+                                                Debug.errorSemantic($identifier.text,$identifier.line,$identifier.pos,Debug.errorArrayType);
+                                            }else{
+                                                $typeS = v.getInfoType() ;
+                                            }
+                                        }
+                                    }
 
                                 }
-                    }
+
+           }
            ;
 
 array_access [IdentifiersTable idTH]
@@ -264,7 +299,21 @@ array_access [IdentifiersTable idTH]
              ;
 
 elem_array [IdentifiersTable idTH]
-           : expression[idTH] (',' expression[idTH])*
+           : single_expression[idTH]
+                                    {
+                                      if(!($single_expression.typeS == "integer"))
+                                           {
+                                            Debug.errorSemantic($single_expression.text,$single_expression.line,$single_expression.pos,Debug.createMessageType($single_expression.typeS,"integer"));
+                                           }
+                                    }
+           (',' single_expression[idTH]
+                                    {
+                                        if(!($single_expression.typeS == "integer")){
+                                            Debug.errorSemantic($single_expression.text,$single_expression.line,$single_expression.pos,Debug.createMessageType($single_expression.typeS,"integer"));
+                                        }
+
+                                    }
+           )* //ver isto
            ;
 
 /* ****** Function call ****** */
@@ -291,20 +340,39 @@ expression [IdentifiersTable idTH]
 /* ****** Single expression ****** */
 
 single_expression [IdentifiersTable idTH]
-                  : term[idTH] (add_op term[idTH])*
+                  returns [String typeS, int line, int pos ]
+                  : term[idTH] {$typeS = $term.typeS; $line = $term.line; $pos = $term.pos;}
+                  (add_op term[idTH] {$typeS = $term.typeS; $line = $term.line; $pos = $term.pos;} )*
                   ;
 
 /* ****** Term ****** */
 
 term [IdentifiersTable idTH]
-     : factor[idTH] (mul_op factor[idTH])*
+     returns [String typeS, int line, int pos]
+     @init{
+        boolean correctType = true;
+     }
+     : f1=factor[idTH] {$line = $f1.line; $pos = $f1.pos;}
+     (mul_op f2=factor[idTH] {
+                                if($f1.typeS==$mul_op.typeS){
+                                    if(!($mul_op.typeS == $f2.typeS)){
+                                        Debug.errorSemantic($f2.text, $f2.line, $f2.pos, Debug.createMessageType($f2.typeS,$mul_op.typeS));
+                                        correctType = false;
+                                    }
+                                }else{
+                                    Debug.errorSemantic($f1.text, $f1.line, $f1.pos, Debug.createMessageType($f1.typeS,$mul_op.typeS));
+                                    correctType = false;
+                                }
+                          }
+     )* {if(correctType == true){ $typeS = $f1.typeS;}else{System.out.println("Nao conseguiu devolver nada como tipo.");}}
      ;
 
 /* ****** Factor ****** */
 
-factor [IdentifiersTable idTH]
-       : inic_var[idTH]
-       | designator[idTH]
+factor [IdentifiersTable idTH] //vai ser preciso ver as pre-condiçoes de todos as alternativas feitas
+       returns [String typeS,int line, int pos]
+       : inic_var[idTH] {$typeS = $inic_var.typeS;}
+       | designator[idTH] {$typeS = $designator.typeS; $line = $designator.line; $pos = $designator.pos;}
        | function_call[idTH]
        | '(' expression[idTH] ')'
        | '!' factor[idTH]
@@ -324,26 +392,29 @@ specialFunctions [IdentifiersTable idTH]
 /* ****** add_op, mul_op, rel_op ****** */
 
 //o que tem menor prioridade
-add_op : '+'
-       | '-'
-       | '||'
-       | '++' //( uniao de conjuntos)
+add_op returns [String typeS]
+       : '+' {$typeS = "integer";}
+       | '-' {$typeS = "integer";}
+       | '||'{$typeS = "boolean";}
+       | '++'{$typeS = "set";} //( uniao de conjuntos)
        ;
 
 //tem mais prioridade que add_op
-mul_op : '*'
-       | '/'
-       | '&&'
-       | '**' //( interseccao de conjuntos)
+mul_op returns [String typeS]
+       : '*' {$typeS = "integer";}
+       | '/' {$typeS = "integer";}
+       | '&&'{$typeS = "boolean";}
+       | '**'{$typeS = "set";}//( interseccao de conjuntos)
        ;
 
-rel_op : '=='
-       | '!='
-       | '<'
-       | '>'
-       | '<='
-       | '>='
-       | 'in' // pertence
+rel_op returns [String typeS]
+       : '==' {$typeS = "integer";}
+       | '!=' {$typeS = "integer";}
+       | '<'  {$typeS = "integer";}
+       | '>'  {$typeS = "integer";}
+       | '<=' {$typeS = "integer";}
+       | '>=' {$typeS = "integer";}
+       | 'in' {$typeS = "integer";} // perguntar ao prof o que se deve devolver ??? Eu acho que deve dar para ser tanto SET como SEQUENCE
        ;
 
 /* ****** Write statement ****** */

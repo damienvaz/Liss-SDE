@@ -74,6 +74,7 @@ public class Main {
         //idT.addIdentifiersTable(new String("array1"),aL);
 
 
+
         System.out.println(idT.toString());
 
         //Int i = new Int("VAR",0,0);
