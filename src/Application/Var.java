@@ -38,7 +38,12 @@ public abstract class Var extends InfoIdentifiersTable {
         StringBuilder s = new StringBuilder();
 
         s.append(super.toString());
-        s.append(String.format("%-20s%-20s%-20s","",this.infoType,this.address));
+
+        if(this.address.equals(-1)){
+            s.append(String.format("%-20s%-20s%-20s", "", this.infoType, "NULL"));
+        }else {
+            s.append(String.format("%-20s%-20s%-20s", "", this.infoType, this.address));
+        }
         //s.append("Type: "+this.infoType+"\t");
 
         return s.toString();

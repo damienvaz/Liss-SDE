@@ -7,24 +7,45 @@ declarations
 	array1 = [[1,2],[2,3]], vector -> array size 4,3;
  	seq1 =<<1,2,3,4>> -> sequence;
     seq1 = <<1,4,7>> -> sequence;
+    set1 -> set;
 
 statements
 
 	// here we can't make "8/d", because "d" is boolean type
-	b = 6 + 8 * 5 - 8/d + li;
+	b = 6 + 8 && 5 + 8/d + li;
 
-	c = 2*5 < 2*6;
+    b = 6 + 8 && d;
+
+	c = 2*5-seq1 < 2*3+flag;
 
 	// "array1" it's a vector bi-dimensional,
         // so we can't only give one index
 	a = array1[1];
 
-    li = 2*4;
+	array1 = vector;
+
+    d = (1 > 2) && (3 == 4);
+
+    b = 2+5;
+
+    flag = a in set1;
+
+    array1[1,1,1] = 2*4;
 
 	// we can't give a boolean type to result of
 	// indexing array1
-	d = array1[seq1,0];
+	d = array1[seq1,x,0];
+
+	a = [2];
 
 	// must flag an error because final tail will be empty
- 	a = head(tail(tail(tail(tail(seq1)))));
+ 	a = head(tail(tail(tail(tail(d)))));
+
+ 	a = head(seq1);
+
+    a = cons(flag,seq1);
+
+    d = 2 * false * 6 / true;
+
+    d = isMember(a-3*b+array1[2,2],seq1);
 }

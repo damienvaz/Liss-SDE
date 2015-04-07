@@ -77,6 +77,7 @@ public class IdentifiersTable {
     public void addElementsIdentifiersTables( HashMap<String, HashMap<String, Object>> hashmapVar, String type,int level){
         Type typeSpace;
 
+
         switch(type) {
             case "integer":
                 Int i = new Int(new String("VAR"),new Integer(level),this.address);
@@ -90,7 +91,7 @@ public class IdentifiersTable {
                             this.address = this.address + typeSpace.getSpace();
                             i.setAddress(this.address);
                         }else{
-                            Debug.errorSemantic(id,(int)hashmapVar.get(id).get("line"),(int)hashmapVar.get(id).get("pos"),Debug.errorDeclarations);
+                            ErrorMessage.errorSemantic(id, (int) hashmapVar.get(id).get("line"), (int) hashmapVar.get(id).get("pos"), ErrorMessage.errorDeclarations);
                         }
 
                 }
@@ -108,7 +109,7 @@ public class IdentifiersTable {
                         this.address = this.address + typeSpace.getSpace();
                         b.setAddress(this.address);
                     }else{
-                        Debug.errorSemantic(id, (int) hashmapVar.get(id).get("line"), (int) hashmapVar.get(id).get("pos"),Debug.errorDeclarations);
+                        ErrorMessage.errorSemantic(id, (int) hashmapVar.get(id).get("line"), (int) hashmapVar.get(id).get("pos"), ErrorMessage.errorDeclarations);
                     }
                 }
                 break;
@@ -126,7 +127,7 @@ public class IdentifiersTable {
                         this.address = this.address + (a.getMemorySize() * typeSpace.getSpace());
                         a.setAddress(this.address);
                     }else{
-                        Debug.errorSemantic(id, (int) hashmapVar.get(id).get("line"), (int) hashmapVar.get(id).get("pos"),Debug.errorDeclarations);
+                        ErrorMessage.errorSemantic(id, (int) hashmapVar.get(id).get("line"), (int) hashmapVar.get(id).get("pos"), ErrorMessage.errorDeclarations);
                     }
                 }
 
@@ -144,9 +145,27 @@ public class IdentifiersTable {
                         this.address = this.address + typeSpace.getSpace();
                         s.setAddress(this.address);
                     }else{
-                        Debug.errorSemantic(id, (int) hashmapVar.get(id).get("line"), (int) hashmapVar.get(id).get("pos"),Debug.errorDeclarations);
+                        ErrorMessage.errorSemantic(id, (int) hashmapVar.get(id).get("line"), (int) hashmapVar.get(id).get("pos"), ErrorMessage.errorDeclarations);
                     }
                 }
+                break;
+            case "set":
+                Set set = new Set(new String("VAR"), new Integer(level), this.address);
+                typeSpace = (Type) this.idTable.get(type);
+
+                for(String id : hashmapVar.keySet()){
+                    //Pré-Condição : Verificar se as variaveis (do HashMap) ja existem na tabela de identificadores
+                    if(!this.idTable.containsKey(id)) {
+                        set.setAddress(-1);
+                        this.idTable.put(id, set.clone());
+
+                        this.address = this.address + typeSpace.getSpace();
+
+                    }else{
+                        ErrorMessage.errorSemantic(id, (int) hashmapVar.get(id).get("line"), (int) hashmapVar.get(id).get("pos"), ErrorMessage.errorDeclarations);
+                    }
+                }
+
                 break;
             default:
                 System.out.println("This type doesn't exist");
