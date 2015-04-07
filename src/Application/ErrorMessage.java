@@ -13,11 +13,15 @@ public class ErrorMessage {
         System.out.println("line "+line+":"+pos+"\t Expression '"+var.toString()+"' "+message.toString());
     }
 
+    public static String semantic(String var, String message){
+        return new String("Expression '"+var.toString()+"' "+message.toString());
+    }
+
     public static void errorSemanticAssignment(int line){
         System.out.println("line "+line+"\t Incompatible types in an Assignment.");
     }
 
-    public static String createMessageType(String chosenType, String expectedType){
+    public static String type(String chosenType, String expectedType){
         return " has type '"+chosenType+"',when It should be '"+expectedType+"'.";
     }
 
