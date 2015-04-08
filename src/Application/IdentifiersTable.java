@@ -74,7 +74,7 @@ public class IdentifiersTable {
         this.idTable.put(identifier,infoIdTbl);
     }
 
-    public void addElementsIdentifiersTables( HashMap<String, HashMap<String, Object>> hashmapVar, String type,int level){
+    public void addElementsIdentifiersTables(TableError e, HashMap<String, HashMap<String, Object>> hashmapVar, String type,int level){
         Type typeSpace;
 
 
@@ -91,7 +91,8 @@ public class IdentifiersTable {
                             this.address = this.address + typeSpace.getSpace();
                             i.setAddress(this.address);
                         }else{
-                            ErrorMessage.errorSemantic(id, (int) hashmapVar.get(id).get("line"), (int) hashmapVar.get(id).get("pos"), ErrorMessage.errorDeclarations);
+                            //ErrorMessage.errorSemantic(id, (int) hashmapVar.get(id).get("line"), (int) hashmapVar.get(id).get("pos"), ErrorMessage.errorDeclarations);
+                            e.addMessage((int) hashmapVar.get(id).get("line"),(int) hashmapVar.get(id).get("pos"),ErrorMessage.semantic(id,ErrorMessage.Declarations));
                         }
 
                 }
@@ -109,7 +110,8 @@ public class IdentifiersTable {
                         this.address = this.address + typeSpace.getSpace();
                         b.setAddress(this.address);
                     }else{
-                        ErrorMessage.errorSemantic(id, (int) hashmapVar.get(id).get("line"), (int) hashmapVar.get(id).get("pos"), ErrorMessage.errorDeclarations);
+                        //ErrorMessage.errorSemantic(id, (int) hashmapVar.get(id).get("line"), (int) hashmapVar.get(id).get("pos"), ErrorMessage.errorDeclarations);
+                        e.addMessage((int) hashmapVar.get(id).get("line"),(int) hashmapVar.get(id).get("pos"),ErrorMessage.semantic(id,ErrorMessage.Declarations));
                     }
                 }
                 break;
@@ -127,7 +129,8 @@ public class IdentifiersTable {
                         this.address = this.address + (a.getMemorySize() * typeSpace.getSpace());
                         a.setAddress(this.address);
                     }else{
-                        ErrorMessage.errorSemantic(id, (int) hashmapVar.get(id).get("line"), (int) hashmapVar.get(id).get("pos"), ErrorMessage.errorDeclarations);
+                        //ErrorMessage.errorSemantic(id, (int) hashmapVar.get(id).get("line"), (int) hashmapVar.get(id).get("pos"), ErrorMessage.errorDeclarations);
+                        e.addMessage((int) hashmapVar.get(id).get("line"),(int) hashmapVar.get(id).get("pos"),ErrorMessage.semantic(id,ErrorMessage.Declarations));
                     }
                 }
 
@@ -145,7 +148,8 @@ public class IdentifiersTable {
                         this.address = this.address + typeSpace.getSpace();
                         s.setAddress(this.address);
                     }else{
-                        ErrorMessage.errorSemantic(id, (int) hashmapVar.get(id).get("line"), (int) hashmapVar.get(id).get("pos"), ErrorMessage.errorDeclarations);
+                        //ErrorMessage.errorSemantic(id, (int) hashmapVar.get(id).get("line"), (int) hashmapVar.get(id).get("pos"), ErrorMessage.errorDeclarations);
+                        e.addMessage((int) hashmapVar.get(id).get("line"),(int) hashmapVar.get(id).get("pos"),ErrorMessage.semantic(id,ErrorMessage.Declarations));
                     }
                 }
                 break;
@@ -162,7 +166,8 @@ public class IdentifiersTable {
                         this.address = this.address + typeSpace.getSpace();
 
                     }else{
-                        ErrorMessage.errorSemantic(id, (int) hashmapVar.get(id).get("line"), (int) hashmapVar.get(id).get("pos"), ErrorMessage.errorDeclarations);
+                        //ErrorMessage.errorSemantic(id, (int) hashmapVar.get(id).get("line"), (int) hashmapVar.get(id).get("pos"), ErrorMessage.errorDeclarations);
+                        e.addMessage((int) hashmapVar.get(id).get("line"),(int) hashmapVar.get(id).get("pos"),ErrorMessage.semantic(id,ErrorMessage.Declarations));
                     }
                 }
 

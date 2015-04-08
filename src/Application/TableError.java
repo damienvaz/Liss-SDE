@@ -36,9 +36,14 @@ public class TableError {
             TreeMap<Integer,String> v = this.tableError.get(line);
             for(Integer pos : v.keySet()){
                 s.append("line: "+line);
-                s.append(":"+pos);
-                s.append("\t"+v.get(pos));
-                s.append("\n");
+                if(pos == -1) { // -1 significa que é um tipo assignment !
+                    s.append("\t" + v.get(pos));
+                    s.append("\n");
+                }else{
+                    s.append(":" + pos);
+                    s.append("\t" + v.get(pos));
+                    s.append("\n");
+                }
             }
         }
         return s.toString();

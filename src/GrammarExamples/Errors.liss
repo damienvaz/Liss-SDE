@@ -2,17 +2,18 @@ program Errors
 {
 declarations
 
-	a = 4, b -> integer;
+    a = 4, b -> integer;
 	d = true, flag   -> boolean;
 	array1 = [[1,2],[2,3]], vector -> array size 4,3;
  	seq1 =<<1,2,3,4>> -> sequence;
     seq1 = <<1,4,7>> -> sequence;
     set1 -> set;
+    f -> boolean;
 
 statements
 
 	// here we can't make "8/d", because "d" is boolean type
-	b = 6 + 8 && 5 + 8/d + li;
+    b = 6 + 8 && 5 + 8/d + li;
 
     b = 6 + 8 && d;
 
@@ -39,13 +40,13 @@ statements
 	a = [2];
 
 	// must flag an error because final tail will be empty
- 	a = head(tail(tail(tail(tail(d)))));
+ 	a = head(tail(tail(tail(tail(f)))));
 
  	a = head(seq1);
 
     a = cons(flag,seq1);
 
-    d = 2 * false * 6 / true;
+    d = u * false * 6 / true;
 
     d = isMember(a-3*b+array1[2,2],seq1);
 }

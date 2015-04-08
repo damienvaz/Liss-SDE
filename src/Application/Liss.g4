@@ -57,7 +57,7 @@ variable_declaration [IdentifiersTable idTH]
                             }*/
 
 
-                            $idTH.addElementsIdentifiersTables(varsH,$type.typeS,level);
+                            $idTH.addElementsIdentifiersTables(e,varsH,$type.typeS,level);
 
                      }
                      ;
@@ -71,14 +71,16 @@ vars [IdentifiersTable idTH]
                 if(!info.containsKey($var.text)){
                     info.put($var.idS,$var.infoVarS);
                 }else{
-                    ErrorMessage.errorSemantic($var.text,(int)$var.infoVarS.get("line"), (int)$var.infoVarS.get("pos"),ErrorMessage.errorDeclarations);
+                    //ErrorMessage.errorSemantic($var.text,(int)$var.infoVarS.get("line"), (int)$var.infoVarS.get("pos"),ErrorMessage.errorDeclarations+" woot");
+                    e.addMessage((int)$var.infoVarS.get("line"),(int)$var.infoVarS.get("pos"),ErrorMessage.semantic($var.text,ErrorMessage.Declarations));
                 }
             }
        (',' var[idTH] {
                     if(!info.containsKey($var.text)){
                         info.put($var.idS,$var.infoVarS);
                     }else{
-                        ErrorMessage.errorSemantic($var.text,(int)$var.infoVarS.get("line"), (int)$var.infoVarS.get("pos"),ErrorMessage.errorDeclarations);
+                        //ErrorMessage.errorSemantic($var.text,(int)$var.infoVarS.get("line"), (int)$var.infoVarS.get("pos"),ErrorMessage.errorDeclarations+" woot");
+                        e.addMessage((int)$var.infoVarS.get("line"),(int)$var.infoVarS.get("pos"),ErrorMessage.semantic($var.text,ErrorMessage.Declarations));
                     }
                 }
        )*
@@ -255,7 +257,8 @@ assignment [IdentifiersTable idTH]
                 $typeS = $designator.typeS;
                 System.out.println($designator.line+"Funcionou ;D");
               }else{
-                ErrorMessage.errorSemanticAssignment($designator.line);
+                //ErrorMessage.errorSemanticAssignment($designator.line);
+                e.addMessage($designator.line,-1,ErrorMessage.semanticAssignment($designator.line)); //-1 => assignemen error => there is no pos.
               }
            }
            ;
@@ -276,7 +279,8 @@ designator [IdentifiersTable idTH]
                                     //Pre-Condicao: ver se existe na tabela de identificador
                                     if(!$idTH.getIdentifiersTable().containsKey($identifier.text)){
 
-                                        ErrorMessage.errorSemantic($identifier.text,$identifier.line,$identifier.pos,ErrorMessage.errorStatements);
+                                        //ErrorMessage.errorSemantic($identifier.text,$identifier.line,$identifier.pos,ErrorMessage.errorStatements);
+                                        e.addMessage($identifier.line,$identifier.pos,ErrorMessage.semantic($identifier.text,ErrorMessage.Statements));
 
                                     }else{
                                         if(!$idTH.getIdentifiersTable().get($identifier.text).getCategory().equals(new String("TYPE"))){
@@ -289,17 +293,20 @@ designator [IdentifiersTable idTH]
                                 else{
                                     //Pre-Condicao: se existe na tabela de identificador
                                     if(!$idTH.getIdentifiersTable().containsKey($identifier.text)){
-                                        ErrorMessage.errorSemantic($identifier.text,$identifier.line,$identifier.pos,ErrorMessage.errorStatements);
+                                        //ErrorMessage.errorSemantic($identifier.text,$identifier.line,$identifier.pos,ErrorMessage.errorStatements);
+                                        e.addMessage($identifier.line,$identifier.pos,ErrorMessage.semantic($identifier.text,ErrorMessage.Statements));
 
                                     }else{
                                         Var v = (Var) $idTH.getIdentifiersTable().get($identifier.text);
 
                                         if(v.getCategory().equals(new String("TYPE"))){
-                                            ErrorMessage.errorSemantic($identifier.text,$identifier.line,$identifier.pos,ErrorMessage.errorStatements);
+                                            //ErrorMessage.errorSemantic($identifier.text,$identifier.line,$identifier.pos,ErrorMessage.errorStatements);
+                                            e.addMessage($identifier.line,$identifier.pos,ErrorMessage.semantic($identifier.text,ErrorMessage.Statements));
 
                                         }else{
                                             if(!v.getInfoType().equals(new String("array"))){
                                                 ErrorMessage.errorSemantic($identifier.text,$identifier.line,$identifier.pos,ErrorMessage.errorArrayType);
+                                                e.addMessage($identifier.line,$identifier.pos,ErrorMessage.semantic($identifier.text,ErrorMessage.ArrayType));
                                             }else{
                                                 Array a = (Array) v;
                                                 //System.out.println("Dimension: "+a.getDimension());
@@ -309,7 +316,8 @@ designator [IdentifiersTable idTH]
                                                     //$typeS = v.getInfoType() ;
                                                     $typeS = "integer"; //v[1,1] => inteiro como tipo nao array
                                                 }else{
-                                                    ErrorMessage.errorSemantic($identifier.text,$identifier.line,$identifier.pos,ErrorMessage.createMessageDimensionArray($array_access.dimensionS,a.getDimension()));
+                                                    //ErrorMessage.errorSemantic($identifier.text,$identifier.line,$identifier.pos,ErrorMessage.createMessageDimensionArray($array_access.dimensionS,a.getDimension()));
+                                                    e.addMessage($identifier.line,$identifier.pos,ErrorMessage.semantic($identifier.text,ErrorMessage.dimensionArray($array_access.dimensionS,a.getDimension())));
                                                     //System.out.println("Dimension demasiadas grandes do array "+$identifier.text);
                                                 }
                                             }
@@ -335,16 +343,18 @@ elem_array [IdentifiersTable idTH]
            : single_expression[idTH]
                                     {
                                       dimension++;
-                                      if(!($single_expression.typeS == "integer"))
+                                      if(!($single_expression.typeS == "integer") && $idTH.getIdentifiersTable().containsKey($single_expression.text))
                                            {
                                             ErrorMessage.errorSemantic($single_expression.text,$single_expression.line,$single_expression.pos,ErrorMessage.type($single_expression.typeS,"integer"));
+                                            e.addMessage($single_expression.line,$single_expression.pos,ErrorMessage.semantic($single_expression.text,ErrorMessage.type($single_expression.typeS,"integer")));
                                            }
                                     }
            (',' single_expression[idTH]
                                     {
                                         dimension++;
-                                        if(!($single_expression.typeS == "integer")){
+                                        if(!($single_expression.typeS == "integer") && $idTH.getIdentifiersTable().containsKey($single_expression.text)){
                                             ErrorMessage.errorSemantic($single_expression.text,$single_expression.line,$single_expression.pos,ErrorMessage.type($single_expression.typeS,"integer"));
+                                            e.addMessage($single_expression.line,$single_expression.pos,ErrorMessage.semantic($single_expression.text,ErrorMessage.type($single_expression.typeS,"integer")));
                                         }
 
                                     }
@@ -385,11 +395,13 @@ expression [IdentifiersTable idTH]
                             }else{
                                 System.out.print("expression > ");
                                 ErrorMessage.errorSemantic($s2.text, $s2.line, $s2.pos, ErrorMessage.type($s2.typeS,$rel_op.typeS));
+                                e.addMessage($s2.line,$s2.pos,ErrorMessage.semantic($s2.text,ErrorMessage.type($s2.typeS,$rel_op.typeS)));
                                 correctType = false;
                             }
                         }else{
                             System.out.print("expression > ");
                             ErrorMessage.errorSemantic($s1.text, $s1.line, $s1.pos, ErrorMessage.type($s1.typeS,$rel_op.typeS));
+                            e.addMessage($s1.line,$s1.pos,ErrorMessage.semantic($s1.text,ErrorMessage.type($s1.typeS,$rel_op.typeS)));
                             correctType = false;
                         }
                     }else if($rel_op.text.equals("in")){
@@ -400,11 +412,13 @@ expression [IdentifiersTable idTH]
                             }else{
                                 System.out.print("expression > ");
                                 ErrorMessage.errorSemantic($s2.text, $s2.line, $s2.pos, ErrorMessage.type($s2.typeS,"set"));
+                                e.addMessage($s2.line,$s2.pos,ErrorMessage.semantic($s2.text,ErrorMessage.type($s2.typeS,"set")));
                                 correctType = false;
                             }
                         }else{
                             System.out.print("expression > ");
                             ErrorMessage.errorSemantic($s1.text, $s1.line, $s1.pos, ErrorMessage.type($s1.typeS,$rel_op.typeS));
+                            e.addMessage($s1.line,$s1.pos,ErrorMessage.semantic($s1.text,ErrorMessage.type($s1.typeS,$rel_op.typeS)));
                             correctType = false;
                         }
                     }
@@ -450,12 +464,14 @@ single_expression [IdentifiersTable idTH]
                                                 }else{
                                                     System.out.print("single_expression1 > ");
                                                     ErrorMessage.errorSemantic($t2.text, $t2.line, $t2.pos, ErrorMessage.type($t2.typeS,$add_op.typeS));
+                                                    e.addMessage($t2.line,$t2.pos,ErrorMessage.semantic($t2.text,ErrorMessage.type($t2.typeS,$add_op.typeS)));
                                                     correctType = false;
 
                                                 }
                                             }else{
                                                 System.out.print("single_expression2 > ");
                                                 ErrorMessage.errorSemantic($t1.text, $t1.line, $t1.pos, ErrorMessage.type($t1.typeS,$add_op.typeS));
+                                                e.addMessage($t1.line,$t1.pos,ErrorMessage.semantic($t1.text,ErrorMessage.type($t1.typeS,$add_op.typeS)));
                                                 correctType = false;
 
                                             }
@@ -469,12 +485,13 @@ single_expression [IdentifiersTable idTH]
                                                 }else{
                                                     System.out.print("single_expression3 > ");
                                                     ErrorMessage.errorSemantic($t2.text, $t2.line, $t2.pos, ErrorMessage.type($t2.typeS,$add_op.typeS));
+                                                    e.addMessage($t2.line,$t2.pos,ErrorMessage.semantic($t2.text,ErrorMessage.type($t2.typeS,$add_op.typeS)));
                                                     correctType = false;
                                                 }
                                             }else{
                                                 System.out.print("single_expression4 > ");
                                                 ErrorMessage.errorSemantic(errorManagement.get(0).getIdentifier().concat($add_op.text).concat($t2.text), errorManagement.get(0).getLine(), errorManagement.get(0).getPos(), ErrorMessage.type(leftType,$add_op.typeS));
-
+                                                e.addMessage(errorManagement.get(0).getLine(),errorManagement.get(0).getPos(),ErrorMessage.semantic(errorManagement.get(0).getIdentifier().concat($add_op.text).concat($t2.text),ErrorMessage.type(leftType,$add_op.typeS)));
                                                 correctType = false;
                                             }
 
@@ -515,14 +532,18 @@ term [IdentifiersTable idTH]
                                         if(($f2.typeS != null) && $mul_op.typeS.equals($f2.typeS)){
                                             leftType = $mul_op.typeS;
                                         }else{
-                                            System.out.print("term1 > ");
-                                            ErrorMessage.errorSemantic($f2.text, $f2.line, $f2.pos, ErrorMessage.type($f2.typeS,$mul_op.typeS));
+                                            //só se pode escrever estas mensagens de erros caso as variaveis estiverem na tabela de identificador !!!!
+
+                                            //System.out.print("term1 > ");
+                                            //ErrorMessage.errorSemantic($f2.text, $f2.line, $f2.pos, ErrorMessage.type($f2.typeS,$mul_op.typeS));
                                             e.addMessage($f2.line,$f2.pos,ErrorMessage.semantic($f2.text,ErrorMessage.type($f2.typeS,$mul_op.typeS)));
                                             correctType = false;
                                         }
                                     }else{
-                                        System.out.print("term2 > ");
-                                        ErrorMessage.errorSemantic($f1.text, $f1.line, $f1.pos, ErrorMessage.type($f1.typeS,$mul_op.typeS));
+                                        //só se pode escrever estas mensagens de erros caso as variaveis estiverem na tabela de identificador !!!!
+
+                                        //System.out.print("term2 > ");
+                                        //ErrorMessage.errorSemantic($f1.text, $f1.line, $f1.pos, ErrorMessage.type($f1.typeS,$mul_op.typeS));
                                         e.addMessage($f1.line,$f1.pos,ErrorMessage.semantic($f1.text,ErrorMessage.type($f1.typeS,$mul_op.typeS)));
                                         correctType = false;
                                     }
@@ -535,14 +556,18 @@ term [IdentifiersTable idTH]
                                             if(($f2.typeS != null) && $mul_op.typeS.equals($f2.typeS)){
                                                 leftType = $mul_op.typeS;
                                             }else{
+                                                //só se pode escrever estas mensagens de erros caso as variaveis estiverem na tabela de identificador !!!!
+
                                                 System.out.print("term3 > ");
                                                 ErrorMessage.errorSemantic($f2.text, $f2.line, $f2.pos, ErrorMessage.type($f2.typeS,$mul_op.typeS));
                                                 e.addMessage($f2.line,$f2.pos,ErrorMessage.semantic($f2.text,ErrorMessage.type($f2.typeS,$mul_op.typeS)));
                                                 correctType = false;
                                             }
                                         }else{
-                                            System.out.print("term4 > ");
-                                            ErrorMessage.errorSemantic(errorManagement.get(0).getIdentifier().concat($mul_op.text).concat($f2.text), errorManagement.get(0).getLine(), errorManagement.get(0).getPos(), ErrorMessage.type(leftType,$mul_op.typeS));
+                                            //só se pode escrever estas mensagens de erros caso as variaveis estiverem na tabela de identificador !!!! dar uma especial atencao aqui
+
+                                            //System.out.print("term4 > ");
+                                            //ErrorMessage.errorSemantic(errorManagement.get(0).getIdentifier().concat($mul_op.text).concat($f2.text), errorManagement.get(0).getLine(), errorManagement.get(0).getPos(), ErrorMessage.type(leftType,$mul_op.typeS));
                                             e.addMessage(errorManagement.get(0).getLine(),errorManagement.get(0).getPos(),ErrorMessage.semantic(errorManagement.get(0).getIdentifier().concat($mul_op.text).concat($f2.text),ErrorMessage.type(leftType,$mul_op.typeS)));
                                             correctType = false;
                                         }
@@ -561,14 +586,23 @@ term [IdentifiersTable idTH]
 
 factor [IdentifiersTable idTH] //vai ser preciso ver as pre-condiçoes de todos as alternativas feitas
        returns [String typeS,int line, int pos]
-       @init{
+       /*@init{
             $typeS = null;
-       }
+       }*/
        : inic_var[idTH]           {$typeS = $inic_var.typeS; $line = $inic_var.line; $pos = $inic_var.pos;}
        | designator[idTH]         {$typeS = $designator.typeS; $line = $designator.line; $pos = $designator.pos;}
        | '(' expression[idTH] ')' {$typeS = $expression.typeS; }
-       | '!' f1=factor[idTH]      { if($f1.typeS.equals("boolean")){$typeS = $f1.typeS;}else{$typeS = null; ErrorMessage.errorSemantic($f1.text,$f1.line,$f1.pos,ErrorMessage.type($f1.typeS,"boolean"));}}
-       | function_call[idTH]
+       | '!' f1=factor[idTH]
+        {
+            if($f1.typeS.equals("boolean")){
+                $typeS = $f1.typeS;
+            }else{
+                $typeS = null;
+                //ErrorMessage.errorSemantic($f1.text,$f1.line,$f1.pos,ErrorMessage.type($f1.typeS,"boolean"));
+                e.addMessage($f1.line,$f1.pos,ErrorMessage.semantic($f1.text,ErrorMessage.type($f1.typeS,"boolean")));
+            }
+        }
+       | function_call[idTH]      {$typeS = null;}
        | specialFunctions[idTH]   {$typeS = $specialFunctions.typeS;}
        ;
 
@@ -720,8 +754,9 @@ tail [IdentifiersTable idTH]
         if(($expression.typeS != null) && $expression.typeS.equals("sequence")){
             $typeS = $expression.typeS;
         }else{
-            ErrorMessage.errorSemantic($t.text.concat("(").concat($expression.text).concat(")"),$t.line,$t.pos,ErrorMessage.type($expression.typeS,"sequence"));
-            e.addMessage($t.line,$t.pos,ErrorMessage.semantic($t.text.concat("(").concat($expression.text).concat(")"),ErrorMessage.type($expression.typeS,"sequence")));
+            //ErrorMessage.errorSemantic($t.text.concat("(").concat($expression.text).concat(")"),$t.line,$t.pos,ErrorMessage.type($expression.typeS,"sequence"));
+            //e.addMessage($t.line,$t.pos,ErrorMessage.semantic($t.text.concat("(").concat($expression.text).concat(")"),ErrorMessage.type($expression.typeS,"sequence")));
+            e.addMessage($t.line,$t.pos,ErrorMessage.semantic($expression.text,ErrorMessage.type($expression.typeS,"sequence")));
         }
      }
      ;
@@ -734,8 +769,9 @@ head [IdentifiersTable idTH]
         if(($expression.typeS != null) && $expression.typeS.equals("sequence")){ 
             $typeS = "integer"; 
         }else{ 
-            ErrorMessage.errorSemantic($h.text.concat("(").concat($expression.text).concat(")"),$h.line,$h.pos,ErrorMessage.type($expression.typeS,"sequence"));
-            e.addMessage($h.line,$h.pos,ErrorMessage.semantic($h.text.concat("(").concat($expression.text).concat(")"),ErrorMessage.type($expression.typeS,"sequence")));
+            //ErrorMessage.errorSemantic($h.text.concat("(").concat($expression.text).concat(")"),$h.line,$h.pos,ErrorMessage.type($expression.typeS,"sequence"));
+            //e.addMessage($h.line,$h.pos,ErrorMessage.semantic($h.text.concat("(").concat($expression.text).concat(")"),ErrorMessage.type($expression.typeS,"sequence")));
+            e.addMessage($h.line,$h.pos,ErrorMessage.semantic($expression.text,ErrorMessage.type($expression.typeS,"sequence")));
         }
      }
      ;
@@ -749,11 +785,11 @@ cons [IdentifiersTable idTH]
                 if(($e2.typeS != null) && $e2.typeS.equals("sequence")){
                     $typeS = "sequence";
                 }else{
-                        ErrorMessage.errorSemantic($e2.text,$e2.line,$e2.pos,ErrorMessage.type($e2.typeS,"sequence"));
+                        //ErrorMessage.errorSemantic($e2.text,$e2.line,$e2.pos,ErrorMessage.type($e2.typeS,"sequence"));
                         e.addMessage($e2.line,$e2.pos,ErrorMessage.semantic($e2.text,ErrorMessage.type($e2.typeS,"sequence")));
                 }
             }else{
-                    ErrorMessage.errorSemantic($e1.text,$e1.line,$e1.pos,ErrorMessage.type($e1.typeS,"integer"));
+                    //ErrorMessage.errorSemantic($e1.text,$e1.line,$e1.pos,ErrorMessage.type($e1.typeS,"integer"));
                     e.addMessage($e1.line,$e1.pos,ErrorMessage.semantic($e1.text,ErrorMessage.type($e1.typeS,"integer")));
             }
         }
@@ -768,11 +804,11 @@ delete [IdentifiersTable idTH]
                 if(($e2.typeS != null) && $e2.typeS.equals("sequence")){
                     $typeS = "sequence";
                 }else{
-                    ErrorMessage.errorSemantic($e2.text,$e2.line,$e2.pos,ErrorMessage.type($e2.typeS,"sequence"));
+                    //ErrorMessage.errorSemantic($e2.text,$e2.line,$e2.pos,ErrorMessage.type($e2.typeS,"sequence"));
                     e.addMessage($e2.line,$e2.pos,ErrorMessage.semantic($e2.text,ErrorMessage.type($e2.typeS,"sequence")));
                 }
             }else{
-                ErrorMessage.errorSemantic($e1.text,$e1.line,$e1.pos,ErrorMessage.type($e1.typeS,"integer"));
+                //ErrorMessage.errorSemantic($e1.text,$e1.line,$e1.pos,ErrorMessage.type($e1.typeS,"integer"));
                 e.addMessage($e1.line,$e1.pos,ErrorMessage.semantic($e1.text,ErrorMessage.type($e1.typeS,"integer")));
             }
         }
@@ -794,7 +830,7 @@ is_empty [IdentifiersTable idTH]
             if(($e1.typeS != null) && $e1.typeS.equals("sequence")){
                 $typeS = "boolean";
             }else{
-                ErrorMessage.errorSemantic($e1.text,$e1.line,$e1.pos,ErrorMessage.type($e1.typeS,"sequence"));
+                //ErrorMessage.errorSemantic($e1.text,$e1.line,$e1.pos,ErrorMessage.type($e1.typeS,"sequence"));
                 e.addMessage($e1.line,$e1.pos,ErrorMessage.semantic($e1.text,ErrorMessage.type($e1.typeS,"sequence")));
             }
          }
@@ -808,7 +844,7 @@ length [IdentifiersTable idTH]
           if(($e1.typeS != null) && $e1.typeS.equals("sequence")){
               $typeS = "integer";
           }else{
-              ErrorMessage.errorSemantic($e1.text,$e1.line,$e1.pos,ErrorMessage.type($e1.typeS,"sequence"));
+              //ErrorMessage.errorSemantic($e1.text,$e1.line,$e1.pos,ErrorMessage.type($e1.typeS,"sequence"));
               e.addMessage($e1.line,$e1.pos,ErrorMessage.semantic($e1.text,ErrorMessage.type($e1.typeS,"sequence")));
           }
        }
@@ -833,18 +869,18 @@ member [IdentifiersTable idTH]
                     if(($e.typeS != null) && $e.typeS.equals("integer")){
                         $typeS = "boolean";
                     }else{
-                        ErrorMessage.errorSemantic($e.text,$e.line,$e.pos,ErrorMessage.type($e.typeS,"integer"));
+                        //ErrorMessage.errorSemantic($e.text,$e.line,$e.pos,ErrorMessage.type($e.typeS,"integer"));
                         e.addMessage($e.line,$e.pos,ErrorMessage.semantic($e.text,ErrorMessage.type($e.typeS,"integer")));
                     }
                 }else{
-                    ErrorMessage.errorSemantic($i.text,$i.line,$i.pos,ErrorMessage.type(type,"sequence"));
+                    //ErrorMessage.errorSemantic($i.text,$i.line,$i.pos,ErrorMessage.type(type,"sequence"));
                     e.addMessage($i.line,$i.pos,ErrorMessage.semantic($i.text,ErrorMessage.type(type,"sequence")));
                 }
             }
             //Normally doesn't need else statement.
           }else{
-            ErrorMessage.errorSemantic($i.text, $i.line, $i.pos,ErrorMessage.errorStatements);
-            e.addMessage($i.line,$i.pos,ErrorMessage.semantic($i.text,ErrorMessage.errorStatements));
+            //ErrorMessage.errorSemantic($i.text, $i.line, $i.pos,ErrorMessage.errorStatements);
+            e.addMessage($i.line,$i.pos,ErrorMessage.semantic($i.text,ErrorMessage.Statements));
           }
 
 
