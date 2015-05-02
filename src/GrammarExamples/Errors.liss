@@ -7,8 +7,11 @@ declarations
 	array1 = [[1,2],[2,3]], vector -> array size 4,3;
  	seq1 =<<1,2,3,4>> -> sequence;
     seq1 = <<1,4,7>> -> sequence;
-    set1 -> set;
+    set1 = {} -> set;
+    set2 -> set;
+    set3 = { x | x+1 } -> set;
     f -> boolean;
+    u -> integer;
 
 statements
 
@@ -18,6 +21,7 @@ statements
     b = 6 + 8 && d;
 
 	c = 2*5-seq1 < 2*3+flag;
+    //c = 2*5-seq1 <> 2*3+flag; //voir comment résoudre ce problème '<>'
 
 	// "array1" it's a vector bi-dimensional,
         // so we can't only give one index
@@ -46,7 +50,15 @@ statements
 
     a = cons(flag,seq1);
 
-    d = u * false * 6 / true;
+    d = 2 * u * 6 / true;
+
+    d = 2 * d && 6 / true;
+
+    d =  2 * 4 * false;
 
     d = isMember(a-3*b+array1[2,2],seq1);
+
+    a = 2 + true + c;
+
+    d = 3 in woot;
 }

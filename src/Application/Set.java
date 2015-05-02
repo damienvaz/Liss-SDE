@@ -5,24 +5,26 @@ package Application;
  */
 public class Set extends Var{
 
-    //private String expression;
+    //private Node head; //Binary Tree
 
-    public Set(String cat, Integer level, Integer address) {
-        super(cat, level, "set", address);
+    public Set(String cat, Integer level/*, Node head*/) {
+        super(cat, level, "set",-1);
+        //this.head = head;
         //this.expression = expression;
     }
 
     public Set(Set object){
         super(object.getCategory(),object.getLevel(),object.getInfoType(),object.getAddress());
         //this.expression = object.getExpression();
+        //this.head = object.getHead();
     }
 
-    /*public String getExpression() {
-        return expression;
+    /*public Node getHead() {
+        return head;
     }
 
-    public void setExpression(String expression) {
-        this.expression = expression;
+    public void setHead(Node head) {
+        this.head = head;
     }*/
 
     public Set clone(){return new Set(this);}
@@ -31,6 +33,7 @@ public class Set extends Var{
         StringBuilder s = new StringBuilder();
 
         s.append(super.toString());
+        s.append("\n");
 
         return s.toString();
     }

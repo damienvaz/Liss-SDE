@@ -101,8 +101,11 @@ public class LissLexer extends Lexer {
 	}
 
 
-	    int level=0;
+	    int level = 0;
 	    TableError e = new TableError();
+	    boolean set = false;
+	    int i= 0;
+
 
 
 	public LissLexer(CharStream input) {

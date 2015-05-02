@@ -1,6 +1,7 @@
 package Application;
 
 
+import java.util.ArrayList;
 import java.util.TreeMap;
 
 /**
@@ -8,21 +9,29 @@ import java.util.TreeMap;
  */
 public class TableError {
     //         |  line    |  pos  |  error message |
-    private TreeMap<Integer,TreeMap<Integer,String>> tableError;
+    //private TreeMap<Integer,TreeMap<Integer,String>> tableError;
+    private TreeMap<Integer,TreeMap<Integer,ArrayList<String>>> tableError;
 
     public TableError(){
-        this.tableError = new TreeMap<Integer, TreeMap<Integer, String>>();
+        this.tableError = new TreeMap<Integer, TreeMap<Integer, ArrayList<String>>>();
     }
 
     public void addMessage(int line, int pos, String message){
-        TreeMap<Integer,String> v = this.tableError.get(line);
+        TreeMap<Integer,ArrayList<String>> v = this.tableError.get(line);
         if(v == null){
-            TreeMap<Integer, String> v2 = new TreeMap<Integer,String>();
-            v2.put(pos,message);
+            ArrayList<String> messages = new ArrayList<String>();
+            messages.add(message);
+            TreeMap<Integer, ArrayList<String>> v2 = new TreeMap<Integer,ArrayList<String>>();
+            v2.put(pos,messages);
             this.tableError.put(line,v2);
         }
         else{
-            v.put(pos,message);
+            ArrayList<String> messages = v.get(pos);
+            if(messages == null){
+                messages = new ArrayList<String>();
+            }
+            messages.add(message);
+            v.put(pos, messages);
             this.tableError.put(line, v);
         }
     }
@@ -33,16 +42,21 @@ public class TableError {
         s.append("\n");
         s.append("TABLE ERROR:\n");
         for( Integer line : this.tableError.keySet()){
-            TreeMap<Integer,String> v = this.tableError.get(line);
+            TreeMap<Integer,ArrayList<String>> v = this.tableError.get(line);
             for(Integer pos : v.keySet()){
-                s.append("line: "+line);
-                if(pos == -1) { // -1 significa que é um tipo assignment !
-                    s.append("\t" + v.get(pos));
-                    s.append("\n");
-                }else{
-                    s.append(":" + pos);
-                    s.append("\t" + v.get(pos));
-                    s.append("\n");
+                ArrayList<String> messages = v.get(pos) ;
+                for(String message : messages) {
+                    s.append("line: " + line);
+                    if (pos == -1) { // -1 significa que é um tipo assignment !
+                        //s.append("\t" + v.get(pos));
+                        s.append("\t"+ message);
+                        s.append("\n");
+                    } else {
+                        s.append(":" + pos);
+                        //s.append("\t" + v.get(pos));
+                        s.append("\t" + message);
+                        s.append("\n");
+                    }
                 }
             }
         }

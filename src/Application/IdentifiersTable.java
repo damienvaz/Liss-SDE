@@ -70,11 +70,11 @@ public class IdentifiersTable {
      * @param infoIdTbl Information of the identifier.
      * @see InfoIdentifiersTable
      */
-    public void addIdentifiersTable(String identifier, InfoIdentifiersTable infoIdTbl){
+    /*public void addIdentifiersTable(String identifier, InfoIdentifiersTable infoIdTbl){
         this.idTable.put(identifier,infoIdTbl);
-    }
+    }*/
 
-    public void addElementsIdentifiersTables(TableError e, HashMap<String, HashMap<String, Object>> hashmapVar, String type,int level){
+    public void add(TableError e, HashMap<String, HashMap<String, Object>> hashmapVar, String type,int level){
         Type typeSpace;
 
 
@@ -154,13 +154,12 @@ public class IdentifiersTable {
                 }
                 break;
             case "set":
-                Set set = new Set(new String("VAR"), new Integer(level), this.address);
+                Set set = new Set(new String("VAR"), new Integer(level));
                 typeSpace = (Type) this.idTable.get(type);
 
                 for(String id : hashmapVar.keySet()){
                     //Pré-Condição : Verificar se as variaveis (do HashMap) ja existem na tabela de identificadores
                     if(!this.idTable.containsKey(id)) {
-                        set.setAddress(-1);
                         this.idTable.put(id, set.clone());
 
                         this.address = this.address + typeSpace.getSpace();
@@ -176,7 +175,6 @@ public class IdentifiersTable {
                 System.out.println("This type doesn't exist");
                 break;
         }
-
 
     }
 
