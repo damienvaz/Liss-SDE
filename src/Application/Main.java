@@ -4,6 +4,7 @@ package Application;
  * @author damienvaz
  */
 
+import SymbolTable.IdentifiersTable;
 import org.antlr.v4.runtime.ANTLRFileStream;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CharStream;
@@ -12,7 +13,7 @@ import org.antlr.v4.runtime.CommonTokenStream;
 
 import java.lang.String;
 import java.io.IOException;
-import java.util.HashMap;
+
 
 public class Main {
 

@@ -1,4 +1,6 @@
-package Application;
+package SymbolTable;
+
+import Application.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -61,26 +63,13 @@ public class IdentifiersTable {
         return this.address;
     }
 
-    /**
-     *
-     * This method add all the information of {@link InfoIdentifiersTable} to the referred identifier.
-     *
-     *
-     * @param identifier The name of the identifier.
-     * @param infoIdTbl Information of the identifier.
-     * @see InfoIdentifiersTable
-     */
-    /*public void addIdentifiersTable(String identifier, InfoIdentifiersTable infoIdTbl){
-        this.idTable.put(identifier,infoIdTbl);
-    }*/
-
     public void add(TableError e, HashMap<String, HashMap<String, Object>> hashmapVar, String type,int level){
         Type typeSpace;
 
 
         switch(type) {
             case "integer":
-                Int i = new Int(new String("VAR"),new Integer(level),this.address);
+                Int i = new Int(new Integer(level),this.address);
                 typeSpace = (Type) this.idTable.get(type);
 
                 for(String id : hashmapVar.keySet()){
@@ -92,14 +81,14 @@ public class IdentifiersTable {
                             i.setAddress(this.address);
                         }else{
                             //ErrorMessage.errorSemantic(id, (int) hashmapVar.get(id).get("line"), (int) hashmapVar.get(id).get("pos"), ErrorMessage.errorDeclarations);
-                            e.addMessage((int) hashmapVar.get(id).get("line"),(int) hashmapVar.get(id).get("pos"),ErrorMessage.semantic(id,ErrorMessage.Declarations));
+                            e.addMessage((int) hashmapVar.get(id).get("line"),(int) hashmapVar.get(id).get("pos"), ErrorMessage.semantic(id, ErrorMessage.Declarations));
                         }
 
                 }
 
                 break;
             case "boolean":
-                Bool b = new Bool(new String("VAR"),new Integer(level),this.address);
+                Bool b = new Bool(new Integer(level),this.address);
                 typeSpace = (Type) this.idTable.get(type);
 
                 for(String id : hashmapVar.keySet()){
@@ -123,7 +112,7 @@ public class IdentifiersTable {
                     //Pré-Condição : Verificar se as variaveis (do HashMap) ja existem na tabela de identificadores
                     if(!this.idTable.containsKey(id)) {
                         ArrayList<Integer> arrayDimension = (ArrayList<Integer>) hashmapVar.get(id).get("dimension");
-                        a = new Array(new String("VAR"), new Integer(level), new Integer(arrayDimension.size()), arrayDimension, this.address);
+                        a = new Array(new Integer(level), new Integer(arrayDimension.size()), arrayDimension, this.address);
                         this.idTable.put(id, a.clone());
 
                         this.address = this.address + (a.getMemorySize() * typeSpace.getSpace());
@@ -136,7 +125,7 @@ public class IdentifiersTable {
 
                 break;
             case "sequence":
-                Sequence s = new Sequence(new String("VAR"),new Integer(level),this.address,"integer");
+                Sequence s = new Sequence(new Integer(level),this.address,"integer");
                 typeSpace = (Type) this.idTable.get(type);
 
                 for(String id : hashmapVar.keySet()){
@@ -154,7 +143,7 @@ public class IdentifiersTable {
                 }
                 break;
             case "set":
-                Set set = new Set(new String("VAR"), new Integer(level));
+                Set set = new Set(new Integer(level));
                 typeSpace = (Type) this.idTable.get(type);
 
                 for(String id : hashmapVar.keySet()){

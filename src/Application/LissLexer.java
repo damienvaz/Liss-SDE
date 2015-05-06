@@ -1,8 +1,9 @@
-// Generated from /Users/damienvaz/IdeaProjects/liss/src/Application/Liss.g4 by ANTLR 4.5
+// Generated from /Users/damienvaz/Desktop/Backup/IdeaProjects/liss/src/Application/Liss.g4 by ANTLR 4.5
 package Application;
 
     import java.util.HashMap;
     import java.util.LinkedList;
+    import SymbolTable.*;
 
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.CharStream;
@@ -103,7 +104,7 @@ public class LissLexer extends Lexer {
 
 	    int level = 0;
 	    TableError e = new TableError();
-	    boolean set = false;
+	    boolean isSet = false;
 	    int i= 0;
 
 

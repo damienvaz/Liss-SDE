@@ -8,12 +8,13 @@ grammar Liss;
 @header{
     import java.util.HashMap;
     import java.util.LinkedList;
+    import SymbolTable.*;
 }
 
 @members{
     int level = 0;
     TableError e = new TableError();
-    boolean set = false;
+    boolean isSet = false;
     int i= 0;
 
 }
@@ -61,7 +62,7 @@ variable_declaration [IdentifiersTable idTH]
 
 
                             $idTH.add(e,varsH,$type.typeS,level);
-                            if(set){set = false;}
+                            if(isSet){isSet = false;}
                      }
                      ;
 
@@ -114,9 +115,10 @@ value_var [IdentifiersTable idTH]
           returns [boolean universe]  //Universe refers to the Set composition
           @init{
             $universe = false;
+            Set set = null;
           }
           :                     {}
-          | '=' inic_var[idTH]  {}
+          | '=' inic_var[idTH, set]  {}
           ;
 
 type returns[String typeS, ArrayList<Integer> arrayDimension]
@@ -135,12 +137,15 @@ dimension returns [ArrayList<Integer> arrayDimension]
             (',' number {vars.add($number.numberS);} )*  { $arrayDimension = vars;}
           ;
 
-inic_var [IdentifiersTable idTH]
-         returns [String typeS, int line, int pos]
-         : constant              {$typeS = $constant.typeS; $line = $constant.line; $pos = $constant.pos;}
-         | array_definition      {$typeS = "integer";}
-         | set_definition[idTH]  {$typeS = "set";}
-         | sequence_definition   {$typeS = "sequence";}
+inic_var [IdentifiersTable idTH, Set set]
+         returns [String typeS, int line, int pos, Node treeS]
+         @init{
+            $treeS = null;
+         }
+         : c=constant               {$typeS = $constant.typeS; $line = $constant.line; $pos = $constant.pos; if(isSet && $set!=null){ Node n = new Node(new Data($c.text)); $treeS = n;}}
+         | a=array_definition         {$typeS = "integer";}
+         | s1=set_definition[idTH]  {$typeS = "set"; if(isSet && $set!=null){$treeS = $s1.treeS;}}
+         | s2=sequence_definition   {$typeS = "sequence"; if(isSet && $set!=null){$treeS = $s2.treeS;}}
          ;
 
 constant returns [String typeS, int line, int pos]
@@ -168,66 +173,67 @@ elem : number
 
 /* ****** Sequence definition ****** */
 
-sequence_definition : '<<' sequence_initialization '>>'
+sequence_definition returns [Node treeS]
+                    : '<<' s=sequence_initialization {if(isSet){Node n = new Node(new Data("sequence"),null,$s.treeS); $treeS = n;}}'>>'
                     ;
 
-sequence_initialization :
-                        | values
+sequence_initialization returns [Node treeS]
+                        :             {if(isSet){$treeS = null;}}
+                        | v=values    {if(isSet){$treeS = $v.treeS;}}
                         ;
 
-values : number (',' number)*
+values returns [Node treeS]
+       @init{
+            Node head = null;
+            Node m = null;
+       }
+       : n1=number    {if(isSet){head = new Node(new Data("args"),new Node(new Data($n1.text),null,null),null); m = head;}}
+       (',' n2=number {if(isSet){m.setRight(new Node(new Data("args"),new Node(new Data($n2.text),null,null),null)); m = m.getRight();}}
+       )*
+
+       {
+        if(isSet && head!=null){
+            $treeS = head;
+        }
+       }
        ;
 
 /* ****** Set definition ****** */
 
 set_definition [IdentifiersTable idTH]
+               returns [Set setS, Node treeS]
                : '{'
-                 set_initialization[idTH]
+                   s=set_initialization[idTH] {if(isSet && $s.setS!=null){$setS = $s.setS; $treeS = $s.treeS;}}
                  '}'
                ;
 
 set_initialization [IdentifiersTable idTH]
-                   returns [BinaryTree treeS]
+                   returns [Set setS, Node treeS]
                    @init{
-                      set = true;
-                      BinaryTree tree = null;
+                      isSet = true;
+                      Set s = null;
                    }
                    :                                    //o set é vazio, é o nada
                    | i=identifier
                    {
-                    tree = new BinaryTree($i.text);
+                    s = new Set($i.text);
 
                    }
                     '|'
-                    e=expression[idTH,tree]
+                    e=expression[idTH,s]
                    {
                     if( !($e.typeS != null && $e.typeS.equals("boolean")) ){
                         e.addMessage($e.line,$e.pos,ErrorMessage.semantic($e.text,ErrorMessage.type($e.typeS,"boolean")));
                     }
-                    // tree.add("");
-                    tree = $e.treeS;
-                    /*tree.add("x");
-                    tree.add("<");
-                    tree.add("2");
-                    tree.add("&&");
-                    tree.add("x");
-                    tree.add(">");
-                    tree.add("-1");
-                    tree.add("||");
-                    tree.add("2");
-                    tree.add("<");
-                    tree.add("x");
-                    System.out.println(tree.toString());
-                    tree.setIdentifier("20");
-                    System.out.println(tree.toString());
-                    tree.setIdentifier("woot");
-                    System.out.println(tree.toString());*/
 
-                    $treeS = tree;
-
-                    System.out.println(tree.toString());
-
-                    //$e.treeS.add("<");$e.treeS.add("3");
+                    if($e.treeS!=null && isSet){
+                        s.setHead($e.treeS);
+                        System.out.println("Set : "+s.toString());
+                        s.setIdentifier("10");
+                        System.out.println("Set : "+s.toString());
+                        $setS = s;
+                        $treeS = $e.treeS;
+                    }
 
                    }
                    ;
@@ -272,7 +278,7 @@ return_type :
 
 returnSubPrg [IdentifiersTable idTH]
              @init{
-                BinaryTree tree = null;
+                Set tree = null;
              }
              :
              | 'return' expression[idTH,tree] ';'
@@ -285,12 +291,15 @@ statements [IdentifiersTable idTH]
             ;
 
 statement [IdentifiersTable idTH]
+          @init{
+            Set set = null;
+          }
           : assignment[idTH] ';'
           | write_statement[idTH] ';'
           | read_statement[idTH] ';'
           | conditional_statement[idTH]
           | iterative_statement[idTH]
-          | function_call[idTH] ';'
+          | function_call[idTH, set] ';'
           | succ_or_pred[idTH] ';'
           | copy_statement[idTH] ';'
           | cat_statement[idTH] ';' // conjuntos de sequencias
@@ -302,9 +311,9 @@ assignment [IdentifiersTable idTH]
            returns [String typeS]
            @init{
                 $typeS = null;
-                BinaryTree tree = null;
+                Set set = null;
            }
-           : designator[idTH,tree] '=' expression[idTH,tree]
+           : designator[idTH, set] '=' expression[idTH,set]
            {
               if(($designator.typeS != null && $expression.typeS != null) && $designator.typeS.equals($expression.typeS)){
                 $typeS = $designator.typeS;
@@ -318,12 +327,13 @@ assignment [IdentifiersTable idTH]
 
 /* ****** Designator ****** */
 
-designator [IdentifiersTable idTH, BinaryTree tree]
-            returns [String typeS, int line, int pos]
+designator [IdentifiersTable idTH, Set set]
+            returns [String typeS, int line, int pos, Node treeS]
             @init{
                 $typeS = null;
+                $treeS = null;
             }
-           : identifier array_access[idTH]
+           : i=identifier a=array_access[idTH, set]
            {
                                 $line = $identifier.line;
                                 $pos = $identifier.pos;
@@ -340,6 +350,18 @@ designator [IdentifiersTable idTH, BinaryTree tree]
                                             Var v = (Var) $idTH.getIdentifiersTable().get($identifier.text);
                                             $typeS = v.getInfoType();
                                         }
+                                    }
+                                    if(isSet && $set!=null){
+                                        Data d = $set.getIdentifier();
+                                        Node n = null;
+                                        if(d.getData().equals($identifier.text)){
+                                            n = new Node(d);
+                                            //System.out.println("NT : designator, é um identificador igual ao identificador do set, i.e., setId:"+d.getData()+" designatorId: "+$identifier.text);
+                                        }else{
+                                            n = new Node(new Data($identifier.text));
+                                            //System.out.println("NT : designator, é um identificador que nao é igual ao identificador do set, i.e., setId:"+d.getData()+" designatorId: "+$identifier.text);
+                                        }
+                                        $treeS = n;
                                     }
                                 }
                                 //Pre-Condicao: é um array
@@ -375,6 +397,11 @@ designator [IdentifiersTable idTH, BinaryTree tree]
                                                 }
                                             }
                                         }
+                                        if(isSet && $set!=null){
+                                            Node m = new Node(new Data($identifier.text),null,null);
+                                            Node head = new Node(new Data("array"),m,$a.treeS);
+                                            $treeS = head;
+                                        }
                                     }
 
                                 }
@@ -382,19 +409,21 @@ designator [IdentifiersTable idTH, BinaryTree tree]
            }
            ;
 
-array_access [IdentifiersTable idTH]
-             returns [boolean response, int dimensionS]//response variable => if array_access exists or not
-             :                          {$response = false;}
-             | '[' elem_array[idTH] ']' {$response = true; $dimensionS = $elem_array.dimensionS;}
+array_access [IdentifiersTable idTH, Set set]
+             returns [boolean response, int dimensionS, Node treeS] //response variable => if array_access exists or not
+             :                            {$response = false;}
+             | '[' e=elem_array[idTH, set] ']' {$response = true; $dimensionS = $elem_array.dimensionS; if(isSet && $set!=null && $e.treeS!=null){ $treeS = $e.treeS;}}
              ;
 
-elem_array [IdentifiersTable idTH]
-           returns[int dimensionS]
+elem_array [IdentifiersTable idTH, Set set]
+           returns[int dimensionS, Node treeS]
            @init{
                 int dimension = 0;
-                BinaryTree tree = null;
+                $treeS = null;
+                Node head = null;
+                Node right = null;
            }
-           : single_expression[idTH, tree]
+           : s1=single_expression[idTH, set]
                                     {
                                       dimension++;
                                       if(!($single_expression.typeS == "integer"))
@@ -402,49 +431,76 @@ elem_array [IdentifiersTable idTH]
                                             //ErrorMessage.errorSemantic($single_expression.text,$single_expression.line,$single_expression.pos,ErrorMessage.type($single_expression.typeS,"integer"));
                                             e.addMessage($single_expression.line,$single_expression.pos,ErrorMessage.semantic($single_expression.text,ErrorMessage.type($single_expression.typeS,"integer")));
                                            }
+                                      if(isSet && $set!=null && head == null){
+                                        head = new Node(new Data("args"),$s1.treeS,null);
+                                        right = head;
+                                      }
                                     }
-           (',' single_expression[idTH, tree]
+           (',' s2=single_expression[idTH, set]
                                     {
                                         dimension++;
                                         if(!($single_expression.typeS == "integer")){
                                             //ErrorMessage.errorSemantic($single_expression.text,$single_expression.line,$single_expression.pos,ErrorMessage.type($single_expression.typeS,"integer"));
                                             e.addMessage($single_expression.line,$single_expression.pos,ErrorMessage.semantic($single_expression.text,ErrorMessage.type($single_expression.typeS,"integer")));
                                         }
-
+                                        if(isSet && $set!=null){
+                                            Node m = new Node(new Data("args"),$s2.treeS,null);
+                                            right.setRight(m);
+                                            right = m;
+                                        }
                                     }
-           )* {$dimensionS = dimension;}
+           )*
+           {
+              $dimensionS = dimension;
+              if(isSet && $set!=null && head!=null){
+                $treeS = head;
+              }
+           }
            ;
 
 /* ****** Function call ****** */
 
-function_call [IdentifiersTable idTH]
-              : identifier '(' sub_prg_args[idTH] ')'
+function_call [IdentifiersTable idTH, Set set]
+              returns [Node treeS]
+              : i=identifier '(' s=sub_prg_args[idTH, set] ')' {if(isSet && $set!=null){Node m = new Node(new Data("call"),new Node(new Data($i.text),null,null),$s.treeS);}}
               ;
 
-sub_prg_args [IdentifiersTable idTH]
-             :
-             | args[idTH]
+sub_prg_args [IdentifiersTable idTH, Set set]
+             returns [Node treeS]
+             :                      {if(isSet && $set!=null){$treeS = null;}}
+             | a=args[idTH, set]    {if(isSet && $set!=null){$treeS = $a.treeS;}}
              ;
 
-args [IdentifiersTable idTH]
+args [IdentifiersTable idTH, Set set]
+     returns [Node treeS]
      @init{
-        BinaryTree tree = null;
+        Node head = null;
+        Node m = null;
      }
-     : expression[idTH, tree] (',' expression[idTH, tree])*
+     : e1=expression[idTH, set]      {if(isSet && $set!=null){ head = new Node(new Data("args"),$e1.treeS,null); m = head;}}
+     (',' e2=expression[idTH, set]   {if(isSet && $set!=null){ m.setRight(new Node(new Data("args"),$e2.treeS,null)); m = m.getRight();}}
+     )*
+
+     {
+        if(isSet && $set!=null){
+            $treeS = head;
+        }
+     }
      ;
 
 /* ****** Expression ****** */
 
-expression [IdentifiersTable idTH, BinaryTree tree]
-            returns [String typeS, int line, int pos, BinaryTree treeS ]
+expression [IdentifiersTable idTH, Set set]
+            returns [String typeS, int line, int pos, Node treeS ]
             @init{
                 $typeS = null;
                 boolean correctType = true;
                 boolean relationExp = false;
+                Node n = null;
 
             }
-           : s1=single_expression[idTH, tree]{$line = $s1.line; $pos = $s1.pos;}
-            (rel_op s2=single_expression[idTH,tree]
+           : s1=single_expression[idTH, set]{$line = $s1.line; $pos = $s1.pos; if(isSet && $set!=null && $s1.treeS!=null){ n = $s1.treeS;}}
+            (rel_op s2=single_expression[idTH,set]
                 {   relationExp = true;
                     if(!$rel_op.text.equals("in")){
                         if(($s1.typeS != null) && $s1.typeS.equals($rel_op.typeS)){
@@ -474,7 +530,11 @@ expression [IdentifiersTable idTH, BinaryTree tree]
                             e.addMessage($s1.line,$s1.pos,ErrorMessage.semantic($s1.text+" "+$rel_op.text+" "+$s2.text,ErrorMessage.typeExpression($s1.typeS,$rel_op.text,$s2.typeS,"integer","set")+" < expression 2"));
                         }
                     }
-                    if($tree != null && set){System.out.println(" da fuck?3");$tree.add($rel_op.text);}
+                    if(isSet && $set!=null){
+                        Node m = new Node(new Data($rel_op.text),$s1.treeS,$s2.treeS);
+                        n = m;
+                    }
+
 
                 }
             )?
@@ -486,26 +546,29 @@ expression [IdentifiersTable idTH, BinaryTree tree]
                         $typeS = "boolean";
                     }
                 }
-                if($tree!= null && set){  $treeS = $tree;}
-
+                if(isSet && n!=null && $set!=null){
+                    $treeS = n;
+                    //System.out.println($s1.text+$rel_op.text+$s2.text+" : "+n.toStringSort("infix"));
+                }
             }
            ;
 
 /* ****** Single expression ****** */
 
-single_expression [IdentifiersTable idTH, BinaryTree tree]
-                  returns [String typeS, int line, int pos, BinaryTree treeS ]
+single_expression [IdentifiersTable idTH, Set set]
+                  returns [String typeS, int line, int pos, Node treeS ]
                   @init{
                     $typeS = null;
                     boolean correctType = true;
                     boolean firstTime = true;
                     String leftType = null;
+                    Node n = null;
 
                     //Tratar os erros com mais especificaçoes
                     LinkedList<ErrorInfo> errorManagement = new LinkedList<ErrorInfo>();
                   }
-                  : t1=term[idTH, tree] {$line = $term.line; $pos = $term.pos; errorManagement.add(new ErrorInfo($t1.text,$t1.typeS,$t1.line,$t1.pos));}
-                  (add_op t2=term[idTH, tree] {
+                  : t1=term[idTH, set] {$line = $term.line; $pos = $term.pos; errorManagement.add(new ErrorInfo($t1.text,$t1.typeS,$t1.line,$t1.pos)); if($set!=null && isSet && $t1.treeS!=null){ n = $t1.treeS; }}
+                  (add_op t2=term[idTH, set] {
                                         errorManagement.add(new ErrorInfo($add_op.text,$add_op.typeS,$add_op.line,$add_op.pos));
                                         errorManagement.add(new ErrorInfo($t2.text,$t2.typeS,$t2.line,$t2.pos));
 
@@ -544,34 +607,41 @@ single_expression [IdentifiersTable idTH, BinaryTree tree]
                                             }
 
                                         }
-                                        //if($tree != null && set ){System.out.println(" da fuck?2 "+$add_op.text);$tree.add($add_op.text);}
-                                        if(set && $add_op.text!=null && tree!=null){$tree.add($add_op.text);}
+
+                                        if(isSet && $set != null){
+                                            Node m = new Node(new Data($add_op.text),n,$t2.treeS);
+                                            n = m;
+                                        }
+
                                      }
                   )* {
                         if(correctType == true){
                             $typeS = $t1.typeS;
                         }
-                        if($tree!=null && set){$treeS = $tree;}
+                        if(isSet && n!=null && $set!=null){
+                            $treeS = n;
+                            //System.out.println("woot "+n.toStringSort("infix"));
+                        }
 
                      }
                   ;
 
 /* ****** Term ****** */
-
-term [IdentifiersTable idTH, BinaryTree tree]
-     returns [String typeS, int line, int pos, BinaryTree treeS]
+term [IdentifiersTable idTH, Set set]
+     returns [String typeS, int line, int pos, Node treeS]
      @init{
         $typeS = null;
         boolean correctType = true;
         boolean firstTime = true;
         String leftType = null;
+        $treeS = null;
+        Node n = null;
 
         //Tratar os erros com mais especificaçoes (queue de erros de infromaçoes)
         LinkedList<ErrorInfo> errorManagement = new LinkedList<ErrorInfo>();
-
      }
-     : f1=factor[idTH,tree] { $line = $f1.line; $pos = $f1.pos;  errorManagement.add(new ErrorInfo($f1.text, $f1.typeS, $f1.line,$f1.pos)); if($tree!=null && set){$tree = $f1.treeS;} }
-     (mul_op f2=factor[idTH,tree] {
+     : f1=factor[idTH, set] { $line = $f1.line; $pos = $f1.pos;  errorManagement.add(new ErrorInfo($f1.text, $f1.typeS, $f1.line,$f1.pos)); if($set!=null && isSet && $f1.treeS!=null){ n = $f1.treeS; } }
+     (mul_op f2=factor[idTH, set] {
 
                                 errorManagement.add(new ErrorInfo($mul_op.text,$mul_op.typeS,$mul_op.line,$mul_op.pos));
                                 errorManagement.add(new ErrorInfo($f2.text,$f2.typeS,$f2.line,$f2.pos));
@@ -610,49 +680,64 @@ term [IdentifiersTable idTH, BinaryTree tree]
                                         }
 
                                 }
-                                //if($tree!=null && set && $mul_op.text!=null){System.out.println($mul_op.text);System.out.println(" da fuck?");$tree.add($mul_op.text);$tree.add($f2.text);}
-                                if(set && $mul_op.text!=null && tree!=null){$tree.add($mul_op.text);}
-                                if($tree!=null && set){$tree = $f2.treeS;}
+
+                                //Algorithm for inserting elements in the set
+                                if(isSet && $set != null){
+                                    Node m = new Node(new Data($mul_op.text),n,$f2.treeS);
+                                    n = m;
+                                }
+
 
                           }
      )* {
             if(correctType == true){
                 $typeS = $f1.typeS;
             }
+            if(isSet && n!=null && $set!=null){
+                $treeS = n;
+                //System.out.println("woot "+n.toStringSort("infix"));
+            }
 
-            if($tree!=null && set){$treeS = $tree;}
         }
      ;
 
 /* ****** Factor ****** */
 
-factor [IdentifiersTable idTH,BinaryTree tree] //vai ser preciso ver as pre-condiçoes de todos as alternativas feitas
-       returns [String typeS,int line, int pos,BinaryTree treeS]
-       : i=inic_var[idTH]           {$typeS = $i.typeS; $line = $i.line; $pos = $i.pos;}
-       | d=designator[idTH,tree]         {$typeS = $d.typeS; $line = $d.line; $pos = $d.pos; if(tree!=null && set){$treeS = $tree;}}
-       | '(' e=expression[idTH, tree] ')' {$typeS = $e.typeS; $line = $e.line; $pos = $e.pos;}
-       | '!' f=factor[idTH,tree]
+factor [IdentifiersTable idTH,Set set] //vai ser preciso ver as pre-condiçoes de todos as alternativas feitas
+       returns [String typeS,int line, int pos,Node treeS]
+       @init{
+        //if(isSet && $set!=null){System.out.println($set.toString());}  //Set funciona muito bem até aqui
+        $treeS = null;
+       }
+       : i=inic_var[idTH, set]           {$typeS = $i.typeS; $line = $i.line; $pos = $i.pos; if(isSet && $i.treeS!=null && $set!=null){ $treeS = $i.treeS;}}
+       | d=designator[idTH, set]         {$typeS = $d.typeS; $line = $d.line; $pos = $d.pos; if(isSet && $d.treeS!=null && $set!=null){ $treeS = $d.treeS;}}
+       | '(' e=expression[idTH, set] ')' {$typeS = $e.typeS; $line = $e.line; $pos = $e.pos; if(isSet && $e.treeS!=null && $set!=null){ $treeS = $e.treeS;}}
+       | '!' f1=factor[idTH, set]
         {
-            if($f.typeS.equals("boolean")){
-                $typeS = $f.typeS;
+            if($f1.typeS!=null && $f1.typeS.equals("boolean")){
+                $typeS = $f1.typeS;
             }else{
                 $typeS = null;
-                e.addMessage($f.line,$f.pos,ErrorMessage.semantic($f.text,ErrorMessage.type($f.typeS,"boolean")));
+                e.addMessage($f1.line,$f1.pos,ErrorMessage.semantic($f1.text,ErrorMessage.type($f1.typeS,"boolean")));
+            }
+            if(isSet && $set!=null){
+                Node n = new Node(new Data("not"),$f1.treeS,null);
+                $treeS = n;
             }
         }
-       | function_call[idTH]      {$typeS = null;}                                         // sintetizar a linha e a posição !!!
-       | s=specialFunctions[idTH]   {$typeS = $s.typeS; $line = $s.line; $pos = $s.pos;}
+       | f2=function_call[idTH, set]      {$typeS = null; if(isSet && $set!=null){$treeS = $f2.treeS;}}                                         // sintetizar a linha e a posição e declarar o tipo da funcao !!!!!
+       | s=specialFunctions[idTH, set]   {$typeS = $s.typeS; $line = $s.line; $pos = $s.pos; if(isSet && $s.treeS!=null && $set!=null){ $treeS = $s.treeS;}}
        ;
 
-specialFunctions [IdentifiersTable idTH]
-                 returns [String typeS, int line, int pos]
-                 : tail[idTH]     {$typeS = $tail.typeS; $line = $tail.line; $pos = $tail.pos;}
-                 | head[idTH]     {$typeS = $head.typeS; $line = $head.line; $pos = $head.pos;}
-                 | cons[idTH]     {$typeS = $cons.typeS; $line = $cons.line; $pos = $cons.pos;}
-                 | member[idTH]   {$typeS = $member.typeS; $line = $member.line; $pos = $member.pos;}
-                 | is_empty[idTH] {$typeS = $is_empty.typeS; $line = $is_empty.line; $pos = $is_empty.pos;}
-                 | length[idTH]   {$typeS = $length.typeS; $line = $length.line; $pos = $length.pos;}
-                 | delete[idTH]   {$typeS = $delete.typeS; $line = $delete.line; $pos = $delete.pos;}
+specialFunctions [IdentifiersTable idTH, Set set]
+                 returns [String typeS, int line, int pos, Node treeS]
+                 : t=tail[idTH, set]     {$typeS = $tail.typeS; $line = $tail.line; $pos = $tail.pos; if(isSet && $t.treeS!=null && $set!=null){$treeS = $t.treeS;}}
+                 | h=head[idTH, set]     {$typeS = $head.typeS; $line = $head.line; $pos = $head.pos; if(isSet && $h.treeS!=null && $set!=null){$treeS = $h.treeS;}}
+                 | c=cons[idTH, set]     {$typeS = $cons.typeS; $line = $cons.line; $pos = $cons.pos; if(isSet && $c.treeS!=null && $set!=null){$treeS = $c.treeS;}}
+                 | m=member[idTH, set]   {$typeS = $member.typeS; $line = $member.line; $pos = $member.pos; if(isSet && $m.treeS!=null && $set!=null){$treeS = $m.treeS;}}
+                 | i=is_empty[idTH, set] {$typeS = $is_empty.typeS; $line = $is_empty.line; $pos = $is_empty.pos; if(isSet && $i.treeS!=null && $set!=null){$treeS = $i.treeS;}}
+                 | l=length[idTH, set]   {$typeS = $length.typeS; $line = $length.line; $pos = $length.pos; if(isSet && $l.treeS!=null && $set!=null){$treeS = $l.treeS;}}
+                 | d=delete[idTH, set]   {$typeS = $delete.typeS; $line = $delete.line; $pos = $delete.pos; if(isSet && $d.treeS!=null && $set!=null){$treeS = $d.treeS;}}
                  ;
 
 /* ****** add_op, mul_op, rel_op ****** */
@@ -695,7 +780,7 @@ write_expr : 'write'
 
 print_what [IdentifiersTable idTH]
            @init{
-              BinaryTree tree = null;
+              Set tree = null;
            }
            :
            | e=expression[idTH, tree] {if(!($e.typeS != null && $e.typeS.equals("set"))){e.addMessage($e.line,$e.pos,ErrorMessage.semantic($e.text,ErrorMessage.type($e.typeS,"integer | boolean | sequence | array")));}} //conjuntos nao pode pertencer
@@ -728,7 +813,7 @@ iterative_statement [IdentifiersTable idTH]
 
 if_then_else_stat [IdentifiersTable idTH]
                   @init{
-                    BinaryTree tree = null;
+                    Set tree = null;
                   }
                   : 'if' '(' e1=expression[idTH, tree] ')' { if(!($e1.typeS!=null && $e1.typeS.equals("boolean"))){e.addMessage($e1.line,$e1.pos,ErrorMessage.semantic($e1.text,ErrorMessage.type($e1.typeS,"boolean")));}}
                     'then' '{' s=statements[idTH] '}'
@@ -805,7 +890,7 @@ up_down : 'stepUp'
 
 satisfy [IdentifiersTable idTH]
         @init{
-            BinaryTree tree = null;
+            Set tree = null;
         }
         :
         | 'satisfying' e=expression[idTH, tree]
@@ -820,7 +905,7 @@ satisfy [IdentifiersTable idTH]
 
 while_stat [IdentifiersTable idTH]
            @init{
-              BinaryTree tree = null;
+              Set tree = null;
            }
            : 'while' '(' e=expression[idTH, tree] ')' { if(!($e.typeS!=null && $e.typeS.equals("boolean"))){e.addMessage($e.line,$e.pos,ErrorMessage.semantic($e.text,ErrorMessage.type($e.typeS,"boolean")));}}
              '{' statements[idTH] '}'
@@ -844,13 +929,13 @@ succ_pred : 'succ'
 
 /* ****** SequenceOper ****** */
 
-tail [IdentifiersTable idTH]
-     returns [String typeS, int line, int pos]
+tail [IdentifiersTable idTH, Set set]
+     returns [String typeS, int line, int pos, Node treeS]
      @init{
-        BinaryTree tree = null;
+
      }
      // tail : sequence -> sequence
-     : t='tail' '(' e=expression[idTH, tree] ')'
+     : t='tail' '(' e=expression[idTH, set] ')'
      {
         $line = $t.line;
         $pos = $t.pos;
@@ -859,16 +944,22 @@ tail [IdentifiersTable idTH]
         }else{
             e.addMessage($e.line,$e.pos,ErrorMessage.semantic($e.text,ErrorMessage.type($e.typeS,"sequence")));
         }
+
+        if($set!=null && isSet){
+            Node left = new Node(new Data("tail"),null,null);
+            Node n = new Node(new Data("call"),left,new Node(new Data("args"),$e.treeS,null));
+            $treeS = n;
+        }
      }
      ;
 
-head [IdentifiersTable idTH]
-     returns [String typeS, int line, int pos]
+head [IdentifiersTable idTH, Set set]
+     returns [String typeS, int line, int pos, Node treeS]
      @init{
-        BinaryTree tree = null;
+
      }
      // head : sequence -> integer
-     : h='head' '(' e=expression[idTH, tree] ')'
+     : h='head' '(' e=expression[idTH, set] ')'
      {
         $line = $h.line;
         $pos = $h.pos;
@@ -877,16 +968,22 @@ head [IdentifiersTable idTH]
         }else{ 
             e.addMessage($e.line,$e.pos,ErrorMessage.semantic($e.text,ErrorMessage.type($e.typeS,"sequence")));
         }
+
+        if($set!=null && isSet){
+            Node left = new Node(new Data("head"),null,null);
+            Node n = new Node(new Data("call"),left,new Node(new Data("args"),$e.treeS,null));
+            $treeS = n;
+        }
      }
      ;
 
-cons [IdentifiersTable idTH]
-     returns [String typeS, int line, int pos]
+cons [IdentifiersTable idTH, Set set]
+     returns [String typeS, int line, int pos, Node treeS]
      @init{
-        BinaryTree tree = null;
+
      }
      // integer x sequence -> sequence
-     : c='cons' '(' e1=expression[idTH, tree] ',' e2=expression[idTH, tree] ')'
+     : c='cons' '(' e1=expression[idTH, set] ',' e2=expression[idTH, set] ')'
         {
             $line = $c.line;
             $pos = $c.pos;
@@ -899,16 +996,21 @@ cons [IdentifiersTable idTH]
             }else{
                     e.addMessage($e1.line,$e1.pos,ErrorMessage.semantic($e1.text,ErrorMessage.type($e1.typeS,"integer")));
             }
+            if($set!=null && isSet){
+                Node left = new Node(new Data("cons"),null,null);
+                Node n = new Node(new Data("call"),left,new Node(new Data("args"),$e1.treeS,new Node(new Data("args"),$e2.treeS,null)));
+                $treeS = n;
+            }
         }
      ;
 
-delete [IdentifiersTable idTH]
-       returns [String typeS, int line, int pos]
+delete [IdentifiersTable idTH, Set set]
+       returns [String typeS, int line, int pos, Node treeS]
        @init{
-          BinaryTree tree = null;
+
        }
        // del : integer x sequence -> sequence
-       : d='del' '(' e1=expression[idTH, tree] ',' e2=expression[idTH, tree] ')'
+       : d='del' '(' e1=expression[idTH, set] ',' e2=expression[idTH, set] ')'
         {
             $line = $d.line;
             $pos = $d.pos;
@@ -920,6 +1022,11 @@ delete [IdentifiersTable idTH]
                 }
             }else{
                 e.addMessage($e1.line,$e1.pos,ErrorMessage.semantic($e1.text,ErrorMessage.type($e1.typeS,"integer")));
+            }
+            if($set!=null && isSet){
+                Node left = new Node(new Data("delete"),null,null);
+                Node n = new Node(new Data("call"),left,new Node(new Data("args"),$e1.treeS,new Node(new Data("args"),$e2.treeS,null)));
+                $treeS = n;
             }
         }
        ;
@@ -958,13 +1065,13 @@ cat_statement [IdentifiersTable idTH]
               }//ambos identificadores tem que existir, categoria VAR e Sequence
               ;
 
-is_empty [IdentifiersTable idTH]
-         returns [String typeS, int line, int pos]
+is_empty [IdentifiersTable idTH, Set set]
+         returns [String typeS, int line, int pos, Node treeS]
          @init{
-            BinaryTree tree = null;
+
          }
          // is_empty : sequence -> boolean
-         : i='isEmpty' '(' e1=expression[idTH, tree] ')'
+         : i='isEmpty' '(' e1=expression[idTH, set] ')'
          {
             $line = $i.line;
             $pos = $i.pos;
@@ -973,16 +1080,21 @@ is_empty [IdentifiersTable idTH]
             }else{
                 e.addMessage($e1.line,$e1.pos,ErrorMessage.semantic($e1.text,ErrorMessage.type($e1.typeS,"sequence")));
             }
+            if($set!=null && isSet){
+                Node left = new Node(new Data("is_empty"),null,null);
+                Node n = new Node(new Data("call"),left,new Node(new Data("args"),$e1.treeS,null));
+                $treeS = n;
+            }
          }
          ;
 
-length [IdentifiersTable idTH]
-       returns [String typeS, int line, int pos]
+length [IdentifiersTable idTH, Set set]
+       returns [String typeS, int line, int pos, Node treeS]
        @init{
-            BinaryTree tree = null;
+
        }
        // length : sequence -> integer
-       : l='length' '(' e1=expression[idTH, tree] ')'
+       : l='length' '(' e1=expression[idTH, set] ')'
        {
           $line = $l.line;
           $pos = $l.pos;
@@ -991,18 +1103,23 @@ length [IdentifiersTable idTH]
           }else{
               e.addMessage($e1.line,$e1.pos,ErrorMessage.semantic($e1.text,ErrorMessage.type($e1.typeS,"sequence")));
           }
+          if($set!=null && isSet){
+             Node left = new Node(new Data("length"),null,null);
+             Node n = new Node(new Data("call"),left,new Node(new Data("args"),$e1.treeS,null));
+             $treeS = n;
+          }
        }
        ;
 
 /* ****** set_oper ****** */
 
-member [IdentifiersTable idTH]
-       returns [String typeS, int line, int pos]
+member [IdentifiersTable idTH, Set set]
+       returns [String typeS, int line, int pos, Node treeS]
        @init{
-            BinaryTree tree = null;
+
        }
        // isMember : integer x sequence -> boolean
-       : im='isMember' '(' e=expression[idTH, tree] ',' i=identifier ')'
+       : im='isMember' '(' e=expression[idTH, set] ',' i=identifier ')'
        {
           $line = $im.line;
           $pos = $im.pos;
@@ -1027,6 +1144,17 @@ member [IdentifiersTable idTH]
             //Normally doesn't need else statement.
           }else{
             e.addMessage($i.line,$i.pos,ErrorMessage.semantic($i.text,ErrorMessage.Statements));
+          }
+          if($set!=null && isSet){
+            Data d = $set.getIdentifier();
+            Node left = new Node(new Data("member"),null,null);
+            Node n = null;
+            if(d.getData().equals($i.text)){
+                n = new Node(new Data("call"),left,new Node(new Data("args"),$e.treeS,new Node(new Data("args"),new Node(d,null,null),null)));
+            }else{
+                n = new Node(new Data("call"),left,new Node(new Data("args"),$e.treeS,new Node(new Data("args"),new Node(new Data($i.text),null,null),null)));
+            }
+            $treeS = n;
           }
        }
        ;

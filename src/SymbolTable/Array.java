@@ -1,4 +1,4 @@
-package Application;
+package SymbolTable;
 
 import java.util.ArrayList;
 
@@ -10,14 +10,14 @@ public class Array extends Var {
     private Integer dimension;
     private ArrayList<Integer> limits;
 
-    public Array(String cat, Integer level, Integer dimension, ArrayList<Integer> limits, Integer address) {
-        super(cat, level,"array",address);
+    public Array(Integer level, Integer dimension, ArrayList<Integer> limits, Integer address) {
+        super(level,"array",address);
         this.dimension = dimension;
         this.limits = limits;
     }
 
     public Array(Array object){
-        super(object.getCategory(),object.getLevel(),object.getInfoType(),object.getAddress());
+        super(object.getLevel(),object.getInfoType(),object.getAddress());
         this.dimension = object.getDimension();
         this.limits = object.getLimits();
     }

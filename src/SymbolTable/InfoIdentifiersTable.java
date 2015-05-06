@@ -1,7 +1,8 @@
-package Application;
+package SymbolTable;
 
 //TODO verificar se o javadoc está certo
 //TODO adicionar no javadoc da class, os restantes class (set,sequence, ....)
+
 /**
  *
  * <p>

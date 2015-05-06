@@ -1,40 +1,82 @@
 package Application;
 
-/**
- * Created by damienvaz on 3/31/15.
- */
-public class Set extends Var{
+public class Set {
+    private Data identifier;
+    private Node head;
 
-    //private Node head; //Binary Tree
-
-    public Set(String cat, Integer level/*, Node head*/) {
-        super(cat, level, "set",-1);
-        //this.head = head;
-        //this.expression = expression;
+    public Set(String identifier){
+        Data id = new Data(identifier);
+        this.identifier = id;
+        this.head = null;
     }
 
-    public Set(Set object){
-        super(object.getCategory(),object.getLevel(),object.getInfoType(),object.getAddress());
-        //this.expression = object.getExpression();
-        //this.head = object.getHead();
-    }
+    /*public void add(String data){
+        if(head == null){
+            if(this.identifier.getData().equals(data)){
+                this.head = new Node(this.identifier);
+            }else {
+                Node head = new Node(new Data(data), null, null);
+                this.head = head;
+            }
+        }else if(this.head != null && !this.head.doesLeft() && !this.head.doesRight()  ){
+            if(!data.equals(this.identifier.getData())) {
+                Node head = new Node(new Data(data), this.head, null);
+                this.head = head;
+            }else{
+                Node head = new Node(this.identifier,this.head,null);
+                this.head = head;
+            }
+        }else if( this.head != null && this.head.doesLeft() && !this.head.doesRight()){
+            if(!data.equals(this.identifier.getData())) {
+                Node head = new Node(new Data(data));
+                this.head.setRight(head);
+            }else{
+                Node head = new Node(this.identifier);
+                this.head.setRight(head);
+            }
+        }else if(this.head != null && this.head.doesLeft() && this.head.doesRight()){
+            if(!data.equals(this.identifier.getData())) {
+                Node head = new Node(new Data(data),this.head,null);
+                this.head = head;
+            }else{
+                Node head = new Node(this.identifier, this.head, null);
+                this.head = head;
+            }
+        }
+    }*/
 
-    /*public Node getHead() {
+    public Node getHead() {
         return head;
     }
 
     public void setHead(Node head) {
         this.head = head;
-    }*/
+    }
 
-    public Set clone(){return new Set(this);}
+    public void setIdentifier(String identifier){
+        this.identifier.setData(identifier);
+    }
+
+    public Data getIdentifier(){ return this.identifier; }
+
+    public String toStringSort(String type){
+        StringBuilder s = new StringBuilder();
+        if(this.identifier != null && this.head != null) {
+            s.append(this.identifier.toString());
+            s.append(" | ");
+            s.append(this.head.toStringSort(type));
+        }
+        return s.toString();
+    }
 
     public String toString(){
         StringBuilder s = new StringBuilder();
-
-        s.append(super.toString());
-        s.append("\n");
-
+            if(this.identifier != null && this.head != null) {
+                s.append(this.toStringSort("infix"));
+            }
+            else{
+                s.append("Set not properly initiated.");
+            }
         return s.toString();
     }
 }

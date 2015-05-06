@@ -1,4 +1,4 @@
-package Application;
+package SymbolTable;
 
 /**
  * Created by damienvaz on 3/18/15.
@@ -6,18 +6,18 @@ package Application;
 public class Sequence extends Var {
     private String typeElements;
 
-    public Sequence(String cat, Integer level, Integer address, String typeElements) {
-        super(cat, level,"sequence", address);
+    public Sequence(Integer level, Integer address, String typeElements) {
+        super(level,"sequence", address);
         this.typeElements = typeElements;
     }
 
-    public Sequence(InfoIdentifiersTable object, Integer address, String typeElements) {
+    /*public Sequence(InfoIdentifiersTable object, Integer address, String typeElements) {
         super(object,"sequence", address);
         this.typeElements = typeElements;
-    }
+    }*/
 
     public Sequence(Sequence object){
-        super(object.getCategory(), object.getLevel(), object.getInfoType(), object.getAddress());
+        super(object.getLevel(), object.getInfoType(), object.getAddress());
         this.typeElements = object.getTypeElements();
     }
 

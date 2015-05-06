@@ -9,7 +9,16 @@ declarations
     seq1 = <<1,4,7>> -> sequence;
     set1 = {} -> set;
     set2 -> set;
-    set3 = { x | x+1 } -> set;
+    x -> integer;
+    set4 = { y | y+1 < y+4} -> set;
+    set5 = { y | y+1+array1[y,20] < y+4} -> set;
+    set6 = { z | (z+tail(z)) < 5} -> set;
+    set7 = { z | (z+head(tail(z))) < 5} -> set;
+    set3 = { x | ((x+1<2) && (x>-5000)) || (x>1000) } -> set;
+    set8 = { z | (z+head(tail(cons(x,z)))) < 5} -> set;
+    set9 = { z | !z} -> set;
+    set10 = { z | x+array1[[1,2,3],[2],[3],[1,3,4]]} -> set; //é possivel fazer isto !
+    set11 = { z | v+<<1,2,3,4>>} -> set;
     f -> boolean;
     u -> integer;
 

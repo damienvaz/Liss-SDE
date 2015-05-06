@@ -1,5 +1,7 @@
 package Application;
 
+import SymbolTable.InfoIdentifiersTable;
+
 import java.util.HashMap;
 
 public class TypeChecking {
