@@ -340,13 +340,13 @@ designator [IdentifiersTable idTH, Set set]
                                 //Pre-Condicao: é um identificador
                                 if(!$array_access.response){
                                     //Pre-Condicao: ver se existe na tabela de identificador
-                                    if(!$idTH.getIdentifiersTable().containsKey($identifier.text)){
+                                    if(!isSet && !$idTH.getIdentifiersTable().containsKey($identifier.text)){
 
                                         //ErrorMessage.errorSemantic($identifier.text,$identifier.line,$identifier.pos,ErrorMessage.errorStatements);
                                         e.addMessage($identifier.line,$identifier.pos,ErrorMessage.semantic($identifier.text,ErrorMessage.Statements));
 
                                     }else{
-                                        if(!$idTH.getIdentifiersTable().get($identifier.text).getCategory().equals(new String("TYPE"))){
+                                        if(!isSet && !$idTH.getIdentifiersTable().get($identifier.text).getCategory().equals(new String("TYPE"))){
                                             Var v = (Var) $idTH.getIdentifiersTable().get($identifier.text);
                                             $typeS = v.getInfoType();
                                         }
@@ -374,12 +374,12 @@ designator [IdentifiersTable idTH, Set set]
                                     }else{
                                         Var v = (Var) $idTH.getIdentifiersTable().get($identifier.text);
 
-                                        if(v.getCategory().equals(new String("TYPE"))){
+                                        if(v!=null && v.getCategory().equals(new String("TYPE"))){
                                             //ErrorMessage.errorSemantic($identifier.text,$identifier.line,$identifier.pos,ErrorMessage.errorStatements);
                                             e.addMessage($identifier.line,$identifier.pos,ErrorMessage.semantic($identifier.text,ErrorMessage.Statements));
 
                                         }else{
-                                            if(!v.getInfoType().equals(new String("array"))){
+                                            if(v!=null && !v.getInfoType().equals(new String("array"))){
                                                 //ErrorMessage.errorSemantic($identifier.text,$identifier.line,$identifier.pos,ErrorMessage.errorArrayType);
                                                 e.addMessage($identifier.line,$identifier.pos,ErrorMessage.semantic($identifier.text,ErrorMessage.ArrayType));
                                             }else{
@@ -714,6 +714,8 @@ factor [IdentifiersTable idTH,Set set] //vai ser preciso ver as pre-condiçoes d
        | '(' e=expression[idTH, set] ')' {$typeS = $e.typeS; $line = $e.line; $pos = $e.pos; if(isSet && $e.treeS!=null && $set!=null){ $treeS = $e.treeS;}}
        | '!' f1=factor[idTH, set]
         {
+            $line = $f1.line;
+            $pos = $f1.pos;
             if($f1.typeS!=null && $f1.typeS.equals("boolean")){
                 $typeS = $f1.typeS;
             }else{

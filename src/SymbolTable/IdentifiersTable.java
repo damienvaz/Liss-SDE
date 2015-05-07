@@ -59,6 +59,8 @@ public class IdentifiersTable {
         return this.idTable;
     }
 
+    public InfoIdentifiersTable getInfoIdentifiersTable(String id){return this.idTable.get(id);}
+
     public int getAddress(){
         return this.address;
     }

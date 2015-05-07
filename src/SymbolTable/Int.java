@@ -18,7 +18,7 @@ public class Int extends Var {
         return new Int(this);
     }
 
-    public String toString(){
+    public String toString() {
         StringBuilder s = new StringBuilder();
 
         s.append(super.toString());
