@@ -1,6 +1,9 @@
 package SymbolTable;
 
-import Application.*;
+import Application.TableError;
+import Application.ErrorMessage;
+//import javafx.application.Application;
+//import sun.jvm.hotspot.memory.SymbolTable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -145,12 +148,19 @@ public class IdentifiersTable {
                 }
                 break;
             case "set":
-                Set set = new Set(new Integer(level));
+                //Set set = new Set(new Integer(level),null);
+                Set set = null;
                 typeSpace = (Type) this.idTable.get(type);
 
                 for(String id : hashmapVar.keySet()){
                     //Pré-Condição : Verificar se as variaveis (do HashMap) ja existem na tabela de identificadores
                     if(!this.idTable.containsKey(id)) {
+                        Application.Set s1 = (Application.Set) hashmapVar.get(id).get("set");
+                        //System.out.println("IDENTIFIERS_TABLE: "+s1);
+                        set = new Set(new Integer(level),s1);
+
+
+
                         this.idTable.put(id, set.clone());
 
                         this.address = this.address + typeSpace.getSpace();
@@ -179,8 +189,8 @@ public class IdentifiersTable {
     public String toString(){
         StringBuilder s = new StringBuilder();
 
-        s.append(String.format("%-20s%-20s%-20s%-20s%-20s%-20s%-20s%-20s%-20s\n","Identifier","Category","Level","Space","Type","Address","Dimension","Limits","Elements_Type"));
-        s.append(String.format("======================================================================================================================================================================================\n"));
+        s.append(String.format("%-20s%-20s%-8s%-10s%-20s%-20s%-20s%-20s%-20s%-20s\n","Identifier","Category","Level","Space","Type","Address","Dimension","Limits","Elements_Type","Tree_Allocated"));
+        s.append(String.format("====================================================================================================================================================================================================\n"));
 
         //Algorithm for sorting the Category table by each type : "TYPE" | "VAR"
         LinkedList<String> sortCategory = new LinkedList<String>();

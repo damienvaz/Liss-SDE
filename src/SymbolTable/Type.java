@@ -36,7 +36,7 @@ public class Type extends InfoIdentifiersTable {
         StringBuilder s = new StringBuilder();
 
         s.append(super.toString());
-        s.append(String.format("%-20s\n",this.space));
+        s.append(String.format("%-10s\n",this.space));
 
         return s.toString();
     }

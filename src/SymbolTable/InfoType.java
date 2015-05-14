@@ -27,7 +27,7 @@ public abstract class InfoType extends InfoIdentifiersTable{
     public String toString(){
         StringBuilder s = new StringBuilder();
         s.append(super.toString());
-        s.append(String.format("%-20s%-20s", "", this.infoType));
+        s.append(String.format("%-10s%-20s", "", this.infoType));
 
         return s.toString();
     }

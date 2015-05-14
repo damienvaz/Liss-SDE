@@ -87,7 +87,7 @@ public abstract class InfoIdentifiersTable {
     public String toString(){
         StringBuilder s = new StringBuilder();
 
-        s.append(String.format("%-20s%-20s",this.category,this.level.toString()));
+        s.append(String.format("%-20s%-8s",this.category,this.level.toString()));
         //s.append("Category: "+this.category+"\t");
         //s.append("Level: "+this.level.toString()+"\t");
 

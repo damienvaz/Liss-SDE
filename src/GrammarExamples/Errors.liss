@@ -2,13 +2,15 @@ program Errors
 {
 declarations
 
-    a = 4, b -> integer;
-	d = true, flag   -> boolean;
-	array1 = [[1,2],[2,3]], vector -> array size 4,3;
+    a = 4, b = true -> integer;
+	d = true, flag = 5   -> boolean;
+	array1 = [[1,2],[2,3,4,5]], vector -> array size 4,3;
  	seq1 =<<1,2,3,4>> -> sequence;
     seq1 = <<1,4,7>> -> sequence;
+    //seq2 = <<true,4,7>> -> sequence;
     set1 = {} -> set;
     set2 -> set;
+    set12 = { x | {x | x+10 < x-4}} -> set;
     x -> integer;
     set4 = { y | y+1 < y+4} -> set;
     set5 = { y | y+1+array1[y,20] < y+4} -> set;
@@ -21,6 +23,13 @@ declarations
     set11 = { z | v+<<1,2,3,4>>} -> set;
     f -> boolean;
     u -> integer;
+    subprogram f(a->integer)->integer{
+        declarations
+            b->integer;
+        statements
+            b = 4;
+        return b;
+    }
 
 statements
 

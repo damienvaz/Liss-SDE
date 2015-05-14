@@ -91,7 +91,18 @@ public class Main {
 
         System.out.println(idT.toString());*/
 
+        long total_memory = Runtime.getRuntime().totalMemory();    // Total available now (bytes)
+        long free_memory = Runtime.getRuntime().freeMemory();      // Free memory now   (bytes)
+        long max_memory = Runtime.getRuntime().maxMemory();        //  (bytes)
+        long mb= (2^20);
 
+        System.out.println("TOTAL_MEMORY: "+total_memory +" B");
+        System.out.println("FREE_MEMORY: "+(free_memory)+" B");
+        System.out.println("MAX_MEMORY: "+(max_memory)+" B\n");
+
+        System.out.println("TOTAL_MEMORY: "+total_memory/mb +" MB");
+        System.out.println("FREE_MEMORY: "+(free_memory/mb)+" MB");
+        System.out.println("MAX_MEMORY: "+(max_memory/mb)+" MB");
 
     }
 }

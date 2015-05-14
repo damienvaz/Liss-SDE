@@ -52,6 +52,28 @@ variable_declaration [IdentifiersTable idTH]
                                 for(String i : varsH.keySet()){
                                     varsH.get(i).put("dimension",$type.arrayDimension);
                                 }
+                            }else if($type.typeS == "set"){
+                                for(String i : varsH.keySet()){
+                                    HashMap<String,Object> v = (HashMap<String,Object>)varsH.get(i);
+                                    if(v.get("set") == null){
+                                        v.put("set", new Set());
+                                    }
+                                }
+                                for(String i : varsH.keySet()){
+                                    System.out.println("Variable: "+i+" "+varsH.get(i).toString());
+                                }
+                            }
+
+                            for(String i : varsH.keySet()){
+                                HashMap<String, Object> varInfo = (HashMap<String, Object>)varsH.get(i);
+                                boolean s=false;
+                                for(String j : varInfo.keySet()){
+                                    String type = (String) varInfo.get("type");
+                                    if(type!=null && !type.equals($type.typeS) && s==false){
+                                        e.addMessage((int)varInfo.get("line"),(int)varInfo.get("pos"),ErrorMessage.semantic(i,ErrorMessage.type((String)varInfo.get("type"),$type.typeS)));
+                                        s=true;
+                                    }
+                                }
                             }
 
 
@@ -71,19 +93,20 @@ vars [IdentifiersTable idTH]
      @init{
         HashMap<String, HashMap<String,Object>> info = new HashMap<String, HashMap<String,Object>>();
      }
-     : var[idTH]  {
+     : v1=var[idTH]
+            {
                 if(!info.containsKey($var.text)){
                     info.put($var.idS,$var.infoVarS);
                 }else{
-                    //ErrorMessage.errorSemantic($var.text,(int)$var.infoVarS.get("line"), (int)$var.infoVarS.get("pos"),ErrorMessage.errorDeclarations);
                     e.addMessage((int)$var.infoVarS.get("line"),(int)$var.infoVarS.get("pos"),ErrorMessage.semantic($var.text,ErrorMessage.Declarations));
                 }
+
             }
-       (',' var[idTH] {
+       (',' v2=var[idTH]
+                {
                     if(!info.containsKey($var.text)){
                         info.put($var.idS,$var.infoVarS);
                     }else{
-                        //ErrorMessage.errorSemantic($var.text,(int)$var.infoVarS.get("line"), (int)$var.infoVarS.get("pos"),ErrorMessage.errorDeclarations);
                         e.addMessage((int)$var.infoVarS.get("line"),(int)$var.infoVarS.get("pos"),ErrorMessage.semantic($var.text,ErrorMessage.Declarations));
                     }
                 }
@@ -101,10 +124,19 @@ var [IdentifiersTable idTH]
     @init{
         HashMap<String, Object> info = new HashMap<String, Object>();
     }
-    : identifier value_var[idTH]
+    : i=identifier v=value_var[idTH]
     {
-        info.put("pos",$identifier.pos);
-        info.put("line",$identifier.line);
+        info.put("pos",$i.pos);
+        info.put("line",$i.line);
+
+        if($v.typeS!=null){
+            info.put("type",$v.typeS);
+        }
+
+        if($v.setS!=null){
+            info.put("set",$v.setS);
+        }
+
 
         $idS = $identifier.text;
         $infoVarS = info;
@@ -112,13 +144,12 @@ var [IdentifiersTable idTH]
     ;
 
 value_var [IdentifiersTable idTH]
-          returns [boolean universe]  //Universe refers to the Set composition
+          returns [Set setS, String typeS]
           @init{
-            $universe = false;
             Set set = null;
           }
-          :                     {}
-          | '=' inic_var[idTH, set]  {}
+          :                            { $setS = set; $typeS = null;}
+          | '=' i=inic_var[idTH, set]  {if(isSet){ set = $i.setS; $setS = set;} $typeS = $i.typeS;}
           ;
 
 type returns[String typeS, ArrayList<Integer> arrayDimension]
@@ -138,13 +169,13 @@ dimension returns [ArrayList<Integer> arrayDimension]
           ;
 
 inic_var [IdentifiersTable idTH, Set set]
-         returns [String typeS, int line, int pos, Node treeS]
+         returns [String typeS, int line, int pos,Set setS, Node treeS]
          @init{
             $treeS = null;
          }
          : c=constant               {$typeS = $constant.typeS; $line = $constant.line; $pos = $constant.pos; if(isSet && $set!=null){ Node n = new Node(new Data($c.text)); $treeS = n;}}
-         | a=array_definition         {$typeS = "integer";}
-         | s1=set_definition[idTH]  {$typeS = "set"; if(isSet && $set!=null){$treeS = $s1.treeS;}}
+         | a=array_definition       {$typeS = "integer";}
+         | s1=set_definition[idTH]  {$typeS = "set"; $line = $s1.line; $pos = $s1.pos;if(isSet && $s1.treeS!=null){$treeS = $s1.treeS;} if(isSet && $s1.setS!=null){$setS = $s1.setS;}}
          | s2=sequence_definition   {$typeS = "sequence"; if(isSet && $set!=null){$treeS = $s2.treeS;}}
          ;
 
@@ -201,9 +232,9 @@ values returns [Node treeS]
 /* ****** Set definition ****** */
 
 set_definition [IdentifiersTable idTH]
-               returns [Set setS, Node treeS]
-               : '{'
-                   s=set_initialization[idTH] {if(isSet && $s.setS!=null){$setS = $s.setS; $treeS = $s.treeS;}}
+               returns [Set setS, Node treeS,int line, int pos]
+               : m='{'
+                   s=set_initialization[idTH] {$line = $m.line; $pos = $m.pos;$setS = $s.setS; $treeS = $s.treeS; if($s.setS!=null){System.out.println("SET_DEFINITION: {"+$s.text+"} -> "+$s.setS.toString());}}
                  '}'
                ;
 
@@ -212,12 +243,12 @@ set_initialization [IdentifiersTable idTH]
                    @init{
                       isSet = true;
                       Set s = null;
+                      Node tree = null;
                    }
-                   :                                    //o set é vazio, é o nada
+                   :                    { s = new Set("x"); $setS = s; $treeS=null;}                //o set é vazio, é o nada
                    | i=identifier
                    {
-                    s = new Set($i.text);
-
+                     s = new Set($i.text,tree);
                    }
                     '|'
                     e=expression[idTH,s]
@@ -226,14 +257,13 @@ set_initialization [IdentifiersTable idTH]
                         e.addMessage($e.line,$e.pos,ErrorMessage.semantic($e.text,ErrorMessage.type($e.typeS,"boolean")));
                     }
 
-                    if($e.treeS!=null && isSet){
+                    if($e.treeS!=null && isSet && $e.typeS != null && $e.typeS.equals("boolean")){                                              //só se pode adicionar caso a expressao for booleano !
                         s.setHead($e.treeS);
-                        System.out.println("Set : "+s.toString());
-                        s.setIdentifier("10");
-                        System.out.println("Set : "+s.toString());
-                        $setS = s;
                         $treeS = $e.treeS;
+                    }else{
+                        //s.isntASet(); //se nao é booleano deve-se enviar o conjunto vazio ( que é constituido por identifier nao nulo e
                     }
+                    $setS = s;
 
                    }
                    ;
@@ -277,11 +307,13 @@ return_type :
 /* ****** Return ****** */
 
 returnSubPrg [IdentifiersTable idTH]
+             returns [String typeS]
              @init{
                 Set tree = null;
+                $typeS = null;
              }
              :
-             | 'return' expression[idTH,tree] ';'
+             | 'return' e=expression[idTH,tree]{$typeS = $e.typeS;} ';'
              ;
 
 /* ****** Statements ****** */
@@ -346,13 +378,14 @@ designator [IdentifiersTable idTH, Set set]
                                         e.addMessage($identifier.line,$identifier.pos,ErrorMessage.semantic($identifier.text,ErrorMessage.Statements));
 
                                     }else{
-                                        if(!isSet && !$idTH.getIdentifiersTable().get($identifier.text).getCategory().equals(new String("TYPE"))){
-                                            Var v = (Var) $idTH.getIdentifiersTable().get($identifier.text);
+                                        if(!isSet && !$idTH.getInfoIdentifiersTable($identifier.text).getCategory().equals(new String("TYPE"))){
+                                            Var v = (Var) $idTH.getInfoIdentifiersTable($identifier.text);
                                             $typeS = v.getInfoType();
                                         }
                                     }
                                     if(isSet && $set!=null){
                                         Data d = $set.getIdentifier();
+                                        $typeS = "integer";
                                         Node n = null;
                                         if(d.getData().equals($identifier.text)){
                                             n = new Node(d);
@@ -372,7 +405,7 @@ designator [IdentifiersTable idTH, Set set]
                                         e.addMessage($identifier.line,$identifier.pos,ErrorMessage.semantic($identifier.text,ErrorMessage.Statements));
 
                                     }else{
-                                        Var v = (Var) $idTH.getIdentifiersTable().get($identifier.text);
+                                        Var v = (Var) $idTH.getInfoIdentifiersTable($identifier.text);
 
                                         if(v!=null && v.getCategory().equals(new String("TYPE"))){
                                             //ErrorMessage.errorSemantic($identifier.text,$identifier.line,$identifier.pos,ErrorMessage.errorStatements);
@@ -793,7 +826,7 @@ print_what [IdentifiersTable idTH]
 read_statement [IdentifiersTable idTH]
                : 'input' '(' i=identifier ')'
                {
-                  Var v = (Var) $idTH.getIdentifiersTable().get($i.text);
+                  Var v = (Var) $idTH.getInfoIdentifiersTable($i.text);
                   if(!(v != null && v.getCategory().equals("VAR") && v.getInfoType().equals("integer"))){       //verificar se existe e é tipo inteiro e class VAR
                     e.addMessage($i.line,$i.pos,ErrorMessage.semantic($i.text,ErrorMessage.type(v.getInfoType(),"integer")));
                   }
@@ -837,7 +870,7 @@ for_stat [IdentifiersTable idTH]
 interval [IdentifiersTable idTH]
          : i=identifier type_interval[idTH]
          {
-            Var v = (Var) $idTH.getIdentifiersTable().get($i.text);
+            Var v = (Var) $idTH.getInfoIdentifiersTable($i.text);
             if(!(v != null && v.getCategory().equals("VAR") && v.getInfoType().equals("integer"))){   //identifier tem que pertencer a tabela, cat VAR e tipo inteiro
                 e.addMessage($i.line,$i.pos,ErrorMessage.semantic($i.text,ErrorMessage.type(v.getInfoType(),"integer")));
             }
@@ -848,7 +881,7 @@ type_interval [IdentifiersTable idTH]
               : 'in' range[idTH]  //
               | 'inArray' i=identifier
               {
-                Var v = (Var) $idTH.getIdentifiersTable().get($i.text);
+                Var v = (Var) $idTH.getInfoIdentifiersTable($i.text);
                 if(!(v != null && v.getCategory().equals("VAR") && v.getInfoType().equals("array"))){   //identifier => Array e cat VAR
                     e.addMessage($i.line,$i.pos,ErrorMessage.semantic($i.text,ErrorMessage.type(v.getInfoType(),"integer")));
                 }
@@ -864,7 +897,7 @@ minimum [IdentifiersTable idTH]
         : number
         | i=identifier
          {
-            Var v = (Var) $idTH.getIdentifiersTable().get($i.text);
+            Var v = (Var) $idTH.getInfoIdentifiersTable($i.text);
             if(!(v != null && v.getCategory().equals("VAR") && v.getInfoType().equals("integer"))){       //tem que existir e tem que ser variavel tipo inteiro , cat VAR
                 e.addMessage($i.line,$i.pos,ErrorMessage.semantic($i.text,ErrorMessage.type(v.getInfoType(),"integer")));
             }
@@ -875,7 +908,7 @@ maximum [IdentifiersTable idTH]
         : number
         | i=identifier
         {
-            Var v = (Var) $idTH.getIdentifiersTable().get($i.text);
+            Var v = (Var) $idTH.getInfoIdentifiersTable($i.text);
             if(!(v != null && v.getCategory().equals("VAR") && v.getInfoType().equals("integer"))){       //tem que existir e tem que ser variavel tipo inteiro , cat VAR
                 e.addMessage($i.line,$i.pos,ErrorMessage.semantic($i.text,ErrorMessage.type(v.getInfoType(),"integer")));
             }
@@ -918,7 +951,7 @@ while_stat [IdentifiersTable idTH]
 succ_or_pred [IdentifiersTable idTH]
              : succ_pred i=identifier
              {
-                Var v = (Var) $idTH.getIdentifiersTable().get($i.text);
+                Var v = (Var) $idTH.getInfoIdentifiersTable($i.text);
                 if( !( $i.text.matches("^[0-9]+$") || (v != null && v.getCategory().equals("VAR") && v.getInfoType().equals("integer")) ) ){
                     e.addMessage($i.line,$i.pos,ErrorMessage.semantic($i.text,ErrorMessage.type("null","integer")));
                 }
@@ -1038,8 +1071,8 @@ copy_statement [IdentifiersTable idTH]
                // copy_statement : seq x seq -> void
                : 'copy' '(' i1=identifier ',' i2=identifier ')'
                {
-                  Var v1 = (Var) $idTH.getIdentifiersTable().get($i1.text);
-                  Var v2 = (Var) $idTH.getIdentifiersTable().get($i2.text);
+                  Var v1 = (Var) $idTH.getInfoIdentifiersTable($i1.text);
+                  Var v2 = (Var) $idTH.getInfoIdentifiersTable($i2.text);
 
                   if( !( v1 != null && v1.getInfoType().equals("sequence") && v1.getCategory().equals("VAR") ) ){
                     e.addMessage($i1.line,$i2.pos,ErrorMessage.semantic($i1.text,ErrorMessage.type("boolean | sequence | integer","sequence")));
@@ -1055,8 +1088,8 @@ cat_statement [IdentifiersTable idTH]
               //cat_statement : seq x seq -> void
               : 'cat' '(' i1=identifier ',' i2=identifier ')'
               {
-                Var v1 = (Var) $idTH.getIdentifiersTable().get($i1.text);
-                Var v2 = (Var) $idTH.getIdentifiersTable().get($i2.text);
+                Var v1 = (Var) $idTH.getInfoIdentifiersTable($i1.text);
+                Var v2 = (Var) $idTH.getInfoIdentifiersTable($i2.text);
 
                 if( !( v1 != null && v1.getInfoType().equals("sequence") && v1.getCategory().equals("VAR") ) ){
                     e.addMessage($i1.line,$i2.pos,ErrorMessage.semantic($i1.text,ErrorMessage.type("boolean | sequence | integer","sequence")));
@@ -1064,6 +1097,7 @@ cat_statement [IdentifiersTable idTH]
                 if( !( v2 != null && v2.getInfoType().equals("sequence") && v2.getCategory().equals("VAR") ) ){
                     e.addMessage($i2.line,$i2.pos,ErrorMessage.semantic($i2.text,ErrorMessage.type("boolean | sequence | integer","sequence")));
                 }
+
               }//ambos identificadores tem que existir, categoria VAR e Sequence
               ;
 
@@ -1130,7 +1164,7 @@ member [IdentifiersTable idTH, Set set]
 
           //Pre-Condicao : verificar se existe o identificador na tabela de identificador, caso nao existir significa que é um inteiro ou que nao foi declarado !!!
           if($idTH.getIdentifiersTable().containsKey($i.text)){
-            Var v = (Var) $idTH.getIdentifiersTable().get($i.text);
+            Var v = (Var) $idTH.getInfoIdentifiersTable($i.text);
             if( v != null){
                 type = v.getInfoType();
                 if((type != null) && type.equals("sequence")){
