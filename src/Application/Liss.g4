@@ -35,12 +35,11 @@ body[IdentifiersTable idTH]
 /* ****** Declarations ****** */
 
 declarations[IdentifiersTable idTH]
-             : declaration[idTH]*
+             : declaration[idTH]
              ;
 
 declaration [IdentifiersTable idTH]
-            : variable_declaration[idTH]
-            | subprogram_definition[idTH] {level--;}
+            : variable_declaration[idTH]* subprogram_definition[idTH]*
             ;
 
 /* ****** Variables ****** */
@@ -51,6 +50,7 @@ variable_declaration [IdentifiersTable idTH]
                             if($type.typeS == "array" ){
                                 for(String i : varsH.keySet()){
                                     varsH.get(i).put("dimension",$type.arrayDimension);
+                                    varsH.get(i).put("type","array");
                                 }
                             }else if($type.typeS == "set"){
                                 for(String i : varsH.keySet()){
@@ -271,11 +271,30 @@ set_initialization [IdentifiersTable idTH]
 /* ****** SubProgram definition ****** */
 
 subprogram_definition[IdentifiersTable idTH]
+
                       @init{
                         level++;
+                        HashMap<String,Object> varInfo = new HashMap<String, Object>();
+                        HashMap<String, HashMap<String, Object>> hashmapVar = new HashMap<String, HashMap<String,Object>>();
                       }
-                      : 'subprogram' identifier
-                        '(' formal_args ')' return_type f_body[idTH]
+                      : 'subprogram' i=identifier
+                        '(' f=formal_args[idTH] ')' r=return_type f_body[idTH]
+                        {
+                            //Pre-Condition : Remover todas as variaveis do nivel actual
+
+                            //$idTH.removeLevel(level);
+
+                            level--;
+
+                            varInfo.put("line",$i.line);
+                            varInfo.put("pos",$i.pos);
+                            varInfo.put("return",$r.typeS);
+                            varInfo.put("numberArguments", $f.numberArgumentS);
+                            varInfo.put("typeList",$f.typeListS);
+
+                            hashmapVar.put($i.text,varInfo);
+                            $idTH.add(e,hashmapVar,"function",level);
+                        }
                       ;
 
 f_body[IdentifiersTable idTH]
@@ -288,20 +307,62 @@ f_body[IdentifiersTable idTH]
 
 /* ****** Formal args ****** */
 
-formal_args :
-            | f_args
+formal_args [IdentifiersTable idTH]
+            returns[int numberArgumentS, LinkedList<String> typeListS]
+            :                   { $numberArgumentS = 0; $typeListS = null;}
+            | f=f_args[idTH]    { $numberArgumentS = $f.numberArgumentS; $typeListS = $f.typeListS;}
+
             ;
 
-f_args : formal_arg (';' formal_arg)*
-       ;
+f_args  [IdentifiersTable idTH]
+        returns [int numberArgumentS, LinkedList<String> typeListS]
+        @init{
+            int numberArgument = 0;
+            LinkedList<String> typeList = new LinkedList<String>();
+        }
+        : f1=formal_arg
+          {
+            numberArgument++;
+            $idTH.add(e,$f1.hashmapVarS,$f1.typeS,level);
+            typeList.add($f1.typeS);
+          }
+          (';' f2=formal_arg
+          {
+            numberArgument++;
+            $idTH.add(e,$f2.hashmapVarS,$f2.typeS,level);
+            typeList.add($f2.typeS);
+          }
+          )*
 
-formal_arg : identifier '->' type
+          {
+            $numberArgumentS = numberArgument;
+            $typeListS = typeList;
+          }
+        ;
+
+formal_arg
+           returns[HashMap<String,HashMap<String,Object>> hashmapVarS, String typeS ]
+           @init{
+            HashMap<String,Object> varInfo = new HashMap<String, Object>();
+            HashMap<String, HashMap<String, Object>> hashmapVar = new HashMap<String, HashMap<String,Object>>();
+           }
+           : i=identifier '->' t=type
+           {
+            varInfo.put("line",$i.line);
+            varInfo.put("pos",$i.pos);
+
+            hashmapVar.put($i.text,varInfo);
+            $hashmapVarS = hashmapVar;
+            $typeS = $t.typeS;
+           }
            ;
 
 /* ****** Return type ****** */
 
-return_type :
-            | '->' type
+return_type
+            returns [String typeS]
+            :               {$typeS = "null";}
+            | '->' t=type   {$typeS = $t.typeS;}
             ;
 
 /* ****** Return ****** */
@@ -379,8 +440,10 @@ designator [IdentifiersTable idTH, Set set]
 
                                     }else{
                                         if(!isSet && !$idTH.getInfoIdentifiersTable($identifier.text).getCategory().equals(new String("TYPE"))){
-                                            Var v = (Var) $idTH.getInfoIdentifiersTable($identifier.text);
-                                            $typeS = v.getInfoType();
+                                            if($idTH.getInfoIdentifiersTable($identifier.text) instanceof Var){
+                                                Var v = (Var) $idTH.getInfoIdentifiersTable($identifier.text);
+                                                $typeS = v.getInfoType();
+                                            }
                                         }
                                     }
                                     if(isSet && $set!=null){

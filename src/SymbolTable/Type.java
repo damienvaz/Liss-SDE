@@ -8,9 +8,25 @@ public class Type extends InfoIdentifiersTable {
     private Integer space;
 
     /* *** Constructor *** */
-    public Type( Integer level, Integer spaceType){
+    public Type( Integer level, String type){
         super("TYPE",level);
-        this.space = spaceType;
+        switch (type) {
+            case "integer":
+                this.space = new Integer(1);
+                break;
+            case "set":
+                this.space = new Integer(0);
+                break;
+            case "sequence":
+                this.space = new Integer(1);
+                break;
+            case "boolean":
+                this.space = new Integer(1);
+                break;
+            default:
+                System.out.println("This type isn't recognized !");
+                break;
+        }
     }
 
     public Type(Type st){

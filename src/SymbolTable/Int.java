@@ -18,6 +18,10 @@ public class Int extends Var {
         return new Int(this);
     }
 
+    public boolean equals(Int i){
+        return ( i.getLevel().equals(this.getLevel()) )? true : false;
+    }
+
     public String toString() {
         StringBuilder s = new StringBuilder();
 

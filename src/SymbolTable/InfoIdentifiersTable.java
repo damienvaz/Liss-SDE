@@ -93,4 +93,9 @@ public abstract class InfoIdentifiersTable {
 
         return s.toString();
     }
+
+    public boolean equals(Object l){
+        InfoIdentifiersTable i = (InfoIdentifiersTable) l;
+        return (i.getLevel().equals(this.getLevel()) && i.getCategory().equals(this.getCategory())) ? true : false;
+    }
 }
