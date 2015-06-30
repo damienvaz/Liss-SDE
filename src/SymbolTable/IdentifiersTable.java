@@ -41,7 +41,7 @@ public class IdentifiersTable {
 
 
         //Put the primitive types to the Identifier Table
-        this.idTable.put("integer",new LinkedList<InfoIdentifiersTable>());
+        this.idTable.put("integer", new LinkedList<InfoIdentifiersTable>());
         this.idTable.get("integer").add(integer);
         this.idTable.put("set", new LinkedList<InfoIdentifiersTable>());
         this.idTable.get("set").add(set);
@@ -88,6 +88,10 @@ public class IdentifiersTable {
         return this.address;
     }
 
+    public void setAddress(int address) {
+        this.address = address;
+    }
+
     public void add(TableError e, HashMap<String, HashMap<String, Object>> hashmapVar, String type,int level){
         Type typeSpace;
 
@@ -101,7 +105,7 @@ public class IdentifiersTable {
                         if(!this.idTable.containsKey(id)){
                             LinkedList<InfoIdentifiersTable> l = new LinkedList<InfoIdentifiersTable>();
                             l.add(i.clone());
-                            this.idTable.put(id,l);
+                            this.idTable.put(id, l);
 
                             this.address = this.address + typeSpace.getSpace();
                             i.setAddress(this.address);
@@ -255,9 +259,10 @@ public class IdentifiersTable {
 
                         LinkedList<InfoIdentifiersTable> l = new LinkedList<InfoIdentifiersTable>();
                         l.add(f.clone());
-                        this.idTable.put(id,l);
+                        this.idTable.put(id, l);
 
-                        this.address = 0;
+                        //this.address = 0;
+                        //System.out.println("Function: "+id+" Passei por aqui1. Address: "+this.address);
                         //f.setAddress(this.address);
                     }else{
                         f = new Function(new Integer(level),(String)hashmapVar.get(id).get("return"),(Integer)hashmapVar.get(id).get("numberArguments"),(LinkedList<String>)hashmapVar.get(id).get("typeList"));
@@ -270,9 +275,15 @@ public class IdentifiersTable {
                             //typeSpace = (Type) this.idTable.get(type).getLast();
 
                             //this.address = this.idTable.get((LinkedList<String>) hashmapVar.get(id).get("typeList")).getFirst()).;
-                            this.address = 0;
+                            //this.address = 0;
+                            //System.out.println("Function: "+id+" Passei por aqui2. Address: "+this.address);
                             //f.setAddress(this.address);
                         } else {
+                            //this.address = 0;
+                            //Como sei que a funçao nao pode ser inserido, criar um "errorFuncao" na tabela so para verificar
+                            LinkedList<InfoIdentifiersTable> l = new LinkedList<InfoIdentifiersTable>();
+                            l.add(f.clone());
+                            this.idTable.put("error"+id, l);
                             e.addMessage((int) hashmapVar.get(id).get("line"),(int) hashmapVar.get(id).get("pos"),ErrorMessage.semantic(id,ErrorMessage.Declarations));
                         }
                     }
@@ -284,6 +295,8 @@ public class IdentifiersTable {
         }
 
     }
+
+
 
 
     /**

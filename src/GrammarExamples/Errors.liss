@@ -2,7 +2,7 @@ program Errors
 {
 declarations
 
-    a = 4, b = true -> integer;
+    a = 4, a = 5, b = true -> integer;
 	d = true, flag = 5   -> boolean;
 	array1 = [[1,2],[2,3,4,5]], vector -> array size 4,3;
 	vector -> array size 4,3;
@@ -49,32 +49,12 @@ declarations
                     b = 5;
                 return b;
             }
-            subprogram fc(amen2->integer;amen2->sequence)->integer{
-                declarations
-                    fb-> integer;
-                    fb-> integer;
-                    fd->integer;
-                    fvector -> integer;
-                    fnovo -> sequence;
-                statements
-                    b = 5;
-                return b;
-            }
+
         statements
             b = 4;
         return b;
     }
-    subprogram c(a->integer;b->boolean)->integer{
-                    declarations
-                        bb-> integer;
-                        bc-> integer;
-                        dd->integer;
-                        vector2 -> integer;
-                        novo2 -> sequence;
-                    statements
-                        b = 5;
-                    return b;
-               }
+
 
 statements
 

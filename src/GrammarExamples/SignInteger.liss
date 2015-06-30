@@ -1,11 +1,19 @@
 program test{
   declarations
-    a, b = -4, c = +3, d, e, f, g, h -> integer;
+    a, b = -4, c = +3, d, e, f, g = 1, h -> integer;
+    flag = true -> boolean;
+    array2 = [
+              [[1],[5]],
+              [[2,2],[3]]
+             ] -> array size 4,3,2;
   statements
     a = +2;
     d = +3*-4;
-    e = -2-3;
-    f = -2 - +3;
     g = 2 * -3 * 4;
-    h = 2 * (-3 / 4);
+    h = 8 * ((2 + 4) / 4);
+    g = 8 * (2 * (4 / 4));
+    e = -2-b;
+    f = -2 - +3;
+    d = c;
+    a = array2[1,1,0];
 }

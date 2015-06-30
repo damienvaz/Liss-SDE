@@ -36,6 +36,10 @@ public class TableError {
         }
     }
 
+    public boolean isNull(){
+        return this.tableError.isEmpty();
+    }
+
     public String toString(){
         StringBuilder s = new StringBuilder();
 

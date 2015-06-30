@@ -107,6 +107,9 @@ public class LissLexer extends Lexer {
 	    boolean isSet = false;
 	    int i= 0;
 
+	    boolean isDeclarations;
+
+	     Mips m = new Mips();
 
 
 	public LissLexer(CharStream input) {
