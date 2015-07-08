@@ -107,7 +107,25 @@ public class Mips {
         StringBuilder s = new StringBuilder();
         String r[] = lastTwoRegisterOccupied();
         resetRegister();
-        s.append("\tsb "+r[0]+", "+name+"("+r[1]+")\t\t# "+line+":"+pos+"\n");
+        s.append("\tsw "+r[0]+", "+name+"("+r[1]+")\t\t# "+line+":"+pos+"\n");
+        return s.toString();
+    }
+
+    public String storeWordArrayText(String name, int line, int pos){
+        StringBuilder s = new StringBuilder();
+        String r[] = lastTwoRegisterOccupied();
+        resetRegister();
+        s.append("\tsw "+r[1]+", "+name+"("+r[0]+")\t\t# "+line+":"+pos+"\n");
+        return s.toString();
+    }
+
+    public String loadWordArray(String name, int line, int pos){
+        StringBuilder s = new StringBuilder();
+        //String r[] = lastTwoRegisterOccupied();
+        String r[] = lastRegisterOccupied();
+        //resetRegister();
+        //freeLastRegister();
+        s.append("\tlw "+r[0]+", "+name+"("+r[0]+")\t\t# "+line+":"+pos+"\n");
         return s.toString();
     }
 
@@ -268,15 +286,17 @@ public class Mips {
 
     }
 
-    public void addTextInstructions(String name, String instruction, String type, int line, int pos){
-        switch (type){
+    //public void addTextInstructions(String name, String instruction, String type, int line, int pos){
+    public void addTextInstructions(String instruction){
+        addTextInstruction(instruction);
+        /*switch (type){
             case "integer":
                 addTextInstruction(instruction);
-                addTextInstruction(storeWord(name, line, pos));
+                //addTextInstruction(storeWord(name, line, pos));
                 break;
             default:
                 break;
-        }
+        }*/
     }
 
 

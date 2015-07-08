@@ -2390,7 +2390,21 @@ public class LissParser extends Parser {
 			                System.out.println(((AssignmentContext)_localctx).designator.line+"Funcionou ;D");
 
 			                //MIPS
-			                m.addTextInstructions((((AssignmentContext)_localctx).designator!=null?_input.getText(((AssignmentContext)_localctx).designator.start,((AssignmentContext)_localctx).designator.stop):null),((AssignmentContext)_localctx).expression.mipsCodeS,((AssignmentContext)_localctx).designator.typeS,((AssignmentContext)_localctx).designator.line,((AssignmentContext)_localctx).designator.pos);
+			                if(/*((AssignmentContext)_localctx).designator.mipsCodeS != null &&*/ ((AssignmentContext)_localctx).expression.mipsCodeS != null){
+			                    String mipsCodeS = "";
+			                    if(((AssignmentContext)_localctx).designator.arrayS == false){
+			                        mipsCodeS = ((AssignmentContext)_localctx).expression.mipsCodeS;
+			                        mipsCodeS += m.storeWord((((AssignmentContext)_localctx).designator!=null?_input.getText(((AssignmentContext)_localctx).designator.start,((AssignmentContext)_localctx).designator.stop):null), ((AssignmentContext)_localctx).designator.line, ((AssignmentContext)_localctx).designator.pos);
+			                        //m.addTextInstructions((((AssignmentContext)_localctx).designator!=null?_input.getText(((AssignmentContext)_localctx).designator.start,((AssignmentContext)_localctx).designator.stop):null),((AssignmentContext)_localctx).expression.mipsCodeS,((AssignmentContext)_localctx).designator.typeS,((AssignmentContext)_localctx).designator.line,((AssignmentContext)_localctx).designator.pos);
+			                    }else if(((AssignmentContext)_localctx).designator.arrayS == true){
+			                        mipsCodeS = ((AssignmentContext)_localctx).designator.mipsCodeS;
+			                        mipsCodeS += ((AssignmentContext)_localctx).expression.mipsCodeS;
+			                        mipsCodeS += m.storeWordArrayText(((AssignmentContext)_localctx).designator.identifierS, ((AssignmentContext)_localctx).designator.line, ((AssignmentContext)_localctx).designator.pos);
+			                    }
+
+			                    m.addTextInstructions(mipsCodeS);
+			                }
+
 			              }else{
 			                //ErrorMessage.errorSemanticAssignment(((AssignmentContext)_localctx).designator.line);
 			                e.addMessage(((AssignmentContext)_localctx).designator.line,-1,ErrorMessage.semanticAssignment(((AssignmentContext)_localctx).designator.line)); //-1 => assignemen error => there is no pos.
@@ -2416,11 +2430,13 @@ public class LissParser extends Parser {
 		public IdentifiersTable idTH;
 		public Set set;
 		public String side;
+		public String identifierS;
 		public String typeS;
 		public int line;
 		public int pos;
 		public Node treeS;
 		public String mipsCodeS;
+		public boolean arrayS;
 		public IdentifierContext i;
 		public IdentifierContext identifier;
 		public Array_accessContext a;
@@ -2456,6 +2472,7 @@ public class LissParser extends Parser {
 		                ((DesignatorContext)_localctx).typeS =  null;
 		                ((DesignatorContext)_localctx).treeS =  null;
 		                ((DesignatorContext)_localctx).mipsCodeS =  null;
+
 		            
 		try {
 			enterOuterAlt(_localctx, 1);
@@ -2463,8 +2480,10 @@ public class LissParser extends Parser {
 			setState(426); 
 			((DesignatorContext)_localctx).i = ((DesignatorContext)_localctx).identifier = identifier();
 			setState(427); 
-			((DesignatorContext)_localctx).a = ((DesignatorContext)_localctx).array_access = array_access(idTH, set);
+			((DesignatorContext)_localctx).a = ((DesignatorContext)_localctx).array_access = array_access(idTH, set, (((DesignatorContext)_localctx).identifier!=null?_input.getText(((DesignatorContext)_localctx).identifier.start,((DesignatorContext)_localctx).identifier.stop):null));
 
+			                                ((DesignatorContext)_localctx).identifierS =  (((DesignatorContext)_localctx).identifier!=null?_input.getText(((DesignatorContext)_localctx).identifier.start,((DesignatorContext)_localctx).identifier.stop):null);
+			                                ((DesignatorContext)_localctx).arrayS =  ((DesignatorContext)_localctx).array_access.response;
 			                                ((DesignatorContext)_localctx).line =  ((DesignatorContext)_localctx).identifier.line;
 			                                ((DesignatorContext)_localctx).pos =  ((DesignatorContext)_localctx).identifier.pos;
 			                                //Pre-Condicao: é um identificador
@@ -2485,6 +2504,7 @@ public class LissParser extends Parser {
 			                                                if(_localctx.typeS.equals("integer")){
 			                                                    if(_localctx.side.equals("right")){
 			                                                        ((DesignatorContext)_localctx).mipsCodeS =  m.loadWord((((DesignatorContext)_localctx).i!=null?_input.getText(((DesignatorContext)_localctx).i.start,((DesignatorContext)_localctx).i.stop):null), ((DesignatorContext)_localctx).i.line, ((DesignatorContext)_localctx).i.pos);
+			                                                        //System.out.println(_localctx.mipsCodeS);
 			                                                    }
 			                                                }
 			                                            }
@@ -2534,6 +2554,15 @@ public class LissParser extends Parser {
 
 			                                                    //o codigo do array todo ;D
 
+			                                                    if(_localctx.side.equals("right") && ((DesignatorContext)_localctx).a.mipsCodeS != null){
+			                                                        //_localctx.mipsCodeS += m.loadWordArray((((DesignatorContext)_localctx).identifier!=null?_input.getText(((DesignatorContext)_localctx).identifier.start,((DesignatorContext)_localctx).identifier.stop):null), ((DesignatorContext)_localctx).identifier.line, ((DesignatorContext)_localctx).identifier.pos);
+			                                                        ((DesignatorContext)_localctx).mipsCodeS =  ((DesignatorContext)_localctx).a.mipsCodeS;
+			                                                        _localctx.mipsCodeS += m.loadWordArray((((DesignatorContext)_localctx).identifier!=null?_input.getText(((DesignatorContext)_localctx).identifier.start,((DesignatorContext)_localctx).identifier.stop):null), ((DesignatorContext)_localctx).identifier.line, ((DesignatorContext)_localctx).identifier.pos);
+			                                                    }else{
+			                                                        ((DesignatorContext)_localctx).mipsCodeS =  ((DesignatorContext)_localctx).a.mipsCodeS;
+			                                                    }
+			                                                    //System.out.println(((DesignatorContext)_localctx).a.mipsCodeS);
+
 
 			                                                }else{
 			                                                    //ErrorMessage.errorSemantic((((DesignatorContext)_localctx).identifier!=null?_input.getText(((DesignatorContext)_localctx).identifier.start,((DesignatorContext)_localctx).identifier.stop):null),((DesignatorContext)_localctx).identifier.line,((DesignatorContext)_localctx).identifier.pos,ErrorMessage.createMessageDimensionArray(((DesignatorContext)_localctx).array_access.dimensionS,a.getDimension()));
@@ -2568,19 +2597,22 @@ public class LissParser extends Parser {
 	public static class Array_accessContext extends ParserRuleContext {
 		public IdentifiersTable idTH;
 		public Set set;
+		public String id;
 		public boolean response;
 		public int dimensionS;
 		public Node treeS;
+		public String mipsCodeS;
 		public Elem_arrayContext e;
 		public Elem_arrayContext elem_array;
 		public Elem_arrayContext elem_array() {
 			return getRuleContext(Elem_arrayContext.class,0);
 		}
 		public Array_accessContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public Array_accessContext(ParserRuleContext parent, int invokingState, IdentifiersTable idTH, Set set) {
+		public Array_accessContext(ParserRuleContext parent, int invokingState, IdentifiersTable idTH, Set set, String id) {
 			super(parent, invokingState);
 			this.idTH = idTH;
 			this.set = set;
+			this.id = id;
 		}
 		@Override public int getRuleIndex() { return RULE_array_access; }
 		@Override
@@ -2593,8 +2625,8 @@ public class LissParser extends Parser {
 		}
 	}
 
-	public final Array_accessContext array_access(IdentifiersTable idTH,Set set) throws RecognitionException {
-		Array_accessContext _localctx = new Array_accessContext(_ctx, getState(), idTH, set);
+	public final Array_accessContext array_access(IdentifiersTable idTH,Set set,String id) throws RecognitionException {
+		Array_accessContext _localctx = new Array_accessContext(_ctx, getState(), idTH, set, id);
 		enterRule(_localctx, 64, RULE_array_access);
 		try {
 			setState(436);
@@ -2632,10 +2664,10 @@ public class LissParser extends Parser {
 				setState(431); 
 				match(T__19);
 				setState(432); 
-				((Array_accessContext)_localctx).e = ((Array_accessContext)_localctx).elem_array = elem_array(idTH, set);
+				((Array_accessContext)_localctx).e = ((Array_accessContext)_localctx).elem_array = elem_array(idTH, set, id);
 				setState(433); 
 				match(T__20);
-				((Array_accessContext)_localctx).response =  true; ((Array_accessContext)_localctx).dimensionS =  ((Array_accessContext)_localctx).elem_array.dimensionS; if(isSet && _localctx.set!=null && ((Array_accessContext)_localctx).e.treeS!=null){ ((Array_accessContext)_localctx).treeS =  ((Array_accessContext)_localctx).e.treeS;}
+				((Array_accessContext)_localctx).response =  true; ((Array_accessContext)_localctx).dimensionS =  ((Array_accessContext)_localctx).elem_array.dimensionS; if(((Array_accessContext)_localctx).e.mipsCodeS != null){((Array_accessContext)_localctx).mipsCodeS =  ((Array_accessContext)_localctx).e.mipsCodeS;} if(isSet && _localctx.set!=null && ((Array_accessContext)_localctx).e.treeS!=null){ ((Array_accessContext)_localctx).treeS =  ((Array_accessContext)_localctx).e.treeS;}
 				}
 				break;
 			default:
@@ -2656,8 +2688,10 @@ public class LissParser extends Parser {
 	public static class Elem_arrayContext extends ParserRuleContext {
 		public IdentifiersTable idTH;
 		public Set set;
+		public String id;
 		public int dimensionS;
 		public Node treeS;
+		public String mipsCodeS;
 		public Single_expressionContext s1;
 		public Single_expressionContext single_expression;
 		public Single_expressionContext s2;
@@ -2668,10 +2702,11 @@ public class LissParser extends Parser {
 			return getRuleContext(Single_expressionContext.class,i);
 		}
 		public Elem_arrayContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public Elem_arrayContext(ParserRuleContext parent, int invokingState, IdentifiersTable idTH, Set set) {
+		public Elem_arrayContext(ParserRuleContext parent, int invokingState, IdentifiersTable idTH, Set set, String id) {
 			super(parent, invokingState);
 			this.idTH = idTH;
 			this.set = set;
+			this.id = id;
 		}
 		@Override public int getRuleIndex() { return RULE_elem_array; }
 		@Override
@@ -2684,14 +2719,19 @@ public class LissParser extends Parser {
 		}
 	}
 
-	public final Elem_arrayContext elem_array(IdentifiersTable idTH,Set set) throws RecognitionException {
-		Elem_arrayContext _localctx = new Elem_arrayContext(_ctx, getState(), idTH, set);
+	public final Elem_arrayContext elem_array(IdentifiersTable idTH,Set set,String id) throws RecognitionException {
+		Elem_arrayContext _localctx = new Elem_arrayContext(_ctx, getState(), idTH, set, id);
 		enterRule(_localctx, 66, RULE_elem_array);
 
 		                int dimension = 0;
 		                ((Elem_arrayContext)_localctx).treeS =  null;
 		                Node head = null;
 		                Node right = null;
+
+		                //((Elem_arrayContext)_localctx).mipsCodeS =  null;
+		                Array array = (Array) idTH.getInfoIdentifiersTable(id);
+		                int n = 1;
+		                System.out.println("Dimension: "+array.getDimension());
 		           
 		int _la;
 		try {
@@ -2706,6 +2746,20 @@ public class LissParser extends Parser {
 			                                            //ErrorMessage.errorSemantic((((Elem_arrayContext)_localctx).single_expression!=null?_input.getText(((Elem_arrayContext)_localctx).single_expression.start,((Elem_arrayContext)_localctx).single_expression.stop):null),((Elem_arrayContext)_localctx).single_expression.line,((Elem_arrayContext)_localctx).single_expression.pos,ErrorMessage.type(((Elem_arrayContext)_localctx).single_expression.typeS,"integer"));
 			                                            e.addMessage(((Elem_arrayContext)_localctx).single_expression.line,((Elem_arrayContext)_localctx).single_expression.pos,ErrorMessage.semantic((((Elem_arrayContext)_localctx).single_expression!=null?_input.getText(((Elem_arrayContext)_localctx).single_expression.start,((Elem_arrayContext)_localctx).single_expression.stop):null),ErrorMessage.type(((Elem_arrayContext)_localctx).single_expression.typeS,"integer")));
 			                                           }
+			                                      else{
+			                                        if(array.getDimension() == 1){
+			                                            ((Elem_arrayContext)_localctx).mipsCodeS =  ((Elem_arrayContext)_localctx).s1.mipsCodeS;
+			                                            //System.out.println(_localctx.mipsCodeS);
+			                                        }else{
+			                                            int res = 1;
+			                                            for(int i = n; i < array.getDimension(); i++){
+			                                                res = res* array.getLimits().get(i);
+			                                            }
+			                                            ((Elem_arrayContext)_localctx).mipsCodeS =  ((Elem_arrayContext)_localctx).s1.mipsCodeS + m.loadImmediateWord(String.valueOf(res),((Elem_arrayContext)_localctx).s1.line,((Elem_arrayContext)_localctx).s1.pos) + m.textMul(((Elem_arrayContext)_localctx).s1.line,((Elem_arrayContext)_localctx).s1.pos);
+			                                            //System.out.println(_localctx.mipsCodeS);
+			                                            n++;
+			                                        }
+			                                      }
 			                                      if(isSet && _localctx.set!=null && head == null){
 			                                        head = new Node(new Data("args"),((Elem_arrayContext)_localctx).s1.treeS,null);
 			                                        right = head;
@@ -2726,6 +2780,24 @@ public class LissParser extends Parser {
 				                                        if(!(((Elem_arrayContext)_localctx).single_expression.typeS == "integer")){
 				                                            //ErrorMessage.errorSemantic((((Elem_arrayContext)_localctx).single_expression!=null?_input.getText(((Elem_arrayContext)_localctx).single_expression.start,((Elem_arrayContext)_localctx).single_expression.stop):null),((Elem_arrayContext)_localctx).single_expression.line,((Elem_arrayContext)_localctx).single_expression.pos,ErrorMessage.type(((Elem_arrayContext)_localctx).single_expression.typeS,"integer"));
 				                                            e.addMessage(((Elem_arrayContext)_localctx).single_expression.line,((Elem_arrayContext)_localctx).single_expression.pos,ErrorMessage.semantic((((Elem_arrayContext)_localctx).single_expression!=null?_input.getText(((Elem_arrayContext)_localctx).single_expression.start,((Elem_arrayContext)_localctx).single_expression.stop):null),ErrorMessage.type(((Elem_arrayContext)_localctx).single_expression.typeS,"integer")));
+				                                        }else{
+				                                            if(array.getDimension() == n){
+				                                                /*if(_localctx.mipsCodeS == null){
+				                                                    ((Elem_arrayContext)_localctx).mipsCodeS =  ((Elem_arrayContext)_localctx).s2.mipsCodeS;
+				                                                }else{
+				                                                    _localctx.mipsCodeS += ((Elem_arrayContext)_localctx).s2.mipsCodeS;
+				                                                }*/
+				                                                _localctx.mipsCodeS += ((Elem_arrayContext)_localctx).s2.mipsCodeS + m.textAdd(((Elem_arrayContext)_localctx).s2.line,((Elem_arrayContext)_localctx).s2.pos);
+				                                            }else{
+				                                                int res = 1;
+				                                                for(int i = n; i < array.getDimension(); i++){
+				                                                    res = res* array.getLimits().get(i);
+				                                                }
+				                                                _localctx.mipsCodeS += ((Elem_arrayContext)_localctx).s2.mipsCodeS + m.loadImmediateWord(String.valueOf(res),((Elem_arrayContext)_localctx).s2.line,((Elem_arrayContext)_localctx).s2.pos) + m.textMul(((Elem_arrayContext)_localctx).s2.line,((Elem_arrayContext)_localctx).s2.pos) + m.textAdd(((Elem_arrayContext)_localctx).s2.line,((Elem_arrayContext)_localctx).s2.pos);
+				                                                n++;
+				                                            }
+
+
 				                                        }
 				                                        if(isSet && _localctx.set!=null){
 				                                            Node m = new Node(new Data("args"),((Elem_arrayContext)_localctx).s2.treeS,null);
@@ -2744,6 +2816,10 @@ public class LissParser extends Parser {
 			              if(isSet && _localctx.set!=null && head!=null){
 			                ((Elem_arrayContext)_localctx).treeS =  head;
 			              }
+
+			              //multiplicar por 4 no mips!
+			              _localctx.mipsCodeS += m.loadImmediateWord(String.valueOf("4"),((Elem_arrayContext)_localctx).s1.line,((Elem_arrayContext)_localctx).s1.pos) + m.textMul(((Elem_arrayContext)_localctx).s1.line,((Elem_arrayContext)_localctx).s1.pos);
+			              System.out.println(_localctx.mipsCodeS+" ****");
 			           
 			}
 		}
@@ -3187,8 +3263,9 @@ public class LissParser extends Parser {
 				                                                    if((((Single_expressionContext)_localctx).add_op!=null?_input.getText(((Single_expressionContext)_localctx).add_op.start,((Single_expressionContext)_localctx).add_op.stop):null).equals("+")){
 				                                                        ((Single_expressionContext)_localctx).mipsCodeS =  _localctx.mipsCodeS + m.textAdd(((Single_expressionContext)_localctx).add_op.line,((Single_expressionContext)_localctx).add_op.pos);
 				                                                    }
-				                                                    if((((Single_expressionContext)_localctx).add_op!=null?_input.getText(((Single_expressionContext)_localctx).add_op.start,((Single_expressionContext)_localctx).add_op.stop):null).equals("-")){
+				                                                    if((((Single_expressionContext)_localctx).add_op!=null?_input.getText(((Single_expressionContext)_localctx).add_op.start,((Single_expressionContext)_localctx).add_op.stop):null).equals("-") && _localctx.mipsCodeS != null){
 				                                                        ((Single_expressionContext)_localctx).mipsCodeS =  _localctx.mipsCodeS + m.textSub(((Single_expressionContext)_localctx).add_op.line,((Single_expressionContext)_localctx).add_op.pos);
+				                                                        //System.out.println(_localctx.mipsCodeS+" single_expression");
 				                                                    }
 				                                                }
 
@@ -3217,8 +3294,9 @@ public class LissParser extends Parser {
 				                                                        if((((Single_expressionContext)_localctx).add_op!=null?_input.getText(((Single_expressionContext)_localctx).add_op.start,((Single_expressionContext)_localctx).add_op.stop):null).equals("+")){
 				                                                            ((Single_expressionContext)_localctx).mipsCodeS =  _localctx.mipsCodeS + m.textAdd(((Single_expressionContext)_localctx).add_op.line,((Single_expressionContext)_localctx).add_op.pos);
 				                                                        }
-				                                                        if((((Single_expressionContext)_localctx).add_op!=null?_input.getText(((Single_expressionContext)_localctx).add_op.start,((Single_expressionContext)_localctx).add_op.stop):null).equals("-")){
+				                                                        if((((Single_expressionContext)_localctx).add_op!=null?_input.getText(((Single_expressionContext)_localctx).add_op.start,((Single_expressionContext)_localctx).add_op.stop):null).equals("-") && _localctx.mipsCodeS != null){
 				                                                            ((Single_expressionContext)_localctx).mipsCodeS =  _localctx.mipsCodeS + m.textSub(((Single_expressionContext)_localctx).add_op.line,((Single_expressionContext)_localctx).add_op.pos);
+				                                                            //System.out.println(_localctx.mipsCodeS+" single_expression");
 				                                                        }
 				                                                    }
 				                                                }else{
@@ -3319,7 +3397,7 @@ public class LissParser extends Parser {
 		        Node n = null;
 		        ((TermContext)_localctx).mipsCodeS =  null;
 
-		        //Tratar os erros com mais especificaçoes (queue de erros de infromaçoes)
+		        //Tratar os erros com mais especificaçoes (queue de erros de informaçoes)
 		        LinkedList<ErrorInfo> errorManagement = new LinkedList<ErrorInfo>();
 		     
 		int _la;
@@ -4106,7 +4184,7 @@ public class LissParser extends Parser {
 				{
 				setState(602); 
 				((Print_whatContext)_localctx).e = expression(idTH, tree);
-				if(!(((Print_whatContext)_localctx).e.typeS != null && ((Print_whatContext)_localctx).e.typeS.equals("set"))){e.addMessage(((Print_whatContext)_localctx).e.line,((Print_whatContext)_localctx).e.pos,ErrorMessage.semantic((((Print_whatContext)_localctx).e!=null?_input.getText(((Print_whatContext)_localctx).e.start,((Print_whatContext)_localctx).e.stop):null),ErrorMessage.type(((Print_whatContext)_localctx).e.typeS,"integer | boolean | sequence | array")));}
+				if( ((Print_whatContext)_localctx).e.typeS == null || ((Print_whatContext)_localctx).e.typeS.equals("set")){e.addMessage(((Print_whatContext)_localctx).e.line,((Print_whatContext)_localctx).e.pos,ErrorMessage.semantic((((Print_whatContext)_localctx).e!=null?_input.getText(((Print_whatContext)_localctx).e.start,((Print_whatContext)_localctx).e.stop):null),ErrorMessage.type(((Print_whatContext)_localctx).e.typeS,"integer | boolean | sequence | array")));}
 				}
 				break;
 			default:

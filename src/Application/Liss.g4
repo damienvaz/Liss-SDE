@@ -503,7 +503,21 @@ assignment [IdentifiersTable idTH]
                 System.out.println($designator.line+"Funcionou ;D");
 
                 //MIPS
-                m.addTextInstructions($designator.text,$expression.mipsCodeS,$designator.typeS,$designator.line,$designator.pos);
+                if(/*$designator.mipsCodeS != null &&*/ $expression.mipsCodeS != null){
+                    String mipsCodeS = "";
+                    if($designator.arrayS == false){
+                        mipsCodeS = $expression.mipsCodeS;
+                        mipsCodeS += m.storeWord($designator.text, $designator.line, $designator.pos);
+                        //m.addTextInstructions($designator.text,$expression.mipsCodeS,$designator.typeS,$designator.line,$designator.pos);
+                    }else if($designator.arrayS == true){
+                        mipsCodeS = $designator.mipsCodeS;
+                        mipsCodeS += $expression.mipsCodeS;
+                        mipsCodeS += m.storeWordArrayText($designator.identifierS, $designator.line, $designator.pos);
+                    }
+
+                    m.addTextInstructions(mipsCodeS);
+                }
+
               }else{
                 //ErrorMessage.errorSemanticAssignment($designator.line);
                 e.addMessage($designator.line,-1,ErrorMessage.semanticAssignment($designator.line)); //-1 => assignemen error => there is no pos.
@@ -517,14 +531,17 @@ assignment [IdentifiersTable idTH]
 /* ****** Designator ****** */
 
 designator [IdentifiersTable idTH, Set set, String side]
-            returns [String typeS, int line, int pos, Node treeS, String mipsCodeS]
+            returns [String identifierS,String typeS, int line, int pos, Node treeS, String mipsCodeS, boolean arrayS]
             @init{
                 $typeS = null;
                 $treeS = null;
                 $mipsCodeS = null;
+
             }
-           : i=identifier a=array_access[idTH, set]
+           : i=identifier a=array_access[idTH, set, $identifier.text]
            {
+                                $identifierS = $identifier.text;
+                                $arrayS = $array_access.response;
                                 $line = $identifier.line;
                                 $pos = $identifier.pos;
                                 //Pre-Condicao: é um identificador
@@ -545,6 +562,7 @@ designator [IdentifiersTable idTH, Set set, String side]
                                                 if($typeS.equals("integer")){
                                                     if($side.equals("right")){
                                                         $mipsCodeS = m.loadWord($i.text, $i.line, $i.pos);
+                                                        //System.out.println($mipsCodeS);
                                                     }
                                                 }
                                             }
@@ -594,6 +612,15 @@ designator [IdentifiersTable idTH, Set set, String side]
 
                                                     //o codigo do array todo ;D
 
+                                                    if($side.equals("right") && $a.mipsCodeS != null){
+                                                        //$mipsCodeS += m.loadWordArray($identifier.text, $identifier.line, $identifier.pos);
+                                                        $mipsCodeS = $a.mipsCodeS;
+                                                        $mipsCodeS += m.loadWordArray($identifier.text, $identifier.line, $identifier.pos);
+                                                    }else{
+                                                        $mipsCodeS = $a.mipsCodeS;
+                                                    }
+                                                    //System.out.println($a.mipsCodeS);
+
 
                                                 }else{
                                                     //ErrorMessage.errorSemantic($identifier.text,$identifier.line,$identifier.pos,ErrorMessage.createMessageDimensionArray($array_access.dimensionS,a.getDimension()));
@@ -614,19 +641,24 @@ designator [IdentifiersTable idTH, Set set, String side]
            }
            ;
 
-array_access [IdentifiersTable idTH, Set set]
-             returns [boolean response, int dimensionS, Node treeS] //response variable => if array_access exists or not
-             :                            {$response = false;}
-             | '[' e=elem_array[idTH, set] ']' {$response = true; $dimensionS = $elem_array.dimensionS; if(isSet && $set!=null && $e.treeS!=null){ $treeS = $e.treeS;}}
+array_access [IdentifiersTable idTH, Set set, String id]
+             returns [boolean response, int dimensionS, Node treeS, String mipsCodeS] //response variable => if array_access exists or not
+             :                                 {$response = false;}
+             | '[' e=elem_array[idTH, set, id] ']' {$response = true; $dimensionS = $elem_array.dimensionS; if($e.mipsCodeS != null){$mipsCodeS = $e.mipsCodeS;} if(isSet && $set!=null && $e.treeS!=null){ $treeS = $e.treeS;}}
              ;
 
-elem_array [IdentifiersTable idTH, Set set]
-           returns[int dimensionS, Node treeS]
+elem_array [IdentifiersTable idTH, Set set, String id] //id = name of the array
+           returns[int dimensionS, Node treeS, String mipsCodeS]
            @init{
                 int dimension = 0;
                 $treeS = null;
                 Node head = null;
                 Node right = null;
+
+                //$mipsCodeS = null;
+                Array array = (Array) idTH.getInfoIdentifiersTable(id);
+                int n = 1;
+                System.out.println("Dimension: "+array.getDimension());
            }
            : s1=single_expression[idTH, set]
                                     {
@@ -636,6 +668,20 @@ elem_array [IdentifiersTable idTH, Set set]
                                             //ErrorMessage.errorSemantic($single_expression.text,$single_expression.line,$single_expression.pos,ErrorMessage.type($single_expression.typeS,"integer"));
                                             e.addMessage($single_expression.line,$single_expression.pos,ErrorMessage.semantic($single_expression.text,ErrorMessage.type($single_expression.typeS,"integer")));
                                            }
+                                      else{
+                                        if(array.getDimension() == 1){
+                                            $mipsCodeS = $s1.mipsCodeS;
+                                            //System.out.println($mipsCodeS);
+                                        }else{
+                                            int res = 1;
+                                            for(int i = n; i < array.getDimension(); i++){
+                                                res = res* array.getLimits().get(i);
+                                            }
+                                            $mipsCodeS = $s1.mipsCodeS + m.loadImmediateWord(String.valueOf(res),$s1.line,$s1.pos) + m.textMul($s1.line,$s1.pos);
+                                            //System.out.println($mipsCodeS);
+                                            n++;
+                                        }
+                                      }
                                       if(isSet && $set!=null && head == null){
                                         head = new Node(new Data("args"),$s1.treeS,null);
                                         right = head;
@@ -647,6 +693,24 @@ elem_array [IdentifiersTable idTH, Set set]
                                         if(!($single_expression.typeS == "integer")){
                                             //ErrorMessage.errorSemantic($single_expression.text,$single_expression.line,$single_expression.pos,ErrorMessage.type($single_expression.typeS,"integer"));
                                             e.addMessage($single_expression.line,$single_expression.pos,ErrorMessage.semantic($single_expression.text,ErrorMessage.type($single_expression.typeS,"integer")));
+                                        }else{
+                                            if(array.getDimension() == n){
+                                                /*if($mipsCodeS == null){
+                                                    $mipsCodeS = $s2.mipsCodeS;
+                                                }else{
+                                                    $mipsCodeS += $s2.mipsCodeS;
+                                                }*/
+                                                $mipsCodeS += $s2.mipsCodeS + m.textAdd($s2.line,$s2.pos);
+                                            }else{
+                                                int res = 1;
+                                                for(int i = n; i < array.getDimension(); i++){
+                                                    res = res* array.getLimits().get(i);
+                                                }
+                                                $mipsCodeS += $s2.mipsCodeS + m.loadImmediateWord(String.valueOf(res),$s2.line,$s2.pos) + m.textMul($s2.line,$s2.pos) + m.textAdd($s2.line,$s2.pos);
+                                                n++;
+                                            }
+
+
                                         }
                                         if(isSet && $set!=null){
                                             Node m = new Node(new Data("args"),$s2.treeS,null);
@@ -660,6 +724,10 @@ elem_array [IdentifiersTable idTH, Set set]
               if(isSet && $set!=null && head!=null){
                 $treeS = head;
               }
+
+              //multiplicar por 4 no mips!
+              $mipsCodeS += m.loadImmediateWord(String.valueOf("4"),$s1.line,$s1.pos) + m.textMul($s1.line,$s1.pos);
+              System.out.println($mipsCodeS+" ****");
            }
            ;
 
@@ -792,8 +860,9 @@ single_expression [IdentifiersTable idTH, Set set]
                                                     if($add_op.text.equals("+")){
                                                         $mipsCodeS = $mipsCodeS + m.textAdd($add_op.line,$add_op.pos);
                                                     }
-                                                    if($add_op.text.equals("-")){
+                                                    if($add_op.text.equals("-") && $mipsCodeS != null){
                                                         $mipsCodeS = $mipsCodeS + m.textSub($add_op.line,$add_op.pos);
+                                                        //System.out.println($mipsCodeS+" single_expression");
                                                     }
                                                 }
 
@@ -822,8 +891,9 @@ single_expression [IdentifiersTable idTH, Set set]
                                                         if($add_op.text.equals("+")){
                                                             $mipsCodeS = $mipsCodeS + m.textAdd($add_op.line,$add_op.pos);
                                                         }
-                                                        if($add_op.text.equals("-")){
+                                                        if($add_op.text.equals("-") && $mipsCodeS != null){
                                                             $mipsCodeS = $mipsCodeS + m.textSub($add_op.line,$add_op.pos);
+                                                            //System.out.println($mipsCodeS+" single_expression");
                                                         }
                                                     }
                                                 }else{
@@ -867,7 +937,7 @@ term [IdentifiersTable idTH, Set set]
         Node n = null;
         $mipsCodeS = null;
 
-        //Tratar os erros com mais especificaçoes (queue de erros de infromaçoes)
+        //Tratar os erros com mais especificaçoes (queue de erros de informaçoes)
         LinkedList<ErrorInfo> errorManagement = new LinkedList<ErrorInfo>();
      }
      : f1=factor[idTH, set] { $line = $f1.line; $pos = $f1.pos;  errorManagement.add(new ErrorInfo($f1.text, $f1.typeS, $f1.line,$f1.pos)); if($set!=null && isSet && $f1.treeS!=null){ n = $f1.treeS; } $mipsCodeS = $f1.mipsCodeS; }
@@ -1040,7 +1110,7 @@ print_what [IdentifiersTable idTH]
               Set tree = null;
            }
            :
-           | e=expression[idTH, tree] {if(!($e.typeS != null && $e.typeS.equals("set"))){e.addMessage($e.line,$e.pos,ErrorMessage.semantic($e.text,ErrorMessage.type($e.typeS,"integer | boolean | sequence | array")));}} //conjuntos nao pode pertencer
+           | e=expression[idTH, tree] {if( $e.typeS == null || $e.typeS.equals("set")){e.addMessage($e.line,$e.pos,ErrorMessage.semantic($e.text,ErrorMessage.type($e.typeS,"integer | boolean | sequence | array")));}} //conjuntos nao pode pertencer
            ;
 
 /* ****** Read statement ****** */

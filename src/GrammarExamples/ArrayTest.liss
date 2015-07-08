@@ -39,6 +39,6 @@ statements
 	vector2 = vector1;
 	writeln(vector2);
 
-	a = length(array4);
+	//a = length(array4);
 	writeln(a);
 }
