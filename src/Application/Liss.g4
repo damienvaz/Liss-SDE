@@ -854,18 +854,19 @@ single_expression [IdentifiersTable idTH, Set set]
                                                 if(($t2.typeS != null) && $add_op.typeS.equals($t2.typeS)){
                                                     leftType = $add_op.typeS;
 
-                                                //MIPS
-                                                $mipsCodeS = $mipsCodeS + $t2.mipsCodeS;
-                                                if($add_op.typeS.equals("integer")){
-                                                    if($add_op.text.equals("+")){
-                                                        $mipsCodeS = $mipsCodeS + m.textAdd($add_op.line,$add_op.pos);
+                                                    //MIPS
+                                                    if(!isSet){
+                                                        $mipsCodeS = $mipsCodeS + $t2.mipsCodeS;
+                                                        if($add_op.typeS.equals("integer")){
+                                                            if($add_op.text.equals("+")){
+                                                                $mipsCodeS = $mipsCodeS + m.textAdd($add_op.line,$add_op.pos);
+                                                            }
+                                                            if($add_op.text.equals("-") && $mipsCodeS != null){
+                                                                $mipsCodeS = $mipsCodeS + m.textSub($add_op.line,$add_op.pos);
+                                                                //System.out.println($mipsCodeS+" single_expression");
+                                                            }
+                                                        }
                                                     }
-                                                    if($add_op.text.equals("-") && $mipsCodeS != null){
-                                                        $mipsCodeS = $mipsCodeS + m.textSub($add_op.line,$add_op.pos);
-                                                        //System.out.println($mipsCodeS+" single_expression");
-                                                    }
-                                                }
-
                                                 }else{
                                                     e.addMessage($t1.line,$t1.pos,ErrorMessage.semantic($t1.text+" "+$add_op.text+" "+$t2.text,ErrorMessage.typeExpression($t1.typeS,$add_op.text,$t2.typeS,$add_op.typeS,$add_op.typeS)+" < single_Expression 1"));
                                                     correctType = false;
@@ -886,14 +887,16 @@ single_expression [IdentifiersTable idTH, Set set]
                                                     leftType = $add_op.typeS;
 
                                                     //MIPS
-                                                    $mipsCodeS = $mipsCodeS + $t2.mipsCodeS;
-                                                    if($add_op.typeS.equals("integer")){
-                                                        if($add_op.text.equals("+")){
-                                                            $mipsCodeS = $mipsCodeS + m.textAdd($add_op.line,$add_op.pos);
-                                                        }
-                                                        if($add_op.text.equals("-") && $mipsCodeS != null){
-                                                            $mipsCodeS = $mipsCodeS + m.textSub($add_op.line,$add_op.pos);
-                                                            //System.out.println($mipsCodeS+" single_expression");
+                                                    if(!isSet){
+                                                        $mipsCodeS = $mipsCodeS + $t2.mipsCodeS;
+                                                        if($add_op.typeS.equals("integer")){
+                                                            if($add_op.text.equals("+")){
+                                                                $mipsCodeS = $mipsCodeS + m.textAdd($add_op.line,$add_op.pos);
+                                                            }
+                                                            if($add_op.text.equals("-") && $mipsCodeS != null){
+                                                                $mipsCodeS = $mipsCodeS + m.textSub($add_op.line,$add_op.pos);
+                                                                //System.out.println($mipsCodeS+" single_expression");
+                                                            }
                                                         }
                                                     }
                                                 }else{

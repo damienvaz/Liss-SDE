@@ -8,7 +8,7 @@ program test{
               [[2,2],[3]]
              ] -> array size 4,3,2;
     //set1 = { x | {x | x+10 < x-4}} -> set;
-    //set2 = { y | y+1 < y+4} -> set;
+    set2 = { y | y+1 < y+4} -> set;
   statements
     a = +2;
     d = +3*-4;
