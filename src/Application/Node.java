@@ -1,18 +1,20 @@
 package Application;
 
+/**
+ * Created by damienvaz on 7/15/15.
+ */
 public class Node {
-
-    private Data data;
+    private String data;
     private Node left;
     private Node right;
 
-    public Node(Data data){
+    public Node(String data){
         this.data = data;
         this.left = null;
         this.right = null;
     }
 
-    public Node(Data data, Node left, Node right){
+    public Node(String data, Node left, Node right){
         this.data = data;
         this.left = left;
         this.right = right;
@@ -24,9 +26,9 @@ public class Node {
         this.right = n.getRight();
     }
 
-    public Data getData() {return data;}
+    public String getData() {return data;}
 
-    public void setData(Data data) {
+    public void setData(String data) {
         this.data = data;
     }
 

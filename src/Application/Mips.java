@@ -39,7 +39,7 @@ public class Mips {
 
     public void resetRegister(){
         int i=0;
-        while(this.register[i]==true){
+        while(this.register[i]==true && (i < (this.register.length-1))){
             this.register[i]=false;
             i++;
         }
@@ -48,7 +48,7 @@ public class Mips {
     public String nextFreeRegister(){
         String res = null;
         int i = 0;
-        while(this.register[i] != false && i<this.register.length){
+        while(this.register[i] != false && i< (this.register.length-1)){
             //System.out.println("registerName["+i+"] : "+this.register[i]+" line:"+l+" pos:"+p);
             i++;
         }
@@ -64,7 +64,7 @@ public class Mips {
 
     public void freeLastRegister(){
         int i = 0;
-        while(this.register[i] != false && i<this.register.length){
+        while(this.register[i] != false && i<(this.register.length-1)){
             //System.out.println(this.register[i]);
             i++;
         }
@@ -76,7 +76,7 @@ public class Mips {
     public String[] lastTwoRegisterOccupied(){
         String res[] = new String[2];
         int i = 1;
-            while(this.register[i]==true && i<this.register.length){
+            while(this.register[i]==true && i< (this.register.length-1)){
                 i++;
             }
             res[1] = this.registerName[i-1];
@@ -87,7 +87,7 @@ public class Mips {
     public String[] lastRegisterOccupied(){
         String res[] = new String[1];
         int i = 0;
-        while(this.register[i]==true && i<this.register.length){
+        while(this.register[i]==true && i<(this.register.length-1)){
             i++;
         }
         res[0] = this.registerName[i-1];
