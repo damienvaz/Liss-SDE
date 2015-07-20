@@ -58,6 +58,14 @@ declarations
 
 statements
 
+    d = 2+4 in set4;
+
+    d = 2+4 in { y | y+1 < y+4};
+
+    d = 2+4 in (set4 ++ set2);
+
+    d = 2+4 in (2+5 in set2);
+
 	// here we can't make "8/d", because "d" is boolean type
     b = 6 + 8 && 5 + 8/d + li;
 
@@ -103,5 +111,5 @@ statements
 
     a = 2 + true + c;
 
-    d = 3 in woot;
+    //d = 3 in woot;
 }

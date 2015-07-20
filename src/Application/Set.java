@@ -4,7 +4,7 @@ package Application;
  * Created by damienvaz on 7/15/15.
  */
 public class Set {
-    private Node identifier;
+    private Node identifier; //vl
     private Node head;
 
     //Pre-Condição : Cria o conjunto de universo
