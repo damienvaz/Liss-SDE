@@ -2416,12 +2416,10 @@ public class LissParser extends Parser {
 			                    System.out.println("FIM <- assignment");
 			                    String mipsCodeS = "";
 			                    if(((AssignmentContext)_localctx).designator.arrayS == false){
-			                        System.out.println("ENTREI AQUI");
 			                        mipsCodeS = ((AssignmentContext)_localctx).expression.mipsCodeS;
 			                        mipsCodeS += m.storeWord((((AssignmentContext)_localctx).designator!=null?_input.getText(((AssignmentContext)_localctx).designator.start,((AssignmentContext)_localctx).designator.stop):null), ((AssignmentContext)_localctx).designator.line, ((AssignmentContext)_localctx).designator.pos);
 			                        //m.addTextInstructions((((AssignmentContext)_localctx).designator!=null?_input.getText(((AssignmentContext)_localctx).designator.start,((AssignmentContext)_localctx).designator.stop):null),((AssignmentContext)_localctx).expression.mipsCodeS,((AssignmentContext)_localctx).designator.typeS,((AssignmentContext)_localctx).designator.line,((AssignmentContext)_localctx).designator.pos);
 			                    }else if(((AssignmentContext)_localctx).designator.arrayS == true){
-			                        System.out.println("ENTREI AQUI 2 : "+(((AssignmentContext)_localctx).designator!=null?_input.getText(((AssignmentContext)_localctx).designator.start,((AssignmentContext)_localctx).designator.stop):null));
 			                        mipsCodeS = ((AssignmentContext)_localctx).designator.mipsCodeS;
 			                        mipsCodeS += ((AssignmentContext)_localctx).expression.mipsCodeS;
 			                        mipsCodeS += m.storeWordArrayText(((AssignmentContext)_localctx).designator.identifierS, ((AssignmentContext)_localctx).designator.line, ((AssignmentContext)_localctx).designator.pos);

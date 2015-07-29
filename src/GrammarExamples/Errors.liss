@@ -60,15 +60,15 @@ statements
 
     d = 2+4 in set4;
 
-    d = 2+4 in { y | y+1+a < y+4};
+    //d = 2+4 in { y | y+1+a < y+4};
 
-    d = 2+4 in (set4 ++ set2);
+    //d = 2+4 in (set4 ++ set2);
 
-    d = 2+4 in set4 ** set2 ++ set5;
+    //d = 2+4 in set4 ** set2 ++ set5;
 
-    d = 2+4 in set4 ++ set2 ++ set5 ++ { y | y+1 < y+4};
+    //d = 2+4 in set4 ++ set2 ++ set5 ++ { y | y+1 < y+4};
 
-    d = 2+4 in (2+5 in set2);
+    //d = 2+4 in (2+5 in set2);
 
 	// here we can't make "8/d", because "d" is boolean type
     b = 6 + 8 && 5 + 8/d + li;

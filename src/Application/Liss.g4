@@ -528,12 +528,10 @@ assignment [IdentifiersTable idTH]
                     System.out.println("FIM <- assignment");
                     String mipsCodeS = "";
                     if($designator.arrayS == false){
-                        System.out.println("ENTREI AQUI");
                         mipsCodeS = $expression.mipsCodeS;
                         mipsCodeS += m.storeWord($designator.text, $designator.line, $designator.pos);
                         //m.addTextInstructions($designator.text,$expression.mipsCodeS,$designator.typeS,$designator.line,$designator.pos);
                     }else if($designator.arrayS == true){
-                        System.out.println("ENTREI AQUI 2 : "+$designator.text);
                         mipsCodeS = $designator.mipsCodeS;
                         mipsCodeS += $expression.mipsCodeS;
                         mipsCodeS += m.storeWordArrayText($designator.identifierS, $designator.line, $designator.pos);

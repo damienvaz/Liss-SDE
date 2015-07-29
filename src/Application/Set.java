@@ -93,6 +93,7 @@ public class Set {
         String res = "" ;
 
         Node n = this.head;
+        m.resetRegister();
         res += "\t##### Initialize Set#####\n";
         res = search(res,id, m, n, line);
         res += "\t#######################################\n";
@@ -191,6 +192,10 @@ public class Set {
                     res = res + s + s1 + s2;
                 }
             }
+        }else{
+            //Means that the set is empty
+            String s = m.loadImmediateWord("0",line,0);
+            res = res + s;
         }
 
         return res;

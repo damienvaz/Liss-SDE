@@ -157,7 +157,6 @@ public class Mips {
     public String loadImmediateWord(String value,int line, int pos){
         StringBuilder s = new StringBuilder();
             String register = nextFreeRegister();
-            //System.out.println(register+" woot");
             s.append("\tli "+register+","+value+"\t\t# "+line+":"+pos+"\n");
         return s.toString();
     }
