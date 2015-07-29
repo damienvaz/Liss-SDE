@@ -60,9 +60,13 @@ statements
 
     d = 2+4 in set4;
 
-    d = 2+4 in { y | y+1 < y+4};
+    d = 2+4 in { y | y+1+a < y+4};
 
     d = 2+4 in (set4 ++ set2);
+
+    d = 2+4 in set4 ** set2 ++ set5;
+
+    d = 2+4 in set4 ++ set2 ++ set5 ++ { y | y+1 < y+4};
 
     d = 2+4 in (2+5 in set2);
 

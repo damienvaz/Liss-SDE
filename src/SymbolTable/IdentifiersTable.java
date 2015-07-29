@@ -65,6 +65,8 @@ public class IdentifiersTable {
         return this.idTable;
     }
 
+    public boolean doesExist(String id){return (this.idTable.get(id) != null)? true : false;}
+
     public InfoIdentifiersTable getInfoIdentifiersTable(String id){return this.idTable.get(id).getLast();} //Return the last element of the linkedlist
 
     public LinkedList<InfoIdentifiersTable> getListInfoIdentifiersTable(String id){return this.idTable.get(id);}

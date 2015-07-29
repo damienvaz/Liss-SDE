@@ -10,6 +10,7 @@ program test{
     //set1 = { x | {x | x+10 < x-4}} -> set;
     set2 = { y | y+1 < y+4} -> set;
   statements
+    flag = 2+4 in set2;
     a = +2;
     d = +3*-4;
     g = 2 * -3 * 4;

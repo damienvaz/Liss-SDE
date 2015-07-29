@@ -233,6 +233,81 @@ public class Mips {
         return s.toString();
     }
 
+    public String textSetOnLessThan(int line, int pos){
+        StringBuilder s = new StringBuilder();
+        String res[] = lastTwoRegisterOccupied();
+        String r0 = res[0];
+        String r1 = res[1];
+
+        freeLastRegister();
+        s.append("\tslt "+r0+", "+r0+", "+r1+"\t# " + line + ":" + pos + "\n");
+        //s.append("\tli "+register+","+value+"\t\t# "+line+":"+pos+"\n");
+
+        return s.toString();
+    }
+
+    /**
+     * Greather than is the reverse of Less than function
+     * @param line
+     * @param pos
+     * @return
+     */
+    public String textSetOnGreatThan(int line, int pos){
+        StringBuilder s = new StringBuilder();
+        String res[] = lastTwoRegisterOccupied();
+        String r0 = res[0];
+        String r1 = res[1];
+
+        freeLastRegister();
+        s.append("\tslt "+r0+", "+r1+", "+r0+"\t# " + line + ":" + pos + "\n");
+        //s.append("\tli "+register+","+value+"\t\t# "+line+":"+pos+"\n");
+
+        return s.toString();
+    }
+
+    public String textOr(int line, int pos){
+        StringBuilder s = new StringBuilder();
+        String res[] = lastTwoRegisterOccupied();
+        String r0 = res[0];
+        String r1 = res[1];
+
+        freeLastRegister();
+        s.append("\tor "+r0+", "+r0+", "+r1+"\t# " + line + ":" + pos + "\n");
+        //s.append("\tli "+register+","+value+"\t\t# "+line+":"+pos+"\n");
+
+        return s.toString();
+    }
+
+    public String textAnd(int line, int pos){
+        StringBuilder s = new StringBuilder();
+        String res[] = lastTwoRegisterOccupied();
+        String r0 = res[0];
+        String r1 = res[1];
+
+        freeLastRegister();
+        s.append("\tand "+r0+", "+r0+", "+r1+"\t# " + line + ":" + pos + "\n");
+        //s.append("\tli "+register+","+value+"\t\t# "+line+":"+pos+"\n");
+
+        return s.toString();
+    }
+
+    public String textNot(int line,int pos){
+        StringBuilder s = new StringBuilder();
+
+        String res[] = lastRegisterOccupied();
+        String r0 = res[0];
+
+        //freeLastRegister();
+
+        //process for calculating the not instruction in MIPS
+        //s.append(loadImmediateWord(r0, line, pos));
+        String t[] = lastRegisterOccupied();
+        s.append("\tsltu "+t[0]+", $zero, "+t[0]+"\t# " + line + ":" + pos +"\n");
+        s.append("\txori "+t[0]+", "+t[0]+", 1"+"\t# " + line + ":" + pos +"\n");
+
+        return s.toString();
+    }
+
     public void addDataInstructions(HashMap<String, HashMap<String,Object>> vars, String type){
 
         switch (type){

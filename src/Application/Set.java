@@ -1,33 +1,70 @@
 package Application;
 
+import SymbolTable.IdentifiersTable;
+import SymbolTable.Int;
+
+
+import java.util.ArrayList;
+
 /**
  * Created by damienvaz on 7/15/15.
  */
 public class Set {
-    private Node identifier; //vl
+    private ArrayList<Node> identifier;
     private Node head;
 
     //Pre-Condição : Cria o conjunto de universo
     public Set(){
         Node id = new Node(new String("x"),null,null);
-        this.identifier = id;
-        Node left = new Node(new String("<"),this.identifier, new Node(new String("0"),null,null));
-        Node right = new Node(new String(">="),this.identifier, new Node(new String("0"),null,null));
+        ArrayList<Node> n = new ArrayList<Node>();
+        n.add(id);
+        this.identifier = n;
+        Node left = new Node(new String("<"),this.identifier.get(0), new Node(new String("0"),null,null));
+        Node right = new Node(new String(">="),this.identifier.get(0), new Node(new String("0"),null,null));
         this.head = new Node(new String("&&"), left,right);
     }
 
     //Pre-Condicao : Cria o conjunto vazio
     public Set(String identifier){
         Node id = new Node(identifier);
-        this.identifier = id;
+        ArrayList<Node> n = new ArrayList<Node>();
+        n.add(id);
+        this.identifier = n;
         this.head = null;
     }
 
     //Pre-Condicao: Cria o conjunto dado
-    public Set(String identifier, Node h){
+    /*public Set(String identifier, Node h){
         Node id = new Node(identifier);
-        this.identifier = id;
+        ArrayList<Node> n = new ArrayList<Node>();
+        n.add(id);
+        this.identifier = n;
         this.head = h;
+    }*/
+
+    public Set(Set s1, Set s2, String operator){
+
+        Node n = new Node(operator);
+        n.setLeft(s1.getHead());
+        n.setRight(s2.getHead());
+
+        ArrayList<Node> a = new ArrayList<Node>();
+
+        for(Node n1 : s1.getIdentifier()){
+            n1.setData("x");
+            n1.setLeft(null);
+            n1.setRight(null);
+            a.add(n1);
+        }
+
+        for(Node n2 : s2.getIdentifier()){
+            n2.setData("x");
+            n2.setLeft(null);
+            n2.setRight(null);
+            a.add(n2);
+        }
+        this.identifier = a;
+        this.head = n;
     }
 
     public Node getHead() {
@@ -39,22 +76,131 @@ public class Set {
     }
 
     public void setIdentifier(Node identifier){
-        if(this.identifier!=null){
-            //this.identifier = identifier;
-            this.identifier.setData(identifier.getData());
-            this.identifier.setLeft(identifier.getLeft());
-            this.identifier.setRight(identifier.getRight());
+        if(this.identifier!=null && this.head != null){
+            for(Node n : this.identifier) {
+                n.setData(identifier.getData());
+                n.setLeft(identifier.getLeft());
+                n.setRight(identifier.getRight());
+            }
         }
     }
 
-    public Node getIdentifier(){ return this.identifier; }
+    public ArrayList<Node> getIdentifier(){ return this.identifier; }
 
     public void isntASet(){this.identifier=null;}
+
+    public String mipsCode(IdentifiersTable id, Mips m,int line){
+        String res = "" ;
+
+        Node n = this.head;
+        res += "\t##### Initialize Set#####\n";
+        res = search(res,id, m, n, line);
+        res += "\t#######################################\n";
+
+        return res;
+    }
+
+    private String search(String res, IdentifiersTable id, Mips m, Node n, int line){
+        //MIPS CODE
+        if(n != null) {
+            if (n.getData().matches("^array$")) {
+                System.out.println(n.getData());
+
+            } else if(n.getData().matches("^[0-9]+$")){
+                System.out.println(n.getData());
+                String s = m.loadImmediateWord(n.getData(), line, 0);
+                System.out.println(s);
+                res = res + s;
+            } else if(n.getData().matches("^[A-Za-z]+$")) {
+                if(id.doesExist(n.getData())){
+                   if(id.getInfoIdentifiersTable(n.getData()) instanceof Int){
+                       String s = m.loadImmediateWord(n.getData(),line,0);
+                       System.out.println(s);
+                       res = res + s;
+                   }
+                }
+            }else{
+                if (n.doesLeft()) { res = search(res, id, m, n.getLeft(), line); }
+                if (n.doesRight()) { res = search(res, id, m, n.getRight(), line); }
+
+                System.out.println(n.getData()+" WOOT");
+                if (n.getData().matches("^[+]$")) {
+                    String s = m.textAdd(line, 0);
+                    System.out.println(s);
+                    res = res + s;
+                } else if (n.getData().matches("^[-]$")) {
+                    String s = m.textSub(line, 0);
+                    System.out.println(s);
+                    res = res + s;                } else if (n.getData().matches("^[*]$")) {
+                    String s = m.textMul(line, 0);
+                    System.out.println(s);
+                    res = res + s;
+                } else if (n.getData().matches("^[/]$")) {
+                    String s = m.textDiv(line, 0);
+                    System.out.println(s);
+                    res = res + s;
+                } else if(n.getData().matches("^[<]$")){
+                    String s = m.textSetOnLessThan(line,0);
+                    System.out.println(s);
+                    res = res + s;
+                } else if (n.getData().matches("^[>]$")){
+                    String s = m.textSetOnGreatThan(line, 0);
+                    System.out.println(s);
+                    res = res + s;
+                } else if (n.getData().matches("^([+][+])|([|][|])$")){
+                    String s = m.textOr(line, 0);
+                    System.out.println(s);
+                    res = res + s;
+                } else if (n.getData().matches("^([*][*])|([&][&])$")){
+                    String s = m.textAnd(line,0);
+                    System.out.println(s);
+                    res = res + s;
+                } else if(n.getData().matches("^[!][=]$")){
+                    // != -> (< || >)
+                    String s = m.textSetOnLessThan(line,0);
+                    System.out.println(s);
+                    String s1 = m.textSetOnGreatThan(line,0);
+                    System.out.println(s1);
+                    String s2 = m.textOr(line,0);
+                    System.out.println(s2);
+                    res = res + s + s1 + s2;
+                } else if (n.getData().matches("^[<][=]$")){
+                    // <= -> !>
+                    String s = m.textSetOnGreatThan(line,0);
+                    System.out.println(s);
+                    String s1 = m.textNot(line,0);
+                    System.out.println(s1);
+                    res = res + s + s1;
+                } else if(n.getData().matches("^[>][=]$")){
+                    //>= -> !<
+                    String s = m.textSetOnLessThan(line,0);
+                    String s1 = m.textNot(line, 0);
+                    System.out.println(s);
+                    System.out.println(s1);
+                    res = res + s +s1;
+                } else if(n.getData().matches("^[=][=]$")){
+                    // == -> (!<) && (!>)
+                    String s = m.textSetOnLessThan(line, 0);
+                    s = s + m.textNot(line,0);
+                    System.out.println(s);
+                    String s1 = m.textSetOnGreatThan(line,0);
+                    s1 = s1 + m.textNot(line,0);
+                    System.out.println(s1);
+                    String s2 = m.textAnd(line,0);
+                    System.out.println(s2);
+                    res = res + s + s1 + s2;
+                }
+            }
+        }
+
+        return res;
+    }
+
 
     public String toStringSort(String type){
         StringBuilder s = new StringBuilder();
         if(this.identifier != null && this.head != null) {
-            s.append(this.identifier.toStringSort(type));
+            s.append(this.identifier.get(0).toStringSort(type));
             s.append(" | ");
             s.append(this.head.toStringSort(type));
         }
@@ -68,7 +214,7 @@ public class Set {
         }
         else if(this.identifier!=null && this.head==null) {
             s.append("{");
-            s.append(this.identifier.toStringSort("infix"));
+            s.append(this.identifier.get(0).toStringSort("infix"));
             s.append(" | ");
             s.append(" }");
         }else{
