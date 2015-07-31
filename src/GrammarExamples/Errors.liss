@@ -15,7 +15,7 @@ declarations
     set12 = { x | {x | x+10 < x-4}} -> set;
     x -> integer;
     set4 = { y | y+1 < y+4} -> set;
-    set5 = { y | y+1+array1[y,20] < y+4} -> set;
+    set5 = { y | y+1+array1[y,array1[20,y]] < a+4} -> set;
     set6 = { z | (z+tail(z)) < 5} -> set;
     set7 = { z | (z+head(tail(z))) < 5} -> set;
     set3 = { x | ((x+1<2) && (x>-5000)) || (x>1000) } -> set;
@@ -64,9 +64,9 @@ statements
 
     //d = 2+4 in (set4 ++ set2);
 
-    //d = 2+4 in set4 ** set2 ++ set5;
+    d = 2+4 in set4 ** set2 ++ set5;
 
-    //d = 2+4 in set4 ++ set2 ++ set5 ++ { y | y+1 < y+4};
+    d = 2+4 in set4 ++ set2 ++ set5 ++ { y | y+1 < y+4};
 
     //d = 2+4 in (2+5 in set2);
 

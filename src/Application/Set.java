@@ -1,5 +1,6 @@
 package Application;
 
+import SymbolTable.Array;
 import SymbolTable.IdentifiersTable;
 import SymbolTable.Int;
 
@@ -94,10 +95,10 @@ public class Set {
 
         Node n = this.head;
         m.resetRegister();
-        res += "\t##### Initialize Set#####\n";
+        res += "\t##### Initialize Set (line "+line+")#####\n";
         res = search(res,id, m, n, line);
         res += "\t#######################################\n";
-
+        //System.out.println(res);
         return res;
     }
 
@@ -107,12 +108,46 @@ public class Set {
             if (n.getData().matches("^array$")) {
                 System.out.println(n.getData());
 
+                String name = n.getLeft().getData();
+                n = n.getRight();
+                if(id.doesExist(name)) {
+                    if (id.getInfoIdentifiersTable(name) instanceof Array) {        //A confirmar
+                        Array a = (Array) id.getInfoIdentifiersTable(name);
+                        Integer dimension = a.getDimension();
+                        ArrayList<Integer> limits = a.getLimits();
+                        int i = 0;
+                        if(n != null){
+                            while (n != null) {
+                                res = search(res, id, m, n.getLeft(), line);
+                                if(i<(dimension-1)) {
+                                    int r = 1; //need to calculate the position of the array
+                                    for (int j = r; j < dimension; j++) {
+                                        r = r * limits.get(j);
+                                    }
+                                    String s = m.loadImmediateWord(String.valueOf(r),line,0);
+                                    String s1 = m.textMul(line,0);
+                                    res = res + s + s1;
+                                }
+                                if(i>0 && i<dimension){
+                                    String s = m.textAdd(line,0);
+                                    res = res + s;
+                                }
+                                n = n.getRight();
+                                i++;
+                            }
+                        }
+                        String s = m.loadImmediateWord("4",line,0);
+                        String s1 = m.textMul(line,0);
+                        String s2 = m.loadWordArray(name,line,0);
+                        res = res + s + s1 + s2;
+                    }
+                }
             } else if(n.getData().matches("^[0-9]+$")){
                 System.out.println(n.getData());
                 String s = m.loadImmediateWord(n.getData(), line, 0);
                 System.out.println(s);
                 res = res + s;
-            } else if(n.getData().matches("^[A-Za-z]+$")) {
+            } else if(n.getData().matches("^[A-Za-z0-9]+$")) {
                 if(id.doesExist(n.getData())){
                    if(id.getInfoIdentifiersTable(n.getData()) instanceof Int){
                        String s = m.loadImmediateWord(n.getData(),line,0);

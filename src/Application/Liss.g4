@@ -726,11 +726,6 @@ elem_array [IdentifiersTable idTH, Set set, String id] //id = name of the array
                                         }else{
                                             if(!isSet){
                                                 if(array.getDimension() == n){
-                                                    /*if($mipsCodeS == null){
-                                                        $mipsCodeS = $s2.mipsCodeS;
-                                                    }else{
-                                                        $mipsCodeS += $s2.mipsCodeS;
-                                                    }*/
                                                     $mipsCodeS += $s2.mipsCodeS + m.textAdd($s2.line,$s2.pos);
                                                 }else{
                                                     int res = 1;
@@ -817,6 +812,28 @@ expression [IdentifiersTable idTH, Set set]
                         if(($s1.typeS != null) && $s1.typeS.equals($rel_op.typeS)){
                             if(($s2.typeS !=null) && $rel_op.typeS.equals($s2.typeS)){
                                 $typeS = "boolean";
+                                //MIPS
+                                    if($rel_op.typeS.equals("integer") && !isDeclarations && !isSet){
+                                        $mipsCodeS = $mipsCodeS + $s2.mipsCodeS;
+                                        if($rel_op.text.equals("==")){
+                                            $mipsCodeS = $mipsCodeS + m.textSetOnLessThan($rel_op.line,$rel_op.pos) + m.textNot($rel_op.line,$rel_op.pos);
+                                            $mipsCodeS = $mipsCodeS + m.textSetOnGreatThan($rel_op.line,$rel_op.pos) + m.textNot($rel_op.line,$rel_op.pos);
+                                            $mipsCodeS = $mipsCodeS + m.textAnd($rel_op.line,$rel_op.pos);
+                                        }else if($rel_op.text.equals("!=")){
+                                            $mipsCodeS = $mipsCodeS + m.textSetOnLessThan($rel_op.line,$rel_op.pos);
+                                            $mipsCodeS = $mipsCodeS + m.textSetOnGreatThan($rel_op.line,$rel_op.pos);
+                                            $mipsCodeS = $mipsCodeS + m.textOr($rel_op.line,$rel_op.pos);
+                                        }else if($rel_op.text.equals(">=")){
+                                            $mipsCodeS = $mipsCodeS + m.textSetOnLessThan($rel_op.line,$rel_op.pos) + m.textNot($rel_op.line,$rel_op.pos);
+                                        }else if($rel_op.text.equals("<=")){
+                                            $mipsCodeS = $mipsCodeS + m.textSetOnGreatThan($rel_op.line,$rel_op.pos) + m.textNot($rel_op.line,$rel_op.pos);
+                                        }else if($rel_op.text.equals("<")){
+                                            $mipsCodeS = $mipsCodeS + m.textSetOnLessThan($rel_op.line,$rel_op.pos);
+                                        }else if($rel_op.text.equals(">")){
+                                            $mipsCodeS = $mipsCodeS + m.textSetOnGreatThan($rel_op.line,$rel_op.pos);
+                                        }
+                                    }
+                                //END_MIPS
                             }else{
                                 correctType = false;
                             }
