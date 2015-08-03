@@ -293,16 +293,81 @@ public class Mips {
     public String textNot(int line,int pos){
         StringBuilder s = new StringBuilder();
 
-        String res[] = lastRegisterOccupied();
-        String r0 = res[0];
+        //String res[] = lastRegisterOccupied();
+        //String r0 = res[0];
 
         //freeLastRegister();
 
         //process for calculating the not instruction in MIPS
         //s.append(loadImmediateWord(r0, line, pos));
         String t[] = lastRegisterOccupied();
-        s.append("\tsltu "+t[0]+", $zero, "+t[0]+"\t# " + line + ":" + pos +"\n");
+        s.append("\tsltu " + t[0] + ", $zero, " + t[0] + "\t# " + line + ":" + pos + "\n");
         s.append("\txori "+t[0]+", "+t[0]+", 1"+"\t# " + line + ":" + pos +"\n");
+
+        return s.toString();
+    }
+
+    public String textEquals(int line, int pos){
+        StringBuilder s = new StringBuilder();
+
+        String res[] = lastTwoRegisterOccupied();
+        String r0 = res[0];
+        String r1 = res[1];
+
+
+        //need to test < and then !
+        String res2 = nextFreeRegister();
+        s.append("\tslt "+res2+", "+r0+", "+r1+"\t# " + line + ":" + pos + "\n");
+        s.append(textNot(line,pos));
+        //need to test > and then !
+        String res3 = nextFreeRegister();
+        s.append("\tslt "+res3+", "+r1+", "+r0+"\t# " + line + ":" + pos + "\n");
+        s.append(textNot(line,pos));
+        //finally we must finish by testing and instruction
+        s.append(textMove(res2,r0,line,0));
+        s.append(textMove(res3,r1,line,0));
+        //s.append("\tmove "+res2+", "+r0+"\t\t# " + line + ":" + pos + "\n");
+        //s.append("\tmove "+res3+", "+r1+"\t\t# " + line + ":" + pos + "\n");
+        //free last two registers
+        freeLastRegister();
+        freeLastRegister();
+        s.append(textAnd(line,pos));
+
+        return s.toString();
+    }
+
+    public String textMove(String r1, String r2, int line, int pos){
+        StringBuilder s = new StringBuilder();
+        s.append("\tmove "+r2+", "+r1+"\t\t# " + line + ":" + pos + "\n");
+        return s.toString();
+    }
+
+    public String textDifferent(int line, int pos){
+        StringBuilder s = new StringBuilder();
+
+        String res[] = lastTwoRegisterOccupied();
+        String r0 = res[0];
+        String r1 = res[1];
+
+
+        //need to test < and then !
+        String res2 = nextFreeRegister();
+        s.append("\tslt "+res2+", "+r0+", "+r1+"\t# " + line + ":" + pos + "\n");
+
+        //need to test > and then !
+
+        String res3 = nextFreeRegister();
+        s.append("\tslt "+res3+", "+r1+", "+r0+"\t# " + line + ":" + pos + "\n");
+
+        //finally we must finish by testing and instruction
+        s.append(textMove(res2,r0,line,0));
+        s.append(textMove(res3,r1,line,0));
+        //s.append("\tmove "+res2+", "+r0+"\t# " + line + ":" + pos + "\n");
+        //s.append("\tmove "+res3+", "+r1+"\t# " + line + ":" + pos + "\n");
+        //free last two registers
+        freeLastRegister();
+        freeLastRegister();
+        s.append(textOr(line, pos));
 
         return s.toString();
     }
@@ -363,14 +428,6 @@ public class Mips {
     //public void addTextInstructions(String name, String instruction, String type, int line, int pos){
     public void addTextInstructions(String instruction){
         addTextInstruction(instruction);
-        /*switch (type){
-            case "integer":
-                addTextInstruction(instruction);
-                //addTextInstruction(storeWord(name, line, pos));
-                break;
-            default:
-                break;
-        }*/
     }
 
 

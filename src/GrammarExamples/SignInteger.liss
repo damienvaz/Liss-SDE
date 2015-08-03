@@ -9,8 +9,27 @@ program test{
              ] -> array size 4,3,2;
     //set1 = { x | {x | x+10 < x-4}} -> set;
     set2 = { y | y+1 < y+4} -> set;
+    set5 = { y | y+1+array1[y] < a+4} -> set;
+    set6 = { y | y+1+array1[y+array2[y,a,20]] < a+4} -> set;
+    set7 = { y | y+1+array1[y+array2[y,a,20]] == a+4} -> set;
+    set8 = { y | y+1+array1[y+array2[y,a,20]] != a+4} -> set;
   statements
+    flag = 1 == 1;
+    flag = 1 != 1;
+    array1[2+4] = 2;
+    array2[0,0,0] = 10;
     flag = 2+4 in set2;
+    flag = 2+4 in set5;
+    flag = 2+4 in set6;
+    flag = 2+4 in set7;
+    flag = 2+4 in set8;
+    flag = 2+4+5 in set2 ++ set5;
+    flag = 2+3 < 4+5;
+    flag = 2+3 > 4+5;
+    flag = 2+3 == 4+5;
+    flag = 2+3 != 4+5;
+    flag = 2+3 <= 4+5;
+    flag = 2+3 >= 4+5;
     a = +2;
     d = +3*-4;
     g = 2 * -3 * 4;

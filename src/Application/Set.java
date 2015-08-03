@@ -121,7 +121,7 @@ public class Set {
                                 res = search(res, id, m, n.getLeft(), line);
                                 if(i<(dimension-1)) {
                                     int r = 1; //need to calculate the position of the array
-                                    for (int j = r; j < dimension; j++) {
+                                    for (int j = i + 1; j < dimension; j++) {
                                         r = r * limits.get(j);
                                     }
                                     String s = m.loadImmediateWord(String.valueOf(r),line,0);
@@ -150,7 +150,7 @@ public class Set {
             } else if(n.getData().matches("^[A-Za-z0-9]+$")) {
                 if(id.doesExist(n.getData())){
                    if(id.getInfoIdentifiersTable(n.getData()) instanceof Int){
-                       String s = m.loadImmediateWord(n.getData(),line,0);
+                       String s = m.loadWord(n.getData(), line, 0);
                        System.out.println(s);
                        res = res + s;
                    }
@@ -193,13 +193,14 @@ public class Set {
                     res = res + s;
                 } else if(n.getData().matches("^[!][=]$")){
                     // != -> (< || >)
-                    String s = m.textSetOnLessThan(line,0);
+                    /*String s = m.textSetOnLessThan(line,0);
                     System.out.println(s);
                     String s1 = m.textSetOnGreatThan(line,0);
                     System.out.println(s1);
                     String s2 = m.textOr(line,0);
-                    System.out.println(s2);
-                    res = res + s + s1 + s2;
+                    System.out.println(s2);*/
+                    String s = m.textDifferent(line,0);
+                    res = res + s ;
                 } else if (n.getData().matches("^[<][=]$")){
                     // <= -> !>
                     String s = m.textSetOnGreatThan(line,0);
@@ -216,15 +217,16 @@ public class Set {
                     res = res + s +s1;
                 } else if(n.getData().matches("^[=][=]$")){
                     // == -> (!<) && (!>)
-                    String s = m.textSetOnLessThan(line, 0);
+                    /*String s = m.textSetOnLessThan(line, 0);
                     s = s + m.textNot(line,0);
                     System.out.println(s);
                     String s1 = m.textSetOnGreatThan(line,0);
                     s1 = s1 + m.textNot(line,0);
                     System.out.println(s1);
                     String s2 = m.textAnd(line,0);
-                    System.out.println(s2);
-                    res = res + s + s1 + s2;
+                    System.out.println(s2);*/
+                    String s = m.textEquals(line,0);
+                    res = res + s;
                 }
             }
         }else{

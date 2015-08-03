@@ -816,20 +816,26 @@ expression [IdentifiersTable idTH, Set set]
                                     if($rel_op.typeS.equals("integer") && !isDeclarations && !isSet){
                                         $mipsCodeS = $mipsCodeS + $s2.mipsCodeS;
                                         if($rel_op.text.equals("==")){
-                                            $mipsCodeS = $mipsCodeS + m.textSetOnLessThan($rel_op.line,$rel_op.pos) + m.textNot($rel_op.line,$rel_op.pos);
-                                            $mipsCodeS = $mipsCodeS + m.textSetOnGreatThan($rel_op.line,$rel_op.pos) + m.textNot($rel_op.line,$rel_op.pos);
-                                            $mipsCodeS = $mipsCodeS + m.textAnd($rel_op.line,$rel_op.pos);
+                                            $mipsCodeS = $mipsCodeS + m.textEquals($rel_op.line,$rel_op.pos);
+                                            //$mipsCodeS = $mipsCodeS + m.textSetOnLessThan($rel_op.line,$rel_op.pos) + m.textNot($rel_op.line,$rel_op.pos);
+                                            //$mipsCodeS = $mipsCodeS + m.textSetOnGreatThan($rel_op.line,$rel_op.pos) + m.textNot($rel_op.line,$rel_op.pos);
+                                            //$mipsCodeS = $mipsCodeS + m.textAnd($rel_op.line,$rel_op.pos);
                                         }else if($rel_op.text.equals("!=")){
-                                            $mipsCodeS = $mipsCodeS + m.textSetOnLessThan($rel_op.line,$rel_op.pos);
-                                            $mipsCodeS = $mipsCodeS + m.textSetOnGreatThan($rel_op.line,$rel_op.pos);
-                                            $mipsCodeS = $mipsCodeS + m.textOr($rel_op.line,$rel_op.pos);
+                                            $mipsCodeS = $mipsCodeS + m.textDifferent($rel_op.line,$rel_op.pos);
+                                            //$mipsCodeS = $mipsCodeS + m.textSetOnLessThan($rel_op.line,$rel_op.pos);
+                                            //$mipsCodeS = $mipsCodeS + m.textSetOnGreatThan($rel_op.line,$rel_op.pos);
+                                            //$mipsCodeS = $mipsCodeS + m.textOr($rel_op.line,$rel_op.pos);
                                         }else if($rel_op.text.equals(">=")){
+                                            //$mipsCodeS = $mipsCodeS + $s2.mipsCodeS;
                                             $mipsCodeS = $mipsCodeS + m.textSetOnLessThan($rel_op.line,$rel_op.pos) + m.textNot($rel_op.line,$rel_op.pos);
                                         }else if($rel_op.text.equals("<=")){
+                                            //$mipsCodeS = $mipsCodeS + $s2.mipsCodeS;
                                             $mipsCodeS = $mipsCodeS + m.textSetOnGreatThan($rel_op.line,$rel_op.pos) + m.textNot($rel_op.line,$rel_op.pos);
                                         }else if($rel_op.text.equals("<")){
+                                            //$mipsCodeS = $mipsCodeS + $s2.mipsCodeS;
                                             $mipsCodeS = $mipsCodeS + m.textSetOnLessThan($rel_op.line,$rel_op.pos);
                                         }else if($rel_op.text.equals(">")){
+                                            //$mipsCodeS = $mipsCodeS + $s2.mipsCodeS;
                                             $mipsCodeS = $mipsCodeS + m.textSetOnGreatThan($rel_op.line,$rel_op.pos);
                                         }
                                     }
