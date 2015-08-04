@@ -99,6 +99,14 @@ public class Mips {
         this.data +="\t"+name+" : "+instruction;
     }
 
+    /*public void addFunctionInstruction(String name, String instruction){
+        this.text += "  "+name+": \n"+instruction;
+    }*/
+
+    public void addLineInstruction(String name, String instruction){
+        this.text += "  "+name+": \n"+instruction;
+    }
+
     public void addTextInstruction(String instruction){
         this.text += instruction;
     }
@@ -273,6 +281,43 @@ public class Mips {
         freeLastRegister();
         s.append("\tor "+r0+", "+r0+", "+r1+"\t# " + line + ":" + pos + "\n");
         //s.append("\tli "+register+","+value+"\t\t# "+line+":"+pos+"\n");
+
+        return s.toString();
+    }
+
+    public String textLimitsArray(int limit,int line, int pos){
+        StringBuilder s = new StringBuilder();
+
+        s.append("\t####Verify limits of the array####\n");
+        s.append(loadImmediateWord("0",line,pos));
+        String res[] = lastTwoRegisterOccupied();
+        String r0 = res[0];
+        String r1 = res[1];
+        String free = nextFreeRegister();
+
+        //Test if the memory is greater than zero
+        s.append("\tslt "+free+", "+r0+", "+r1+"\t# " + line + ":" + pos + "\n");
+        s.append(textNot(line,pos));
+        s.append("\tbeqz " + free + ", line" + (line + 1) + "\t# " + line + ":" + pos + "\n");
+
+        freeLastRegister();
+        freeLastRegister();
+
+        //Test if the memory is behind the limit.
+        s.append(loadImmediateWord(String.valueOf(limit),line,pos));
+        res = lastTwoRegisterOccupied();
+        r0 = res[0];
+        r1 = res[1];
+        free = nextFreeRegister();
+        s.append("\tslt "+free+", "+r0+", "+r1+"\t# " + line + ":" + pos + "\n");
+        // We cannot apply not instruction for the maximum limit due to [0,...,n-1] = n elements and the nth elements is the prohibited position !
+        // s.append(textNot(line,pos));
+        s.append("\tbeqz "+free+", line"+(line+1)+"\t# " + line + ":" + pos + "\n");
+
+        s.append("\t####End of the verification####\n");
+
+        freeLastRegister();
+        freeLastRegister();
 
         return s.toString();
     }

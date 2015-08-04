@@ -32,7 +32,7 @@ liss [IdentifiersTable idTH]
 body[IdentifiersTable idTH]
      : '{'
        'declarations' {isDeclarations = true;} declarations[idTH]
-       'statements'   {isDeclarations = false;} statements[idTH]
+       'statements'   {isDeclarations = false;} s=statements[idTH] {m.addLineInstruction("line"+($s.line+1),"");}
        '}'
      ;
 
@@ -65,23 +65,43 @@ variable_declaration [IdentifiersTable idTH]
                                             int value = array.get(array.size()-1);
                                             array.remove(array.size()-1);
 
-                                            mipsCodeS = m.loadImmediateWord(String.valueOf(value), (int)varsH.get(i).get("line"), (int)varsH.get(i).get("pos")); //generate mips code for value of the array
                                             //System.out.println(mipsCodeS);
 
                                             int res = 0;
+                                            System.out.println("WOOOOOOOOOOOOOT BEGIN \n");
                                             for(int j=0; j< array.size(); j++){
-                                                //System.out.print(array.get(j).toString()+" ");
+                                                System.out.print(array.get(j).toString()+" <- QUE È ISSO ? ");
                                                 int calc = array.get(j);
-                                                for(int h=j+1; h< array.size(); h++){
-                                                    calc = calc*$type.arrayDimension.get(h);
+                                                //Verify if the position of the value for setting the array is in the limits of the array !!!
+                                                if(calc < $type.arrayDimension.get(j)){
+                                                    for(int h=j+1; h< array.size(); h++){
+                                                        calc = calc*$type.arrayDimension.get(h);
+                                                    }
+                                                    res = res + calc;
+                                                }else{
+                                                    e.addMessage((int)varsH.get(i).get("line"),(int)varsH.get(i).get("pos"),ErrorMessage.semantic($vars.text,ErrorMessage.LimitsArray));
                                                 }
-                                                res = res + calc;
                                             }
-                                            res = res*4;
-                                            //System.out.println(res+" woot2");
-                                            mipsCodeS = mipsCodeS + m.loadImmediateWord(String.valueOf(res), (int)varsH.get(i).get("line"), (int)varsH.get(i).get("pos"));//generate mips code for position of the array
-                                            mipsCodeS = mipsCodeS + m.storeWordArray(i,(int)varsH.get(i).get("line"), (int)varsH.get(i).get("pos"));
-                                            m.addTextInstruction(mipsCodeS);
+                                            System.out.println("WOOOOOOOOOOOOOT END \n");
+
+                                            //we need to see if the res is in the max limit of the array
+                                            /*int limitMaxArray = 1;
+                                            for(Integer i : $type.arrayDimension){
+                                                limitMaxArray = limitMaxArray * i;
+                                            }
+                                            */
+
+                                            //if( res >= 0 && res < limitMaxArray){
+                                                res = res*4;
+                                                //Add the value of the array firstly
+                                                mipsCodeS = m.loadImmediateWord(String.valueOf(value), (int)varsH.get(i).get("line"), (int)varsH.get(i).get("pos")); //generate mips code for value of the array
+                                                //Add the address of the value of the array
+                                                mipsCodeS = mipsCodeS + m.loadImmediateWord(String.valueOf(res), (int)varsH.get(i).get("line"), (int)varsH.get(i).get("pos"));//generate mips code for position of the array
+                                                //Function for adding the value and the addres of the value to the given array
+                                                mipsCodeS = mipsCodeS + m.storeWordArray(i,(int)varsH.get(i).get("line"), (int)varsH.get(i).get("pos"));
+                                                //Add the instruction to the assembly
+                                                m.addTextInstruction(mipsCodeS);
+                                            //}
                                         }
                                         m.addTextInstruction("\t#######################################\n");
                                         varsH.get(i).put("mips",mipsCodeS);
@@ -488,14 +508,16 @@ returnSubPrg [IdentifiersTable idTH]
 /* ****** Statements ****** */
 
 statements [IdentifiersTable idTH]
-            : statement[idTH]* {m.resetRegister();}
+           returns [int line, int pos]
+            : s=statement[idTH]* {m.resetRegister(); $line = $s.line; $pos = $s.pos;}
             ;
 
 statement [IdentifiersTable idTH]
+          returns [int line, int pos]
           @init{
             Set set = null;
           }
-          : assignment[idTH] ';'
+          : a=assignment[idTH] ';' {$line=$a.line; $pos=$a.pos;}
           | write_statement[idTH] ';'
           | read_statement[idTH] ';'
           | conditional_statement[idTH]
@@ -509,14 +531,16 @@ statement [IdentifiersTable idTH]
 /* ****** Assignment ****** */
 
 assignment [IdentifiersTable idTH]
-           returns [String typeS]
+           returns [String typeS,int line, int pos]
            @init{
                 $typeS = null;
                 Set set = null;
                 String side = "left";
            }
-           : designator[idTH, set, side] '=' expression[idTH,set]
+           : designator[idTH, set, side] r='=' expression[idTH,set]
            {
+              $line = $r.line;
+              $pos = $r.pos;
               if(($designator.typeS != null && $expression.typeS != null) && $designator.typeS.equals($expression.typeS)){
                 $typeS = $designator.typeS;
                 System.out.println($designator.line+"Funcionou ;D");
@@ -537,7 +561,8 @@ assignment [IdentifiersTable idTH]
                         mipsCodeS += m.storeWordArrayText($designator.identifierS, $designator.line, $designator.pos);
                     }
 
-                    m.addTextInstructions(mipsCodeS);
+                    //m.addTextInstructions(mipsCodeS);
+                    m.addLineInstruction("line"+$r.line,mipsCodeS);
                 }
 
               }else{
@@ -671,8 +696,8 @@ designator [IdentifiersTable idTH, Set set, String side]
 array_access [IdentifiersTable idTH, Set set, String id]
              returns [boolean response, int dimensionS, Node treeS, String mipsCodeS] //response variable => if array_access exists or not
              :                                     {$response = false;}
-             | '[' e=elem_array[idTH, set, id] ']' {$response = true; $dimensionS = $elem_array.dimensionS; $treeS = $e.treeS; if($e.mipsCodeS != null){$mipsCodeS = $e.mipsCodeS;} /*if(isSet && $set!=null && $e.treeS!=null){ $treeS = $e.treeS;}*/}
-             ;
+             | '[' e=elem_array[idTH, set, id] ']' {$response = true; $dimensionS = $elem_array.dimensionS; $treeS = $e.treeS; if($e.mipsCodeS != null){$mipsCodeS = $e.mipsCodeS;}}
+                           ;
 
 elem_array [IdentifiersTable idTH, Set set, String id] //id = name of the array
            returns[int dimensionS, Node treeS, String mipsCodeS]
@@ -699,7 +724,6 @@ elem_array [IdentifiersTable idTH, Set set, String id] //id = name of the array
                                         if(!isSet){
                                             if(array.getDimension() == 1){
                                                 $mipsCodeS = $s1.mipsCodeS;
-                                                //System.out.println($mipsCodeS);
                                             }else{
                                                 int res = 1;
                                                 for(int i = n; i < array.getDimension(); i++){
@@ -754,10 +778,17 @@ elem_array [IdentifiersTable idTH, Set set, String id] //id = name of the array
                 $treeS = head;
               }
 
-              //multiplicar por 4 no mips!
+              //gerar o codigo asssembly mips
               if(!isSet){
+                  //Verificar os limites dos arrays se estao na zona do array
+                  int res = 1;
+                  for(int i = 0; i < array.getDimension(); i++){
+                    res = res* array.getLimits().get(i);
+                  }
+                  $mipsCodeS += m.textLimitsArray(res,$s1.line,$s1.pos);
+                  //caso estiver tudo correcto multiplicar o array por 4
                   $mipsCodeS += m.loadImmediateWord(String.valueOf("4"),$s1.line,$s1.pos) + m.textMul($s1.line,$s1.pos);
-                  //System.out.println($mipsCodeS+" ****");
+
               }
            }
            ;

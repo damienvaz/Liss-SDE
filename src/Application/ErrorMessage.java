@@ -13,6 +13,7 @@ public class ErrorMessage {
     public static final String Declarations = "already exists.";
     public static final String Statements = "isn't declared.";
     public static final String ArrayType = "must be an 'array'.";
+    public static final String LimitsArray = "has a problem with his limits.";
 
     public static String semantic(String var, String message){
         return new String("Expression '"+var.toString()+"' "+message.toString());
