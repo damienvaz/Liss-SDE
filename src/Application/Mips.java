@@ -99,6 +99,8 @@ public class Mips {
         this.data +="\t"+name+" : "+instruction;
     }
 
+    public void addDataInstruction(String instruction){ this.data += instruction;}
+
     /*public void addFunctionInstruction(String name, String instruction){
         this.text += "  "+name+": \n"+instruction;
     }*/
@@ -187,6 +189,18 @@ public class Mips {
             }
         return s.toString();
     }
+
+    public String dataTextOriginal(){
+        StringBuilder s = new StringBuilder();
+
+        s.append("\tindexoutofbound: .asciiz \"Index out of bound. \" \n");
+        s.append("\tline: .asciiz \"line: \" \n");
+        s.append("\tnewline: .asciiz \"\\n\" \n");
+
+        return s.toString();
+    }
+
+
 
     public String textMul(int line, int pos){
         StringBuilder s = new StringBuilder();
@@ -297,8 +311,11 @@ public class Mips {
 
         //Test if the memory is greater than zero
         s.append("\tslt "+free+", "+r0+", "+r1+"\t# " + line + ":" + pos + "\n");
-        s.append(textNot(line,pos));
-        s.append("\tbeqz " + free + ", line" + (line + 1) + "\t# " + line + ":" + pos + "\n");
+        s.append(textNot(line, pos));
+        //s.append("\tbeqz " + free + ", line"+line+"indexoutofbound\t# " + line + ":" + pos + "\n");
+        s.append("\tla $a3, line"+(line+1)+"\t# "+ line + ":" + pos + "\n");
+        s.append("\tli $s0, "+line+"\t# "+ line + ":" + pos + "\n");
+        s.append("\tbeqz " + free + ", indexoutofboundError\t# " + line + ":" + pos + "\n");
 
         freeLastRegister();
         freeLastRegister();
@@ -312,12 +329,47 @@ public class Mips {
         s.append("\tslt "+free+", "+r0+", "+r1+"\t# " + line + ":" + pos + "\n");
         // We cannot apply not instruction for the maximum limit due to [0,...,n-1] = n elements and the nth elements is the prohibited position !
         // s.append(textNot(line,pos));
-        s.append("\tbeqz "+free+", line"+(line+1)+"\t# " + line + ":" + pos + "\n");
+        //s.append("\tbeqz "+free+", line"+line+"indexoutofbound\t# " + line + ":" + pos + "\n");
+        s.append("\tla $a3, line"+(line+1)+"\t# "+ line + ":" + pos + "\n");
+        s.append("\tli $s0, "+line+"\t# "+ line + ":" + pos + "\n");
+        s.append("\tbeqz "+free+", indexoutofboundError\t# " + line + ":" + pos + "\n");
+
+
+        //s.append("\tla $a3, line"+(line+1)+"\t# "+ line + ":" + pos + "\n");
+        //s.append("\tbeqz "+free+", indexoutofboundError\t# " + line + ":" + pos + "\n");
 
         s.append("\t####End of the verification####\n");
 
         freeLastRegister();
         freeLastRegister();
+
+        return s.toString();
+    }
+
+    public String indexOutOfBoundError(int line){
+        StringBuilder s = new StringBuilder();
+
+        //s.append("indexoutofboundError: \n");
+        s.append("\tli $v0, 4\n");
+        s.append("\tla $a0, indexoutofbound\n");
+        s.append("\tsyscall\n");
+        s.append("\tla $a0, line\n");
+        s.append("\tsyscall\n");
+        s.append("\tli $v0, 1\n");
+        s.append("\tmove $a0, $s0\n");
+        s.append("\tsyscall\n");
+        s.append("\tli $v0, 4\n");
+        s.append("\tla $a0, newline\n");
+        s.append("\tsyscall\n");
+        s.append("\tjr $a3\n");
+
+        return s.toString();
+    }
+
+    public String exitProgram(int line){
+        StringBuilder s = new StringBuilder();
+        s.append("\tli $v0, 10\n");
+        s.append("\tsyscall\n");
 
         return s.toString();
     }

@@ -136,10 +136,16 @@ public class Set {
                                 i++;
                             }
                         }
-                        String s = m.loadImmediateWord("4",line,0);
-                        String s1 = m.textMul(line,0);
-                        String s2 = m.loadWordArray(name,line,0);
-                        res = res + s + s1 + s2;
+
+                        int l=1;
+                        for(Integer p : limits){
+                            l = l*p;
+                        }
+                        String s = m.textLimitsArray(l,line,0);
+                        String s1 = m.loadImmediateWord("4",line,0);
+                        String s2 = m.textMul(line,0);
+                        String s3 = m.loadWordArray(name,line,0);
+                        res = res + s + s1 + s2 + s3;
                     }
                 }
             } else if(n.getData().matches("^[0-9]+$")){

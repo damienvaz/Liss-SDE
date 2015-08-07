@@ -32,7 +32,7 @@ liss [IdentifiersTable idTH]
 body[IdentifiersTable idTH]
      : '{'
        'declarations' {isDeclarations = true;} declarations[idTH]
-       'statements'   {isDeclarations = false;} s=statements[idTH] {m.addLineInstruction("line"+($s.line+1),"");}
+       'statements'   {isDeclarations = false;} s=statements[idTH] {m.addLineInstruction("line"+($s.line+1),m.exitProgram($s.line)); m.addLineInstruction("indexoutofboundError",m.indexOutOfBoundError($s.line));}
        '}'
      ;
 
@@ -43,7 +43,7 @@ declarations[IdentifiersTable idTH]
              ;
 
 declaration [IdentifiersTable idTH]
-            : variable_declaration[idTH]* subprogram_definition[idTH]*
+            : variable_declaration[idTH]* subprogram_definition[idTH]* { m.addDataInstruction(m.dataTextOriginal());}
             ;
 
 /* ****** Variables ****** */
