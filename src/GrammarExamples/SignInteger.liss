@@ -4,8 +4,20 @@ program test{
     flag = true -> boolean;
     array1 = [2,1,1] -> array size 3;
     array2 = [
-              [[1],[5,2]],
-              [[2,2],[3]]
+              [
+                [1],
+                [5,2]
+              ],
+              [
+                [2,2],
+                [3]
+              ],
+              [
+                [10]
+              ],
+              [
+                [20]
+              ]
              ] -> array size 4,3,2;
     //set1 = { x | {x | x+10 < x-4}} -> set;
     set2 = { y | y+1 < y+4} -> set;
@@ -14,25 +26,25 @@ program test{
     set7 = { y | y+1+array1[y+array2[y,a,20]] == a+4} -> set;
     set8 = { y | y+1+array1[y+array2[y,a,20]] != a+4} -> set;
   statements
-    //flag = 1 == 1;
-    //flag = 1 != 1;
-    array1[-1] = 6;
+    flag = 1 == 1;
+    flag = 1 != 1;
+    //array1[-1] = 6;     //index out of bound
     array1[0] = 3;
     array1[2] = 4;
-    array1[3] = 5;
+    //array1[3] = 5;      //index out of bound
     array2[0,0,0] = 10;
-    array2[4,0,0] = 10;
+    //array2[4,0,0] = 10; //index out of bound
     array2[3,0,0] = 10;
-    array2[3,3,0] = 10;
+    //array2[3,3,0] = 10; //index out of bound
     array2[3,2,0] = 10;
-    array2[3,2,2] = 10;
+    //array2[3,2,2] = 10; //index out of bound
     array2[3,2,1] = 10;
     flag = 2+4 in set2;
-    flag = 2+4 in set5; //index out of bound
-    flag = 1 in set6;
-    flag = 2+4 in set7;
-    flag = 2+4 in set8;
-    flag = 2+4+5 in set2 ++ set5;
+    //flag = 2+4 in set5; //index out of bound
+    //flag = 1 in set6;   //index out of bound
+    //flag = 2+4 in set7; //index out of bound
+    //flag = 2+4 in set8; //index out of bound
+    //flag = 2+4+5 in set2 ++ set5; //index out of bound
     flag = 2+3 < 4+5;
     flag = 2+3 > 4+5;
     flag = 2+3 == 4+5;
@@ -47,9 +59,9 @@ program test{
     e = -2-b;
     f = -2 - +3;
     d = c;
-    a = array2[array2[0,0,0],1,array1[3]];
+    //a = array2[array2[0,0,0],1,array1[3]]; //index out of bound
     a = array1[1];
     array1[2] = array1[0];
-    array1[1+1] = array1[a*3]+d*g;
+    //array1[1+1] = array1[a*3]+d*g; //index out of bound
     array2[1,2,0] = array2[0,1,1];
 }

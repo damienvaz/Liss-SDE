@@ -32,7 +32,7 @@ liss [IdentifiersTable idTH]
 body[IdentifiersTable idTH]
      : '{'
        'declarations' {isDeclarations = true;} declarations[idTH]
-       'statements'   {isDeclarations = false;} s=statements[idTH] {m.addLineInstruction("line"+($s.line+1),m.exitProgram($s.line)); m.addLineInstruction("indexoutofboundError",m.indexOutOfBoundError($s.line));}
+       'statements'   {isDeclarations = false;} s=statements[idTH] {/*m.addLineInstruction("line"+($s.line+1),m.exitProgram($s.line));*/ m.addTextInstructions(m.exitProgram($s.line)); m.addLineInstruction("indexoutofboundError",m.indexOutOfBoundError($s.line));}
        '}'
      ;
 
@@ -561,8 +561,8 @@ assignment [IdentifiersTable idTH]
                         mipsCodeS += m.storeWordArrayText($designator.identifierS, $designator.line, $designator.pos);
                     }
 
-                    //m.addTextInstructions(mipsCodeS);
-                    m.addLineInstruction("line"+$r.line,mipsCodeS);
+                    m.addTextInstructions(mipsCodeS);
+                    //m.addLineInstruction("line"+$r.line,mipsCodeS);
                 }
 
               }else{

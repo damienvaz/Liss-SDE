@@ -313,7 +313,7 @@ public class Mips {
         s.append("\tslt "+free+", "+r0+", "+r1+"\t# " + line + ":" + pos + "\n");
         s.append(textNot(line, pos));
         //s.append("\tbeqz " + free + ", line"+line+"indexoutofbound\t# " + line + ":" + pos + "\n");
-        s.append("\tla $a3, line"+(line+1)+"\t# "+ line + ":" + pos + "\n");
+        //s.append("\tla $a3, line"+(line+1)+"\t# "+ line + ":" + pos + "\n");
         s.append("\tli $s0, "+line+"\t# "+ line + ":" + pos + "\n");
         s.append("\tbeqz " + free + ", indexoutofboundError\t# " + line + ":" + pos + "\n");
 
@@ -330,7 +330,7 @@ public class Mips {
         // We cannot apply not instruction for the maximum limit due to [0,...,n-1] = n elements and the nth elements is the prohibited position !
         // s.append(textNot(line,pos));
         //s.append("\tbeqz "+free+", line"+line+"indexoutofbound\t# " + line + ":" + pos + "\n");
-        s.append("\tla $a3, line"+(line+1)+"\t# "+ line + ":" + pos + "\n");
+        //s.append("\tla $a3, line"+(line+1)+"\t# "+ line + ":" + pos + "\n");
         s.append("\tli $s0, "+line+"\t# "+ line + ":" + pos + "\n");
         s.append("\tbeqz "+free+", indexoutofboundError\t# " + line + ":" + pos + "\n");
 
@@ -361,13 +361,15 @@ public class Mips {
         s.append("\tli $v0, 4\n");
         s.append("\tla $a0, newline\n");
         s.append("\tsyscall\n");
-        s.append("\tjr $a3\n");
+        //s.append("\tjr $a3\n");
+        s.append(exitProgram(line));
 
         return s.toString();
     }
 
     public String exitProgram(int line){
         StringBuilder s = new StringBuilder();
+        s.append("\t####Exit Program####\n");
         s.append("\tli $v0, 10\n");
         s.append("\tsyscall\n");
 
@@ -419,16 +421,14 @@ public class Mips {
         //need to test > and then !
         String res3 = nextFreeRegister();
         s.append("\tslt "+res3+", "+r1+", "+r0+"\t# " + line + ":" + pos + "\n");
-        s.append(textNot(line,pos));
+        s.append(textNot(line, pos));
         //finally we must finish by testing and instruction
-        s.append(textMove(res2,r0,line,0));
-        s.append(textMove(res3,r1,line,0));
-        //s.append("\tmove "+res2+", "+r0+"\t\t# " + line + ":" + pos + "\n");
-        //s.append("\tmove "+res3+", "+r1+"\t\t# " + line + ":" + pos + "\n");
+        s.append(textAnd(line, pos));
+        s.append(textMove(res2, r0, line, 0));
+
         //free last two registers
         freeLastRegister();
         freeLastRegister();
-        s.append(textAnd(line,pos));
 
         return s.toString();
     }
@@ -456,15 +456,12 @@ public class Mips {
         String res3 = nextFreeRegister();
         s.append("\tslt "+res3+", "+r1+", "+r0+"\t# " + line + ":" + pos + "\n");
 
-        //finally we must finish by testing and instruction
+        //finally we must finish by testing or instruction
+        s.append(textOr(line, pos));
         s.append(textMove(res2,r0,line,0));
-        s.append(textMove(res3,r1,line,0));
-        //s.append("\tmove "+res2+", "+r0+"\t# " + line + ":" + pos + "\n");
-        //s.append("\tmove "+res3+", "+r1+"\t# " + line + ":" + pos + "\n");
         //free last two registers
         freeLastRegister();
         freeLastRegister();
-        s.append(textOr(line, pos));
 
         return s.toString();
     }

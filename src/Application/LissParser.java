@@ -242,7 +242,7 @@ public class LissParser extends Parser {
 			isDeclarations = false;
 			setState(165); 
 			((BodyContext)_localctx).s = statements(idTH);
-			m.addLineInstruction("line"+(((BodyContext)_localctx).s.line+1),m.exitProgram(((BodyContext)_localctx).s.line)); m.addLineInstruction("indexoutofboundError",m.indexOutOfBoundError(((BodyContext)_localctx).s.line));
+			/*m.addLineInstruction("line"+($s.line+1),m.exitProgram($s.line));*/ m.addTextInstructions(m.exitProgram(((BodyContext)_localctx).s.line)); m.addLineInstruction("indexoutofboundError",m.indexOutOfBoundError(((BodyContext)_localctx).s.line));
 			setState(167); 
 			match(T__4);
 			}
@@ -2460,8 +2460,8 @@ public class LissParser extends Parser {
 			                        mipsCodeS += m.storeWordArrayText(((AssignmentContext)_localctx).designator.identifierS, ((AssignmentContext)_localctx).designator.line, ((AssignmentContext)_localctx).designator.pos);
 			                    }
 
-			                    //m.addTextInstructions(mipsCodeS);
-			                    m.addLineInstruction("line"+(((AssignmentContext)_localctx).r!=null?((AssignmentContext)_localctx).r.getLine():0),mipsCodeS);
+			                    m.addTextInstructions(mipsCodeS);
+			                    //m.addLineInstruction("line"+(((AssignmentContext)_localctx).r!=null?((AssignmentContext)_localctx).r.getLine():0),mipsCodeS);
 			                }
 
 			              }else{
