@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 
 /**
  * Created by damienvaz on 6/5/15.
@@ -15,6 +16,8 @@ public class Mips {
     private String text;
     private boolean[] register;
     private String[] registerName;
+    private LinkedList<Integer> counterJumpStack;   //A stack which will handle the IF statement behavior
+    private Integer counterJump;                    //A counter for the IF statement behavior
 
     public Mips(){
         this.data = ".data\n";
@@ -22,7 +25,6 @@ public class Mips {
         this.register = new boolean[8];
         for(int i=0; i<this.register.length;i++){
             this.register[i] = false;
-            //System.out.print(this.register[i]+" ");
         }
         this.registerName = new String[8];
         this.registerName[0] = "$t0";
@@ -33,6 +35,9 @@ public class Mips {
         this.registerName[5] = "$t5";
         this.registerName[6] = "$t6";
         this.registerName[7] = "$t7";
+
+        this.counterJump = new Integer(0);
+        this.counterJumpStack = new LinkedList<>();
 
     }
 
@@ -178,16 +183,24 @@ public class Mips {
         return s.toString();
     }
 
-    public String dataBoolean(boolean b, int line, int pos){
+    public String dataBoolean(boolean b, int line, int pos) {
         StringBuilder s = new StringBuilder();
-            if(b==true) {
-                //s.append(".byte 1\t\t# " + line + ":" + pos + "\n");
-                s.append(".word 1\t\t# " + line + ":" + pos + "\n");
-            }else if(b==false){
-                //s.append(".byte 0\t\t# " + line + ":" + pos + "\n");
-                s.append(".word 0\t\t# " + line + ":" + pos + "\n");
-            }
+        if (b == true) {
+            //s.append(".byte 1\t\t# " + line + ":" + pos + "\n");
+            s.append(".word 1\t\t# " + line + ":" + pos + "\n");
+        } else if (b == false) {
+            //s.append(".byte 0\t\t# " + line + ":" + pos + "\n");
+            s.append(".word 0\t\t# " + line + ":" + pos + "\n");
+        }
         return s.toString();
+    }
+
+    public String loadBoolTrue(int line , int pos){
+        return loadImmediateWord("1", line, pos);
+    }
+
+    public String loadBoolFalse(int line, int pos){
+        return loadImmediateWord("0", line, pos);
     }
 
     public String dataTextOriginal(){
@@ -383,7 +396,7 @@ public class Mips {
         String r1 = res[1];
 
         freeLastRegister();
-        s.append("\tand "+r0+", "+r0+", "+r1+"\t# " + line + ":" + pos + "\n");
+        s.append("\tand " + r0 + ", " + r0 + ", " + r1 + "\t# " + line + ":" + pos + "\n");
         //s.append("\tli "+register+","+value+"\t\t# "+line+":"+pos+"\n");
 
         return s.toString();
@@ -401,7 +414,7 @@ public class Mips {
         //s.append(loadImmediateWord(r0, line, pos));
         String t[] = lastRegisterOccupied();
         s.append("\tsltu " + t[0] + ", $zero, " + t[0] + "\t# " + line + ":" + pos + "\n");
-        s.append("\txori "+t[0]+", "+t[0]+", 1"+"\t# " + line + ":" + pos +"\n");
+        s.append("\txori " + t[0] + ", " + t[0] + ", 1" + "\t# " + line + ":" + pos + "\n");
 
         return s.toString();
     }
@@ -437,6 +450,63 @@ public class Mips {
         StringBuilder s = new StringBuilder();
         s.append("\tmove "+r2+", "+r1+"\t\t# " + line + ":" + pos + "\n");
         return s.toString();
+    }
+
+    /*************************** IF THEN ELSE*****************************/
+    public String textIfThenElse( int line, int pos){
+        StringBuilder s = new StringBuilder();
+
+        this.counterJump++;
+        this.counterJumpStack.push(this.counterJump);
+        Integer i = this.counterJumpStack.getFirst();
+
+        String res[] = lastRegisterOccupied();
+        String r0 = res[0];
+        s.append("\tbne " + r0 + ", 1, ELSE" + i.toString() + "\t\t# " + line + ":" + pos + "\n");
+
+        return s.toString();
+    }
+
+    public String textElse(int line, int pos){
+        StringBuilder s = new StringBuilder();
+
+        if(this.counterJumpStack.size()>0) {
+            Integer i = this.counterJumpStack.getFirst();
+            s.append("  ELSE" + i.toString() + ":\t\t# " + line + ":" + pos + "\n");
+        }
+
+        return s.toString();
+    }
+
+    public String textJumpBeforeElse(int line, int pos){
+        StringBuilder s = new StringBuilder();
+
+        if(this.counterJumpStack.size()>0) {
+            Integer i = this.counterJumpStack.getFirst();
+            s.append("\tj L" + i.toString() + "\t\t# " + line + ":" + pos + "\n");
+            s.append("  ELSE" + i.toString() + ":\t\t# " + line + ":" + pos + "\n");
+        }
+
+        return s.toString();
+    }
+
+    public String textJumpAfterElse(int line, int pos){
+        StringBuilder s = new StringBuilder();
+
+        if(this.counterJumpStack.size()>0) {
+            Integer i = this.counterJumpStack.getFirst();
+            s.append("  L" + i.toString() + ":\t\t# " + line + ":" + pos + "\n");
+        }
+
+        return s.toString();
+    }
+
+    /*******************************************************************/
+
+    public void removeLastStack(){
+        if(this.counterJumpStack.size()>0) {
+            this.counterJumpStack.pop();
+        }
     }
 
     public String textDifferent(int line, int pos){

@@ -13,7 +13,7 @@ statements
 	if (d)  then{ if( flag ) then { a = 6;} }
 	if (d == true) then{ if( flag ) then { a = 6;} else { b = 9; }}
 
-	if( !(c[2]==0) ) //problema em meter o signal do '!'
+	if( !(c[2]==0) )
 	then{
 		a = 5;
 		write(a);
@@ -23,8 +23,13 @@ statements
 		c[5] = 5;
 		write(b);
 	}
-	if(!c[2])
+	if(true)
 	then{
 		b=7;
 	}
+
+	//if(!c[2]) //Como tratar desta condiçao ??? Sabendo que o valor do array pode nao ser 1 ou 0 ?
+	//then{
+	//	b=7;
+	//}
 }

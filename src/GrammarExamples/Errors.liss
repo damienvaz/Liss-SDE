@@ -26,7 +26,7 @@ declarations
     set11 = { z | v+<<1,2,3,4>>} -> set;
     f -> boolean;
     u -> integer;
-    /*subprogram f(amen->boolean)->integer{
+    subprogram f(amen->boolean)->integer{
         declarations
             b->integer;
             b->boolean;
@@ -53,7 +53,7 @@ declarations
         statements
             b = 4;
         return b;
-    }*/
+    }
 
 
 statements

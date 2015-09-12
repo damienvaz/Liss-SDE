@@ -59,7 +59,7 @@ program test{
     e = -2-b;
     f = -2 - +3;
     d = c;
-    //a = array2[array2[0,0,0],1,array1[3]]; //index out of bound
+    a = array2[array2[0,0,0],1,array1[3]]; //index out of bound
     a = array1[1];
     array1[2] = array1[0];
     //array1[1+1] = array1[a*3]+d*g; //index out of bound

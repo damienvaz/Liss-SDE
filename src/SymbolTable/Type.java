@@ -12,7 +12,7 @@ public class Type extends InfoIdentifiersTable {
         super("TYPE",level);
         switch (type) {
             case "integer":
-                this.space = new Integer(1);
+                this.space = new Integer(4); //INTEGER in mips is equals to 4 bytes
                 break;
             case "set":
                 this.space = new Integer(0);
@@ -21,7 +21,7 @@ public class Type extends InfoIdentifiersTable {
                 this.space = new Integer(1);
                 break;
             case "boolean":
-                this.space = new Integer(1);
+                this.space = new Integer(4); //BOOLEAN in mips is equals to 4 bytes
                 break;
             default:
                 System.out.println("This type isn't recognized !");

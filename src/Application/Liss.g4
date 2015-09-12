@@ -284,8 +284,8 @@ inic_var [IdentifiersTable idTH, Set set]
 
 constant returns [String typeS, int line, int pos, String mipsCodeS]
          : sign number   {$typeS = "integer"; $line = $number.line; $pos = $number.pos; if(isDeclarations){ $mipsCodeS = m.dataWord($sign.text+$number.text,$number.line,$number.pos);}else{ $mipsCodeS = m.loadImmediateWord($sign.text+$number.text,$number.line,$number.pos);} }
-         | t='true'      {$typeS = "boolean"; $line = $t.line; $pos = $t.pos; if(isDeclarations){ $mipsCodeS = m.dataBoolean(true,$t.line,$t.pos);}else{} }
-         | f='false'     {$typeS = "boolean"; $line = $f.line; $pos = $f.pos; if(isDeclarations){ $mipsCodeS = m.dataBoolean(false,$f.line,$f.pos);}else{} }
+         | t='true'      {$typeS = "boolean"; $line = $t.line; $pos = $t.pos; if(isDeclarations){ $mipsCodeS = m.dataBoolean(true,$t.line,$t.pos);}else{ $mipsCodeS = m.loadBoolTrue($t.line,$t.pos);} }
+         | f='false'     {$typeS = "boolean"; $line = $f.line; $pos = $f.pos; if(isDeclarations){ $mipsCodeS = m.dataBoolean(false,$f.line,$f.pos);}else{ $mipsCodeS = m.loadBoolFalse($f.line, $f.pos);} }
          ;
 
 sign :
@@ -608,10 +608,10 @@ designator [IdentifiersTable idTH, Set set, String side]
                                                 $typeS = v.getInfoType();
 
                                                 //MIPS
-                                                if($typeS.equals("integer")){
+                                                if($typeS.equals("integer") || $typeS.equals("boolean")){
                                                     if($side.equals("right")){
                                                         $mipsCodeS = m.loadWord($i.text, $i.line, $i.pos);
-                                                        //System.out.println($mipsCodeS);
+                                                        System.out.println($mipsCodeS);
                                                     }
                                                 }
                                             }
@@ -827,20 +827,43 @@ args [IdentifiersTable idTH, Set set]
 /* ****** Expression ****** */
 
 expression [IdentifiersTable idTH, Set set]
-            returns [String typeS, int line, int pos, Node treeS, String mipsCodeS,Set setS ]
+            returns [String typeS, int line, int pos, Node treeS, String mipsCodeS,Set setS, boolean relationExp ]
             @init{
                 $typeS = null;
                 boolean correctType = true;
                 boolean relationExp = false;
                 Node n = null;
                 $mipsCodeS = null;
-
             }
            : s1=single_expression[idTH, set]{ $line = $s1.line; $pos = $s1.pos; n = $s1.treeS; $setS = $s1.setS; if($rel_op.text == null){$mipsCodeS = $s1.mipsCodeS;}}
             (rel_op s2=single_expression[idTH,set]
                 {   relationExp = true;
                     if(!$rel_op.text.equals("in")){
-                        if(($s1.typeS != null) && $s1.typeS.equals($rel_op.typeS)){
+                        if(($s1.typeS != null) && ($rel_op.text.equals("==") || $rel_op.text.equals("!=")) && $s1.typeS.equals("boolean")){
+                            if(($s2.typeS !=null) && ($rel_op.text.equals("==") || $rel_op.text.equals("!=")) && $s2.typeS.equals("boolean")){
+                                //MIPS
+
+                                if(!isDeclarations && !isSet){
+                                    $mipsCodeS = $mipsCodeS + $s2.mipsCodeS;
+                                    //System.out.println("/*****************************123**********************/");
+                                    //System.out.println($mipsCodeS);
+                                    //System.out.println("/*****************************123**********************/");
+
+                                    if($rel_op.text.equals("==")){
+                                        $mipsCodeS = $mipsCodeS + m.textEquals($rel_op.line,$rel_op.pos);
+                                    }else if($rel_op.text.equals("!=")){
+                                        $mipsCodeS = $mipsCodeS + m.textDifferent($rel_op.line,$rel_op.pos);
+                                    }
+
+                                    System.out.println($mipsCodeS+"kijuhygkjnhbjiuhgjytfrdrf");
+                                }
+                                //System.out.println($mipsCodeS);
+
+                                //END_MIPS
+                            }else{
+                                correctType = false;
+                            }
+                        }else if(($s1.typeS != null) && $s1.typeS.equals($rel_op.typeS)){ //Tratar as relacoes em que os tipos sao inteiros
                             if(($s2.typeS !=null) && $rel_op.typeS.equals($s2.typeS)){
                                 $typeS = "boolean";
                                 //MIPS
@@ -923,6 +946,8 @@ expression [IdentifiersTable idTH, Set set]
                 }
 
                 $treeS = n;
+                $relationExp = relationExp;
+
             }
            ;
 
@@ -1208,6 +1233,7 @@ factor [IdentifiersTable idTH,Set set] //vai ser preciso ver as pre-condiçoes d
             $pos = $f1.pos;
             if($f1.typeS!=null && $f1.typeS.equals("boolean")){
                 $typeS = $f1.typeS;
+                $mipsCodeS = $f1.mipsCodeS + m.textNot($f1.line, $f1.pos);
             }else{
                 $typeS = null;
                 e.addMessage($f1.line,$f1.pos,ErrorMessage.semantic($f1.text,ErrorMessage.type($f1.typeS,"boolean")));
@@ -1253,8 +1279,8 @@ mul_op returns [String typeS, int line, int pos]
        ;
 
 rel_op returns [String typeS, int line, int pos]
-       : r='==' {$typeS = "integer"; $line = $r.line; $pos = $r.pos;}
-       | r='!=' {$typeS = "integer"; $line = $r.line; $pos = $r.pos;}
+       : r='==' {$typeS = "integer"; $line = $r.line; $pos = $r.pos;} //The return of the type may be boolean or integer
+       | r='!=' {$typeS = "integer"; $line = $r.line; $pos = $r.pos;} //The return of the type may be boolean or integer
        | r='<'  {$typeS = "integer"; $line = $r.line; $pos = $r.pos;}
        | r='>'  {$typeS = "integer"; $line = $r.line; $pos = $r.pos;}
        | r='<=' {$typeS = "integer"; $line = $r.line; $pos = $r.pos;}
@@ -1295,7 +1321,7 @@ read_statement [IdentifiersTable idTH]
 /* ****** Conditional & Iterative ****** */
 
 conditional_statement [IdentifiersTable idTH]
-                      : if_then_else_stat[idTH]
+                      : if_then_else_stat[idTH] {   m.removeLastStack();    }
                       ;
 
 iterative_statement [IdentifiersTable idTH]
@@ -1308,15 +1334,38 @@ iterative_statement [IdentifiersTable idTH]
 if_then_else_stat [IdentifiersTable idTH]
                   @init{
                     Set tree = null;
+                    String mipsCodeS = null;
                   }
-                  : 'if' '(' e1=expression[idTH, tree] ')' { if(!($e1.typeS!=null && $e1.typeS.equals("boolean"))){e.addMessage($e1.line,$e1.pos,ErrorMessage.semantic($e1.text,ErrorMessage.type($e1.typeS,"boolean")));}}
+                  : i='if' '(' e1=expression[idTH, tree] ')'
+                        { if(!($e1.typeS!=null && $e1.typeS.equals("boolean"))){
+                            e.addMessage($e1.line,$e1.pos,ErrorMessage.semantic($e1.text,ErrorMessage.type($e1.typeS,"boolean")));
+                          }else{
+                            mipsCodeS = $e1.mipsCodeS;
+                            mipsCodeS += m.textIfThenElse( $i.line, $i.pos);
+
+                            m.addTextInstruction(mipsCodeS);
+                          }
+                        }
                     'then' '{' s=statements[idTH] '}'
-                    e2=else_expression[idTH]
+                    e2=else_expression[idTH, $i.line, $i.pos]
+
+
                   ;
 
-else_expression [IdentifiersTable idTH]
-                :
-                | 'else' '{' statements[idTH] '}'
+else_expression [IdentifiersTable idTH, int line, int pos]
+                @init{
+                    String mipsCodeS = null;
+                }
+                :                                   { String s1 = m.textElse(line,pos); if(s1 != null){m.addTextInstructions(s1);}}
+                | e='else' '{'
+                    {
+                        String s2 = m.textJumpBeforeElse($e.line, $e.pos);
+                        if(s2 !=  null){
+                            m.addTextInstructions(s2);
+                        }
+                    }
+                  s=statements[idTH] { String s3 = m.textJumpAfterElse($e.line, $e.pos); if(s3 != null){m.addTextInstructions(s3);}}
+                  '}'
                 ;
 
 /* ****** for_stat ****** */
