@@ -16,8 +16,8 @@ public class Mips {
     private String text;
     private boolean[] register;
     private String[] registerName;
-    private LinkedList<Integer> counterJumpStack;   //A stack which will handle the IF statement behavior
-    private Integer counterJump;                    //A counter for the IF statement behavior
+    private LinkedList<Integer> counterJumpStack;   //A stack which will handle the IF/WHILE statement behavior
+    private Integer counterJump;                    //A counter for the IF/WHILE statement behavior
 
     public Mips(){
         this.data = ".data\n";
@@ -374,8 +374,7 @@ public class Mips {
         s.append("\tli $v0, 4\n");
         s.append("\tla $a0, newline\n");
         s.append("\tsyscall\n");
-        //s.append("\tjr $a3\n");
-        s.append(exitProgram(line));
+        s.append(exitProgram(line)); //Necessary due to an error of index ! So it must quit !
 
         return s.toString();
     }
@@ -462,7 +461,7 @@ public class Mips {
 
         String res[] = lastRegisterOccupied();
         String r0 = res[0];
-        s.append("\tbne " + r0 + ", 1, ELSE" + i.toString() + "\t\t# " + line + ":" + pos + "\n");
+        s.append("\tbne " + r0 + ", 1, else" + i.toString() + "\t\t# " + line + ":" + pos + "\n");
 
         return s.toString();
     }
@@ -472,7 +471,7 @@ public class Mips {
 
         if(this.counterJumpStack.size()>0) {
             Integer i = this.counterJumpStack.getFirst();
-            s.append("  ELSE" + i.toString() + ":\t\t# " + line + ":" + pos + "\n");
+            s.append("  else" + i.toString() + ":\t\t# " + line + ":" + pos + "\n");
         }
 
         return s.toString();
@@ -483,8 +482,8 @@ public class Mips {
 
         if(this.counterJumpStack.size()>0) {
             Integer i = this.counterJumpStack.getFirst();
-            s.append("\tj L" + i.toString() + "\t\t# " + line + ":" + pos + "\n");
-            s.append("  ELSE" + i.toString() + ":\t\t# " + line + ":" + pos + "\n");
+            s.append("\tj l" + i.toString() + "\t\t# " + line + ":" + pos + "\n");
+            s.append("  else" + i.toString() + ":\t\t# " + line + ":" + pos + "\n");
         }
 
         return s.toString();
@@ -495,13 +494,122 @@ public class Mips {
 
         if(this.counterJumpStack.size()>0) {
             Integer i = this.counterJumpStack.getFirst();
-            s.append("  L" + i.toString() + ":\t\t# " + line + ":" + pos + "\n");
+            s.append("  l" + i.toString() + ":\t\t# " + line + ":" + pos + "\n");
         }
 
         return s.toString();
     }
 
     /*******************************************************************/
+
+    /*************************** WHILE *********************************/
+
+    public String textWhile(String mipsCodeS, int line, int pos){
+        StringBuilder s = new StringBuilder();
+
+        if(mipsCodeS != null) {
+            this.counterJump++;
+            this.counterJumpStack.push(this.counterJump);
+            Integer i = this.counterJumpStack.getFirst();
+
+            s.append("  while"+i.toString()+":\t\t# " + line + ":" + pos + "\n");
+            s.append("\t########## CONDITION WHILE" + i.toString() + " ##########\n");
+            s.append(mipsCodeS);
+
+            String res[] = lastRegisterOccupied();
+            String r0 = res[0];
+            s.append("\tbne " + r0 + ", 1, while_exit" + i.toString() + "\t\t# " + line + ":" + pos + "\n");
+            s.append("\t######## END CONDITION WHILE"+i.toString()+" ########\n");
+            freeLastRegister();
+        }
+        return s.toString();
+    }
+
+    public String textWhileExit(int line, int pos){
+        StringBuilder s = new StringBuilder();
+
+        Integer i = this.counterJumpStack.getFirst();
+
+        s.append("\tj while" + i.toString() + "\t\t# " + line + ":" + pos + "\n");
+        s.append("  while_exit"+i.toString()+":\t\t# " + line + ":" + pos + "\n");
+
+
+        this.counterJumpStack.pop();
+
+        return s.toString();
+    }
+
+    /*******************************************************************/
+
+    /*************************** SUCC OR PRED *********************************/
+
+    public String textSucc(String value,int line, int pos){
+        StringBuilder s = new StringBuilder();
+
+        s.append(loadWord(value,line,pos));
+        s.append(loadImmediateWord("1", line, pos));
+        s.append(textAdd(line, pos));
+        s.append(storeWord(value,line,pos));
+
+
+        return s.toString();
+    }
+
+    public String textPred(String value, int line, int pos){
+        StringBuilder s = new StringBuilder();
+
+        s.append(loadWord(value,line,pos));
+        s.append(loadImmediateWord("1",line,pos));
+        s.append(textSub(line, pos));
+        s.append(storeWord(value,line,pos));
+
+        return s.toString();
+    }
+
+    /**************************************************************************/
+
+    /*************************** WRITE *********************************/
+
+    public String textWrite(String mipsCodeS,boolean write, int line, int pos){
+        StringBuilder s = new StringBuilder();
+        if(mipsCodeS != null) {
+            s.append(mipsCodeS);
+
+            String res[] = lastRegisterOccupied();
+            String r0 = res[0];
+
+            s.append("\tmove $a0, " + r0 + "\t\t# " + line + ":" + pos + "\n");
+            if(write == true) {
+                s.append("\tjal write\t\t# " + line + ":" + pos + "\n");
+            }else if(write == false){
+                s.append("\tjal writeln\t\t# " + line + ":" + pos + "\n");
+            }
+        }
+        return s.toString();
+    }
+
+    public String textWriteMessage(boolean value, int line){
+        // if(value == true) => "write" ! Else "writeln" !
+        StringBuilder s = new StringBuilder();
+
+        s.append("\tli $v0, 1\n");
+        s.append("\tsyscall\n");
+        if(value == false){
+            s.append("\tli $v0, 4\n");
+            s.append("\tla $a0, newline\n");
+            s.append("\tsyscall\n");
+        }
+        s.append("\tjr $ra\n");
+
+        return s.toString();
+    }
+
+    /*******************************************************************/
+
+    /*************************** FOR *********************************/
+
+
+    /*****************************************************************/
 
     public void removeLastStack(){
         if(this.counterJumpStack.size()>0) {

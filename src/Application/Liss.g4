@@ -32,7 +32,7 @@ liss [IdentifiersTable idTH]
 body[IdentifiersTable idTH]
      : '{'
        'declarations' {isDeclarations = true;} declarations[idTH]
-       'statements'   {isDeclarations = false;} s=statements[idTH] {/*m.addLineInstruction("line"+($s.line+1),m.exitProgram($s.line));*/ m.addTextInstructions(m.exitProgram($s.line)); m.addLineInstruction("indexoutofboundError",m.indexOutOfBoundError($s.line));}
+       'statements'   {isDeclarations = false;} s=statements[idTH] { m.addTextInstructions(m.exitProgram($s.line)); m.addLineInstruction("indexoutofboundError",m.indexOutOfBoundError($s.line));m.addLineInstruction("write",m.textWriteMessage(true,$s.line));m.addLineInstruction("writeln",m.textWriteMessage(false,$s.line));}
        '}'
      ;
 
@@ -509,7 +509,7 @@ returnSubPrg [IdentifiersTable idTH]
 
 statements [IdentifiersTable idTH]
            returns [int line, int pos]
-            : s=statement[idTH]* {m.resetRegister(); $line = $s.line; $pos = $s.pos;}
+            : { m.resetRegister(); }s=statement[idTH]* { $line = $s.line; $pos = $s.pos; }
             ;
 
 statement [IdentifiersTable idTH]
@@ -518,12 +518,12 @@ statement [IdentifiersTable idTH]
             Set set = null;
           }
           : a=assignment[idTH] ';' {$line=$a.line; $pos=$a.pos;}
-          | write_statement[idTH] ';'
+          | write_statement[idTH] ';'       //done
           | read_statement[idTH] ';'
-          | conditional_statement[idTH]
-          | iterative_statement[idTH]
+          | conditional_statement[idTH]     //done
+          | iterative_statement[idTH]       //done
           | function_call[idTH, set] ';'
-          | succ_or_pred[idTH] ';'
+          | succ_or_pred[idTH] ';'          //done
           | copy_statement[idTH] ';'
           | cat_statement[idTH] ';' // conjuntos de sequencias
           ;
@@ -1291,19 +1291,42 @@ rel_op returns [String typeS, int line, int pos]
 /* ****** Write statement ****** */
 
 write_statement [IdentifiersTable idTH]
-                : write_expr '(' print_what[idTH] ')'
+                : w=write_expr '(' p=print_what[idTH] ')'
+                 {
+                    if($p.mipsCodeS != null){
+                        if($w.write == true){
+                        //Means that it is only write !
+                            String s1 = m.textWrite($p.mipsCodeS, $w.write, $w.line, $w.pos);
+                            m.addTextInstructions(s1);
+                        }else if($w.write == false){
+                        //Means that it is only writeln !
+                            String s2 = m.textWrite($p.mipsCodeS, $w.write, $w.line, $w.pos);
+                            m.addTextInstructions(s2);
+                        }
+                    }
+                 }
                 ;
 
-write_expr : 'write'
-           | 'writeln'
+write_expr
+           returns [boolean write, int line, int pos]
+           : w='write'    { $write = true; $line = $w.line; $pos = $w.pos;}
+           | w='writeln'  { $write = false; $line = $w.line; $pos = $w.pos;}
            ;
 
 print_what [IdentifiersTable idTH]
+           returns [String mipsCodeS]
            @init{
               Set tree = null;
            }
            :
-           | e=expression[idTH, tree] {if( $e.typeS == null || $e.typeS.equals("set")){e.addMessage($e.line,$e.pos,ErrorMessage.semantic($e.text,ErrorMessage.type($e.typeS,"integer | boolean | sequence | array")));}} //conjuntos nao pode pertencer
+           | e=expression[idTH, tree]
+            {
+                if( $e.typeS == null || $e.typeS.equals("set")){
+                    e.addMessage($e.line,$e.pos,ErrorMessage.semantic($e.text,ErrorMessage.type($e.typeS,"integer | boolean | sequence | array")));
+                }else{
+                    $mipsCodeS = $e.mipsCodeS;
+                }
+            } //conjuntos nao pode pertencer
            ;
 
 /* ****** Read statement ****** */
@@ -1314,6 +1337,8 @@ read_statement [IdentifiersTable idTH]
                   Var v = (Var) $idTH.getInfoIdentifiersTable($i.text);
                   if(!(v != null && v.getCategory().equals("VAR") && v.getInfoType().equals("integer"))){       //verificar se existe e é tipo inteiro e class VAR
                     e.addMessage($i.line,$i.pos,ErrorMessage.semantic($i.text,ErrorMessage.type(v.getInfoType(),"integer")));
+                  }else{
+
                   }
                }
                ;
@@ -1450,24 +1475,51 @@ while_stat [IdentifiersTable idTH]
            @init{
               Set tree = null;
            }
-           : 'while' '(' e=expression[idTH, tree] ')' { if(!($e.typeS!=null && $e.typeS.equals("boolean"))){e.addMessage($e.line,$e.pos,ErrorMessage.semantic($e.text,ErrorMessage.type($e.typeS,"boolean")));}}
-             '{' statements[idTH] '}'
+           : 'while' '('  e=expression[idTH, tree] ')'
+                { if(!($e.typeS!=null && $e.typeS.equals("boolean"))){
+                    e.addMessage($e.line,$e.pos,ErrorMessage.semantic($e.text,ErrorMessage.type($e.typeS,"boolean")));
+                  }else{
+                    if($e.mipsCodeS != null){
+                        String s1 = m.textWhile($e.mipsCodeS, $e.line, $e.pos);
+                        m.addTextInstruction(s1);
+                        //m.resetRegister();
+                    }
+                  }
+
+                }
+             '{' statements[idTH] l='}'
+             {
+                String s2 = m.textWhileExit($l.line, $l.pos);
+                m.addTextInstruction(s2);
+             }
            ;
 
 /* ****** Succ_Or_Predd ****** */
 
 succ_or_pred [IdentifiersTable idTH]
-             : succ_pred i=identifier
+             : s=succ_pred i=identifier
              {
                 Var v = (Var) $idTH.getInfoIdentifiersTable($i.text);
                 if( !( $i.text.matches("^[0-9]+$") || (v != null && v.getCategory().equals("VAR") && v.getInfoType().equals("integer")) ) ){
                     e.addMessage($i.line,$i.pos,ErrorMessage.semantic($i.text,ErrorMessage.type("null","integer")));
+                }else{
+                    if($s.succ == true){
+                    //It means that succ is being used
+                        String s1 = m.textSucc($i.text, $s.line, $s.pos);;
+                        m.addTextInstructions(s1);
+                    }else if($s.succ == false){
+                    //It means that pred is being used
+                        String s2 = m.textPred($i.text, $s.line, $s.pos);
+                        m.addTextInstructions(s2);
+                    }
                 }
              }//identifier inteiro
              ;
 
-succ_pred : 'succ'
-          | 'pred'
+succ_pred
+          returns [boolean succ, int line, int pos]
+          : s='succ' { $succ = true; $line = $s.line; $pos =$s.pos;}
+          | p='pred' { $succ = false; $line = $p.line; $pos = $p.pos;}
           ;
 
 /* ****** SequenceOper ****** */

@@ -6,6 +6,7 @@ declarations
 	a = 4, b -> integer;
 	d = true, flag = false, flag2, bool -> boolean;
 	c = [1,2,3], vector -> array size 8;
+	n = 3, res = 1 -> integer;
 
 
 statements
@@ -13,7 +14,7 @@ statements
 	if (d)  then{ if( flag ) then { a = 6;} }
 	if (d == true) then{ if( flag ) then { a = 6;} else { b = 9; }}
 
-	if( !(c[2]==0) )
+	if( (c[2]==0) )
 	then{
 		a = 5;
 		write(a);
@@ -23,10 +24,27 @@ statements
 		c[5] = 5;
 		write(b);
 	}
-	if(true)
+	if(!flag)
 	then{
+		c[0] = 12;
 		b=7;
+		writeln(c[0]);
 	}
+
+	writeln(a);
+
+	write(c[2]);
+
+	while (n > 0){
+    	res = res * n;
+    	pred n ; //'pred n' or 'pred(n)' ??
+    	if(!(c[2]<3)) //Como tratar desta condiçao ??? Sabendo que o valor do array pode nao ser 1 ou 0 ?
+       	then{
+        	res = 27;
+       	}
+    }
+
+	writeln(res);
 
 	//if(!c[2]) //Como tratar desta condiçao ??? Sabendo que o valor do array pode nao ser 1 ou 0 ?
 	//then{
