@@ -648,7 +648,7 @@ public class Mips {
             s.append(textNot(line, pos));
             String res[] = lastRegisterOccupied();
             String r0 = res[0];
-            s.append("\tbeq "+r0+", 1, for_exit"+i.toString()+"\t\t# " + line + ":" + pos + "\n");
+            s.append("\tbne "+r0+", 1, for_exit"+i.toString()+"\t\t# " + line + ":" + pos + "\n");
             freeLastRegister();
         }else if(stepUp == false){
             //It means stepDown !  var >= Superior Limit
@@ -656,14 +656,9 @@ public class Mips {
             s.append(textNot(line,pos));
             String res[] = lastRegisterOccupied();
             String r0 = res[0];
-            s.append("\tbeq "+r0+", 1, for_exit"+i.toString()+"\t\t# " + line + ":" + pos + "\n");
+            s.append("\tbne "+r0+", 1, for_exit"+i.toString()+"\t\t# " + line + ":" + pos + "\n");
             freeLastRegister();
         }
-
-
-
-
-
         return s.toString();
     }
 
@@ -676,7 +671,7 @@ public class Mips {
             s.append(mipsCodeS);
             String res[] = lastRegisterOccupied();
             String r0 = res[0];
-            s.append("\tbeq "+r0+", 1, satisfying_exit"+i.toString()+"\t\t# " + line + ":" + pos + "\n");
+            s.append("\tbne "+r0+", 1, satisfying_exit"+i.toString()+"\t\t# " + line + ":" + pos + "\n");
         }else{
             //Print error of stack empty
 
@@ -727,17 +722,20 @@ public class Mips {
             s.append(loadImmediateWord("4", line, pos));
             s.append(textAdd(line, pos));
             s.append(storeWord("for_var"+i.toString(), line, pos));
+            s.append("\tj for_loop"+i.toString()+"\t\t# " + line + ":" + pos + "\n");
         }else{
             if(stepUp == true){
                 s.append(loadWord("for_var"+i.toString(), line, pos));
                 s.append(loadImmediateWord(stepValue, line, pos));
                 s.append(textAdd(line, pos));
                 s.append(storeWord("for_var" + i.toString(), line, pos));
+                s.append("\tj for_loop"+i.toString()+"\t\t# " + line + ":" + pos + "\n");
             }else if(stepUp == false){
-                s.append(loadWord("for_var"+i.toString(), line, pos));
+                s.append(loadWord("for_var" + i.toString(), line, pos));
                 s.append(loadImmediateWord(stepValue, line, pos));
                 s.append(textSub(line, pos));
                 s.append(storeWord("for_var" + i.toString(), line, pos));
+                s.append("\tj for_loop"+i.toString()+"\t\t# " + line + ":" + pos + "\n");
             }
         }
         s.append("  for_exit"+i.toString()+":\n");
