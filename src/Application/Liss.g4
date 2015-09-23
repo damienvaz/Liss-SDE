@@ -1415,7 +1415,7 @@ for_stat [IdentifiersTable idTH]
                 $line = $f.line;
                 $pos = $f.pos;
                 if($i.inArray == true && $s.stepS == true){
-                    e.addMessage($f.line, $f.pos, ErrorMessage.semantic($f.text, ErrorMessage.foreachStep()));
+                    e.addMessage($f.line, $f.pos, ErrorMessage.forEachStep());
                 }else{
                     String s1 = $i.mipsCodeS;
                     s1 += m.textForCondition($i.inArray, $i.variableS, $i.arrayS, $i.maximumMipsCodeS, $s.stepUp, $f.line, $f.pos);
@@ -1425,7 +1425,7 @@ for_stat [IdentifiersTable idTH]
             s2=satisfy[idTH]
             {
                 if($i.inArray == true && $s2.satisfyingS == true){
-                    e.addMessage($f.line, $f.pos, ErrorMessage.semantic($f.text, ErrorMessage.foreachSatisfying()));
+                    e.addMessage($f.line, $f.pos, ErrorMessage.forEachSatisfying());
                 }else if($s2.mipsCodeS!=null){
                     String s = m.textForSatisfyingInit($s2.mipsCodeS, $s2.line, $s2.pos); //Fazer isto !!!
                     m.addTextInstructions(s);

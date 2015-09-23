@@ -36,12 +36,12 @@ public class ErrorMessage {
         return " has dimension '"+chosenDimension.toString()+"',when It should be equal to '"+expectedDimension.toString()+"'.";
     }
 
-    public static String foreachStep(){
-        return " doesn't need a stepUp or stepDown information. Please remove the stepUp or StepDown syntax.";
+    public static String forEachStep(){
+        return " stepUp or stepDown expression, not valid with \"inArray\" operation.";
     }
 
-    public static String foreachSatisfying(){
-        return " doesn't need a satisfying information. Please remove the satisfying syntax.";
+    public static String forEachSatisfying(){
+        return " satisfying expression, not valid with \"inArray\" operation.\"";
     }
 
 

@@ -4872,7 +4872,7 @@ public class LissParser extends Parser {
 			                ((For_statContext)_localctx).line =  (((For_statContext)_localctx).f!=null?((For_statContext)_localctx).f.getLine():0);
 			                ((For_statContext)_localctx).pos =  (((For_statContext)_localctx).f!=null?((For_statContext)_localctx).f.getCharPositionInLine():0);
 			                if(((For_statContext)_localctx).i.inArray == true && ((For_statContext)_localctx).s.stepS == true){
-			                    e.addMessage((((For_statContext)_localctx).f!=null?((For_statContext)_localctx).f.getLine():0), (((For_statContext)_localctx).f!=null?((For_statContext)_localctx).f.getCharPositionInLine():0), ErrorMessage.semantic((((For_statContext)_localctx).f!=null?((For_statContext)_localctx).f.getText():null), ErrorMessage.foreachStep()));
+			                    e.addMessage((((For_statContext)_localctx).f!=null?((For_statContext)_localctx).f.getLine():0), (((For_statContext)_localctx).f!=null?((For_statContext)_localctx).f.getCharPositionInLine():0), ErrorMessage.forEachStep());
 			                }else{
 			                    String s1 = ((For_statContext)_localctx).i.mipsCodeS;
 			                    s1 += m.textForCondition(((For_statContext)_localctx).i.inArray, ((For_statContext)_localctx).i.variableS, ((For_statContext)_localctx).i.arrayS, ((For_statContext)_localctx).i.maximumMipsCodeS, ((For_statContext)_localctx).s.stepUp, (((For_statContext)_localctx).f!=null?((For_statContext)_localctx).f.getLine():0), (((For_statContext)_localctx).f!=null?((For_statContext)_localctx).f.getCharPositionInLine():0));
@@ -4883,7 +4883,7 @@ public class LissParser extends Parser {
 			((For_statContext)_localctx).s2 = satisfy(idTH);
 
 			                if(((For_statContext)_localctx).i.inArray == true && ((For_statContext)_localctx).s2.satisfyingS == true){
-			                    e.addMessage((((For_statContext)_localctx).f!=null?((For_statContext)_localctx).f.getLine():0), (((For_statContext)_localctx).f!=null?((For_statContext)_localctx).f.getCharPositionInLine():0), ErrorMessage.semantic((((For_statContext)_localctx).f!=null?((For_statContext)_localctx).f.getText():null), ErrorMessage.foreachSatisfying()));
+			                    e.addMessage((((For_statContext)_localctx).f!=null?((For_statContext)_localctx).f.getLine():0), (((For_statContext)_localctx).f!=null?((For_statContext)_localctx).f.getCharPositionInLine():0), ErrorMessage.forEachSatisfying());
 			                }else if(((For_statContext)_localctx).s2.mipsCodeS!=null){
 			                    String s = m.textForSatisfyingInit(((For_statContext)_localctx).s2.mipsCodeS, ((For_statContext)_localctx).s2.line, ((For_statContext)_localctx).s2.pos); //Fazer isto !!!
 			                    m.addTextInstructions(s);
