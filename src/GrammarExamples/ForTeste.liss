@@ -31,4 +31,7 @@ statements
 		writeln(b);
 	}
 
+	input(a);
+	writeln(a);
+
 }

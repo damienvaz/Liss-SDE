@@ -32,7 +32,7 @@ liss [IdentifiersTable idTH]
 body[IdentifiersTable idTH]
      : '{'
        'declarations' {isDeclarations = true;} declarations[idTH]
-       'statements'   {isDeclarations = false;} s=statements[idTH] { m.addTextInstructions(m.exitProgram($s.line)); m.addLineInstruction("indexoutofboundError",m.indexOutOfBoundError($s.line));m.addLineInstruction("write",m.textWriteMessage(true,$s.line));m.addLineInstruction("writeln",m.textWriteMessage(false,$s.line));}
+       'statements'   {isDeclarations = false;} s=statements[idTH] { m.addTextInstructions(m.exitProgram($s.line)); m.addLineInstruction("indexoutofboundError",m.indexOutOfBoundError($s.line));m.addLineInstruction("write",m.textWriteMessage(true,$s.line));m.addLineInstruction("writeln",m.textWriteMessage(false,$s.line));m.addLineInstruction("read",m.textReadFunction());}
        '}'
      ;
 
@@ -517,9 +517,9 @@ statement [IdentifiersTable idTH]
           @init{
             Set set = null;
           }
-          : a=assignment[idTH] ';'          {$line=$a.line; $pos=$a.pos;}
+          : a=assignment[idTH] ';'          {$line=$a.line; $pos=$a.pos;}           //done
           | w=write_statement[idTH] ';'     {$line=$w.line; $pos=$w.pos;}           //done
-          | read_statement[idTH] ';'
+          | r=read_statement[idTH] ';'      {$line=$r.line; $pos=$r.pos;}
           | c=conditional_statement[idTH]   {$line=$c.line; $pos=$c.pos;}           //done
           | i=iterative_statement[idTH]     {$line=$i.line; $pos=$i.pos;}           //done
           | function_call[idTH, set] ';'
@@ -1344,7 +1344,8 @@ read_statement [IdentifiersTable idTH]
                   if(!(v != null && v.getCategory().equals("VAR") && v.getInfoType().equals("integer"))){       //verificar se existe e é tipo inteiro e class VAR
                     e.addMessage($i.line,$i.pos,ErrorMessage.semantic($i.text,ErrorMessage.type(v.getInfoType(),"integer")));
                   }else{
-
+                    String s = m.textRead($i.text, $i.line, $i.pos);
+                    m.addTextInstruction(s);
                   }
                }
                ;

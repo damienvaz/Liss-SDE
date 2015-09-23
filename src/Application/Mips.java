@@ -766,6 +766,27 @@ public class Mips {
 
     /*************************** READ *********************************/
 
+    public String textRead(String variable, int line, int pos){
+        StringBuilder s = new StringBuilder();
+
+        s.append("\tjal read\t\t# " + line + ":" + pos + "\n");
+        String r0 = nextFreeRegister();
+        s.append("\tmove "+r0+", $v0\t\t# " + line + ":" + pos +"\n");
+        s.append(storeWord(variable,line,pos));
+
+        return s.toString();
+    }
+
+    public String textReadFunction(){
+        StringBuilder s = new StringBuilder();
+
+        s.append("\tli $v0,5\n");
+        s.append("\tsyscall\n");
+        s.append("\tjr $ra\n");
+
+        return s.toString();
+    }
+
     /******************************************************************/
 
     public void removeLastStack(){
