@@ -521,7 +521,7 @@ statement [IdentifiersTable idTH]
           | w=write_statement[idTH] ';'     {$line=$w.line; $pos=$w.pos;}           //done
           | read_statement[idTH] ';'
           | c=conditional_statement[idTH]   {$line=$c.line; $pos=$c.pos;}           //done
-          | iterative_statement[idTH]       //done
+          | i=iterative_statement[idTH]     {$line=$i.line; $pos=$i.pos;}           //done
           | function_call[idTH, set] ';'
           | s=succ_or_pred[idTH] ';'        {$line=$s.line; $pos=$s.pos;}           //done
           | copy_statement[idTH] ';'
@@ -1335,8 +1335,11 @@ print_what [IdentifiersTable idTH]
 /* ****** Read statement ****** */
 
 read_statement [IdentifiersTable idTH]
-               : 'input' '(' i=identifier ')'
+               returns [int line, int pos]
+               : in='input' '(' i=identifier ')'
                {
+                  $line = $in.line;
+                  $pos = $in.pos;
                   Var v = (Var) $idTH.getInfoIdentifiersTable($i.text);
                   if(!(v != null && v.getCategory().equals("VAR") && v.getInfoType().equals("integer"))){       //verificar se existe e é tipo inteiro e class VAR
                     e.addMessage($i.line,$i.pos,ErrorMessage.semantic($i.text,ErrorMessage.type(v.getInfoType(),"integer")));
@@ -1350,12 +1353,13 @@ read_statement [IdentifiersTable idTH]
 
 conditional_statement [IdentifiersTable idTH]
                       returns [int line, int pos]
-                      : i=if_then_else_stat[idTH] { $line = $i.line; $pos = $i.pos; m.removeLastStack();    }
+                      : i=if_then_else_stat[idTH] { $line = $i.line; $pos = $i.pos; m.removeLastStack();}
                       ;
 
 iterative_statement [IdentifiersTable idTH]
-                    : for_stat[idTH]
-                    | while_stat[idTH]
+                    returns [int line, int pos]
+                    : f=for_stat[idTH]      {$line = $f.line; $pos = $f.pos;}
+                    | w=while_stat[idTH]    {$line = $w.line; $pos = $w.pos;}
                     ;
 
 /* ****** if_then_else_stat ****** */
@@ -1404,15 +1408,24 @@ else_expression [IdentifiersTable idTH, int line, int pos]
 /* ****** for_stat ****** */
 
 for_stat [IdentifiersTable idTH]
+         returns [int line, int pos]
          : f='for' '(' i=interval[idTH] ')' s=step
             {
-                String s1 = $i.mipsCodeS;
-                s1 += m.textForCondition($i.maximumMipsCodeS, $s.stepUp, $f.line, $f.pos);
-                m.addTextInstructions(s1);
+                $line = $f.line;
+                $pos = $f.pos;
+                if($i.inArray == true && $s.stepS == true){
+                    e.addMessage($f.line, $f.pos, ErrorMessage.semantic($f.text, ErrorMessage.foreachStep()));
+                }else{
+                    String s1 = $i.mipsCodeS;
+                    s1 += m.textForCondition($i.inArray, $i.variableS, $i.arrayS, $i.maximumMipsCodeS, $s.stepUp, $f.line, $f.pos);
+                    m.addTextInstructions(s1);
+                }
             }
             s2=satisfy[idTH]
             {
-                if($s2.mipsCodeS!=null){
+                if($i.inArray == true && $s2.satisfyingS == true){
+                    e.addMessage($f.line, $f.pos, ErrorMessage.semantic($f.text, ErrorMessage.foreachSatisfying()));
+                }else if($s2.mipsCodeS!=null){
                     String s = m.textForSatisfyingInit($s2.mipsCodeS, $s2.line, $s2.pos); //Fazer isto !!!
                     m.addTextInstructions(s);
                 }
@@ -1425,9 +1438,9 @@ for_stat [IdentifiersTable idTH]
                 }
                 //P.C. = inArray, stepBoolean, StepValue
                 if(l!=null){
-                    l += m.textForStep($i.inArray, $s.stepUp, $s.numberS, $s3.line, $s3.pos);
+                    l += m.textForStep($i.variable, $i.inArray, $s.stepUp, $s.numberS, $s3.line, $s3.pos);
                 }else{
-                    l = m.textForStep($i.inArray, $s.stepUp, $s.numberS, $s3.line, $s3.pos);
+                    l = m.textForStep($i.variable, $i.inArray, $s.stepUp, $s.numberS, $s3.line, $s3.pos);
                 }
                 //need to implement stepup and stepdown
                 m.addTextInstructions(l);
@@ -1435,66 +1448,70 @@ for_stat [IdentifiersTable idTH]
          ;
 
 interval [IdentifiersTable idTH]
-         returns [String mipsCodeS, boolean inArray, String maximumMipsCodeS]
+         returns [String mipsCodeS, boolean inArray, String maximumMipsCodeS, String variable, String arrayS, String variableS]
          @init{
             $mipsCodeS = null;
+            $arrayS = null;
+            $variableS = null;
          }
-         : i=identifier t=type_interval[idTH]
+         : i=identifier t=type_interval[idTH,$i.text]
          {
             Var v = (Var) $idTH.getInfoIdentifiersTable($i.text);
             if(!(v != null && v.getCategory().equals("VAR") && v.getInfoType().equals("integer"))){   //identifier tem que pertencer a tabela, cat VAR e tipo inteiro
                 e.addMessage($i.line,$i.pos,ErrorMessage.semantic($i.text,ErrorMessage.type(v.getInfoType(),"integer")));
             }else{
                 $mipsCodeS = $t.minimumMipsCodeS;
-                $inArray = $t.inArray;
+                $inArray = $t.inArrayS;
                 $maximumMipsCodeS = $t.maximumMipsCodeS;
+                $variable = $i.text;
+                $arrayS = $t.arrayS;
+                $variableS = $i.text;
             }
          }
          ;
 
-type_interval [IdentifiersTable idTH]
-              returns [String minimumMipsCodeS, String maximumMipsCodeS, boolean inArray]
+type_interval [IdentifiersTable idTH, String variable]
+              returns [String minimumMipsCodeS, String maximumMipsCodeS, boolean inArrayS, String arrayS]
               @init{
-                $inArray = false;
+                $inArrayS = false;
+                $arrayS = null;
               }
-              : 'in' r=range[idTH]        {$minimumMipsCodeS = $r.minimumMipsCodeS; $maximumMipsCodeS = $r.maximumMipsCodeS;}
+              : 'in' r=range[idTH,variable,$inArrayS]        {$minimumMipsCodeS = $r.minimumMipsCodeS; $maximumMipsCodeS = $r.maximumMipsCodeS;}
               | 'inArray' i=identifier {
-                                        $inArray = true;
+                                        $inArrayS = true;
                                         Var v = (Var) $idTH.getInfoIdentifiersTable($i.text);
                                         if(!(v != null && v.getCategory().equals("VAR") && v.getInfoType().equals("array"))){   //identifier => Array e cat VAR
                                             e.addMessage($i.line,$i.pos,ErrorMessage.semantic($i.text,ErrorMessage.type(v.getInfoType(),"integer")));
                                         }else{
-                                            if($inArray == true){
+                                            if($inArrayS == true){
                                                 String s = m.loadImmediateWord("0", $i.line, $i.pos); // 0 because "inArray" is a foreach !! So it must pass to every position of the array. That's why we begin by 0 until the maximum of the dimension of the array.
-                                                $minimumMipsCodeS = m.textForInit(s, $i.line, $i.pos);
-                                                System.out.println("MINIMUM3");
+                                                $minimumMipsCodeS = m.textForInit($inArrayS,$variable,s, $i.line, $i.pos);
 
                                                 // We need to do the code for maximum ! we need to calculate the size of the array !
                                                 Array a = (Array) $idTH.getInfoIdentifiersTable($i.text);
                                                 Integer res =  new Integer(1);
                                                 for(Integer i : a.getLimits()){
                                                     res = res * i;
-                                                    //System.out.println(i.toString());
                                                 }
+                                                res = res-1; //This is needed due to calculation of the array ! For example : [3|2] => 6 positions but the address goes to [0..20] and not 3*2*4 (=24)
                                                 res = res*4;
-                                                //System.out.println("Array Maximum size : "+res.toString());
 
                                                 $maximumMipsCodeS = m.loadImmediateWord(res.toString(), $i.line, $i.pos);
-                                                System.out.println("MAXIMUM3");
+                                                $arrayS = $i.text;
                                             }
                                         }
                                        }
               //| 'inFunction' identifier //tenho aqui representado !
               ;
 
-range [IdentifiersTable idTH]
+range [IdentifiersTable idTH, String variable, boolean inArray]
       returns [String minimumMipsCodeS, String maximumMipsCodeS]
-      : m1=minimum[idTH] '..' m2=maximum[idTH] { $minimumMipsCodeS = $m1.mipsCodeS; $maximumMipsCodeS = $m2.mipsCodeS;}
+      : m1=minimum[idTH,variable,$inArray] '..' m2=maximum[idTH] { $minimumMipsCodeS = $m1.mipsCodeS; $maximumMipsCodeS = $m2.mipsCodeS;}
       ;
 
-minimum [IdentifiersTable idTH]
+minimum [IdentifiersTable idTH, String variable, boolean inArray]
         returns [String mipsCodeS]
-        : n=number        { String s = m.loadImmediateWord($n.text, $n.line, $n.pos); $mipsCodeS = m.textForInit(s, $n.line, $n.pos);System.out.println("MINIMUM1");}
+        : n=number        { String s = m.loadImmediateWord($n.text, $n.line, $n.pos); $mipsCodeS = m.textForInit($inArray,$variable,s, $n.line, $n.pos);System.out.println("MINIMUM1");}
         | i=identifier
          {
             Var v = (Var) $idTH.getInfoIdentifiersTable($i.text);
@@ -1502,7 +1519,7 @@ minimum [IdentifiersTable idTH]
                 e.addMessage($i.line,$i.pos,ErrorMessage.semantic($i.text,ErrorMessage.type(v.getInfoType(),"integer")));
             }else{
                 String s = m.loadWord($i.text, $i.line, $i.pos);
-                $mipsCodeS = m.textForInit(s, $i.line, $i.pos);
+                $mipsCodeS = m.textForInit($inArray,$variable,s, $i.line, $i.pos);
                  System.out.println("MINIMUM2");
             }
          }
@@ -1524,12 +1541,11 @@ maximum [IdentifiersTable idTH]
         ;
 
 step
-     returns [boolean stepUp, String numberS]
-     :
-     | u=up_down n=number {
-                            $stepUp = $u.stepUp; $numberS = $n.text;
-
-                        }
+     returns [boolean stepS, boolean stepUp, String numberS]
+     :                      { $stepUp = true; $stepS = false;}
+     | u=up_down n=number   {
+                              $stepUp = $u.stepUp; $numberS = $n.text; $stepS = true;
+                            }
      ;
 
 up_down returns [boolean stepUp]
@@ -1541,15 +1557,16 @@ up_down returns [boolean stepUp]
         ;
 
 satisfy [IdentifiersTable idTH]
-        returns [String mipsCodeS, int line, int pos]
+        returns [String mipsCodeS, boolean satisfyingS, int line, int pos]
         @init{
             Set tree = null;
             $mipsCodeS = null;
         }
-        :
+        :                                           {$mipsCodeS = null; $satisfyingS = false;}
         | 'satisfying' e=expression[idTH, tree]
         {   $line = $e.line;
             $pos = $e.pos;
+            $satisfyingS = true;
             if(!($e.typeS !=null && $e.typeS.equals("boolean"))){
                 e.addMessage($e.line,$e.pos,ErrorMessage.semantic($e.text,ErrorMessage.type($e.typeS,"boolean")));
             }else{
@@ -1561,11 +1578,15 @@ satisfy [IdentifiersTable idTH]
 /* ****** While_Stat ****** */
 
 while_stat [IdentifiersTable idTH]
+           returns [int line, int pos]
            @init{
               Set tree = null;
            }
-           : 'while' '('  e=expression[idTH, tree] ')'
-                { if(!($e.typeS!=null && $e.typeS.equals("boolean"))){
+           : w='while' '('  e=expression[idTH, tree] ')'
+                {
+                  $line = $w.line;
+                  $pos = $w.pos;
+                  if(!($e.typeS!=null && $e.typeS.equals("boolean"))){
                     e.addMessage($e.line,$e.pos,ErrorMessage.semantic($e.text,ErrorMessage.type($e.typeS,"boolean")));
                   }else{
                     if($e.mipsCodeS != null){

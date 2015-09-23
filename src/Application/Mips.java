@@ -636,7 +636,7 @@ public class Mips {
 
     /*************************** FOR *********************************/
 
-    public String textForCondition(String mipsCodeS, boolean stepUp, int line, int pos){
+    public String textForCondition(boolean inArray, String variable, String array, String mipsCodeS, boolean stepUp, int line, int pos){
         StringBuilder s = new StringBuilder();
 
         Integer i = this.counterJumpStack.getFirst();
@@ -650,6 +650,12 @@ public class Mips {
             String r0 = res[0];
             s.append("\tbne "+r0+", 1, for_exit"+i.toString()+"\t\t# " + line + ":" + pos + "\n");
             freeLastRegister();
+            //Write code for inArray
+            if(inArray == true){
+                s.append(loadWord("for_var"+i.toString(),line,pos));
+                s.append(loadWordArray(array, line, pos));
+                s.append(storeWord(variable,line,pos));
+            }
         }else if(stepUp == false){
             //It means stepDown !  var >= Superior Limit
             s.append(textSetOnLessThan(line,pos));
@@ -667,7 +673,6 @@ public class Mips {
 
         if(this.counterJumpStack.size()>0) {
             Integer i = this.counterJumpStack.getFirst();
-            //s.append("  satisfying"+i.toString()+":\n");
             s.append(mipsCodeS);
             String res[] = lastRegisterOccupied();
             String r0 = res[0];
@@ -694,25 +699,35 @@ public class Mips {
         return s.toString();
     }
 
-    public String textForInit(String mipsCodeS, int line, int pos){
+    public String textForInit(boolean inArray,String variable, String mipsCodeS, int line, int pos){
         StringBuilder s = new StringBuilder();
 
         this.counterJump++;
         this.counterJumpStack.push(this.counterJump);
         Integer i = this.counterJumpStack.getFirst();
 
-        addDataInstruction("for_var"+i.toString(),dataWord("0",line,pos));
+        if(inArray == true) {
+            addDataInstruction("for_var"+i.toString(),dataWord("0",line,pos));
+        }
 
         s.append("\t########### INIT FOR_LOOP" + i.toString() + " ###########\n");
         s.append(mipsCodeS);
-        s.append(storeWord("for_var"+i.toString(),line,pos));
-        s.append("  for_loop"+i.toString()+":\n");
-        s.append(loadWord("for_var" + i.toString(), line, pos));
+        if(inArray == true) {
+            s.append(storeWord("for_var"+i.toString(),line,pos));
+        }else{
+            s.append(storeWord(variable, line, pos));
+        }
+        s.append("  for_loop" + i.toString()+":\n");
+        if(inArray == true) {
+            s.append(loadWord("for_var" + i.toString(), line, pos));
+        }else {
+            s.append(loadWord(variable, line, pos));
+        }
 
         return s.toString();
     }
 
-    public String textForStep(boolean inArray, boolean stepUp, String stepValue, int line, int pos){
+    public String textForStep(String variable, boolean inArray, boolean stepUp, String stepValue, int line, int pos){
         StringBuilder s = new StringBuilder();
 
         Integer i = this.counterJumpStack.getFirst();
@@ -721,20 +736,22 @@ public class Mips {
             s.append(loadWord("for_var"+i.toString(), line, pos));
             s.append(loadImmediateWord("4", line, pos));
             s.append(textAdd(line, pos));
-            s.append(storeWord("for_var"+i.toString(), line, pos));
+            String res[] = lastRegisterOccupied();
+            s.append("\tsw "+res[0]+", for_var"+i.toString()+"\t\t# "+line+":"+pos+"\n");
+            resetRegister();
             s.append("\tj for_loop"+i.toString()+"\t\t# " + line + ":" + pos + "\n");
         }else{
             if(stepUp == true){
-                s.append(loadWord("for_var"+i.toString(), line, pos));
+                s.append(loadWord(variable, line, pos));
                 s.append(loadImmediateWord(stepValue, line, pos));
                 s.append(textAdd(line, pos));
-                s.append(storeWord("for_var" + i.toString(), line, pos));
+                s.append(storeWord(variable, line, pos));
                 s.append("\tj for_loop"+i.toString()+"\t\t# " + line + ":" + pos + "\n");
-            }else if(stepUp == false){
-                s.append(loadWord("for_var" + i.toString(), line, pos));
+            } else if(stepUp == false){
+                s.append(loadWord(variable, line, pos));
                 s.append(loadImmediateWord(stepValue, line, pos));
                 s.append(textSub(line, pos));
-                s.append(storeWord("for_var" + i.toString(), line, pos));
+                s.append(storeWord(variable,line,pos));
                 s.append("\tj for_loop"+i.toString()+"\t\t# " + line + ":" + pos + "\n");
             }
         }
@@ -746,6 +763,10 @@ public class Mips {
     }
 
     /*****************************************************************/
+
+    /*************************** READ *********************************/
+
+    /******************************************************************/
 
     public void removeLastStack(){
         if(this.counterJumpStack.size()>0) {
