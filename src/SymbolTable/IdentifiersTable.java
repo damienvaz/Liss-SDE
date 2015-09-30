@@ -50,8 +50,6 @@ public class IdentifiersTable {
         this.idTable.put("boolean", new LinkedList<InfoIdentifiersTable>());
         this.idTable.get("boolean").add(bool);
 
-        //this.address = 0;
-
     }
 
     /* *** Methods *** */

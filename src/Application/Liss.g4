@@ -19,20 +19,23 @@ grammar Liss;
 
     boolean isDeclarations;
 
+    String function = null;
+    boolean functionState = false;
+
      Mips m = new Mips();
 }
 
 /* ****** Program ****** */
 
 liss [IdentifiersTable idTH]
-     : 'program' identifier body[idTH] { System.out.println(e.toString()); if(e.isNull()){ m.write();}}
+     : 'program' identifier body[idTH] { m.addDataInstruction(m.dataTextOriginal()); m.textExitCode(); System.out.println(e.toString()); if(e.isNull()){ m.write();}}
      ;
 
 
 body[IdentifiersTable idTH]
      : '{'
        'declarations' {isDeclarations = true;} declarations[idTH]
-       'statements'   {isDeclarations = false;} s=statements[idTH] { m.addTextInstructions(m.exitProgram($s.line)); m.addLineInstruction("indexoutofboundError",m.indexOutOfBoundError($s.line));m.addLineInstruction("write",m.textWriteMessage(true,$s.line));m.addLineInstruction("writeln",m.textWriteMessage(false,$s.line));m.addLineInstruction("read",m.textReadFunction());}
+       'statements'   {isDeclarations = false;} s=statements[idTH]
        '}'
      ;
 
@@ -43,14 +46,14 @@ declarations[IdentifiersTable idTH]
              ;
 
 declaration [IdentifiersTable idTH]
-            : variable_declaration[idTH]* subprogram_definition[idTH]* { m.addDataInstruction(m.dataTextOriginal());}
+            : variable_declaration[idTH]*  subprogram_definition[idTH]*
             ;
 
 /* ****** Variables ****** */
 
 variable_declaration [IdentifiersTable idTH]
                      : vars[idTH] '->' type ';' {
-                            HashMap<String, HashMap<String,Object>> varsH = $vars.varsS;
+                        HashMap<String, HashMap<String,Object>> varsH = $vars.varsS;
                             if($type.typeS == "array" ){
                                 for(String i : varsH.keySet()){
                                     varsH.get(i).put("dimension",$type.arrayDimension);
@@ -60,17 +63,17 @@ variable_declaration [IdentifiersTable idTH]
 
                                         String mipsCodeS = null;
 
-                                        m.addTextInstruction("\t##### Initialize Array :"+i+"#####\n");
+                                        if(functionState == false){
+                                            m.addTextInstruction("\t##### Initialize Array :"+i+"#####\n");
+                                        }
                                         for(ArrayList<Integer> array :accessArray){
-                                            int value = array.get(array.size()-1);
+                                            int valueOfThePositionOfTheArray = array.get(array.size()-1);
                                             array.remove(array.size()-1);
 
                                             //System.out.println(mipsCodeS);
 
                                             int res = 0;
-                                            System.out.println("WOOOOOOOOOOOOOT BEGIN \n");
                                             for(int j=0; j< array.size(); j++){
-                                                System.out.print(array.get(j).toString()+" <- QUE È ISSO ? ");
                                                 int calc = array.get(j);
                                                 //Verify if the position of the value for setting the array is in the limits of the array !!!
                                                 if(calc < $type.arrayDimension.get(j)){
@@ -82,28 +85,23 @@ variable_declaration [IdentifiersTable idTH]
                                                     e.addMessage((int)varsH.get(i).get("line"),(int)varsH.get(i).get("pos"),ErrorMessage.semantic($vars.text,ErrorMessage.LimitsArray));
                                                 }
                                             }
-                                            System.out.println("WOOOOOOOOOOOOOT END \n");
 
-                                            //we need to see if the res is in the max limit of the array
-                                            /*int limitMaxArray = 1;
-                                            for(Integer i : $type.arrayDimension){
-                                                limitMaxArray = limitMaxArray * i;
-                                            }
-                                            */
-
-                                            //if( res >= 0 && res < limitMaxArray){
-                                                res = res*4;
-                                                //Add the value of the array firstly
-                                                mipsCodeS = m.loadImmediateWord(String.valueOf(value), (int)varsH.get(i).get("line"), (int)varsH.get(i).get("pos")); //generate mips code for value of the array
-                                                //Add the address of the value of the array
-                                                mipsCodeS = mipsCodeS + m.loadImmediateWord(String.valueOf(res), (int)varsH.get(i).get("line"), (int)varsH.get(i).get("pos"));//generate mips code for position of the array
-                                                //Function for adding the value and the addres of the value to the given array
-                                                mipsCodeS = mipsCodeS + m.storeWordArray(i,(int)varsH.get(i).get("line"), (int)varsH.get(i).get("pos"));
-                                                //Add the instruction to the assembly
+                                            res = res*4;
+                                            //Add the value of the array firstly
+                                            mipsCodeS = m.loadImmediateWord(String.valueOf(valueOfThePositionOfTheArray), (int)varsH.get(i).get("line"), (int)varsH.get(i).get("pos")); //generate mips code for value of the array
+                                            //Add the address of the value of the array
+                                            mipsCodeS = mipsCodeS + m.loadImmediateWord(String.valueOf(res), (int)varsH.get(i).get("line"), (int)varsH.get(i).get("pos"));//generate mips code for position of the array
+                                            //Function for adding the value and the addres of the value to the given array
+                                            mipsCodeS = mipsCodeS + m.storeWordArray(i,(int)varsH.get(i).get("line"), (int)varsH.get(i).get("pos"));
+                                            //Add the instruction to the assembly
+                                            if(functionState == false){
                                                 m.addTextInstruction(mipsCodeS);
-                                            //}
+                                            }
+
                                         }
-                                        m.addTextInstruction("\t#######################################\n");
+                                        if(functionState == false){
+                                            m.addTextInstruction("\t#######################################\n");
+                                        }
                                         varsH.get(i).put("mips",mipsCodeS);
                                     }
                                 }
@@ -114,19 +112,12 @@ variable_declaration [IdentifiersTable idTH]
                                         v.put("set", new Set());
                                     }
                                 }
-                                //for(String i : varsH.keySet()){
                                 for(String i : varsH.keySet()){
-                                    System.out.println("Variable: "+i+" || "+varsH.get(i).toString());
-
-
                                     Node n1 = new Node(new String("2"),null,null);
                                     Node n2 = new Node(new String("3"),null,null);
                                     Node n3 = new Node(new String("+"),n1,n2);
 
                                     Application.Set ss= (Application.Set) varsH.get(i).get("set");
-                                    //ss.getSet().setIdentifier(n3);
-                                    //ss.setIdentifier(n3);
-                                    //System.out.println("Variable: "+i+" || "+varsH.get(i).toString());
                                 }
                             }
 
@@ -144,17 +135,17 @@ variable_declaration [IdentifiersTable idTH]
 
 
                             //Print the HashMap<String, HashMap<String,Object>> varsH
-                            /*for(String i : varsH.keySet()){
+                            for(String i : varsH.keySet()){
                                 System.out.println("Variable: "+i+" "+varsH.get(i).toString());
-                            }*/
+                            }
 
 
                             $idTH.add(e,varsH,$type.typeS,level);
-                            //if(isSet){isSet = false;}
 
                             //MIPS
-                            m.addDataInstructions(varsH,$type.typeS);
-
+                            if(functionState == false){
+                                m.addDataInstructions(varsH,$type.typeS);
+                            }
                      }
                      ;
 
@@ -399,21 +390,27 @@ set_initialization [IdentifiersTable idTH]
 subprogram_definition[IdentifiersTable idTH]
 
                       @init{
-                        level++;
                         HashMap<String,Object> varInfo = new HashMap<String, Object>();
                         HashMap<String, HashMap<String, Object>> hashmapVar = new HashMap<String, HashMap<String,Object>>();
 
+                        //If level == 0 , then it means that it will enter to a subprogram and must activate the flag of functionState (state which is saying if it is on a subprogram or not) to true !!!
+                        if(level == 0){functionState = true;}
+                        level++;
                         $idTH.setAddress(0);
                       }
-                      : 'subprogram' i=identifier
-                        '(' f=formal_args[idTH] ')' r=return_type f_body[idTH]
+                      : 'subprogram' i=identifier { function = $i.text; }
+                        '(' f=formal_args[idTH] ')' r=return_type f2=f_body[idTH]
                         {
-                            //Pre-Condition : Remover todas as variaveis do nivel actual
+                            //MIPS
 
+
+
+                            //Pre-Condition : Remover todas as variaveis do nivel actual
                             $idTH.removeLevel(level);
 
                             level--;
 
+                            //Info we must create for adding to the identifier table (regarding to the FUNCTION)
                             varInfo.put("line",$i.line);
                             varInfo.put("pos",$i.pos);
                             varInfo.put("return",$r.typeS);
@@ -422,14 +419,23 @@ subprogram_definition[IdentifiersTable idTH]
 
                             hashmapVar.put($i.text,varInfo);
                             $idTH.add(e,hashmapVar,"function",level);
+
+                            if(!$r.typeS.equals($f2.typeS)){
+                                e.addMessage($i.line,$i.pos,ErrorMessage.semanticReturnSubProgram($i.text,ErrorMessage.returnType($f2.typeS,$r.typeS)));
+                            }
+
+
+                            //If the level is equal to zero, then it means that it exited a subprogram and the behaviour is different from now on ! Everything is related to global variables !
+                            if(level == 0){functionState = false;}
                         }
                       ;
 
 f_body[IdentifiersTable idTH]
+      returns [String typeS, String returnS]
        : '{'
-         'declarations' {isDeclarations = true;} declarations[idTH]
+         'declarations' {isDeclarations = true;}    declarations[idTH]
          'statements'   {isDeclarations = false;}   statements[idTH]
-         returnSubPrg[idTH]
+         r=returnSubPrg[idTH] {$typeS = $r.typeS; $returnS = $r.text;}
          '}'
        ;
 
@@ -479,6 +485,10 @@ formal_arg
             varInfo.put("line",$i.line);
             varInfo.put("pos",$i.pos);
 
+            if($t.typeS.equals("array")){
+                varInfo.put("dimension",$type.arrayDimension);
+            }
+
             hashmapVar.put($i.text,varInfo);
             $hashmapVarS = hashmapVar;
             $typeS = $t.typeS;
@@ -496,20 +506,21 @@ return_type
 /* ****** Return ****** */
 
 returnSubPrg [IdentifiersTable idTH]
-             returns [String typeS]
+             returns [String typeS, int line, int pos]
              @init{
                 Set tree = null;
-                $typeS = null;
+                $typeS = "null";
+
              }
              :
-             | 'return' e=expression[idTH,tree]{$typeS = $e.typeS;} ';'
+             | r='return' e=expression[idTH,tree]{$typeS = $e.typeS;} ';'
              ;
 
 /* ****** Statements ****** */
 
 statements [IdentifiersTable idTH]
            returns [int line, int pos]
-            : ({ m.resetRegister(); }s=statement[idTH])* { $line = $s.line; $pos = $s.pos; }
+            : ({ m.resetRegister(); }s=statement[idTH] { $line = $s.line; $pos = $s.pos; })*
             ;
 
 statement [IdentifiersTable idTH]
@@ -522,7 +533,7 @@ statement [IdentifiersTable idTH]
           | r=read_statement[idTH] ';'      {$line=$r.line; $pos=$r.pos;}
           | c=conditional_statement[idTH]   {$line=$c.line; $pos=$c.pos;}           //done
           | i=iterative_statement[idTH]     {$line=$i.line; $pos=$i.pos;}           //done
-          | function_call[idTH, set] ';'
+          | f=function_call[idTH, set] ';'  {$line=$f.line; $pos=$f.pos;}
           | s=succ_or_pred[idTH] ';'        {$line=$s.line; $pos=$s.pos;}           //done
           | copy_statement[idTH] ';'
           | cat_statement[idTH] ';' // conjuntos de sequencias
@@ -541,33 +552,35 @@ assignment [IdentifiersTable idTH]
            {
               $line = $r.line;
               $pos = $r.pos;
-              if(($designator.typeS != null && $expression.typeS != null) && $designator.typeS.equals($expression.typeS)){
-                $typeS = $designator.typeS;
-                System.out.println($designator.line+"Funcionou ;D");
+              if(functionState == false){
+                  if(($designator.typeS != null && $expression.typeS != null) && $designator.typeS.equals($expression.typeS)){
+                    $typeS = $designator.typeS;
+                    System.out.println($designator.line+"Funcionou ;D");
 
-                //MIPS
-                if($expression.mipsCodeS != null){
-                    System.out.println("INICIO <- assignment");
-                    System.out.println($expression.mipsCodeS);
-                    System.out.println("FIM <- assignment");
-                    String mipsCodeS = "";
-                    if($designator.arrayS == false){
-                        mipsCodeS = $expression.mipsCodeS;
-                        mipsCodeS += m.storeWord($designator.text, $designator.line, $designator.pos);
-                        //m.addTextInstructions($designator.text,$expression.mipsCodeS,$designator.typeS,$designator.line,$designator.pos);
-                    }else if($designator.arrayS == true){
-                        mipsCodeS = $designator.mipsCodeS;
-                        mipsCodeS += $expression.mipsCodeS;
-                        mipsCodeS += m.storeWordArrayText($designator.identifierS, $designator.line, $designator.pos);
+                    //MIPS
+                    if($expression.mipsCodeS != null){
+                        //System.out.println("INICIO <- assignment");
+                        //System.out.println($expression.mipsCodeS);
+                        //System.out.println("FIM <- assignment");
+                        String mipsCodeS = "";
+                        if($designator.arrayS == false){
+                            mipsCodeS = $expression.mipsCodeS;
+                            mipsCodeS += m.storeWord($designator.text, $designator.line, $designator.pos);
+                            //m.addTextInstructions($designator.text,$expression.mipsCodeS,$designator.typeS,$designator.line,$designator.pos);
+                        }else if($designator.arrayS == true){
+                            mipsCodeS = $designator.mipsCodeS;
+                            mipsCodeS += $expression.mipsCodeS;
+                            mipsCodeS += m.storeWordArrayText($designator.identifierS, $designator.line, $designator.pos);
+                        }
+
+                        m.addTextInstructions(mipsCodeS);
+                        //m.addLineInstruction("line"+$r.line,mipsCodeS);
                     }
 
-                    m.addTextInstructions(mipsCodeS);
-                    //m.addLineInstruction("line"+$r.line,mipsCodeS);
-                }
-
-              }else{
-                //ErrorMessage.errorSemanticAssignment($designator.line);
-                e.addMessage($designator.line,-1,ErrorMessage.semanticAssignment($designator.line)); //-1 => assignemen error => there is no pos.
+                  }else{
+                    //ErrorMessage.errorSemanticAssignment($designator.line);
+                    e.addMessage($designator.line,-1,ErrorMessage.semanticAssignment($designator.line)); //-1 => assignemen error => there is no pos.
+                  }
               }
 
 
@@ -611,7 +624,7 @@ designator [IdentifiersTable idTH, Set set, String side]
                                                 if($typeS.equals("integer") || $typeS.equals("boolean")){
                                                     if($side.equals("right")){
                                                         $mipsCodeS = m.loadWord($i.text, $i.line, $i.pos);
-                                                        System.out.println($mipsCodeS);
+                                                        //System.out.println($mipsCodeS);
                                                     }
                                                 }
                                             }
@@ -796,8 +809,24 @@ elem_array [IdentifiersTable idTH, Set set, String id] //id = name of the array
 /* ****** Function call ****** */
 
 function_call [IdentifiersTable idTH, Set set]
-              returns [Node treeS]
-              : i=identifier '(' s=sub_prg_args[idTH, set] ')' { if( $set!=null){Node m = new Node(new String("call"),new Node(new String($i.text),null,null),$s.treeS);}/*if(isSet && $set!=null){Node m = new Node(new String("call"),new Node(new String($i.text),null,null),$s.treeS);}*/}
+              returns [Node treeS, int line, int pos, String typeS]
+              : i=identifier '(' s=sub_prg_args[idTH, set] ')'
+                {
+                    $line = $i.line;
+                    $pos = $i.pos;
+                    if($idTH.getIdentifiersTable().containsKey($i.text)){
+                        if($idTH.getInfoIdentifiersTable($i.text) instanceof Function){
+                            Function f = (Function) $idTH.getInfoIdentifiersTable($i.text);
+                            $typeS = f.getInfoType();
+                        }
+                    }else{
+                        $typeS = null;
+                    }
+
+                    if( $set!=null){
+                        Node m = new Node(new String("call"),new Node(new String($i.text),null,null),$s.treeS);
+                    }
+                }
               ;
 
 sub_prg_args [IdentifiersTable idTH, Set set]
@@ -855,7 +884,6 @@ expression [IdentifiersTable idTH, Set set]
                                         $mipsCodeS = $mipsCodeS + m.textDifferent($rel_op.line,$rel_op.pos);
                                     }
 
-                                    System.out.println($mipsCodeS+"kijuhygkjnhbjiuhgjytfrdrf");
                                 }
                                 //System.out.println($mipsCodeS);
 
@@ -1245,7 +1273,7 @@ factor [IdentifiersTable idTH,Set set] //vai ser preciso ver as pre-condiçoes d
             Node n = new Node(new String("not"),$f1.treeS,null);
             $treeS = n;
         }
-       | f2=function_call[idTH, set]      {$typeS = null; $treeS = $f2.treeS; /*if(isSet && $set!=null){$treeS = $f2.treeS;}*/}                                         // sintetizar a linha e a posição e declarar o tipo da funcao !!!!!
+       | f2=function_call[idTH, set]      {$typeS = $f2.typeS; $treeS = $f2.treeS; /*if(isSet && $set!=null){$treeS = $f2.treeS;}*/}                                         // sintetizar a linha e a posição e declarar o tipo da funcao !!!!!
        | s=specialFunctions[idTH, set]   {$typeS = $s.typeS; $line = $s.line; $pos = $s.pos; $treeS = $s.treeS; /*if(isSet && $s.treeS!=null && $set!=null){ $treeS = $s.treeS;}*/}
        ;
 
@@ -1296,15 +1324,17 @@ write_statement [IdentifiersTable idTH]
                  {
                     $line = $w.line;
                     $pos = $w.pos;
-                    if($p.mipsCodeS != null){
-                        if($w.write == true){
-                        //Means that it is only write !
-                            String s1 = m.textWrite($p.mipsCodeS, $w.write, $w.line, $w.pos);
-                            m.addTextInstructions(s1);
-                        }else if($w.write == false){
-                        //Means that it is only writeln !
-                            String s2 = m.textWrite($p.mipsCodeS, $w.write, $w.line, $w.pos);
-                            m.addTextInstructions(s2);
+                    if(functionState == false){
+                        if($p.mipsCodeS != null){
+                            if($w.write == true){
+                            //Means that it is only write !
+                                String s1 = m.textWrite($p.mipsCodeS, $w.write, $w.line, $w.pos);
+                                m.addTextInstructions(s1);
+                            }else if($w.write == false){
+                            //Means that it is only writeln !
+                                String s2 = m.textWrite($p.mipsCodeS, $w.write, $w.line, $w.pos);
+                                m.addTextInstructions(s2);
+                            }
                         }
                     }
                  }
@@ -1340,12 +1370,14 @@ read_statement [IdentifiersTable idTH]
                {
                   $line = $in.line;
                   $pos = $in.pos;
+                  if(functionState == false){
                   Var v = (Var) $idTH.getInfoIdentifiersTable($i.text);
-                  if(!(v != null && v.getCategory().equals("VAR") && v.getInfoType().equals("integer"))){       //verificar se existe e é tipo inteiro e class VAR
-                    e.addMessage($i.line,$i.pos,ErrorMessage.semantic($i.text,ErrorMessage.type(v.getInfoType(),"integer")));
-                  }else{
-                    String s = m.textRead($i.text, $i.line, $i.pos);
-                    m.addTextInstruction(s);
+                      if(!(v != null && v.getCategory().equals("VAR") && v.getInfoType().equals("integer"))){       //verificar se existe e é tipo inteiro e class VAR
+                        e.addMessage($i.line,$i.pos,ErrorMessage.semantic($i.text,ErrorMessage.type(v.getInfoType(),"integer")));
+                      }else{
+                        String s = m.textRead($i.text, $i.line, $i.pos);
+                        m.addTextInstruction(s);
+                      }
                   }
                }
                ;
@@ -1414,37 +1446,43 @@ for_stat [IdentifiersTable idTH]
             {
                 $line = $f.line;
                 $pos = $f.pos;
-                if($i.inArray == true && $s.stepS == true){
-                    e.addMessage($f.line, $f.pos, ErrorMessage.forEachStep());
-                }else{
-                    String s1 = $i.mipsCodeS;
-                    s1 += m.textForCondition($i.inArray, $i.variableS, $i.arrayS, $i.maximumMipsCodeS, $s.stepUp, $f.line, $f.pos);
-                    m.addTextInstructions(s1);
+                if(functionState == false){
+                    if($i.inArray == true && $s.stepS == true){
+                        e.addMessage($f.line, $f.pos, ErrorMessage.forEachStep());
+                    }else{
+                        String s1 = $i.mipsCodeS;
+                        s1 += m.textForCondition($i.inArray, $i.variableS, $i.arrayS, $i.maximumMipsCodeS, $s.stepUp, $f.line, $f.pos);
+                        m.addTextInstructions(s1);
+                    }
                 }
             }
             s2=satisfy[idTH]
             {
-                if($i.inArray == true && $s2.satisfyingS == true){
-                    e.addMessage($f.line, $f.pos, ErrorMessage.forEachSatisfying());
-                }else if($s2.mipsCodeS!=null){
-                    String s = m.textForSatisfyingInit($s2.mipsCodeS, $s2.line, $s2.pos); //Fazer isto !!!
-                    m.addTextInstructions(s);
+                if(functionState == false){
+                    if($i.inArray == true && $s2.satisfyingS == true){
+                        e.addMessage($f.line, $f.pos, ErrorMessage.forEachSatisfying());
+                    }else if($s2.mipsCodeS!=null){
+                        String s = m.textForSatisfyingInit($s2.mipsCodeS, $s2.line, $s2.pos); //Fazer isto !!!
+                        m.addTextInstructions(s);
+                    }
                 }
             }
            '{' s3=statements[idTH] '}'
             {
-                String  l = null;
-                if($s2.mipsCodeS!=null){
-                    l = m.textForSatisfyingEnd($s3.line, $s3.pos);
+                if(functionState == false){
+                    String  l = null;
+                    if($s2.mipsCodeS!=null){
+                        l = m.textForSatisfyingEnd($s3.line, $s3.pos);
+                    }
+                    //P.C. = inArray, stepBoolean, StepValue
+                    if(l!=null){
+                        l += m.textForStep($i.variable, $i.inArray, $s.stepUp, $s.numberS, $s3.line, $s3.pos);
+                    }else{
+                        l = m.textForStep($i.variable, $i.inArray, $s.stepUp, $s.numberS, $s3.line, $s3.pos);
+                    }
+                    //need to implement stepup and stepdown
+                    m.addTextInstructions(l);
                 }
-                //P.C. = inArray, stepBoolean, StepValue
-                if(l!=null){
-                    l += m.textForStep($i.variable, $i.inArray, $s.stepUp, $s.numberS, $s3.line, $s3.pos);
-                }else{
-                    l = m.textForStep($i.variable, $i.inArray, $s.stepUp, $s.numberS, $s3.line, $s3.pos);
-                }
-                //need to implement stepup and stepdown
-                m.addTextInstructions(l);
             }
          ;
 
@@ -1512,7 +1550,7 @@ range [IdentifiersTable idTH, String variable, boolean inArray]
 
 minimum [IdentifiersTable idTH, String variable, boolean inArray]
         returns [String mipsCodeS]
-        : n=number        { String s = m.loadImmediateWord($n.text, $n.line, $n.pos); $mipsCodeS = m.textForInit($inArray,$variable,s, $n.line, $n.pos);System.out.println("MINIMUM1");}
+        : n=number        { String s = m.loadImmediateWord($n.text, $n.line, $n.pos); $mipsCodeS = m.textForInit($inArray,$variable,s, $n.line, $n.pos);}
         | i=identifier
          {
             Var v = (Var) $idTH.getInfoIdentifiersTable($i.text);
@@ -1521,14 +1559,13 @@ minimum [IdentifiersTable idTH, String variable, boolean inArray]
             }else{
                 String s = m.loadWord($i.text, $i.line, $i.pos);
                 $mipsCodeS = m.textForInit($inArray,$variable,s, $i.line, $i.pos);
-                 System.out.println("MINIMUM2");
             }
          }
         ;
 
 maximum [IdentifiersTable idTH]
         returns [String mipsCodeS]
-        : n=number        { $mipsCodeS = m.loadImmediateWord($n.text, $n.line, $n.pos); System.out.println("MAXIMUM1"); }
+        : n=number        { $mipsCodeS = m.loadImmediateWord($n.text, $n.line, $n.pos); }
         | i=identifier
         {
             Var v = (Var) $idTH.getInfoIdentifiersTable($i.text);
@@ -1536,7 +1573,6 @@ maximum [IdentifiersTable idTH]
                 e.addMessage($i.line,$i.pos,ErrorMessage.semantic($i.text,ErrorMessage.type(v.getInfoType(),"integer")));
             }else{
                 $mipsCodeS = m.loadWord($i.text, $i.line, $i.pos);
-                System.out.println("MAXIMUM2 "+$i.line+" "+$i.pos);
             }
         }
         ;
@@ -1587,21 +1623,25 @@ while_stat [IdentifiersTable idTH]
                 {
                   $line = $w.line;
                   $pos = $w.pos;
-                  if(!($e.typeS!=null && $e.typeS.equals("boolean"))){
-                    e.addMessage($e.line,$e.pos,ErrorMessage.semantic($e.text,ErrorMessage.type($e.typeS,"boolean")));
-                  }else{
-                    if($e.mipsCodeS != null){
-                        String s1 = m.textWhile($e.mipsCodeS, $e.line, $e.pos);
-                        m.addTextInstruction(s1);
-                        //m.resetRegister();
-                    }
+                  if(functionState == false){
+                      if(!($e.typeS!=null && $e.typeS.equals("boolean"))){
+                        e.addMessage($e.line,$e.pos,ErrorMessage.semantic($e.text,ErrorMessage.type($e.typeS,"boolean")));
+                      }else{
+                        if($e.mipsCodeS != null){
+                            String s1 = m.textWhile($e.mipsCodeS, $e.line, $e.pos);
+                            m.addTextInstruction(s1);
+                            //m.resetRegister();
+                        }
+                      }
                   }
 
                 }
              '{' statements[idTH] l='}'
              {
-                String s2 = m.textWhileExit($l.line, $l.pos);
-                m.addTextInstruction(s2);
+                if(functionState == false){
+                    String s2 = m.textWhileExit($l.line, $l.pos);
+                    m.addTextInstruction(s2);
+                }
              }
            ;
 

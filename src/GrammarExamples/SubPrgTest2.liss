@@ -46,6 +46,6 @@ statements
 	}
 
 	writeLn(array3);
-	array2 = calculate(array1);
+	//array2 = calculate(array1);
 	writeLn(array2);
 }

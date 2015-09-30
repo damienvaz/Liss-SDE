@@ -19,6 +19,10 @@ public class ErrorMessage {
         return new String("Expression '"+var.toString()+"' "+message.toString());
     }
 
+    public static String semanticReturnSubProgram(String var, String message){
+        return new String("Function '"+var.toString()+"' "+message.toString());
+    }
+
     //essa funçao nao é para remover, apenas é preciso ver se o argumento int line da função , é mesmo necessario ?
     public static String semanticAssignment(int line){
         return new String("Incompatible types in an Assignment.");
@@ -26,6 +30,10 @@ public class ErrorMessage {
 
     public static String type(String chosenType, String expectedType){
         return " has type '"+chosenType+"',when It should be '"+expectedType+"'.";
+    }
+
+    public static String returnType(String chosenType, String expectedType){
+        return " has return type '"+chosenType+"',when It should be '"+expectedType+"'.";
     }
 
     public static String typeExpression(String leftChosenType,String operator, String rightChosenType, String leftExpectedType, String rightExpectedType){

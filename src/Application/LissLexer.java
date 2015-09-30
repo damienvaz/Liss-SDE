@@ -109,6 +109,9 @@ public class LissLexer extends Lexer {
 
 	    boolean isDeclarations;
 
+	    String function = null;
+	    boolean functionState = false;
+
 	     Mips m = new Mips();
 
 

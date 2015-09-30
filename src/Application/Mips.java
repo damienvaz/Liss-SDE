@@ -7,6 +7,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Stack;
 
 /**
  * Created by damienvaz on 6/5/15.
@@ -18,6 +19,7 @@ public class Mips {
     private String[] registerName;
     private LinkedList<Integer> counterJumpStack;   //A stack which will handle the IF/WHILE statement behavior
     private Integer counterJump;                    //A counter for the IF/WHILE statement behavior
+    private Stack<String> stackFunctions;           //It is a stack of mipscode for each subprogram generated, this is due to recursivity of subprograms !
 
     public Mips(){
         this.data = ".data\n";
@@ -39,7 +41,11 @@ public class Mips {
         this.counterJump = new Integer(0);
         this.counterJumpStack = new LinkedList<>();
 
+        this.stackFunctions = new Stack<String>();
     }
+
+    public String popMipsCodeFunction(){ return this.stackFunctions.pop();}
+    public void pushMipsCodeFunction(String s){ this.stackFunctions.push(s);}
 
 
     public void resetRegister(){
@@ -443,7 +449,7 @@ public class Mips {
         return s.toString();
     }
 
-    public String indexOutOfBoundError(int line){
+    public String indexOutOfBoundError(){
         StringBuilder s = new StringBuilder();
 
         //s.append("indexoutofboundError: \n");
@@ -458,12 +464,12 @@ public class Mips {
         s.append("\tli $v0, 4\n");
         s.append("\tla $a0, newline\n");
         s.append("\tsyscall\n");
-        s.append(exitProgram(line)); //Necessary due to an error of index ! So it must quit !
+        s.append(exitProgram()); //Necessary due to an error of index ! So it must quit !
 
         return s.toString();
     }
 
-    public String exitProgram(int line){
+    public String exitProgram(){
         StringBuilder s = new StringBuilder();
         s.append("\t####Exit Program####\n");
         s.append("\tli $v0, 10\n");
@@ -616,7 +622,7 @@ public class Mips {
         return s.toString();
     }
 
-    public String textWriteMessage(boolean value, int line){
+    public String textWriteMessage(boolean value){
         // if(value == true) => "write" ! Else "writeln" !
         StringBuilder s = new StringBuilder();
 
@@ -795,6 +801,14 @@ public class Mips {
         }
     }
 
+    public void textExitCode(){
+        addTextInstructions(exitProgram());
+        addLineInstruction("indexoutofboundError",indexOutOfBoundError());
+        addLineInstruction("write",textWriteMessage(true));
+        addLineInstruction("writeln",textWriteMessage(false));
+        addLineInstruction("read",textReadFunction());
+    }
+
     public void addDataInstructions(HashMap<String, HashMap<String,Object>> vars, String type){
 
         switch (type){
@@ -830,15 +844,8 @@ public class Mips {
                         res = res*i;
                     }
 
-                    //System.out.println(res+" wooooooot");
                     String s = (String) dataArray(res, (int) info.get("line"), (int) info.get("pos"));
-                    //String s = (String) info.get("mips");
                     addDataInstruction(var, s);
-                    /*if(s != null){
-                        addDataInstruction(var, s);
-                    }else if(s==null){
-                        addDataInstruction(var,dataBoolean(false,(int)info.get("line"),(int)info.get("pos")));
-                    }*/
                 }
 
                 break;
