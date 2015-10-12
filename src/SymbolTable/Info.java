@@ -41,8 +41,6 @@ public abstract class Info extends InfoIdentifiersTable{
         s.append(String.format("%-10s%-20s", "", this.infoType));
         if(this.address.equals(-1)){
             s.append(String.format("%-20s","NULL"));
-        }else if(this.address.equals(-2)){
-            s.append(String.format("%-20s","Address Function"));
         }else{
             s.append(String.format("%-20s",this.address));
         }

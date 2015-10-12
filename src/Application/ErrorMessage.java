@@ -19,7 +19,7 @@ public class ErrorMessage {
         return new String("Expression '"+var.toString()+"' "+message.toString());
     }
 
-    public static String semanticReturnSubProgram(String var, String message){
+    public static String semanticSubProgram(String var, String message){
         return new String("Function '"+var.toString()+"' "+message.toString());
     }
 
@@ -50,6 +50,10 @@ public class ErrorMessage {
 
     public static String forEachSatisfying(){
         return " satisfying expression, not valid with \"inArray\" operation.\"";
+    }
+
+    public static String functionDoesntExist(){
+        return " does not exist.";
     }
 
 

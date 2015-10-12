@@ -19,7 +19,6 @@ grammar Liss;
 
     boolean isDeclarations;
 
-    String function = null;
     boolean functionState = false;
 
      Mips m = new Mips();
@@ -34,19 +33,49 @@ liss [IdentifiersTable idTH]
 
 body[IdentifiersTable idTH]
      : '{'
-       'declarations' {isDeclarations = true;} declarations[idTH]
+       'declarations' {isDeclarations = true;} declarations[idTH,null]
        'statements'   {isDeclarations = false;} s=statements[idTH]
        '}'
      ;
 
 /* ****** Declarations ****** */
 
-declarations[IdentifiersTable idTH]
-             : declaration[idTH]
+declarations[IdentifiersTable idTH, HashMap<String,Object> varInfo]
+             : declaration[idTH, varInfo]
              ;
 
-declaration [IdentifiersTable idTH]
-            : variable_declaration[idTH]*  subprogram_definition[idTH]*
+declaration [IdentifiersTable idTH, HashMap<String,Object> varInfo]
+            @init{
+                 HashMap<String, HashMap<String, Object>> hashmapVar = new HashMap<String, HashMap<String,Object>>();
+            }
+            : variable_declaration[idTH]*
+              {
+                $idTH.pushSP(m.numberOfRegistersInBytes());
+                //It is necessary to the add function ASAP on the idTH due to consistencyof the idTH ! And to add it, we must know ASAP when we know the stack frame size !! Even before a subprogram is detected or a statement !!
+                if(functionState == true && varInfo!=null){
+                    varInfo.put("address",idTH.getSizeSP(level+1));
+
+                    String nameFunction = (String) varInfo.get("nameFunction");
+                    varInfo.remove("nameFunction");
+                    hashmapVar.put(nameFunction,varInfo);
+
+                    $idTH.add(e,hashmapVar,"function",level-1); //Name of the function is always one level below (for this part of the code) !
+                    //Code below generate the mipscode for functions
+                    String mipsCodeS = m.increaseStackFrameSP($idTH.getSizeSP(level+1));
+                    mipsCodeS += m.saveRegistersAndReturnAddressBeginFunctions($idTH.getSizeSP(level+1));
+                    m.addMipsCodeFunction(m.getNameFunction(),mipsCodeS);
+                    //add the rest of the mipsCode of variable_Declaration NT
+
+                }
+              }
+              subprogram_definition[idTH]*
+              {
+                //System.out.println("-------");
+                //$idTH.printSP();
+                //$idTH.popSP();
+                //$idTH.printSP();
+                //System.out.println("-------");
+              }
             ;
 
 /* ****** Variables ****** */
@@ -135,9 +164,9 @@ variable_declaration [IdentifiersTable idTH]
 
 
                             //Print the HashMap<String, HashMap<String,Object>> varsH
-                            for(String i : varsH.keySet()){
-                                System.out.println("Variable: "+i+" "+varsH.get(i).toString());
-                            }
+                            //for(String i : varsH.keySet()){
+                            //    System.out.println("Variable: "+i+" "+varsH.get(i).toString());
+                            //}
 
 
                             $idTH.add(e,varsH,$type.typeS,level);
@@ -391,49 +420,57 @@ subprogram_definition[IdentifiersTable idTH]
 
                       @init{
                         HashMap<String,Object> varInfo = new HashMap<String, Object>();
-                        HashMap<String, HashMap<String, Object>> hashmapVar = new HashMap<String, HashMap<String,Object>>();
 
                         //If level == 0 , then it means that it will enter to a subprogram and must activate the flag of functionState (state which is saying if it is on a subprogram or not) to true !!!
                         if(level == 0){functionState = true;}
                         level++;
                         $idTH.setAddress(0);
                       }
-                      : 'subprogram' i=identifier { function = $i.text; }
-                        '(' f=formal_args[idTH] ')' r=return_type f2=f_body[idTH]
+                      : 'subprogram' i=identifier { m.addNameFunction($i.text); }
+                        '(' f=formal_args[idTH] ')' r=return_type
                         {
-                            //MIPS
-
-
-
-                            //Pre-Condition : Remover todas as variaveis do nivel actual
-                            $idTH.removeLevel(level);
-
-                            level--;
-
                             //Info we must create for adding to the identifier table (regarding to the FUNCTION)
                             varInfo.put("line",$i.line);
                             varInfo.put("pos",$i.pos);
                             varInfo.put("return",$r.typeS);
                             varInfo.put("numberArguments", $f.numberArgumentS);
                             varInfo.put("typeList",$f.typeListS);
+                            varInfo.put("nameFunction",$i.text);
+                        }
 
-                            hashmapVar.put($i.text,varInfo);
-                            $idTH.add(e,hashmapVar,"function",level);
+                        f2=f_body[idTH, varInfo]
+
+                        {
+
+                            //MIPS
+                            String mipsCodeS = m.textEndFunction($idTH.getSizeSP(level+1));
+                            m.addMipsCodeFunction(m.getNameFunction(),mipsCodeS);
+                            m.removeMipsCodeFunction();
+
+
+                            //Pre-Condition : Remover todas as variaveis do nivel actual
+                            $idTH.removeLevel(level);
+                            //System.out.println(m.getNameFunction());
+                            m.removeNameFunction();
+
+                            $idTH.popSP();
+                            level--;
 
                             if(!$r.typeS.equals($f2.typeS)){
-                                e.addMessage($i.line,$i.pos,ErrorMessage.semanticReturnSubProgram($i.text,ErrorMessage.returnType($f2.typeS,$r.typeS)));
+                                e.addMessage($i.line,$i.pos,ErrorMessage.semanticSubProgram($i.text,ErrorMessage.returnType($f2.typeS,$r.typeS)));
                             }
 
 
                             //If the level is equal to zero, then it means that it exited a subprogram and the behaviour is different from now on ! Everything is related to global variables !
                             if(level == 0){functionState = false;}
+
                         }
                       ;
 
-f_body[IdentifiersTable idTH]
+f_body[IdentifiersTable idTH, HashMap<String,Object> varInfo]
       returns [String typeS, String returnS]
        : '{'
-         'declarations' {isDeclarations = true;}    declarations[idTH]
+         'declarations' {isDeclarations = true;}    declarations[idTH, varInfo]
          'statements'   {isDeclarations = false;}   statements[idTH]
          r=returnSubPrg[idTH] {$typeS = $r.typeS; $returnS = $r.text;}
          '}'
@@ -506,14 +543,14 @@ return_type
 /* ****** Return ****** */
 
 returnSubPrg [IdentifiersTable idTH]
-             returns [String typeS, int line, int pos]
+             returns [String typeS, int line, int pos, String mipsCodeS]
              @init{
                 Set tree = null;
                 $typeS = "null";
 
              }
-             :
-             | r='return' e=expression[idTH,tree]{$typeS = $e.typeS;} ';'
+             :                                   {$mipsCodeS = null;}
+             | r='return' e=expression[idTH,tree]{$typeS = $e.typeS; $mipsCodeS = $e.mipsCodeS;} ';'
              ;
 
 /* ****** Statements ****** */
@@ -621,10 +658,21 @@ designator [IdentifiersTable idTH, Set set, String side]
                                                 $typeS = v.getInfoType();
 
                                                 //MIPS
-                                                if($typeS.equals("integer") || $typeS.equals("boolean")){
+                                                if(v.getLevel().equals(0)){
                                                     if($side.equals("right")){
-                                                        $mipsCodeS = m.loadWord($i.text, $i.line, $i.pos);
-                                                        //System.out.println($mipsCodeS);
+                                                        if($typeS.equals("integer") || $typeS.equals("boolean")){
+                                                            $mipsCodeS = m.loadWord($i.text, $i.line, $i.pos);
+                                                            //System.out.println($mipsCodeS);
+                                                        }
+                                                    }
+                                                }else if(!v.getLevel().equals(0)){
+                                                    if($side.equals("right")){
+                                                        if($typeS.equals("integer") || $typeS.equals("boolean")){
+                                                            int addressOfVariable = $idTH.getValueSP(level,$i.text);
+                                                            $mipsCodeS = m.loadWordSP(addressOfVariable);
+                                                            //$mipsCodeS = m.loadWord($i.text, $i.line, $i.pos);
+                                                            //System.out.println($mipsCodeS);
+                                                        }
                                                     }
                                                 }
                                             }
@@ -821,6 +869,7 @@ function_call [IdentifiersTable idTH, Set set]
                         }
                     }else{
                         $typeS = null;
+                        e.addMessage($i.line,$i.pos,ErrorMessage.semanticSubProgram($i.text,ErrorMessage.functionDoesntExist()));
                     }
 
                     if( $set!=null){

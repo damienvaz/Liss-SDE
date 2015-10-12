@@ -10,8 +10,8 @@ public class Function extends Info {
     private Integer numberArguments;
     private LinkedList<String> type;
 
-    public Function(Integer level, String infotype, Integer numberArguments, LinkedList<String> type){
-        super("FUNCTION",level,infotype,-2);
+    public Function(Integer level, String infotype, Integer numberArguments, LinkedList<String> type, Integer address){
+        super("FUNCTION",level,infotype,address);
         this.numberArguments = numberArguments; this.type = type;
     }
 

@@ -17,36 +17,54 @@ public class Mips {
     private String text;
     private boolean[] register;
     private String[] registerName;
+    private String[] registerSavedTemporaryName;
+    private static int numberOfRegisters = 8;
+    private static Integer eachAddressOccupies = 4; // 4 Bytes
     private LinkedList<Integer> counterJumpStack;   //A stack which will handle the IF/WHILE statement behavior
     private Integer counterJump;                    //A counter for the IF/WHILE statement behavior
-    private Stack<String> stackFunctions;           //It is a stack of mipscode for each subprogram generated, this is due to recursivity of subprograms !
+    private LinkedList<String> functionName;        //It concatenates all the function name, this is due to generate the correct name for the MIPS code.
+    private HashMap<String,String> mipsCodeFunctionCache;    //It is a stack which will help the program in producing the mipscode of functions.
+    private String functionMipsCode;                //All the code of mipscode Function available here !!!
+
 
     public Mips(){
         this.data = ".data\n";
         this.text = ".text\n  main:\n";
-        this.register = new boolean[8];
+        this.register = new boolean[this.numberOfRegisters];
         for(int i=0; i<this.register.length;i++){
             this.register[i] = false;
         }
-        this.registerName = new String[8];
-        this.registerName[0] = "$t0";
+        this.registerName = new String[this.numberOfRegisters];
+        /*this.registerName[0] = "$t0";
         this.registerName[1] = "$t1";
         this.registerName[2] = "$t2";
         this.registerName[3] = "$t3";
         this.registerName[4] = "$t4";
         this.registerName[5] = "$t5";
         this.registerName[6] = "$t6";
-        this.registerName[7] = "$t7";
+        this.registerName[7] = "$t7";*/
+        for(int i=0; i<this.numberOfRegisters; i++){
+            this.registerName[i] = "$t"+i;
+        }
+        //Normally it should have 10 "t" registers !! But MIPS has only 8 registers (s0-s7) which are preserved across call ! So we decided to only have, for consistency, 8 "t" registers (which aren't preserved across call !
+
+        this.registerSavedTemporaryName = new String[this.numberOfRegisters];
+        for(int i=0; i<this.numberOfRegisters; i++){
+            this.registerSavedTemporaryName[i] = "$s"+i;
+        }
 
         this.counterJump = new Integer(0);
         this.counterJumpStack = new LinkedList<>();
+        this.functionName = new LinkedList<String>();
+        this.mipsCodeFunctionCache = new HashMap<String,String>();
 
-        this.stackFunctions = new Stack<String>();
     }
 
-    public String popMipsCodeFunction(){ return this.stackFunctions.pop();}
-    public void pushMipsCodeFunction(String s){ this.stackFunctions.push(s);}
+    //public String getFunctionMipsCode(){return this.functionMipsCode;}
 
+    public Integer numberOfRegistersInBytes(){ return this.register.length*this.eachAddressOccupies;    }
+
+    public Integer numberOfBytesForEachAddress(){return this.eachAddressOccupies;}
 
     public void resetRegister(){
         int i=0;
@@ -60,11 +78,8 @@ public class Mips {
         String res = null;
         int i = 0;
         while(this.register[i] != false && i< (this.register.length-1)){
-            //System.out.println("registerName["+i+"] : "+this.register[i]+" line:"+l+" pos:"+p);
             i++;
         }
-
-        //System.out.println("*END* registerName["+i+"] : "+this.register[i]+" line:"+l+" pos:"+p);
 
         if(i<this.register.length){
             res = this.registerName[i];
@@ -76,7 +91,6 @@ public class Mips {
     public void freeLastRegister(){
         int i = 0;
         while(this.register[i] != false && i<(this.register.length-1)){
-            //System.out.println(this.register[i]);
             i++;
         }
         if(i<this.register.length){
@@ -102,7 +116,6 @@ public class Mips {
             i++;
         }
         res[0] = this.registerName[i-1];
-        //res[0] = this.registerName[i-2];
         return res;
     }
 
@@ -138,10 +151,7 @@ public class Mips {
 
     public String loadWordArray(String name, int line, int pos){
         StringBuilder s = new StringBuilder();
-        //String r[] = lastTwoRegisterOccupied();
         String r[] = lastRegisterOccupied();
-        //resetRegister();
-        //freeLastRegister();
         s.append("\tlw "+r[0]+", "+name+"("+r[0]+")\t\t# "+line+":"+pos+"\n");
         return s.toString();
     }
@@ -166,7 +176,7 @@ public class Mips {
 
     public String dataArray(Integer value, int line, int pos){
         StringBuilder s = new StringBuilder();
-            Integer res = value*4;
+            Integer res = value*this.eachAddressOccupies;
             s.append(".space "+res.toString()+"\t\t# "+line+":"+pos+"\n");
         return s.toString();
     }
@@ -188,10 +198,8 @@ public class Mips {
     public String dataBoolean(boolean b, int line, int pos) {
         StringBuilder s = new StringBuilder();
         if (b == true) {
-            //s.append(".byte 1\t\t# " + line + ":" + pos + "\n");
             s.append(".word 1\t\t# " + line + ":" + pos + "\n");
         } else if (b == false) {
-            //s.append(".byte 0\t\t# " + line + ":" + pos + "\n");
             s.append(".word 0\t\t# " + line + ":" + pos + "\n");
         }
         return s.toString();
@@ -217,7 +225,6 @@ public class Mips {
 
             freeLastRegister();
             s.append("\tmul "+r0+", "+r0+", "+r1+"\t# "+line+":"+pos+"\n");
-            //s.append("\tli "+register+","+value+"\t\t# "+line+":"+pos+"\n");
 
         return s.toString();
     }
@@ -230,7 +237,6 @@ public class Mips {
 
         freeLastRegister();
         s.append("\tdiv "+r0+", "+r0+", "+r1+"\t# " + line + ":" + pos + "\n");
-        //s.append("\tli "+register+","+value+"\t\t# "+line+":"+pos+"\n");
 
         return s.toString();
     }
@@ -243,7 +249,6 @@ public class Mips {
 
         freeLastRegister();
         s.append("\tadd "+r0+", "+r0+", "+r1+"\t# " + line + ":" + pos + "\n");
-        //s.append("\tli "+register+","+value+"\t\t# "+line+":"+pos+"\n");
 
         return s.toString();
     }
@@ -256,7 +261,6 @@ public class Mips {
 
         freeLastRegister();
         s.append("\tsub "+r0+", "+r0+", "+r1+"\t# " + line + ":" + pos + "\n");
-        //s.append("\tli "+register+","+value+"\t\t# "+line+":"+pos+"\n");
 
         return s.toString();
     }
@@ -279,7 +283,6 @@ public class Mips {
 
         freeLastRegister();
         s.append("\tslt " + r0 + ", " + r0 + ", " + r1 + "\t# " + line + ":" + pos + "\n");
-        //s.append("\tli "+register+","+value+"\t\t# "+line+":"+pos+"\n");
 
         return s.toString();
     }
@@ -298,7 +301,6 @@ public class Mips {
 
         freeLastRegister();
         s.append("\tslt "+r0+", "+r1+", "+r0+"\t# " + line + ":" + pos + "\n");
-        //s.append("\tli "+register+","+value+"\t\t# "+line+":"+pos+"\n");
 
         return s.toString();
     }
@@ -311,7 +313,6 @@ public class Mips {
 
         freeLastRegister();
         s.append("\tor " + r0 + ", " + r0 + ", " + r1 + "\t# " + line + ":" + pos + "\n");
-        //s.append("\tli "+register+","+value+"\t\t# "+line+":"+pos+"\n");
 
         return s.toString();
     }
@@ -324,7 +325,6 @@ public class Mips {
 
         freeLastRegister();
         s.append("\tand " + r0 + ", " + r0 + ", " + r1 + "\t# " + line + ":" + pos + "\n");
-        //s.append("\tli "+register+","+value+"\t\t# "+line+":"+pos+"\n");
 
         return s.toString();
     }
@@ -332,13 +332,6 @@ public class Mips {
     public String textNot(int line,int pos){
         StringBuilder s = new StringBuilder();
 
-        //String res[] = lastRegisterOccupied();
-        //String r0 = res[0];
-
-        //freeLastRegister();
-
-        //process for calculating the not instruction in MIPS
-        //s.append(loadImmediateWord(r0, line, pos));
         String t[] = lastRegisterOccupied();
         s.append("\tsltu " + t[0] + ", $zero, " + t[0] + "\t# " + line + ":" + pos + "\n");
         s.append("\txori " + t[0] + ", " + t[0] + ", 1" + "\t# " + line + ":" + pos + "\n");
@@ -431,15 +424,8 @@ public class Mips {
         free = nextFreeRegister();
         s.append("\tslt "+free+", "+r0+", "+r1+"\t# " + line + ":" + pos + "\n");
         // We cannot apply not instruction for the maximum limit due to [0,...,n-1] = n elements and the nth elements is the prohibited position !
-        // s.append(textNot(line,pos));
-        //s.append("\tbeqz "+free+", line"+line+"indexoutofbound\t# " + line + ":" + pos + "\n");
-        //s.append("\tla $a3, line"+(line+1)+"\t# "+ line + ":" + pos + "\n");
         s.append("\tli $s0, "+line+"\t# "+ line + ":" + pos + "\n");
         s.append("\tbeqz "+free+", indexoutofboundError\t# " + line + ":" + pos + "\n");
-
-
-        //s.append("\tla $a3, line"+(line+1)+"\t# "+ line + ":" + pos + "\n");
-        //s.append("\tbeqz "+free+", indexoutofboundError\t# " + line + ":" + pos + "\n");
 
         s.append("\t####End of the verification####\n");
 
@@ -452,7 +438,6 @@ public class Mips {
     public String indexOutOfBoundError(){
         StringBuilder s = new StringBuilder();
 
-        //s.append("indexoutofboundError: \n");
         s.append("\tli $v0, 4\n");
         s.append("\tla $a0, indexoutofbound\n");
         s.append("\tsyscall\n");
@@ -740,7 +725,7 @@ public class Mips {
 
         if(inArray == true){
             s.append(loadWord("for_var"+i.toString(), line, pos));
-            s.append(loadImmediateWord("4", line, pos));
+            s.append(loadImmediateWord(this.eachAddressOccupies.toString(), line, pos));
             s.append(textAdd(line, pos));
             String res[] = lastRegisterOccupied();
             s.append("\tsw "+res[0]+", for_var"+i.toString()+"\t\t# "+line+":"+pos+"\n");
@@ -795,6 +780,142 @@ public class Mips {
 
     /******************************************************************/
 
+    /*************************** FUNCTIONS *********************************/
+
+    public void addNameFunction(String s ){ this.functionName.addLast(s);}
+
+    public void removeNameFunction(){ this.functionName.removeLast();}
+
+    public String getNameFunction(){
+        StringBuilder s = new StringBuilder();
+
+        for(String s1 : this.functionName){
+            s.append(s1);
+        }
+
+        return s.toString();
+    }
+
+    public String storeValueSP(String register, Integer positionFromSP){
+        StringBuilder s = new StringBuilder();
+
+        s.append("\tsw " + register + ", " + positionFromSP.toString() + "($sp)\t\t \n");// + line + ":" + pos +"\n");
+
+        return s.toString();
+    }
+
+    public String loadWordValueSP(String register, Integer positionFromSP){
+        StringBuilder s = new StringBuilder();
+
+        s.append("\tlw " + register + ", " + positionFromSP.toString() + "($sp)\t\t\n");
+
+        return s.toString();
+    }
+
+    public String loadWordSP(Integer positionFromSP){
+        StringBuilder s = new StringBuilder();
+
+        String register = nextFreeRegister();
+        s.append("\tlw " + register + ", " + positionFromSP.toString() + "($sp)\t\t\n");
+
+        return s.toString();
+    }
+
+    public String jumpReturnAddress(){
+        StringBuilder s = new StringBuilder();
+
+        s.append("\tjr $ra\t\t\n");
+
+        return s.toString();
+    }
+
+    public Integer valueReturnAddressFunction(int sizeFrameStack){ //Size from Table Identifier of Function (Address)
+        return sizeFrameStack-this.eachAddressOccupies;
+    }
+
+    public String increaseStackFrameSP(int size){
+        StringBuilder s = new StringBuilder();
+
+        s.append("\taddi $sp, $sp, -"+size+"\t\t\n");
+
+        return s.toString();
+    }
+
+    public String decreaseStackFrameSP(int size){
+        StringBuilder s = new StringBuilder();
+
+        s.append("\taddi $sp, $sp, "+size+"\t\t\n");
+
+        return s.toString();
+    }
+
+    public String saveRegistersAndReturnAddressBeginFunctions(int sizeFrameStack){
+        StringBuilder s = new StringBuilder();
+
+        int returnAddress = valueReturnAddressFunction(sizeFrameStack);
+        Integer registerNr = this.numberOfRegisters;
+
+        for(String reg : this.registerSavedTemporaryName){
+            s.append(storeValueSP(reg,returnAddress-(registerNr*this.eachAddressOccupies)));
+            registerNr--;
+        }
+
+        s.append(storeValueSP("$ra",returnAddress));
+
+        return s.toString();
+    }
+
+    public String textBeginFunction(int line,int pos,int sizeFrameStack){
+        StringBuilder s = new StringBuilder();
+
+
+        return s.toString();
+    }
+
+    public String textEndFunction(int sizeFrameStack){
+        StringBuilder s = new StringBuilder();
+
+        //s.append("\taddi $sp, $sp, "+sizeFrameStack+"\t\t# " + line + ":" + pos +"\n");
+        int returnAddress = valueReturnAddressFunction(sizeFrameStack);
+        Integer registerNr = this.numberOfRegisters;
+
+        for(String reg : this.registerSavedTemporaryName){
+            s.append(loadWordValueSP(reg,returnAddress-(registerNr*this.eachAddressOccupies)));
+            registerNr--;
+        }
+        s.append(loadWordValueSP("$ra",sizeFrameStack-this.numberOfBytesForEachAddress()));
+        s.append(this.decreaseStackFrameSP(sizeFrameStack));
+        s.append(this.jumpReturnAddress());
+
+        return s.toString();
+    }
+
+    public void addMipsCodeFunction(String nameFunction, String mipsCode){
+        if(!this.mipsCodeFunctionCache.containsKey(nameFunction)) {
+            this.mipsCodeFunctionCache.put(nameFunction,mipsCode);
+        }else{
+            String s = this.mipsCodeFunctionCache.get(nameFunction)+mipsCode;
+            this.mipsCodeFunctionCache.remove(nameFunction);
+            this.mipsCodeFunctionCache.put(nameFunction,s);
+        }
+    }
+
+    public String getMipsCodeFunction(String nameFunction){
+        return this.mipsCodeFunctionCache.get(nameFunction);
+    }
+
+    public void removeMipsCodeFunction(){
+        String name = this.getNameFunction();
+        if(this.functionMipsCode == null) {
+            this.functionMipsCode = "  " + name + ": \n" + this.getMipsCodeFunction(name);
+        }else{
+            this.functionMipsCode += "  " + name + ": \n" + this.getMipsCodeFunction(name);
+        }
+        this.mipsCodeFunctionCache.remove(name);
+    }
+
+    /***********************************************************************/
+
     public void removeLastStack(){
         if(this.counterJumpStack.size()>0) {
             this.counterJumpStack.pop();
@@ -803,6 +924,9 @@ public class Mips {
 
     public void textExitCode(){
         addTextInstructions(exitProgram());
+        if(this.functionMipsCode!=null){
+            addTextInstruction(this.functionMipsCode);
+        }
         addLineInstruction("indexoutofboundError",indexOutOfBoundError());
         addLineInstruction("write",textWriteMessage(true));
         addLineInstruction("writeln",textWriteMessage(false));

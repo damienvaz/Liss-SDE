@@ -22,6 +22,8 @@ public class IdentifiersTable {
 
     private HashMap<String, LinkedList<InfoIdentifiersTable>> idTable;
     private int address;
+    private ArrayList<Integer> stackSP;             // It is a stack for saving all the stack pointer (=SP) !!!!
+
 
     /* *** Constructor *** */
 
@@ -50,6 +52,9 @@ public class IdentifiersTable {
         this.idTable.put("boolean", new LinkedList<InfoIdentifiersTable>());
         this.idTable.get("boolean").add(bool);
 
+        //The stack pointer initially is 0
+        this.stackSP = new ArrayList<Integer>();
+        this.pushSP(0);
     }
 
     /* *** Methods *** */
@@ -68,6 +73,47 @@ public class IdentifiersTable {
     public InfoIdentifiersTable getInfoIdentifiersTable(String id){return this.idTable.get(id).getLast();} //Return the last element of the linkedlist
 
     public LinkedList<InfoIdentifiersTable> getListInfoIdentifiersTable(String id){return this.idTable.get(id);}
+
+    /******************************************* SP instructions***********************************************/
+    public Integer getValueSP(Integer actualLevel, String variable){
+        //P.-C. : Size of the stackSP + Different level +
+        Integer i = 0;
+        //Integer levelOfVariable = this.getInfoIdentifiersTable(variable).getLevel();
+        Info v = (Var) this.idTable.get(variable).getLast();
+        if(actualLevel!=v.getLevel()){
+            //Apply algorithms for searching the position on the stack pointer stack
+            Integer sp = actualLevel;
+            if(this.stackSP.size()>=sp && sp>=0){
+                i = this.stackSP.get(sp) - this.stackSP.get(v.getLevel()) + v.getAddress();
+            }
+        }else{
+            //It means that actualLevel == levelOfVariable
+            i = v.getAddress();
+        }
+        return i;
+    }
+
+    public Integer getSizeSP(Integer level){ return this.stackSP.get(level)-this.stackSP.get(level-1);}
+
+    public void pushSP( Integer savedRegisters){
+        if(this.stackSP.size()>0 ){
+            this.stackSP.add(this.stackSP.get(this.stackSP.size()-1)+this.address+savedRegisters+4);
+        }else if(this.stackSP.size() == 0){
+            this.stackSP.add(this.address);
+        }
+    }
+    public void popSP(){ if(this.stackSP.size()>0){this.stackSP.remove(this.stackSP.size()-1);}}
+
+    public void printSP(){
+        System.out.print("[");
+        for(Integer i : this.stackSP){
+            System.out.print(i.toString());
+            System.out.print(" | ");
+        }
+        System.out.println("]");
+
+    }
+    /******************************************************************************************/
 
     public void removeLevel(Integer level){
         LinkedList<String> idS = new LinkedList<String>();
@@ -255,7 +301,7 @@ public class IdentifiersTable {
                     //Pré-Condição : Verificar se as variaveis (do HashMap) ja existem na tabela de identificadores
                     if(!this.idTable.containsKey(id)) {
                         //Application.Set s1 = (Application.Set) hashmapVar.get(id).get("set");
-                        f = new Function(new Integer(level),(String)hashmapVar.get(id).get("return"),(Integer)hashmapVar.get(id).get("numberArguments"),(LinkedList<String>)hashmapVar.get(id).get("typeList"));
+                        f = new Function(new Integer(level),(String)hashmapVar.get(id).get("return"),(Integer)hashmapVar.get(id).get("numberArguments"),(LinkedList<String>)hashmapVar.get(id).get("typeList"),(Integer)hashmapVar.get(id).get("address"));
 
                         LinkedList<InfoIdentifiersTable> l = new LinkedList<InfoIdentifiersTable>();
                         l.add(f.clone());
@@ -265,7 +311,7 @@ public class IdentifiersTable {
                         //System.out.println("Function: "+id+" Passei por aqui1. Address: "+this.address);
                         //f.setAddress(this.address);
                     }else{
-                        f = new Function(new Integer(level),(String)hashmapVar.get(id).get("return"),(Integer)hashmapVar.get(id).get("numberArguments"),(LinkedList<String>)hashmapVar.get(id).get("typeList"));
+                        f = new Function(new Integer(level),(String)hashmapVar.get(id).get("return"),(Integer)hashmapVar.get(id).get("numberArguments"),(LinkedList<String>)hashmapVar.get(id).get("typeList"),(Integer)hashmapVar.get(id).get("address"));
 
                         //Pre-Condition : Verificar e comparar o nivel da variavel na tabela de identificador e o nivel do identificador
                         if (!this.idTable.get(id).getLast().getLevel().equals(f.getLevel())) {
@@ -281,9 +327,9 @@ public class IdentifiersTable {
                         } else {
                             //this.address = 0;
                             //Como sei que a funçao nao pode ser inserido, criar um "errorFuncao" na tabela so para verificar
-                            LinkedList<InfoIdentifiersTable> l = new LinkedList<InfoIdentifiersTable>();
-                            l.add(f.clone());
-                            this.idTable.put("error"+id, l);
+                            //LinkedList<InfoIdentifiersTable> l = new LinkedList<InfoIdentifiersTable>();
+                            //l.add(f.clone());
+                            //this.idTable.put("error"+id, l);
                             e.addMessage((int) hashmapVar.get(id).get("line"),(int) hashmapVar.get(id).get("pos"),ErrorMessage.semantic(id,ErrorMessage.Declarations));
                         }
                     }

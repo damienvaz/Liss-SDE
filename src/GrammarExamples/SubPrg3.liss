@@ -5,8 +5,6 @@ declarations
 	a = 4, b= 5, c= 5 -> integer;
 	array1 = [10,20,30,40], array2, array3 -> array size 4;
 
-
-
 	subprogram calculate(m -> array size 4) -> array size 4
 	{
 	  declarations
@@ -15,8 +13,8 @@ declarations
 
 		subprogram factorial(n -> integer) -> integer
 		{
-		  declarations
-				//res = 1 -> integer;
+		  	declarations
+			  //res = 1 -> integer;
 
 			statements
 				while (n > 0)
@@ -27,11 +25,24 @@ declarations
 				return res;
 		}
 
+		subprogram factorial2(n -> integer) -> integer
+        		{
+        		  	declarations
+        				//res = 1 -> integer;
+
+        			statements
+        				while (n > 0)
+        				{
+        					res = res * n;
+        					n = n -1;
+        				}
+        				return res;
+        		}
 	  statements
 			writeln(res);
 			for (a in 0..3) stepUp 1
 			{
-			  m[a] = factorial(fac + a);
+			  m[a] = factorial(fac + a);  //need to know the concatenate function linkedlist+ the name of that function (for activing the fac
 			}
 			writeln(res);
 
@@ -44,8 +55,18 @@ declarations
 
     	statements
 
-    		return array1;
+    		//return array1;
+    		return a;
     }
+
+    //subprogram factorial(n -> integer) -> integer
+    //   	{
+    //    	declarations
+
+    //    	statements
+
+    //    		return array1;
+    //    }
 
 	subprogram writeArray(z -> array size 4)
 	{
@@ -59,5 +80,6 @@ declarations
 statements
 
 	array2 = calculate(array1);
+	//a = factorial2(3);
 	//writeArray(array2);
 }
