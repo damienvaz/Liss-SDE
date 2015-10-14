@@ -360,10 +360,11 @@ public class LissParser extends Parser {
 				_la = _input.LA(1);
 			}
 
-			                _localctx.idTH.pushSP(m.numberOfRegistersInBytes());
+
 			                //It is necessary to the add function ASAP on the idTH due to consistencyof the idTH ! And to add it, we must know ASAP when we know the stack frame size !! Even before a subprogram is detected or a statement !!
 			                if(functionState == true && varInfo!=null){
-			                    varInfo.put("address",idTH.getSizeSP(level+1));
+			                    _localctx.idTH.pushSP(m.numberOfRegistersInBytes()); //only add when subprogram are activated !!!!
+			                    varInfo.put("address",_localctx.idTH.getSizeSP(level));
 
 			                    String nameFunction = (String) varInfo.get("nameFunction");
 			                    varInfo.remove("nameFunction");
@@ -371,8 +372,8 @@ public class LissParser extends Parser {
 
 			                    _localctx.idTH.add(e,hashmapVar,"function",level-1); //Name of the function is always one level below (for this part of the code) !
 			                    //Code below generate the mipscode for functions
-			                    String mipsCodeS = m.increaseStackFrameSP(_localctx.idTH.getSizeSP(level+1));
-			                    mipsCodeS += m.saveRegistersAndReturnAddressBeginFunctions(_localctx.idTH.getSizeSP(level+1));
+			                    String mipsCodeS = m.increaseStackFrameSP(_localctx.idTH.getSizeSP(level));
+			                    mipsCodeS += m.saveRegistersAndReturnAddressBeginFunctions(_localctx.idTH.getSizeSP(level));
 			                    m.addMipsCodeFunction(m.getNameFunction(),mipsCodeS);
 			                    //add the rest of the mipsCode of variable_Declaration NT
 
@@ -393,11 +394,11 @@ public class LissParser extends Parser {
 				_la = _input.LA(1);
 			}
 
-			                //System.out.println("-------");
-			                //_localctx.idTH.printSP();
+			                System.out.println("-------");
+			                _localctx.idTH.printSP();
 			                //_localctx.idTH.popSP();
 			                //_localctx.idTH.printSP();
-			                //System.out.println("-------");
+			                System.out.println("-------");
 			              
 			}
 		}
@@ -545,6 +546,8 @@ public class LissParser extends Parser {
 			                            //MIPS
 			                            if(functionState == false){
 			                                m.addDataInstructions(varsH,((Variable_declarationContext)_localctx).type.typeS);
+			                            }else{
+
 			                            }
 			                     
 			}
@@ -1798,7 +1801,7 @@ public class LissParser extends Parser {
 
 
 			                            //MIPS
-			                            String mipsCodeS = m.textEndFunction(_localctx.idTH.getSizeSP(level+1));
+			                            String mipsCodeS = m.textEndFunction(_localctx.idTH.getSizeSP(level),((Subprogram_definitionContext)_localctx).f2.returnMipsCodeS);
 			                            m.addMipsCodeFunction(m.getNameFunction(),mipsCodeS);
 			                            m.removeMipsCodeFunction();
 
@@ -1808,7 +1811,11 @@ public class LissParser extends Parser {
 			                            //System.out.println(m.getNameFunction());
 			                            m.removeNameFunction();
 
-			                            _localctx.idTH.popSP();
+			                            //Remove the last SP !
+			                            if(level != 0){
+			                                _localctx.idTH.popSP();
+			                            }
+			                            //Decrease level by one
 			                            level--;
 
 			                            if(!((Subprogram_definitionContext)_localctx).r.typeS.equals(((Subprogram_definitionContext)_localctx).f2.typeS)){
@@ -1817,7 +1824,7 @@ public class LissParser extends Parser {
 
 
 			                            //If the level is equal to zero, then it means that it exited a subprogram and the behaviour is different from now on ! Everything is related to global variables !
-			                            if(level == 0){functionState = false;}
+			                            if(level == 0){functionState = false; }
 
 			                        
 			}
@@ -1838,6 +1845,7 @@ public class LissParser extends Parser {
 		public HashMap<String,Object> varInfo;
 		public String typeS;
 		public String returnS;
+		public String returnMipsCodeS;
 		public ReturnSubPrgContext r;
 		public DeclarationsContext declarations() {
 			return getRuleContext(DeclarationsContext.class,0);
@@ -1885,7 +1893,7 @@ public class LissParser extends Parser {
 			statements(idTH);
 			setState(354);
 			((F_bodyContext)_localctx).r = returnSubPrg(idTH);
-			((F_bodyContext)_localctx).typeS =  ((F_bodyContext)_localctx).r.typeS; ((F_bodyContext)_localctx).returnS =  (((F_bodyContext)_localctx).r!=null?_input.getText(((F_bodyContext)_localctx).r.start,((F_bodyContext)_localctx).r.stop):null);
+			((F_bodyContext)_localctx).typeS =  ((F_bodyContext)_localctx).r.typeS; ((F_bodyContext)_localctx).returnS =  (((F_bodyContext)_localctx).r!=null?_input.getText(((F_bodyContext)_localctx).r.start,((F_bodyContext)_localctx).r.stop):null); ((F_bodyContext)_localctx).returnMipsCodeS =  ((F_bodyContext)_localctx).r.mipsCodeS;
 			setState(356);
 			match(T__4);
 			}
@@ -2512,7 +2520,6 @@ public class LissParser extends Parser {
 
 			              ((AssignmentContext)_localctx).line =  (((AssignmentContext)_localctx).r!=null?((AssignmentContext)_localctx).r.getLine():0);
 			              ((AssignmentContext)_localctx).pos =  (((AssignmentContext)_localctx).r!=null?((AssignmentContext)_localctx).r.getCharPositionInLine():0);
-			              if(functionState == false){
 			                  if((((AssignmentContext)_localctx).designator.typeS != null && ((AssignmentContext)_localctx).expression.typeS != null) && ((AssignmentContext)_localctx).designator.typeS.equals(((AssignmentContext)_localctx).expression.typeS)){
 			                    ((AssignmentContext)_localctx).typeS =  ((AssignmentContext)_localctx).designator.typeS;
 			                    System.out.println(((AssignmentContext)_localctx).designator.line+"Funcionou ;D");
@@ -2525,15 +2532,22 @@ public class LissParser extends Parser {
 			                        String mipsCodeS = "";
 			                        if(((AssignmentContext)_localctx).designator.arrayS == false){
 			                            mipsCodeS = ((AssignmentContext)_localctx).expression.mipsCodeS;
-			                            mipsCodeS += m.storeWord((((AssignmentContext)_localctx).designator!=null?_input.getText(((AssignmentContext)_localctx).designator.start,((AssignmentContext)_localctx).designator.stop):null), ((AssignmentContext)_localctx).designator.line, ((AssignmentContext)_localctx).designator.pos);
+			                            if(_localctx.idTH.getInfoIdentifiersTable((((AssignmentContext)_localctx).designator!=null?_input.getText(((AssignmentContext)_localctx).designator.start,((AssignmentContext)_localctx).designator.stop):null)).getLevel().equals(0)){
+			                                mipsCodeS += m.storeWord((((AssignmentContext)_localctx).designator!=null?_input.getText(((AssignmentContext)_localctx).designator.start,((AssignmentContext)_localctx).designator.stop):null), ((AssignmentContext)_localctx).designator.line, ((AssignmentContext)_localctx).designator.pos);
+			                            }else if(!_localctx.idTH.getInfoIdentifiersTable((((AssignmentContext)_localctx).designator!=null?_input.getText(((AssignmentContext)_localctx).designator.start,((AssignmentContext)_localctx).designator.stop):null)).getLevel().equals(0)){
+			                                mipsCodeS += m.storeWordSP(_localctx.idTH.getValueSP(level,(((AssignmentContext)_localctx).designator!=null?_input.getText(((AssignmentContext)_localctx).designator.start,((AssignmentContext)_localctx).designator.stop):null)));
+			                            }
 			                            //m.addTextInstructions((((AssignmentContext)_localctx).designator!=null?_input.getText(((AssignmentContext)_localctx).designator.start,((AssignmentContext)_localctx).designator.stop):null),((AssignmentContext)_localctx).expression.mipsCodeS,((AssignmentContext)_localctx).designator.typeS,((AssignmentContext)_localctx).designator.line,((AssignmentContext)_localctx).designator.pos);
 			                        }else if(((AssignmentContext)_localctx).designator.arrayS == true){
 			                            mipsCodeS = ((AssignmentContext)_localctx).designator.mipsCodeS;
 			                            mipsCodeS += ((AssignmentContext)_localctx).expression.mipsCodeS;
 			                            mipsCodeS += m.storeWordArrayText(((AssignmentContext)_localctx).designator.identifierS, ((AssignmentContext)_localctx).designator.line, ((AssignmentContext)_localctx).designator.pos);
 			                        }
-
-			                        m.addTextInstructions(mipsCodeS);
+			                        if(functionState == false){
+			                            m.addTextInstructions(mipsCodeS);
+			                        }else if(functionState == true){
+			                            m.addMipsCodeFunction(m.getNameFunction(),mipsCodeS);
+			                        }
 			                        //m.addLineInstruction("line"+(((AssignmentContext)_localctx).r!=null?((AssignmentContext)_localctx).r.getLine():0),mipsCodeS);
 			                    }
 
@@ -2541,7 +2555,7 @@ public class LissParser extends Parser {
 			                    //ErrorMessage.errorSemanticAssignment(((AssignmentContext)_localctx).designator.line);
 			                    e.addMessage(((AssignmentContext)_localctx).designator.line,-1,ErrorMessage.semanticAssignment(((AssignmentContext)_localctx).designator.line)); //-1 => assignemen error => there is no pos.
 			                  }
-			              }
+
 
 
 
@@ -2636,23 +2650,22 @@ public class LissParser extends Parser {
 			                                                ((DesignatorContext)_localctx).typeS =  v.getInfoType();
 
 			                                                //MIPS
-			                                                if(v.getLevel().equals(0)){
+
 			                                                    if(_localctx.side.equals("right")){
 			                                                        if(_localctx.typeS.equals("integer") || _localctx.typeS.equals("boolean")){
-			                                                            ((DesignatorContext)_localctx).mipsCodeS =  m.loadWord((((DesignatorContext)_localctx).i!=null?_input.getText(((DesignatorContext)_localctx).i.start,((DesignatorContext)_localctx).i.stop):null), ((DesignatorContext)_localctx).i.line, ((DesignatorContext)_localctx).i.pos);
-			                                                            //System.out.println(_localctx.mipsCodeS);
+			                                                            if(v.getLevel().equals(0)){
+			                                                                ((DesignatorContext)_localctx).mipsCodeS =  m.loadWord((((DesignatorContext)_localctx).i!=null?_input.getText(((DesignatorContext)_localctx).i.start,((DesignatorContext)_localctx).i.stop):null), ((DesignatorContext)_localctx).i.line, ((DesignatorContext)_localctx).i.pos);
+			                                                                //System.out.println(_localctx.mipsCodeS);
+			                                                            }else if(!v.getLevel().equals(0)){
+			                                                                int addressOfVariable = _localctx.idTH.getValueSP(level,(((DesignatorContext)_localctx).i!=null?_input.getText(((DesignatorContext)_localctx).i.start,((DesignatorContext)_localctx).i.stop):null));
+			                                                                ((DesignatorContext)_localctx).mipsCodeS =  m.loadWordSP(addressOfVariable);
+			                                                                //((DesignatorContext)_localctx).mipsCodeS =  m.loadWord((((DesignatorContext)_localctx).i!=null?_input.getText(((DesignatorContext)_localctx).i.start,((DesignatorContext)_localctx).i.stop):null), ((DesignatorContext)_localctx).i.line, ((DesignatorContext)_localctx).i.pos);
+			                                                                System.out.println(_localctx.mipsCodeS+" "+(((DesignatorContext)_localctx).identifier!=null?_input.getText(((DesignatorContext)_localctx).identifier.start,((DesignatorContext)_localctx).identifier.stop):null)+" line: "+((DesignatorContext)_localctx).i.line);
+			                                                            }
+
 			                                                        }
 			                                                    }
-			                                                }else if(!v.getLevel().equals(0)){
-			                                                    if(_localctx.side.equals("right")){
-			                                                        if(_localctx.typeS.equals("integer") || _localctx.typeS.equals("boolean")){
-			                                                            int addressOfVariable = _localctx.idTH.getValueSP(level,(((DesignatorContext)_localctx).i!=null?_input.getText(((DesignatorContext)_localctx).i.start,((DesignatorContext)_localctx).i.stop):null));
-			                                                            ((DesignatorContext)_localctx).mipsCodeS =  m.loadWordSP(addressOfVariable);
-			                                                            //((DesignatorContext)_localctx).mipsCodeS =  m.loadWord((((DesignatorContext)_localctx).i!=null?_input.getText(((DesignatorContext)_localctx).i.start,((DesignatorContext)_localctx).i.stop):null), ((DesignatorContext)_localctx).i.line, ((DesignatorContext)_localctx).i.pos);
-			                                                            //System.out.println(_localctx.mipsCodeS);
-			                                                        }
-			                                                    }
-			                                                }
+
 			                                            }
 
 			                                        }
@@ -3000,6 +3013,7 @@ public class LissParser extends Parser {
 		public int line;
 		public int pos;
 		public String typeS;
+		public String mipsCodeS;
 		public IdentifierContext i;
 		public Sub_prg_argsContext s;
 		public IdentifierContext identifier() {
@@ -3046,6 +3060,14 @@ public class LissParser extends Parser {
 			                        if(_localctx.idTH.getInfoIdentifiersTable((((Function_callContext)_localctx).i!=null?_input.getText(((Function_callContext)_localctx).i.start,((Function_callContext)_localctx).i.stop):null)) instanceof Function){
 			                            Function f = (Function) _localctx.idTH.getInfoIdentifiersTable((((Function_callContext)_localctx).i!=null?_input.getText(((Function_callContext)_localctx).i.start,((Function_callContext)_localctx).i.stop):null));
 			                            ((Function_callContext)_localctx).typeS =  f.getInfoType();
+
+			                            //MIPS
+			                            boolean returnBoolean = false;
+			                            if(!_localctx.typeS.equals("null")){
+			                                returnBoolean = true;
+			                            }
+			                            ((Function_callContext)_localctx).mipsCodeS =  m.textFunctionCall((((Function_callContext)_localctx).i!=null?_input.getText(((Function_callContext)_localctx).i.start,((Function_callContext)_localctx).i.stop):null), ((Function_callContext)_localctx).i.line, ((Function_callContext)_localctx).i.pos, returnBoolean);
+			                            System.out.println(_localctx.mipsCodeS);
 			                        }
 			                    }else{
 			                        ((Function_callContext)_localctx).typeS =  null;
@@ -3949,7 +3971,7 @@ public class LissParser extends Parser {
 				{
 				setState(546);
 				((FactorContext)_localctx).f2 = function_call(idTH, set);
-				((FactorContext)_localctx).typeS =  ((FactorContext)_localctx).f2.typeS; ((FactorContext)_localctx).treeS =  ((FactorContext)_localctx).f2.treeS; /*if(isSet && _localctx.set!=null){((FactorContext)_localctx).treeS =  ((FactorContext)_localctx).f2.treeS;}*/
+				((FactorContext)_localctx).typeS =  ((FactorContext)_localctx).f2.typeS; ((FactorContext)_localctx).mipsCodeS =  ((FactorContext)_localctx).f2.mipsCodeS; ((FactorContext)_localctx).treeS =  ((FactorContext)_localctx).f2.treeS; /*if(isSet && _localctx.set!=null){((FactorContext)_localctx).treeS =  ((FactorContext)_localctx).f2.treeS;}*/
 				}
 				break;
 			case 6:

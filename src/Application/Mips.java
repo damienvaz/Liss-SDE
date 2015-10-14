@@ -782,6 +782,23 @@ public class Mips {
 
     /*************************** FUNCTIONS *********************************/
 
+    public String textFunctionCall(String name, int line, int pos, boolean returnBoolean){
+        //This works only for level 0
+        StringBuilder s = new StringBuilder();
+
+        for(int i=0; i<this.registerSavedTemporaryName.length ; i++){
+            s.append(textMove(this.registerName[i],this.registerSavedTemporaryName[i],line,pos));
+        }
+
+        s.append("\tjal "+name+"\t\t# " + line + ":" + pos + "\n");
+        if(returnBoolean==true){
+            String r0 = nextFreeRegister();
+            s.append(textMove("$v0",r0,line,pos));
+        }
+
+        return s.toString();
+    }
+
     public void addNameFunction(String s ){ this.functionName.addLast(s);}
 
     public void removeNameFunction(){ this.functionName.removeLast();}
@@ -799,6 +816,15 @@ public class Mips {
     public String storeValueSP(String register, Integer positionFromSP){
         StringBuilder s = new StringBuilder();
 
+        s.append("\tsw " + register + ", " + positionFromSP.toString() + "($sp)\t\t \n");// + line + ":" + pos +"\n");
+
+        return s.toString();
+    }
+
+    public String storeWordSP(Integer positionFromSP){
+        StringBuilder s = new StringBuilder();
+
+        String register = nextFreeRegister();
         s.append("\tsw " + register + ", " + positionFromSP.toString() + "($sp)\t\t \n");// + line + ":" + pos +"\n");
 
         return s.toString();
@@ -872,7 +898,7 @@ public class Mips {
         return s.toString();
     }
 
-    public String textEndFunction(int sizeFrameStack){
+    public String textEndFunction(int sizeFrameStack, String returnMipsCode){
         StringBuilder s = new StringBuilder();
 
         //s.append("\taddi $sp, $sp, "+sizeFrameStack+"\t\t# " + line + ":" + pos +"\n");
@@ -884,6 +910,12 @@ public class Mips {
             registerNr--;
         }
         s.append(loadWordValueSP("$ra",sizeFrameStack-this.numberOfBytesForEachAddress()));
+        //System.out.println("RETURN2 : "+returnMipsCode);
+        if(returnMipsCode!=null){
+            s.append(returnMipsCode);
+            String[] r = lastRegisterOccupied();
+            s.append(textMove(r[0],"$v0",0,0));
+        }
         s.append(this.decreaseStackFrameSP(sizeFrameStack));
         s.append(this.jumpReturnAddress());
 

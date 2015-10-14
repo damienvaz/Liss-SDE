@@ -14,12 +14,12 @@ declarations
 		subprogram factorial(n -> integer) -> integer
 		{
 		  	declarations
-			  //res = 1 -> integer;
+			  res = 1 -> integer;
 
 			statements
 				while (n > 0)
 				{
-					res = res * n;
+					a = res * n;
 					n = n -1;
 				}
 				return res;
@@ -42,7 +42,7 @@ declarations
 			writeln(res);
 			for (a in 0..3) stepUp 1
 			{
-			  m[a] = factorial(fac + a);  //need to know the concatenate function linkedlist+ the name of that function (for activing the fac
+			  //m[a] = factorial(fac + a);  //need to know the concatenate function linkedlist+ the name of that function (for activing the fac
 			}
 			writeln(res);
 
@@ -79,7 +79,7 @@ declarations
 
 statements
 
-	array2 = calculate(array1);
+	array2 = calculate(array1);  // Wth do we must to do with that ?? Copying array (each elements ?)
 	//a = factorial2(3);
 	//writeArray(array2);
 }

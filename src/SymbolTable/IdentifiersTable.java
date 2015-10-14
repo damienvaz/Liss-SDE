@@ -79,12 +79,14 @@ public class IdentifiersTable {
         //P.-C. : Size of the stackSP + Different level +
         Integer i = 0;
         //Integer levelOfVariable = this.getInfoIdentifiersTable(variable).getLevel();
-        Info v = (Var) this.idTable.get(variable).getLast();
-        if(actualLevel!=v.getLevel()){
+        Info v = (Var) this.getInfoIdentifiersTable(variable);
+        //System.out.println("Variable: "+variable+" Address: "+v.getAddress()+" Level: "+v.getLevel());
+        if(!actualLevel.equals(v.getLevel())){
             //Apply algorithms for searching the position on the stack pointer stack
             Integer sp = actualLevel;
             if(this.stackSP.size()>=sp && sp>=0){
-                i = this.stackSP.get(sp) - this.stackSP.get(v.getLevel()) + v.getAddress();
+                //System.out.println("Variable: "+variable+" Actual Level: "+sp.toString()+" Address of Actual Level SP : "+this.stackSP.get(sp)+" Variable level: "+v.getLevel()+" Address of Variable Level SP :"+this.stackSP.get(v.getLevel())+" Address Level Variable: "+v.getAddress());
+                i = (this.stackSP.get(sp) - this.stackSP.get(v.getLevel())) + v.getAddress();
             }
         }else{
             //It means that actualLevel == levelOfVariable
@@ -95,11 +97,11 @@ public class IdentifiersTable {
 
     public Integer getSizeSP(Integer level){ return this.stackSP.get(level)-this.stackSP.get(level-1);}
 
-    public void pushSP( Integer savedRegisters){
+    public void pushSP(Integer savedRegisters){
         if(this.stackSP.size()>0 ){
             this.stackSP.add(this.stackSP.get(this.stackSP.size()-1)+this.address+savedRegisters+4);
         }else if(this.stackSP.size() == 0){
-            this.stackSP.add(this.address);
+            this.stackSP.add(savedRegisters);
         }
     }
     public void popSP(){ if(this.stackSP.size()>0){this.stackSP.remove(this.stackSP.size()-1);}}
