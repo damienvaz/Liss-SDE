@@ -120,12 +120,18 @@ variable_declaration [IdentifiersTable idTH]
                                             //Add the value of the array firstly
                                             mipsCodeS = m.loadImmediateWord(String.valueOf(valueOfThePositionOfTheArray), (int)varsH.get(i).get("line"), (int)varsH.get(i).get("pos")); //generate mips code for value of the array
                                             //Add the address of the value of the array
-                                            mipsCodeS = mipsCodeS + m.loadImmediateWord(String.valueOf(res), (int)varsH.get(i).get("line"), (int)varsH.get(i).get("pos"));//generate mips code for position of the array
-                                            //Function for adding the value and the addres of the value to the given array
-                                            mipsCodeS = mipsCodeS + m.storeWordArray(i,(int)varsH.get(i).get("line"), (int)varsH.get(i).get("pos"));
-                                            //Add the instruction to the assembly
+                                            mipsCodeS += m.loadImmediateWord(String.valueOf(res), (int)varsH.get(i).get("line"), (int)varsH.get(i).get("pos"));//generate mips code for position of the array
                                             if(functionState == false){
+                                                //Function for adding the value and the address of the value to the given array
+                                                mipsCodeS += m.storeWordArray(i,(int)varsH.get(i).get("line"), (int)varsH.get(i).get("pos"));
+                                                //Add the instruction to the assembly
                                                 m.addTextInstruction(mipsCodeS);
+                                            }else if(functionState == true){
+                                                //What it does is,
+                                                mipsCodeS += m.loadImmediateWord(((Info)$idTH.getInfoIdentifiersTable(i)).getAddress().toString(), (int)varsH.get(i).get("line"), (int)varsH.get(i).get("pos"))+m.textAdd((int)varsH.get(i).get("line"), (int)varsH.get(i).get("pos"));
+                                                //è necessario adicionar o endereço da stack frame a posicao calculado do endereço array (para acceder bem)
+                                                mipsCodeS += m.storeWordArraySP((int)varsH.get(i).get("line"), (int)varsH.get(i).get("pos"));
+                                                m.addMipsCodeFunction(m.getNameFunction(),mipsCodeS);
                                             }
 
                                         }
@@ -574,7 +580,7 @@ statement [IdentifiersTable idTH]
           }
           : a=assignment[idTH] ';'          {$line=$a.line; $pos=$a.pos;}           //done
           | w=write_statement[idTH] ';'     {$line=$w.line; $pos=$w.pos;}           //done
-          | r=read_statement[idTH] ';'      {$line=$r.line; $pos=$r.pos;}
+          | r=read_statement[idTH] ';'      {$line=$r.line; $pos=$r.pos;}           //done
           | c=conditional_statement[idTH]   {$line=$c.line; $pos=$c.pos;}           //done
           | i=iterative_statement[idTH]     {$line=$i.line; $pos=$i.pos;}           //done
           | f=function_call[idTH, set] ';'  {$line=$f.line; $pos=$f.pos;}
@@ -610,17 +616,17 @@ assignment [IdentifiersTable idTH]
                             mipsCodeS = $expression.mipsCodeS;
                             if($idTH.getInfoIdentifiersTable($designator.text).getLevel().equals(0)){
                                 mipsCodeS += m.storeWord($designator.text, $designator.line, $designator.pos);
-                            }else if(!$idTH.getInfoIdentifiersTable($designator.text).getLevel().equals(0)){
+                            }else{ //if(!$idTH.getInfoIdentifiersTable($designator.text).getLevel().equals(0)){
                                 mipsCodeS += m.storeWordSP($idTH.getValueSP(level,$designator.text));
                             }
-                            //m.addTextInstructions($designator.text,$expression.mipsCodeS,$designator.typeS,$designator.line,$designator.pos);
+                            //m.addTextInstruction($designator.text,$expression.mipsCodeS,$designator.typeS,$designator.line,$designator.pos);
                         }else if($designator.arrayS == true){
                             mipsCodeS = $designator.mipsCodeS;
                             mipsCodeS += $expression.mipsCodeS;
                             mipsCodeS += m.storeWordArrayText($designator.identifierS, $designator.line, $designator.pos);
                         }
                         if(functionState == false){
-                            m.addTextInstructions(mipsCodeS);
+                            m.addTextInstruction(mipsCodeS);
                         }else if(functionState == true){
                             m.addMipsCodeFunction(m.getNameFunction(),mipsCodeS);
                         }
@@ -870,7 +876,7 @@ elem_array [IdentifiersTable idTH, Set set, String id] //id = name of the array
 
 function_call [IdentifiersTable idTH, Set set]
               returns [Node treeS, int line, int pos, String typeS, String mipsCodeS]
-              : i=identifier '(' s=sub_prg_args[idTH, set] ')'
+              : i=identifier '(' s=sub_prg_args[idTH, set, $i.text] ')'
                 {
                     $line = $i.line;
                     $pos = $i.pos;
@@ -884,7 +890,7 @@ function_call [IdentifiersTable idTH, Set set]
                             if(!$typeS.equals("null")){
                                 returnBoolean = true;
                             }
-                            $mipsCodeS = m.textFunctionCall($i.text, $i.line, $i.pos, returnBoolean);
+                            $mipsCodeS = m.textFunctionCall($i.text, $i.line, $i.pos, returnBoolean,$s.argumentsMipsCodeS);
                             System.out.println($mipsCodeS);
                         }
                     }else{
@@ -898,23 +904,32 @@ function_call [IdentifiersTable idTH, Set set]
                 }
               ;
 
-sub_prg_args [IdentifiersTable idTH, Set set]
-             returns [Node treeS]
-             :                      { $treeS = null;/*if(isSet && $set!=null){$treeS = null;}*/}
-             | a=args[idTH, set]    { $treeS = $a.treeS;/*if(isSet && $set!=null){$treeS = $a.treeS;}*/}
+sub_prg_args [IdentifiersTable idTH, Set set,String nameOfTheFunction]
+             returns [Node treeS, String argumentsMipsCodeS]
+             :                                          { $argumentsMipsCodeS = null; $treeS = null; /*if(isSet && $set!=null){$treeS = null;}*/}
+             | a=args[idTH, set, nameOfTheFunction]     { $argumentsMipsCodeS = $a.mipsCodeS; $treeS = $a.treeS;/*if(isSet && $set!=null){$treeS = $a.treeS;}*/}
              ;
 
-args [IdentifiersTable idTH, Set set]
-     returns [Node treeS]
+args [IdentifiersTable idTH, Set set,String nameOfTheFunction]
+     returns [Node treeS, String mipsCodeS]
      @init{
         Node head = null;
-        Node m = null;
+        Node m1 = null;
+        Integer addressOfArgumentsOnSF = 0;
+        Integer sizeOfSFFunction = 0;
+        if($idTH.doesExist(nameOfTheFunction)){
+            sizeOfSFFunction = ((Info)$idTH.getInfoIdentifiersTable(nameOfTheFunction)).getAddress();
+        }
      }
-     : e1=expression[idTH, set]      {  head = new Node(new String("args"),$e1.treeS,null); m = head;/*if(isSet && $set!=null){ head = new Node(new String("args"),$e1.treeS,null); m = head;}*/}
-     (',' e2=expression[idTH, set]   {  m.setRight(new Node(new String("args"),$e2.treeS,null)); m = m.getRight();/*if(isSet && $set!=null){ m.setRight(new Node(new String("args"),$e2.treeS,null)); m = m.getRight();}*/}
+     : e1=expression[idTH, set]      {  $mipsCodeS = $e1.mipsCodeS+m.storeArgumentsSP(sizeOfSFFunction-addressOfArgumentsOnSF); addressOfArgumentsOnSF += m.numberOfBytesForEachAddress(); head = new Node(new String("args"),$e1.treeS,null); m1 = head;/*if(isSet && $set!=null){ head = new Node(new String("args"),$e1.treeS,null); m = head;}*/}
+     (',' e2=expression[idTH, set]   {  $mipsCodeS += $e2.mipsCodeS+m.storeArgumentsSP(sizeOfSFFunction-addressOfArgumentsOnSF); addressOfArgumentsOnSF += m.numberOfBytesForEachAddress(); m1.setRight(new Node(new String("args"),$e2.treeS,null)); m1 = m1.getRight();/*if(isSet && $set!=null){ m.setRight(new Node(new String("args"),$e2.treeS,null)); m = m.getRight();}*/}
      )*
 
      {
+        //System.out.println("/*******************ARGUMENTS MIPSCODE***********************/");
+        //System.out.println($mipsCodeS);
+        //System.out.println("/******************************************/");
+
         //if(isSet && $set!=null){
         if($set!=null){
             $treeS = head;
@@ -1398,11 +1413,19 @@ write_statement [IdentifiersTable idTH]
                             if($w.write == true){
                             //Means that it is only write !
                                 String s1 = m.textWrite($p.mipsCodeS, $w.write, $w.line, $w.pos);
-                                m.addTextInstructions(s1);
+                                if(functionState == false){
+                                    m.addTextInstruction(s1);
+                                }else if(functionState == true){
+                                    m.addMipsCodeFunction(m.getNameFunction(),s1);
+                                }
                             }else if($w.write == false){
                             //Means that it is only writeln !
                                 String s2 = m.textWrite($p.mipsCodeS, $w.write, $w.line, $w.pos);
-                                m.addTextInstructions(s2);
+                                if(functionState == false){
+                                    m.addTextInstruction(s2);
+                                }else if(functionState == true){
+                                    m.addMipsCodeFunction(m.getNameFunction(),s2);
+                                }
                             }
                         }
                     }
@@ -1444,8 +1467,19 @@ read_statement [IdentifiersTable idTH]
                       if(!(v != null && v.getCategory().equals("VAR") && v.getInfoType().equals("integer"))){       //verificar se existe e é tipo inteiro e class VAR
                         e.addMessage($i.line,$i.pos,ErrorMessage.semantic($i.text,ErrorMessage.type(v.getInfoType(),"integer")));
                       }else{
-                        String s = m.textRead($i.text, $i.line, $i.pos);
-                        m.addTextInstruction(s);
+                        String mipsCodeS,s;
+
+                        if($idTH.getInfoIdentifiersTable($i.text).getLevel().equals(0)){
+                            mipsCodeS = m.storeWord($i.text,$i.line,$i.pos);
+                        }else{
+                            mipsCodeS = m.storeWordSP($idTH.getValueSP(level,$i.text));
+                        }
+                        s = m.textRead(mipsCodeS, $i.line, $i.pos);
+                        if(functionState == false){
+                            m.addTextInstruction(s);
+                        }else if(functionState == true){
+                            m.addMipsCodeFunction(m.getNameFunction(),s);
+                        }
                       }
                   }
                }
@@ -1480,9 +1514,12 @@ if_then_else_stat [IdentifiersTable idTH]
                             e.addMessage($e1.line,$e1.pos,ErrorMessage.semantic($e1.text,ErrorMessage.type($e1.typeS,"boolean")));
                           }else{
                             mipsCodeS = $e1.mipsCodeS;
-                            mipsCodeS += m.textIfThenElse( $i.line, $i.pos);
-
-                            m.addTextInstruction(mipsCodeS);
+                            mipsCodeS += m.textIfThenElse($i.line, $i.pos);
+                            if(functionState == false){
+                                m.addTextInstruction(mipsCodeS);
+                            }else if(functionState == true){
+                                m.addMipsCodeFunction(m.getNameFunction(),mipsCodeS);
+                            }
                           }
                         }
                     'then' '{' s=statements[idTH] '}'
@@ -1495,15 +1532,19 @@ else_expression [IdentifiersTable idTH, int line, int pos]
                 @init{
                     String mipsCodeS = null;
                 }
-                :                                   { String s1 = m.textElse(line,pos); if(s1 != null){m.addTextInstructions(s1);}}
+                :                                   { String s1 = m.textElse(line,pos); if(s1 != null){ if(functionState == false){m.addTextInstruction(s1);}else if(functionState == true){ m.addMipsCodeFunction(m.getNameFunction(),s1);}}}
                 | e='else' '{'
                     {
                         String s2 = m.textJumpBeforeElse($e.line, $e.pos);
                         if(s2 !=  null){
-                            m.addTextInstructions(s2);
+                            if(functionState == false){
+                                m.addTextInstruction(s2);
+                            }else if(functionState == true){
+                                m.addMipsCodeFunction(m.getNameFunction(),s2);
+                            }
                         }
                     }
-                  s=statements[idTH] { String s3 = m.textJumpAfterElse($e.line, $e.pos); if(s3 != null){m.addTextInstructions(s3);}}
+                  s=statements[idTH] { String s3 = m.textJumpAfterElse($e.line, $e.pos); if(s3 != null){ if(functionState == false){m.addTextInstruction(s3);}else if(functionState == true){ m.addMipsCodeFunction(m.getNameFunction(),s3);}}}
                   '}'
                 ;
 
@@ -1515,43 +1556,66 @@ for_stat [IdentifiersTable idTH]
             {
                 $line = $f.line;
                 $pos = $f.pos;
-                if(functionState == false){
-                    if($i.inArray == true && $s.stepS == true){
-                        e.addMessage($f.line, $f.pos, ErrorMessage.forEachStep());
-                    }else{
-                        String s1 = $i.mipsCodeS;
-                        s1 += m.textForCondition($i.inArray, $i.variableS, $i.arrayS, $i.maximumMipsCodeS, $s.stepUp, $f.line, $f.pos);
-                        m.addTextInstructions(s1);
+                if($i.inArray == true && $s.stepS == true){
+                    e.addMessage($f.line, $f.pos, ErrorMessage.forEachStep());
+                }else{
+                    String s1 = $i.mipsCodeS;
+                    Integer positionFromSP = 0, variableLevel = $idTH.getInfoIdentifiersTable($i.variableS).getLevel(); //we must declare that for textForCondition function, it is needed for the use of variables for functions and also, not including IdentifiersTable into Mips class
+                    if(!variableLevel.equals(0)){
+                        positionFromSP = $idTH.getValueSP(level, $i.variableS);
+                    }
+                    Integer positionFromSPArray = 0, arrayLevel = 0;
+                    if($i.inArray){
+                        positionFromSPArray = $idTH.getValueSP(level, $i.arrayS);
+                        arrayLevel = $idTH.getInfoIdentifiersTable($i.arrayS).getLevel();
+                    }
+                    s1 += m.textForCondition($i.inArray,$i.variableS,variableLevel,positionFromSP,$i.arrayS, positionFromSPArray, arrayLevel, $i.maximumMipsCodeS, $s.stepUp, $f.line, $f.pos);
+                    if(functionState == false){
+                        m.addTextInstruction(s1);
+                    }else if(functionState == true){
+                        m.addMipsCodeFunction(m.getNameFunction(),s1);
                     }
                 }
+
             }
             s2=satisfy[idTH]
             {
-                if(functionState == false){
-                    if($i.inArray == true && $s2.satisfyingS == true){
-                        e.addMessage($f.line, $f.pos, ErrorMessage.forEachSatisfying());
-                    }else if($s2.mipsCodeS!=null){
-                        String s = m.textForSatisfyingInit($s2.mipsCodeS, $s2.line, $s2.pos); //Fazer isto !!!
-                        m.addTextInstructions(s);
+
+                if($i.inArray == true && $s2.satisfyingS == true){
+                    e.addMessage($f.line, $f.pos, ErrorMessage.forEachSatisfying());
+                }else if($s2.mipsCodeS!=null){
+                    String s = m.textForSatisfyingInit($s2.mipsCodeS, $s2.line, $s2.pos); //Fazer isto !!!
+                    if(functionState == false){
+                        m.addTextInstruction(s);
+                    }else if(functionState == true){
+                        m.addMipsCodeFunction(m.getNameFunction(),s);
                     }
                 }
+
             }
            '{' s3=statements[idTH] '}'
             {
-                if(functionState == false){
-                    String  l = null;
-                    if($s2.mipsCodeS!=null){
-                        l = m.textForSatisfyingEnd($s3.line, $s3.pos);
-                    }
-                    //P.C. = inArray, stepBoolean, StepValue
-                    if(l!=null){
-                        l += m.textForStep($i.variable, $i.inArray, $s.stepUp, $s.numberS, $s3.line, $s3.pos);
-                    }else{
-                        l = m.textForStep($i.variable, $i.inArray, $s.stepUp, $s.numberS, $s3.line, $s3.pos);
-                    }
-                    //need to implement stepup and stepdown
-                    m.addTextInstructions(l);
+                String  l = null;
+                if($s2.mipsCodeS!=null){
+                    l = m.textForSatisfyingEnd($s3.line, $s3.pos);
                 }
+                //P.C. = inArray, stepBoolean, StepValue
+                Integer levelVariable = 0, positionFromSP = 0;
+                if(!$idTH.getInfoIdentifiersTable($i.variable).getLevel().equals(0)){
+                    levelVariable = $idTH.getInfoIdentifiersTable($i.variable).getLevel();
+                    positionFromSP = $idTH.getValueSP(level, $i.variable);
+                }
+                if(l!=null){
+                    l += m.textForStep($i.variable,levelVariable,positionFromSP, $i.inArray, $s.stepUp, $s.numberS, $s3.line, $s3.pos);
+                }else{
+                    l = m.textForStep($i.variable,levelVariable,positionFromSP, $i.inArray, $s.stepUp, $s.numberS, $s3.line, $s3.pos);
+                }
+                if(functionState == false){
+                    m.addTextInstruction(l);
+                }else if(functionState == true){
+                    m.addMipsCodeFunction(m.getNameFunction(),l);
+                }
+
             }
          ;
 
@@ -1593,7 +1657,13 @@ type_interval [IdentifiersTable idTH, String variable]
                                         }else{
                                             if($inArrayS == true){
                                                 String s = m.loadImmediateWord("0", $i.line, $i.pos); // 0 because "inArray" is a foreach !! So it must pass to every position of the array. That's why we begin by 0 until the maximum of the dimension of the array.
-                                                $minimumMipsCodeS = m.textForInit($inArrayS,$variable,s, $i.line, $i.pos);
+
+                                                Integer levelVariable = 0, positionFromSP = 0;
+                                                if(!$idTH.getInfoIdentifiersTable($variable).getLevel().equals(0)){
+                                                    levelVariable = $idTH.getInfoIdentifiersTable($variable).getLevel();
+                                                    positionFromSP = $idTH.getValueSP(level,$variable);
+                                                }
+                                                $minimumMipsCodeS = m.textForInit($inArrayS,$variable,levelVariable,positionFromSP,s, $i.line, $i.pos);
 
                                                 // We need to do the code for maximum ! we need to calculate the size of the array !
                                                 Array a = (Array) $idTH.getInfoIdentifiersTable($i.text);
@@ -1619,15 +1689,33 @@ range [IdentifiersTable idTH, String variable, boolean inArray]
 
 minimum [IdentifiersTable idTH, String variable, boolean inArray]
         returns [String mipsCodeS]
-        : n=number        { String s = m.loadImmediateWord($n.text, $n.line, $n.pos); $mipsCodeS = m.textForInit($inArray,$variable,s, $n.line, $n.pos);}
+        : n=number        {
+                            String s = m.loadImmediateWord($n.text, $n.line, $n.pos);
+                            Integer variableLevel = 0,  positionFromSP = 0;
+                            if(!$idTH.getInfoIdentifiersTable($variable).getLevel().equals(0)){
+                                variableLevel = $idTH.getInfoIdentifiersTable($variable).getLevel();
+                                positionFromSP = $idTH.getValueSP(level,$variable);
+                            }
+                            $mipsCodeS = m.textForInit($inArray,$variable,variableLevel,positionFromSP,s, $n.line, $n.pos);
+                          }
         | i=identifier
          {
             Var v = (Var) $idTH.getInfoIdentifiersTable($i.text);
             if(!(v != null && v.getCategory().equals("VAR") && v.getInfoType().equals("integer"))){       //tem que existir e tem que ser variavel tipo inteiro , cat VAR
                 e.addMessage($i.line,$i.pos,ErrorMessage.semantic($i.text,ErrorMessage.type(v.getInfoType(),"integer")));
             }else{
-                String s = m.loadWord($i.text, $i.line, $i.pos);
-                $mipsCodeS = m.textForInit($inArray,$variable,s, $i.line, $i.pos);
+                String s;
+                if($idTH.getInfoIdentifiersTable($i.text).getLevel().equals(0)){
+                    s = m.loadWord($i.text, $i.line, $i.pos);
+                }else{
+                    s = m.loadWordSP($idTH.getValueSP(level,$i.text));
+                }
+                Integer variableLevel = 0,  positionFromSP = 0;
+                if(!$idTH.getInfoIdentifiersTable($variable).getLevel().equals(0)){
+                    variableLevel = $idTH.getInfoIdentifiersTable($variable).getLevel();
+                    positionFromSP = $idTH.getValueSP(level,$variable);
+                }
+                $mipsCodeS = m.textForInit($inArray,$variable,variableLevel,positionFromSP,s, $i.line, $i.pos);
             }
          }
         ;
@@ -1641,7 +1729,13 @@ maximum [IdentifiersTable idTH]
             if(!(v != null && v.getCategory().equals("VAR") && v.getInfoType().equals("integer"))){       //tem que existir e tem que ser variavel tipo inteiro , cat VAR
                 e.addMessage($i.line,$i.pos,ErrorMessage.semantic($i.text,ErrorMessage.type(v.getInfoType(),"integer")));
             }else{
-                $mipsCodeS = m.loadWord($i.text, $i.line, $i.pos);
+                //String s;
+                if($idTH.getInfoIdentifiersTable($i.text).getLevel().equals(0)){
+                    $mipsCodeS = m.loadWord($i.text, $i.line, $i.pos);
+                }else{
+                    $mipsCodeS = m.loadWordSP($idTH.getValueSP(level,$i.text));
+                }
+                //$mipsCodeS = m.loadWord($i.text, $i.line, $i.pos);
             }
         }
         ;
@@ -1682,7 +1776,6 @@ satisfy [IdentifiersTable idTH]
         ;
 
 /* ****** While_Stat ****** */
-
 while_stat [IdentifiersTable idTH]
            returns [int line, int pos]
            @init{
@@ -1692,24 +1785,31 @@ while_stat [IdentifiersTable idTH]
                 {
                   $line = $w.line;
                   $pos = $w.pos;
-                  if(functionState == false){
-                      if(!($e.typeS!=null && $e.typeS.equals("boolean"))){
-                        e.addMessage($e.line,$e.pos,ErrorMessage.semantic($e.text,ErrorMessage.type($e.typeS,"boolean")));
-                      }else{
-                        if($e.mipsCodeS != null){
-                            String s1 = m.textWhile($e.mipsCodeS, $e.line, $e.pos);
+                  if(!($e.typeS!=null && $e.typeS.equals("boolean"))){
+                    e.addMessage($e.line,$e.pos,ErrorMessage.semantic($e.text,ErrorMessage.type($e.typeS,"boolean")));
+                  }else{
+                    if($e.mipsCodeS != null){
+                        String s1 = m.textWhile($e.mipsCodeS, $e.line, $e.pos);
+                        if(functionState==false){
                             m.addTextInstruction(s1);
-                            //m.resetRegister();
+                        }else if(functionState==true){
+                            //generate mips assembly code for functions
+                            m.addMipsCodeFunction(m.getNameFunction(),s1);
                         }
-                      }
+                        //m.resetRegister();
+                    }
                   }
-
                 }
              '{' statements[idTH] l='}'
              {
-                if(functionState == false){
+                if($e.mipsCodeS != null){
                     String s2 = m.textWhileExit($l.line, $l.pos);
-                    m.addTextInstruction(s2);
+                    if(functionState == false){
+                        m.addTextInstruction(s2);
+                    }else if(functionState == true){
+                        //generate mips assembly code for functions
+                        m.addMipsCodeFunction(m.getNameFunction(),s2);
+                    }
                 }
              }
            ;
@@ -1728,12 +1828,35 @@ succ_or_pred [IdentifiersTable idTH]
                 }else{
                     if($s.succ == true){
                     //It means that succ is being used
-                        String s1 = m.textSucc($i.text, $s.line, $s.pos);;
-                        m.addTextInstructions(s1);
+                        String s1;
+                        //we need to know the level of the identifier
+                        if($idTH.getInfoIdentifiersTable($i.text).getLevel().equals(0)){
+                            s1 = m.textSucc($i.text, $s.line, $s.pos);
+                        }else{
+                            s1 = m.textSuccSF($idTH.getValueSP(level,$i.text), $s.line, $s.pos);
+                        }
+
+                        //this is needed for knowing where the instruction will be added to the mips assembly code
+                        if(functionState == false){
+                            m.addTextInstruction(s1);
+                        }else if(functionState == true){
+                            m.addMipsCodeFunction(m.getNameFunction(),s1);
+                        }
                     }else if($s.succ == false){
                     //It means that pred is being used
-                        String s2 = m.textPred($i.text, $s.line, $s.pos);
-                        m.addTextInstructions(s2);
+                        String s2;
+                        //we need to know the level of the identifier
+                        if($idTH.getInfoIdentifiersTable($i.text).getLevel().equals(0)){
+                            s2 = m.textPred($i.text, $s.line, $s.pos);
+                        }else{
+                            s2 = m.textPredSF($idTH.getValueSP(level,$i.text),$s.line,$s.pos);
+                        }
+
+                        if(functionState == false){
+                            m.addTextInstruction(s2);
+                        }else if(functionState == true){
+                            m.addMipsCodeFunction(m.getNameFunction(),s2);
+                        }
                     }
                 }
              }//identifier inteiro
