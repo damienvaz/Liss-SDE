@@ -7,7 +7,6 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Stack;
 
 /**
  * Created by damienvaz on 6/5/15.
@@ -17,7 +16,7 @@ public class Mips {
     private String text;
     private boolean[] register;
     private String[] registerName;
-    private String[] registerSavedTemporaryName;    // blablabla
+    private String[] registerSavedTemporaryName;
     private static int numberOfRegisters = 8;
     private static Integer eachAddressOccupies = 4; // 4 Bytes
     private LinkedList<Integer> counterJumpStack;   //A stack which will handle the IF/WHILE statement behavior
@@ -947,6 +946,47 @@ public class Mips {
     }
 
     /***********************************************************************/
+
+    /******************************TRYING TO FIGURE OUT THE EFFECT OF THE FUNCTIONS DUE TO GITHUB INTELLIJ BUG******************************/
+
+    public String storeWordArraySP(int line, int pos) {
+        StringBuilder s = new StringBuilder();
+
+        return s.toString();
+    }
+
+    public String textFunctionCall(String identifierText, int line, int pos, boolean returnBoolean, String argumentsMipsCode){
+        StringBuilder s = new StringBuilder();
+
+        return s.toString();
+    }
+
+    public String storeArgumentsSP(Integer i){
+        StringBuilder s = new StringBuilder();
+
+        return s.toString();
+    }
+
+    public String textSuccSF(Integer i, int line, int pos){
+        StringBuilder s = new StringBuilder();
+
+        return s.toString();
+    }
+
+    public String textPredSF(Integer i, int line, int pos){
+        StringBuilder s = new StringBuilder();
+
+        return s.toString();
+    }
+
+    public String blabla(){
+        StringBuilder s = new StringBuilder();
+
+        return s.toString();
+    }
+
+
+    /***************************************************************************************************************************************/
 
     public void removeLastStack(){
         if(this.counterJumpStack.size()>0) {
