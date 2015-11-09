@@ -17,7 +17,7 @@ public class Mips {
     private String text;
     private boolean[] register;
     private String[] registerName;
-    private String[] registerSavedTemporaryName;
+    private String[] registerSavedTemporaryName;    // blablabla
     private static int numberOfRegisters = 8;
     private static Integer eachAddressOccupies = 4; // 4 Bytes
     private LinkedList<Integer> counterJumpStack;   //A stack which will handle the IF/WHILE statement behavior
@@ -30,11 +30,11 @@ public class Mips {
     public Mips(){
         this.data = ".data\n";
         this.text = ".text\n  main:\n";
-        this.register = new boolean[this.numberOfRegisters];
+        this.register = new boolean[numberOfRegisters];
         for(int i=0; i<this.register.length;i++){
             this.register[i] = false;
         }
-        this.registerName = new String[this.numberOfRegisters];
+        this.registerName = new String[numberOfRegisters];
         /*this.registerName[0] = "$t0";
         this.registerName[1] = "$t1";
         this.registerName[2] = "$t2";
@@ -43,13 +43,13 @@ public class Mips {
         this.registerName[5] = "$t5";
         this.registerName[6] = "$t6";
         this.registerName[7] = "$t7";*/
-        for(int i=0; i<this.numberOfRegisters; i++){
+        for(int i = 0; i< numberOfRegisters; i++){
             this.registerName[i] = "$t"+i;
         }
         //Normally it should have 10 "t" registers !! But MIPS has only 8 registers (s0-s7) which are preserved across call ! So we decided to only have, for consistency, 8 "t" registers (which aren't preserved across call !
 
-        this.registerSavedTemporaryName = new String[this.numberOfRegisters];
-        for(int i=0; i<this.numberOfRegisters; i++){
+        this.registerSavedTemporaryName = new String[numberOfRegisters];
+        for(int i = 0; i< numberOfRegisters; i++){
             this.registerSavedTemporaryName[i] = "$s"+i;
         }
 
@@ -62,9 +62,9 @@ public class Mips {
 
     //public String getFunctionMipsCode(){return this.functionMipsCode;}
 
-    public Integer numberOfRegistersInBytes(){ return this.register.length*this.eachAddressOccupies;    }
+    public Integer numberOfRegistersInBytes(){ return this.register.length* eachAddressOccupies;    }
 
-    public Integer numberOfBytesForEachAddress(){return this.eachAddressOccupies;}
+    public Integer numberOfBytesForEachAddress(){return eachAddressOccupies;}
 
     public void resetRegister(){
         int i=0;
@@ -176,7 +176,7 @@ public class Mips {
 
     public String dataArray(Integer value, int line, int pos){
         StringBuilder s = new StringBuilder();
-            Integer res = value*this.eachAddressOccupies;
+            Integer res = value* eachAddressOccupies;
             s.append(".space "+res.toString()+"\t\t# "+line+":"+pos+"\n");
         return s.toString();
     }
@@ -725,7 +725,7 @@ public class Mips {
 
         if(inArray == true){
             s.append(loadWord("for_var"+i.toString(), line, pos));
-            s.append(loadImmediateWord(this.eachAddressOccupies.toString(), line, pos));
+            s.append(loadImmediateWord(eachAddressOccupies.toString(), line, pos));
             s.append(textAdd(line, pos));
             String res[] = lastRegisterOccupied();
             s.append("\tsw "+res[0]+", for_var"+i.toString()+"\t\t# "+line+":"+pos+"\n");
@@ -856,7 +856,7 @@ public class Mips {
     }
 
     public Integer valueReturnAddressFunction(int sizeFrameStack){ //Size from Table Identifier of Function (Address)
-        return sizeFrameStack-this.eachAddressOccupies;
+        return sizeFrameStack- eachAddressOccupies;
     }
 
     public String increaseStackFrameSP(int size){
@@ -879,10 +879,10 @@ public class Mips {
         StringBuilder s = new StringBuilder();
 
         int returnAddress = valueReturnAddressFunction(sizeFrameStack);
-        Integer registerNr = this.numberOfRegisters;
+        Integer registerNr = numberOfRegisters;
 
         for(String reg : this.registerSavedTemporaryName){
-            s.append(storeValueSP(reg,returnAddress-(registerNr*this.eachAddressOccupies)));
+            s.append(storeValueSP(reg,returnAddress-(registerNr* eachAddressOccupies)));
             registerNr--;
         }
 
@@ -903,10 +903,10 @@ public class Mips {
 
         //s.append("\taddi $sp, $sp, "+sizeFrameStack+"\t\t# " + line + ":" + pos +"\n");
         int returnAddress = valueReturnAddressFunction(sizeFrameStack);
-        Integer registerNr = this.numberOfRegisters;
+        Integer registerNr = numberOfRegisters;
 
         for(String reg : this.registerSavedTemporaryName){
-            s.append(loadWordValueSP(reg,returnAddress-(registerNr*this.eachAddressOccupies)));
+            s.append(loadWordValueSP(reg,returnAddress-(registerNr* eachAddressOccupies)));
             registerNr--;
         }
         s.append(loadWordValueSP("$ra",sizeFrameStack-this.numberOfBytesForEachAddress()));
@@ -1000,7 +1000,7 @@ public class Mips {
                         res = res*i;
                     }
 
-                    String s = (String) dataArray(res, (int) info.get("line"), (int) info.get("pos"));
+                    String s = dataArray(res, (int) info.get("line"), (int) info.get("pos"));
                     addDataInstruction(var, s);
                 }
 

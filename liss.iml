@@ -10,16 +10,7 @@
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$USER_HOME$/Downloads/plugin/lib/antlr-4.5-complete.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" exported="">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../../antlr/antlr-4.5-complete.jar!/" />
+          <root url="jar://$USER_HOME$/Desktop/antlr/antlr-4.5-complete.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
