@@ -626,7 +626,7 @@ public class Mips {
 
     /*************************** FOR *********************************/
 
-    public String textForCondition(boolean inArray, String variable, String array, String mipsCodeS, boolean stepUp, int line, int pos){
+    public String textForCondition(boolean inArray, String variable,Integer variableLevel, Integer positionFromSPvariable, String array, Integer arrayLevel, Integer positionFromSPArray, String mipsCodeS, boolean stepUp, int line, int pos){
         StringBuilder s = new StringBuilder();
 
         Integer i = this.counterJumpStack.getFirst();
@@ -689,7 +689,7 @@ public class Mips {
         return s.toString();
     }
 
-    public String textForInit(boolean inArray,String variable, String mipsCodeS, int line, int pos){
+    public String textForInit(boolean inArray,String variable,Integer variableLevel, Integer positionFromSPVariable, String mipsCodeS, int line, int pos){
         StringBuilder s = new StringBuilder();
 
         this.counterJump++;
@@ -717,7 +717,7 @@ public class Mips {
         return s.toString();
     }
 
-    public String textForStep(String variable, boolean inArray, boolean stepUp, String stepValue, int line, int pos){
+    public String textForStep(String variable, Integer variableLevel, Integer positionFromSP, boolean inArray, boolean stepUp, String stepValue, int line, int pos){
         StringBuilder s = new StringBuilder();
 
         Integer i = this.counterJumpStack.getFirst();
@@ -979,12 +979,7 @@ public class Mips {
         return s.toString();
     }
 
-    public String blabla(){
-        StringBuilder s = new StringBuilder();
-
-        return s.toString();
-    }
-
+    //textForCondition && textForStep && textForInit
 
     /***************************************************************************************************************************************/
 

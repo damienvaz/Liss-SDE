@@ -1569,7 +1569,7 @@ for_stat [IdentifiersTable idTH]
                         positionFromSPArray = $idTH.getValueSP(level, $i.arrayS);
                         arrayLevel = $idTH.getInfoIdentifiersTable($i.arrayS).getLevel();
                     }
-                    s1 += m.textForCondition($i.inArray,$i.variableS,variableLevel,positionFromSP,$i.arrayS, positionFromSPArray, arrayLevel, $i.maximumMipsCodeS, $s.stepUp, $f.line, $f.pos);
+                    s1 += m.textForCondition($i.inArray,$i.variableS,variableLevel,positionFromSP,$i.arrayS, arrayLevel,positionFromSPArray, $i.maximumMipsCodeS, $s.stepUp, $f.line, $f.pos);
                     if(functionState == false){
                         m.addTextInstruction(s1);
                     }else if(functionState == true){
