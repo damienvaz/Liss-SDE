@@ -1,20 +1,18 @@
 // Generated from /Developer/Github/Liss-SDE/src/Application/Liss.g4 by ANTLR 4.5.1
 package Application;
 
-import SymbolTable.*;
-import org.antlr.v4.runtime.*;
-import org.antlr.v4.runtime.atn.ATN;
-import org.antlr.v4.runtime.atn.ATNDeserializer;
-import org.antlr.v4.runtime.atn.ParserATNSimulator;
-import org.antlr.v4.runtime.atn.PredictionContextCache;
-import org.antlr.v4.runtime.dfa.DFA;
-import org.antlr.v4.runtime.tree.ParseTreeListener;
-import org.antlr.v4.runtime.tree.TerminalNode;
+    import java.util.HashMap;
+    import java.util.LinkedList;
+    import SymbolTable.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
+import org.antlr.v4.runtime.atn.*;
+import org.antlr.v4.runtime.dfa.DFA;
+import org.antlr.v4.runtime.*;
+import org.antlr.v4.runtime.misc.*;
+import org.antlr.v4.runtime.tree.*;
 import java.util.List;
+import java.util.Iterator;
+import java.util.ArrayList;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
 public class LissParser extends Parser {
@@ -363,7 +361,7 @@ public class LissParser extends Parser {
 			}
 
 
-			                //It is necessary to the add function ASAP on the idTH due to consistencyof the idTH ! And to add it, we must know ASAP when we know the stack frame size !! Even before a subprogram is detected or a statement !!
+			                //It is necessary to the add function ASAP on the idTH due to consistency of the idTH ! And to add it, we must know ASAP when we know the stack frame size !! Even before a subprogram is detected or a statement !!
 			                if(functionState == true && varInfo!=null){
 			                    _localctx.idTH.pushSP(m.numberOfRegistersInBytes()); //only add when subprogram are activated !!!!
 			                    varInfo.put("address",_localctx.idTH.getSizeSP(level));
@@ -375,7 +373,10 @@ public class LissParser extends Parser {
 			                    _localctx.idTH.add(e,hashmapVar,"function",level-1); //Name of the function is always one level below (for this part of the code) !
 			                    //Code below generate the mipscode for functions
 			                    String mipsCodeS = m.increaseStackFrameSP(_localctx.idTH.getSizeSP(level));
-			                    mipsCodeS += m.saveRegistersAndReturnAddressBeginFunctions(_localctx.idTH.getSizeSP(level));
+			                    m.addIncreaseSFMipsCodeFunction(m.getNameFunction(),mipsCodeS);
+
+			                    mipsCodeS = m.saveRegistersAndReturnAddressBeginFunctions(_localctx.idTH.getSizeSP(level));
+
 			                    m.addMipsCodeFunction(m.getNameFunction(),mipsCodeS);
 			                    //add the rest of the mipsCode of variable_Declaration NT
 
@@ -464,16 +465,13 @@ public class LissParser extends Parser {
 			                                    if(varsH.get(i).get("accessArray") != null){
 			                                        ArrayList<ArrayList<Integer>> accessArray = (ArrayList<ArrayList<Integer>>) varsH.get(i).get("accessArray");
 
-			                                        String mipsCodeS = null;
+			                                        String mipsCodeS;
 
-			                                        if(functionState == false){
-			                                            m.addTextInstruction("\t##### Initialize Array :"+i+"#####\n");
-			                                        }
+			                                        mipsCodeS = "\t##### Initialize Array :"+i+"#####\n";
+
 			                                        for(ArrayList<Integer> array :accessArray){
 			                                            int valueOfThePositionOfTheArray = array.get(array.size()-1);
 			                                            array.remove(array.size()-1);
-
-			                                            //System.out.println(mipsCodeS);
 
 			                                            int res = 0;
 			                                            for(int j=0; j< array.size(); j++){
@@ -491,26 +489,25 @@ public class LissParser extends Parser {
 
 			                                            res = res*4;
 			                                            //Add the value of the array firstly
-			                                            mipsCodeS = m.loadImmediateWord(String.valueOf(valueOfThePositionOfTheArray), (int)varsH.get(i).get("line"), (int)varsH.get(i).get("pos")); //generate mips code for value of the array
+			                                            mipsCodeS += m.loadImmediateWord(String.valueOf(valueOfThePositionOfTheArray), (int)varsH.get(i).get("line"), (int)varsH.get(i).get("pos")); //generate mips code for value of the array
 			                                            //Add the address of the value of the array
 			                                            mipsCodeS += m.loadImmediateWord(String.valueOf(res), (int)varsH.get(i).get("line"), (int)varsH.get(i).get("pos"));//generate mips code for position of the array
 			                                            if(functionState == false){
 			                                                //Function for adding the value and the address of the value to the given array
 			                                                mipsCodeS += m.storeWordArray(i,(int)varsH.get(i).get("line"), (int)varsH.get(i).get("pos"));
 			                                                //Add the instruction to the assembly
-			                                                m.addTextInstruction(mipsCodeS);
+			                                                //m.addTextInstruction(mipsCodeS);
 			                                            }else if(functionState == true){
 			                                                //What it does is,
-			                                                mipsCodeS += m.loadImmediateWord(((Info)_localctx.idTH.getInfoIdentifiersTable(i)).getAddress().toString(), (int)varsH.get(i).get("line"), (int)varsH.get(i).get("pos"))+m.textAdd((int)varsH.get(i).get("line"), (int)varsH.get(i).get("pos"));
+			                                                mipsCodeS += m.loadImmediateWord(""+_localctx.idTH.getAddress(), (int)varsH.get(i).get("line"), (int)varsH.get(i).get("pos"))+m.textAdd((int)varsH.get(i).get("line"), (int)varsH.get(i).get("pos"));
 			                                                //è necessario adicionar o endereço da stack frame a posicao calculado do endereço array (para acceder bem)
-			                                                mipsCodeS += m.storeWordArraySP((int)varsH.get(i).get("line"), (int)varsH.get(i).get("pos"));
-			                                                m.addMipsCodeFunction(m.getNameFunction(),mipsCodeS);
+			                                                mipsCodeS += m.storeValueWordArraySP((int)varsH.get(i).get("line"), (int)varsH.get(i).get("pos"));
+			                                                //m.addMipsCodeFunction(m.getNameFunction(),mipsCodeS);
 			                                            }
 
 			                                        }
-			                                        if(functionState == false){
-			                                            m.addTextInstruction("\t#######################################\n");
-			                                        }
+
+			                                        mipsCodeS += "\t#######################################\n";
 			                                        varsH.get(i).put("mips",mipsCodeS);
 			                                    }
 			                                }
@@ -530,6 +527,7 @@ public class LissParser extends Parser {
 			                                }
 			                            }
 
+			                            //Testing the type of the variables and the type of types ! if they ain't equals then we must throw an error
 			                            for(String i : varsH.keySet()){
 			                                HashMap<String, Object> varInfo = (HashMap<String, Object>)varsH.get(i);
 			                                boolean s=false;
@@ -554,8 +552,9 @@ public class LissParser extends Parser {
 			                            //MIPS
 			                            if(functionState == false){
 			                                m.addDataInstructions(varsH,((Variable_declarationContext)_localctx).type.typeS);
-			                            }else{
-
+			                            }else if(functionState == true){
+			                                //    m.addMipsCodeFunction(m.getNameFunction(),mipsCodeS);
+			                                m.addDataFunctionInstructions(varsH, ((Variable_declarationContext)_localctx).type.typeS);
 			                            }
 			                     
 			}
@@ -1047,12 +1046,6 @@ public class LissParser extends Parser {
 
 				                                                    ((Inic_varContext)_localctx).typeS =  "integer";
 				                                                    ((Inic_varContext)_localctx).type_ =  "array";
-				                                                    /*for(ArrayList<Integer> array :accessArray){
-				                                                        for(int i=0; i< array.size(); i++){
-				                                                            System.out.print(array.get(i).toString()+" ");
-				                                                        }
-				                                                        System.out.println("woot");
-				                                                    }*/
 				                                                    ((Inic_varContext)_localctx).accessArrayS =  accessArray;
 				                                              
 				}
@@ -1132,7 +1125,7 @@ public class LissParser extends Parser {
 				((ConstantContext)_localctx).sign = sign();
 				setState(258);
 				((ConstantContext)_localctx).number = number();
-				((ConstantContext)_localctx).typeS =  "integer"; ((ConstantContext)_localctx).line =  ((ConstantContext)_localctx).number.line; ((ConstantContext)_localctx).pos =  ((ConstantContext)_localctx).number.pos; if(isDeclarations){ ((ConstantContext)_localctx).mipsCodeS =  m.dataWord((((ConstantContext)_localctx).sign!=null?_input.getText(((ConstantContext)_localctx).sign.start,((ConstantContext)_localctx).sign.stop):null)+(((ConstantContext)_localctx).number!=null?_input.getText(((ConstantContext)_localctx).number.start,((ConstantContext)_localctx).number.stop):null),((ConstantContext)_localctx).number.line,((ConstantContext)_localctx).number.pos);}else{ ((ConstantContext)_localctx).mipsCodeS =  m.loadImmediateWord((((ConstantContext)_localctx).sign!=null?_input.getText(((ConstantContext)_localctx).sign.start,((ConstantContext)_localctx).sign.stop):null)+(((ConstantContext)_localctx).number!=null?_input.getText(((ConstantContext)_localctx).number.start,((ConstantContext)_localctx).number.stop):null),((ConstantContext)_localctx).number.line,((ConstantContext)_localctx).number.pos);} 
+				((ConstantContext)_localctx).typeS =  "integer"; ((ConstantContext)_localctx).line =  ((ConstantContext)_localctx).number.line; ((ConstantContext)_localctx).pos =  ((ConstantContext)_localctx).number.pos; if(isDeclarations){ if(functionState == false){((ConstantContext)_localctx).mipsCodeS =  m.dataWord((((ConstantContext)_localctx).sign!=null?_input.getText(((ConstantContext)_localctx).sign.start,((ConstantContext)_localctx).sign.stop):null)+(((ConstantContext)_localctx).number!=null?_input.getText(((ConstantContext)_localctx).number.start,((ConstantContext)_localctx).number.stop):null),((ConstantContext)_localctx).number.line,((ConstantContext)_localctx).number.pos);}else{ ((ConstantContext)_localctx).mipsCodeS =  m.loadImmediateWord((((ConstantContext)_localctx).sign!=null?_input.getText(((ConstantContext)_localctx).sign.start,((ConstantContext)_localctx).sign.stop):null)+(((ConstantContext)_localctx).number!=null?_input.getText(((ConstantContext)_localctx).number.start,((ConstantContext)_localctx).number.stop):null),((ConstantContext)_localctx).number.line,((ConstantContext)_localctx).number.pos);}}else{ ((ConstantContext)_localctx).mipsCodeS =  m.loadImmediateWord((((ConstantContext)_localctx).sign!=null?_input.getText(((ConstantContext)_localctx).sign.start,((ConstantContext)_localctx).sign.stop):null)+(((ConstantContext)_localctx).number!=null?_input.getText(((ConstantContext)_localctx).number.start,((ConstantContext)_localctx).number.stop):null),((ConstantContext)_localctx).number.line,((ConstantContext)_localctx).number.pos);} 
 				}
 				break;
 			case T__15:
@@ -1140,7 +1133,7 @@ public class LissParser extends Parser {
 				{
 				setState(261);
 				((ConstantContext)_localctx).t = match(T__15);
-				((ConstantContext)_localctx).typeS =  "boolean"; ((ConstantContext)_localctx).line =  (((ConstantContext)_localctx).t!=null?((ConstantContext)_localctx).t.getLine():0); ((ConstantContext)_localctx).pos =  (((ConstantContext)_localctx).t!=null?((ConstantContext)_localctx).t.getCharPositionInLine():0); if(isDeclarations){ ((ConstantContext)_localctx).mipsCodeS =  m.dataBoolean(true,(((ConstantContext)_localctx).t!=null?((ConstantContext)_localctx).t.getLine():0),(((ConstantContext)_localctx).t!=null?((ConstantContext)_localctx).t.getCharPositionInLine():0));}else{ ((ConstantContext)_localctx).mipsCodeS =  m.loadBoolTrue((((ConstantContext)_localctx).t!=null?((ConstantContext)_localctx).t.getLine():0),(((ConstantContext)_localctx).t!=null?((ConstantContext)_localctx).t.getCharPositionInLine():0));} 
+				((ConstantContext)_localctx).typeS =  "boolean"; ((ConstantContext)_localctx).line =  (((ConstantContext)_localctx).t!=null?((ConstantContext)_localctx).t.getLine():0); ((ConstantContext)_localctx).pos =  (((ConstantContext)_localctx).t!=null?((ConstantContext)_localctx).t.getCharPositionInLine():0); if(isDeclarations){ if(functionState == false){((ConstantContext)_localctx).mipsCodeS =  m.dataBoolean(true,(((ConstantContext)_localctx).t!=null?((ConstantContext)_localctx).t.getLine():0),(((ConstantContext)_localctx).t!=null?((ConstantContext)_localctx).t.getCharPositionInLine():0));}else{((ConstantContext)_localctx).mipsCodeS =  m.loadBoolTrue((((ConstantContext)_localctx).t!=null?((ConstantContext)_localctx).t.getLine():0),(((ConstantContext)_localctx).t!=null?((ConstantContext)_localctx).t.getCharPositionInLine():0));}}else{ ((ConstantContext)_localctx).mipsCodeS =  m.loadBoolTrue((((ConstantContext)_localctx).t!=null?((ConstantContext)_localctx).t.getLine():0),(((ConstantContext)_localctx).t!=null?((ConstantContext)_localctx).t.getCharPositionInLine():0));} 
 				}
 				break;
 			case T__16:
@@ -1148,7 +1141,7 @@ public class LissParser extends Parser {
 				{
 				setState(263);
 				((ConstantContext)_localctx).f = match(T__16);
-				((ConstantContext)_localctx).typeS =  "boolean"; ((ConstantContext)_localctx).line =  (((ConstantContext)_localctx).f!=null?((ConstantContext)_localctx).f.getLine():0); ((ConstantContext)_localctx).pos =  (((ConstantContext)_localctx).f!=null?((ConstantContext)_localctx).f.getCharPositionInLine():0); if(isDeclarations){ ((ConstantContext)_localctx).mipsCodeS =  m.dataBoolean(false,(((ConstantContext)_localctx).f!=null?((ConstantContext)_localctx).f.getLine():0),(((ConstantContext)_localctx).f!=null?((ConstantContext)_localctx).f.getCharPositionInLine():0));}else{ ((ConstantContext)_localctx).mipsCodeS =  m.loadBoolFalse((((ConstantContext)_localctx).f!=null?((ConstantContext)_localctx).f.getLine():0), (((ConstantContext)_localctx).f!=null?((ConstantContext)_localctx).f.getCharPositionInLine():0));} 
+				((ConstantContext)_localctx).typeS =  "boolean"; ((ConstantContext)_localctx).line =  (((ConstantContext)_localctx).f!=null?((ConstantContext)_localctx).f.getLine():0); ((ConstantContext)_localctx).pos =  (((ConstantContext)_localctx).f!=null?((ConstantContext)_localctx).f.getCharPositionInLine():0); if(isDeclarations){ if(functionState == false){((ConstantContext)_localctx).mipsCodeS =  m.dataBoolean(false,(((ConstantContext)_localctx).f!=null?((ConstantContext)_localctx).f.getLine():0),(((ConstantContext)_localctx).f!=null?((ConstantContext)_localctx).f.getCharPositionInLine():0));}else{((ConstantContext)_localctx).mipsCodeS =  m.loadBoolFalse((((ConstantContext)_localctx).f!=null?((ConstantContext)_localctx).f.getLine():0), (((ConstantContext)_localctx).f!=null?((ConstantContext)_localctx).f.getCharPositionInLine():0));}}else{ ((ConstantContext)_localctx).mipsCodeS =  m.loadBoolFalse((((ConstantContext)_localctx).f!=null?((ConstantContext)_localctx).f.getLine():0), (((ConstantContext)_localctx).f!=null?((ConstantContext)_localctx).f.getCharPositionInLine():0));} 
 				}
 				break;
 			default:
@@ -3222,6 +3215,7 @@ public class LissParser extends Parser {
 		        if(_localctx.idTH.doesExist(nameOfTheFunction)){
 		            sizeOfSFFunction = ((Info)_localctx.idTH.getInfoIdentifiersTable(nameOfTheFunction)).getAddress();
 		        }
+
 		     
 		int _la;
 		try {
@@ -3248,9 +3242,9 @@ public class LissParser extends Parser {
 				_la = _input.LA(1);
 			}
 
-			        //System.out.println("/*******************ARGUMENTS MIPSCODE***********************/");
-			        //System.out.println(_localctx.mipsCodeS);
-			        //System.out.println("/******************************************/");
+			        System.out.println("/*******************ARGUMENTS MIPSCODE***********************/");
+			        System.out.println(_localctx.mipsCodeS);
+			        System.out.println("/******************************************/");
 
 			        //if(isSet && _localctx.set!=null){
 			        if(_localctx.set!=null){
@@ -5051,7 +5045,7 @@ public class LissParser extends Parser {
 			                        positionFromSPArray = _localctx.idTH.getValueSP(level, ((For_statContext)_localctx).i.arrayS);
 			                        arrayLevel = _localctx.idTH.getInfoIdentifiersTable(((For_statContext)_localctx).i.arrayS).getLevel();
 			                    }
-			                    s1 += m.textForCondition(((For_statContext)_localctx).i.inArray,((For_statContext)_localctx).i.variableS,variableLevel,positionFromSP,((For_statContext)_localctx).i.arrayS, positionFromSPArray, arrayLevel, ((For_statContext)_localctx).i.maximumMipsCodeS, ((For_statContext)_localctx).s.stepUp, (((For_statContext)_localctx).f!=null?((For_statContext)_localctx).f.getLine():0), (((For_statContext)_localctx).f!=null?((For_statContext)_localctx).f.getCharPositionInLine():0));
+			                    s1 += m.textForCondition(((For_statContext)_localctx).i.inArray,((For_statContext)_localctx).i.variableS,variableLevel,positionFromSP,((For_statContext)_localctx).i.arrayS, arrayLevel,positionFromSPArray, ((For_statContext)_localctx).i.maximumMipsCodeS, ((For_statContext)_localctx).s.stepUp, (((For_statContext)_localctx).f!=null?((For_statContext)_localctx).f.getLine():0), (((For_statContext)_localctx).f!=null?((For_statContext)_localctx).f.getCharPositionInLine():0));
 			                    if(functionState == false){
 			                        m.addTextInstruction(s1);
 			                    }else if(functionState == true){
@@ -5085,7 +5079,7 @@ public class LissParser extends Parser {
 
 			                String  l = null;
 			                if(((For_statContext)_localctx).s2.mipsCodeS!=null){
-			                    l = m.textForSatisfyingEnd(((For_statContext)_localctx).s3.line, ((For_statContext)_localctx).s3.pos);
+			                    l = m.textForSatisfyingEnd(functionState, ((For_statContext)_localctx).s3.line, ((For_statContext)_localctx).s3.pos);
 			                }
 			                //P.C. = inArray, stepBoolean, StepValue
 			                Integer levelVariable = 0, positionFromSP = 0;
@@ -5094,9 +5088,9 @@ public class LissParser extends Parser {
 			                    positionFromSP = _localctx.idTH.getValueSP(level, ((For_statContext)_localctx).i.variable);
 			                }
 			                if(l!=null){
-			                    l += m.textForStep(((For_statContext)_localctx).i.variable,levelVariable,positionFromSP, ((For_statContext)_localctx).i.inArray, ((For_statContext)_localctx).s.stepUp, ((For_statContext)_localctx).s.numberS, ((For_statContext)_localctx).s3.line, ((For_statContext)_localctx).s3.pos);
+			                    l += m.textForStep(functionState, ((For_statContext)_localctx).i.variable, levelVariable,positionFromSP, ((For_statContext)_localctx).i.inArray, ((For_statContext)_localctx).s.stepUp, ((For_statContext)_localctx).s.numberS, ((For_statContext)_localctx).s3.line, ((For_statContext)_localctx).s3.pos);
 			                }else{
-			                    l = m.textForStep(((For_statContext)_localctx).i.variable,levelVariable,positionFromSP, ((For_statContext)_localctx).i.inArray, ((For_statContext)_localctx).s.stepUp, ((For_statContext)_localctx).s.numberS, ((For_statContext)_localctx).s3.line, ((For_statContext)_localctx).s3.pos);
+			                    l = m.textForStep(functionState, ((For_statContext)_localctx).i.variable, levelVariable, positionFromSP, ((For_statContext)_localctx).i.inArray, ((For_statContext)_localctx).s.stepUp, ((For_statContext)_localctx).s.numberS, ((For_statContext)_localctx).s3.line, ((For_statContext)_localctx).s3.pos);
 			                }
 			                if(functionState == false){
 			                    m.addTextInstruction(l);
@@ -5264,7 +5258,7 @@ public class LissParser extends Parser {
 				                                                    levelVariable = _localctx.idTH.getInfoIdentifiersTable(_localctx.variable).getLevel();
 				                                                    positionFromSP = _localctx.idTH.getValueSP(level,_localctx.variable);
 				                                                }
-				                                                ((Type_intervalContext)_localctx).minimumMipsCodeS =  m.textForInit(_localctx.inArrayS,_localctx.variable,levelVariable,positionFromSP,s, ((Type_intervalContext)_localctx).i.line, ((Type_intervalContext)_localctx).i.pos);
+				                                                ((Type_intervalContext)_localctx).minimumMipsCodeS =  m.textForInit(functionState, _localctx.inArrayS,_localctx.variable,levelVariable,positionFromSP,s, ((Type_intervalContext)_localctx).i.line, ((Type_intervalContext)_localctx).i.pos);
 
 				                                                // We need to do the code for maximum ! we need to calculate the size of the array !
 				                                                Array a = (Array) _localctx.idTH.getInfoIdentifiersTable((((Type_intervalContext)_localctx).i!=null?_input.getText(((Type_intervalContext)_localctx).i.start,((Type_intervalContext)_localctx).i.stop):null));
@@ -5404,7 +5398,7 @@ public class LissParser extends Parser {
 				                                variableLevel = _localctx.idTH.getInfoIdentifiersTable(_localctx.variable).getLevel();
 				                                positionFromSP = _localctx.idTH.getValueSP(level,_localctx.variable);
 				                            }
-				                            ((MinimumContext)_localctx).mipsCodeS =  m.textForInit(_localctx.inArray,_localctx.variable,variableLevel,positionFromSP,s, ((MinimumContext)_localctx).n.line, ((MinimumContext)_localctx).n.pos);
+				                            ((MinimumContext)_localctx).mipsCodeS =  m.textForInit(functionState, _localctx.inArray,_localctx.variable,variableLevel,positionFromSP,s, ((MinimumContext)_localctx).n.line, ((MinimumContext)_localctx).n.pos);
 				                          
 				}
 				break;
@@ -5429,7 +5423,7 @@ public class LissParser extends Parser {
 				                    variableLevel = _localctx.idTH.getInfoIdentifiersTable(_localctx.variable).getLevel();
 				                    positionFromSP = _localctx.idTH.getValueSP(level,_localctx.variable);
 				                }
-				                ((MinimumContext)_localctx).mipsCodeS =  m.textForInit(_localctx.inArray,_localctx.variable,variableLevel,positionFromSP,s, ((MinimumContext)_localctx).i.line, ((MinimumContext)_localctx).i.pos);
+				                ((MinimumContext)_localctx).mipsCodeS =  m.textForInit(functionState, _localctx.inArray,_localctx.variable,variableLevel,positionFromSP,s, ((MinimumContext)_localctx).i.line, ((MinimumContext)_localctx).i.pos);
 				            }
 				         
 				}
@@ -5776,7 +5770,7 @@ public class LissParser extends Parser {
 			                    e.addMessage(((While_statContext)_localctx).e.line,((While_statContext)_localctx).e.pos,ErrorMessage.semantic((((While_statContext)_localctx).e!=null?_input.getText(((While_statContext)_localctx).e.start,((While_statContext)_localctx).e.stop):null),ErrorMessage.type(((While_statContext)_localctx).e.typeS,"boolean")));
 			                  }else{
 			                    if(((While_statContext)_localctx).e.mipsCodeS != null){
-			                        String s1 = m.textWhile(((While_statContext)_localctx).e.mipsCodeS, ((While_statContext)_localctx).e.line, ((While_statContext)_localctx).e.pos);
+			                        String s1 = m.textWhile(functionState, ((While_statContext)_localctx).e.mipsCodeS, ((While_statContext)_localctx).e.line, ((While_statContext)_localctx).e.pos);
 			                        if(functionState==false){
 			                            m.addTextInstruction(s1);
 			                        }else if(functionState==true){
@@ -5795,7 +5789,7 @@ public class LissParser extends Parser {
 			((While_statContext)_localctx).l = match(T__4);
 
 			                if(((While_statContext)_localctx).e.mipsCodeS != null){
-			                    String s2 = m.textWhileExit((((While_statContext)_localctx).l!=null?((While_statContext)_localctx).l.getLine():0), (((While_statContext)_localctx).l!=null?((While_statContext)_localctx).l.getCharPositionInLine():0));
+			                    String s2 = m.textWhileExit(functionState, (((While_statContext)_localctx).l!=null?((While_statContext)_localctx).l.getLine():0), (((While_statContext)_localctx).l!=null?((While_statContext)_localctx).l.getCharPositionInLine():0));
 			                    if(functionState == false){
 			                        m.addTextInstruction(s2);
 			                    }else if(functionState == true){

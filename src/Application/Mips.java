@@ -521,7 +521,7 @@ public class Mips {
 
     /*************************** WHILE *********************************/
 
-    public String textWhile(String mipsCodeS, int line, int pos){
+    public String textWhile(boolean functionState,String mipsCodeS, int line, int pos){
         StringBuilder s = new StringBuilder();
 
         if(mipsCodeS != null) {
@@ -529,7 +529,11 @@ public class Mips {
             this.counterJumpStack.push(this.counterJump);
             Integer i = this.counterJumpStack.getFirst();
 
-            s.append("  while"+i.toString()+":\t\t# " + line + ":" + pos + "\n");
+            if(functionState == false) {
+                s.append("  while" + i.toString() + ":\t\t# " + line + ":" + pos + "\n");
+            }else{
+                s.append("      while" + i.toString() + ":\t\t# " + line + ":" + pos + "\n");
+            }
             s.append("\t########## CONDITION WHILE" + i.toString() + " ##########\n");
             s.append(mipsCodeS);
 
@@ -542,13 +546,17 @@ public class Mips {
         return s.toString();
     }
 
-    public String textWhileExit(int line, int pos){
+    public String textWhileExit(boolean functionState, int line, int pos){
         StringBuilder s = new StringBuilder();
 
         Integer i = this.counterJumpStack.getFirst();
 
         s.append("\tj while" + i.toString() + "\t\t# " + line + ":" + pos + "\n");
-        s.append("  while_exit"+i.toString()+":\t\t# " + line + ":" + pos + "\n");
+        if(functionState == false) {
+            s.append("  while_exit" + i.toString() + ":\t\t# " + line + ":" + pos + "\n");
+        }else{
+            s.append("      while_exit" + i.toString() + ":\t\t# " + line + ":" + pos + "\n");
+        }
 
 
         this.counterJumpStack.pop();
@@ -675,12 +683,16 @@ public class Mips {
         return s.toString();
     }
 
-    public String textForSatisfyingEnd(int line, int pos){
+    public String textForSatisfyingEnd(boolean functionState, int line, int pos){
         StringBuilder s = new StringBuilder();
 
         if(this.counterJumpStack.size()>0) {
             Integer i = this.counterJumpStack.getFirst();
-            s.append(" satisfying_exit"+i.toString()+":\n");
+            if(functionState == false) {
+                s.append(" satisfying_exit" + i.toString() + ":\n");
+            }else{
+                s.append("      satisfying_exit" + i.toString() + ":\n");
+            }
         }else{
             //Print error of stack empty
 
@@ -689,7 +701,7 @@ public class Mips {
         return s.toString();
     }
 
-    public String textForInit(boolean inArray,String variable,Integer variableLevel, Integer positionFromSPVariable, String mipsCodeS, int line, int pos){
+    public String textForInit(boolean functionState, boolean inArray, String variable,Integer variableLevel, Integer positionFromSPVariable, String mipsCodeS, int line, int pos){
         StringBuilder s = new StringBuilder();
 
         this.counterJump++;
@@ -707,7 +719,11 @@ public class Mips {
         }else{
             s.append(storeWord(variable, line, pos));
         }
-        s.append("  for_loop" + i.toString()+":\n");
+        if(functionState == false) {
+            s.append("  for_loop" + i.toString() + ":\n");
+        }else{
+            s.append("      for_loop" + i.toString() + ":\n");
+        }
         if(inArray == true) {
             s.append(loadWord("for_var" + i.toString(), line, pos));
         }else {
@@ -717,7 +733,7 @@ public class Mips {
         return s.toString();
     }
 
-    public String textForStep(String variable, Integer variableLevel, Integer positionFromSP, boolean inArray, boolean stepUp, String stepValue, int line, int pos){
+    public String textForStep(boolean functionState, String variable, Integer variableLevel, Integer positionFromSP, boolean inArray, boolean stepUp, String stepValue, int line, int pos){
         StringBuilder s = new StringBuilder();
 
         Integer i = this.counterJumpStack.getFirst();
@@ -745,7 +761,11 @@ public class Mips {
                 s.append("\tj for_loop"+i.toString()+"\t\t# " + line + ":" + pos + "\n");
             }
         }
-        s.append("  for_exit"+i.toString()+":\n");
+        if(functionState == false) {
+            s.append("  for_exit" + i.toString() + ":\n");
+        }else{
+            s.append("      for_exit" + i.toString() + ":\n");
+        }
         s.append("\t########### END FOR_LOOP"+i.toString()+" ###########\n");
 
         this.counterJumpStack.pop();
@@ -781,10 +801,13 @@ public class Mips {
 
     /*************************** FUNCTIONS *********************************/
 
-    public String textFunctionCall(String name, int line, int pos, boolean returnBoolean){
+    public String textFunctionCall(String name, int line, int pos, boolean returnBoolean, String argumentsMipsCodeS){
         //This works only for level 0
         StringBuilder s = new StringBuilder();
 
+        if(argumentsMipsCodeS!=null) {
+            s.append(argumentsMipsCodeS); //See if this is here where it belongs
+        }
         for(int i=0; i<this.registerSavedTemporaryName.length ; i++){
             s.append(textMove(this.registerName[i],this.registerSavedTemporaryName[i],line,pos));
         }
@@ -931,6 +954,16 @@ public class Mips {
         }
     }
 
+    public void addIncreaseSFMipsCodeFunction(String nameFunction, String mipsCode){
+        if(!this.mipsCodeFunctionCache.containsKey(nameFunction)) {
+            this.mipsCodeFunctionCache.put(nameFunction,mipsCode);
+        }else{
+            String s = mipsCode+this.mipsCodeFunctionCache.get(nameFunction);
+            this.mipsCodeFunctionCache.remove(nameFunction);
+            this.mipsCodeFunctionCache.put(nameFunction,s);
+        }
+    }
+
     public String getMipsCodeFunction(String nameFunction){
         return this.mipsCodeFunctionCache.get(nameFunction);
     }
@@ -949,32 +982,56 @@ public class Mips {
 
     /******************************TRYING TO FIGURE OUT THE EFFECT OF THE FUNCTIONS DUE TO GITHUB INTELLIJ BUG******************************/
 
-    public String storeWordArraySP(int line, int pos) {
+    public String storeValueWordArraySP(int line, int pos) {
         StringBuilder s = new StringBuilder();
+
+        s.append("\tadd "+lastRegisterOccupied()[0]+", "+lastRegisterOccupied()[0]+", $sp\n");
+
+        String[] res = lastTwoRegisterOccupied();
+        s.append("\tsw "+res[0]+", ("+res[1]+")\n");
+
+        freeLastRegister();
+        freeLastRegister();
 
         return s.toString();
     }
 
-    public String textFunctionCall(String identifierText, int line, int pos, boolean returnBoolean, String argumentsMipsCode){
-        StringBuilder s = new StringBuilder();
-
-        return s.toString();
-    }
+    //textFunctionCall -> see if it works well
 
     public String storeArgumentsSP(Integer i){
         StringBuilder s = new StringBuilder();
 
+        if(this.register[0] != false) {
+            String[] res = lastRegisterOccupied();
+
+            s.append("\tsw " + res[0] + ", " + i.toString() + "($sp)\n");
+
+            freeLastRegister();  //test it !!
+        }
+
         return s.toString();
     }
 
-    public String textSuccSF(Integer i, int line, int pos){
+    public String textSuccSF(Integer positionFromSP, int line, int pos){
         StringBuilder s = new StringBuilder();
+
+        s.append(loadWordSP(positionFromSP));
+        s.append(loadImmediateWord("1", line, pos));
+        s.append(textAdd(line, pos));
+        //s.append(storeWord(value,line,pos));
+        s.append(storeArgumentsSP(positionFromSP));
 
         return s.toString();
     }
 
-    public String textPredSF(Integer i, int line, int pos){
+    public String textPredSF(Integer positionFromSP, int line, int pos){
         StringBuilder s = new StringBuilder();
+
+        s.append(loadWordSP(positionFromSP));
+        s.append(loadImmediateWord("1", line, pos));
+        s.append(textSub(line, pos));
+        //s.append(storeWord(value,line,pos));
+        s.append(storeArgumentsSP(positionFromSP));
 
         return s.toString();
     }
@@ -1037,6 +1094,11 @@ public class Mips {
 
                     String s = dataArray(res, (int) info.get("line"), (int) info.get("pos"));
                     addDataInstruction(var, s);
+
+                    String s1 = (String) info.get("mips");
+                    if(s1 != null) {
+                        addTextInstruction(s1);
+                    }
                 }
 
                 break;
@@ -1044,6 +1106,45 @@ public class Mips {
                 break;
         }
 
+    }
+
+    public void addDataFunctionInstructions(HashMap<String, HashMap<String,Object>> vars, String type){
+        switch (type){
+            case "integer":
+                for(String var : vars.keySet()){
+                    HashMap<String,Object> info = vars.get(var);
+                    String s = (String) info.get("mips");
+                    if(s != null) {
+                        //addTextInstruction(s1);
+                        addMipsCodeFunction(getNameFunction(),s);
+                    }
+                }
+                break;
+            case "boolean":
+                for(String var : vars.keySet()){
+                    HashMap<String,Object> info = vars.get(var);
+                    String s = (String) info.get("mips");
+                    if(s != null) {
+                        //addTextInstruction(s1);
+                        addMipsCodeFunction(getNameFunction(),s);
+                    }
+                }
+                break;
+            case "array":
+                for(String var : vars.keySet()){
+                    HashMap<String,Object> info = vars.get(var);
+
+                    String s = (String) info.get("mips");
+                    if(s != null) {
+                        //addTextInstruction(s1);
+                        addMipsCodeFunction(getNameFunction(),s);
+                    }
+
+                }
+                 break;
+            default:
+                break;
+        }
     }
 
     //public void addTextInstructions(String name, String instruction, String type, int line, int pos){

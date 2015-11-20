@@ -1,6 +1,11 @@
 // Generated from /Developer/Github/Liss-SDE/src/Application/Liss.g4 by ANTLR 4.5.1
 package Application;
 
+    import java.util.HashMap;
+    import java.util.LinkedList;
+    import SymbolTable.*;
+
+
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;

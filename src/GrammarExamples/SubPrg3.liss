@@ -10,6 +10,7 @@ declarations
 	  declarations
 		fac = 6 -> integer;
 		res = 20 -> integer;
+		array5 = [10,20,30,40] -> array size 4;
 
 		subprogram factorial(n -> integer) -> integer
 		{
@@ -17,6 +18,7 @@ declarations
 			  res = 1 -> integer;
 
 			statements
+			    succ res;
 				while (n > 0)
 				{
 					a = res * n;
