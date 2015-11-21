@@ -34,7 +34,7 @@ liss [IdentifiersTable idTH]
 body[IdentifiersTable idTH]
      : '{'
        'declarations' {isDeclarations = true;} declarations[idTH,null]
-       'statements'   {isDeclarations = false;} s=statements[idTH]
+       'statements'   {isDeclarations = false; String mipsCodeS = "\t#########BEGIN STATEMENTS#########\n"; m.addTextInstruction(mipsCodeS); } s=statements[idTH] {mipsCodeS = "\t##########END STATEMENTS##########\n"; m.addTextInstruction(mipsCodeS);}
        '}'
      ;
 
@@ -57,15 +57,18 @@ declaration [IdentifiersTable idTH, HashMap<String,Object> varInfo]
                     varInfo.put("address",$idTH.getSizeSP(level));
 
                     String nameFunction = (String) varInfo.get("nameFunction");
-                    varInfo.remove("nameFunction");
+                    //varInfo.remove("nameFunction");
                     hashmapVar.put(nameFunction,varInfo);
 
                     $idTH.add(e,hashmapVar,"function",level-1); //Name of the function is always one level below (for this part of the code) !
                     //Code below generate the mipscode for functions
                     String mipsCodeS = m.increaseStackFrameSP($idTH.getSizeSP(level));
+                    mipsCodeS += "\t#########BEGIN DECLARATIONS#########\n";
                     m.addIncreaseSFMipsCodeFunction(m.getNameFunction(),mipsCodeS);
 
-                    mipsCodeS = m.saveRegistersAndReturnAddressBeginFunctions($idTH.getSizeSP(level));
+
+                    mipsCodeS = "\t#########END DECLARATIONS#########\n";
+                    mipsCodeS += m.saveRegistersAndReturnAddressBeginFunctions($idTH.getSizeSP(level));
 
                     m.addMipsCodeFunction(m.getNameFunction(),mipsCodeS);
                     //add the rest of the mipsCode of variable_Declaration NT
@@ -154,6 +157,28 @@ variable_declaration [IdentifiersTable idTH]
 
                                     Application.Set ss= (Application.Set) varsH.get(i).get("set");
                                 }
+                            }else if($type.typeS == "boolean"){
+                                if(functionState == true){
+                                    int address = $idTH.getAddress();
+                                    Type typeSpace = (Type) $idTH.getInfoIdentifiersTable("boolean");
+
+                                    for(String i : varsH.keySet()){
+                                        String mipsCodeS = varsH.get(i).get("mips") + m.storeArgumentsSP(address);
+                                        varsH.get(i).put("mips",mipsCodeS);
+                                        address += typeSpace.getSpace();
+                                    }
+                                }
+                            }else if($type.typeS == "integer"){
+                                if(functionState == true){
+                                    int address = $idTH.getAddress();
+                                    Type typeSpace = (Type) $idTH.getInfoIdentifiersTable("integer");
+
+                                    for(String i : varsH.keySet()){
+                                        String mipsCodeS = varsH.get(i).get("mips") + m.storeArgumentsSP(address);
+                                        varsH.get(i).put("mips",mipsCodeS);
+                                        address += typeSpace.getSpace();
+                                    }
+                                }
                             }
 
                             //Testing the type of the variables and the type of types ! if they ain't equals then we must throw an error
@@ -182,7 +207,6 @@ variable_declaration [IdentifiersTable idTH]
                             if(functionState == false){
                                 m.addDataInstructions(varsH,$type.typeS);
                             }else if(functionState == true){
-                                //    m.addMipsCodeFunction(m.getNameFunction(),mipsCodeS);
                                 m.addDataFunctionInstructions(varsH, $type.typeS);
                             }
                      }
@@ -479,7 +503,7 @@ f_body[IdentifiersTable idTH, HashMap<String,Object> varInfo]
       returns [String typeS, String returnS, String returnMipsCodeS]
        : '{'
          'declarations' {isDeclarations = true;}    declarations[idTH, varInfo]
-         'statements'   {isDeclarations = false;}   statements[idTH]
+         'statements'   {isDeclarations = false; String mipsCodeS = "\t#########BEGIN STATEMENTS#########\n"; m.addMipsCodeFunction(m.getNameFunction(),mipsCodeS);}   statements[idTH] {mipsCodeS = "\t##########END STATEMENTS##########\n"; m.addMipsCodeFunction(m.getNameFunction(),mipsCodeS);}
          r=returnSubPrg[idTH] {$typeS = $r.typeS; $returnS = $r.text; $returnMipsCodeS = $r.mipsCodeS;}
          '}'
        ;
@@ -625,11 +649,9 @@ assignment [IdentifiersTable idTH]
                         }else if(functionState == true){
                             m.addMipsCodeFunction(m.getNameFunction(),mipsCodeS);
                         }
-                        //m.addLineInstruction("line"+$r.line,mipsCodeS);
                     }
 
                   }else{
-                    //ErrorMessage.errorSemanticAssignment($designator.line);
                     e.addMessage($designator.line,-1,ErrorMessage.semanticAssignment($designator.line)); //-1 => assignemen error => there is no pos.
                   }
 
@@ -886,7 +908,9 @@ function_call [IdentifiersTable idTH, Set set]
                                 returnBoolean = true;
                             }
                             $mipsCodeS = m.textFunctionCall($i.text, $i.line, $i.pos, returnBoolean,$s.argumentsMipsCodeS);
+                            System.out.println("FUNCTION CALL HERE : ");
                             System.out.println($mipsCodeS);
+                            System.out.println("FUNCTION CALL END : ");
                         }
                     }else{
                         $typeS = null;
@@ -1404,24 +1428,24 @@ write_statement [IdentifiersTable idTH]
                  {
                     $line = $w.line;
                     $pos = $w.pos;
-                    if(functionState == false){
-                        if($p.mipsCodeS != null){
-                            if($w.write == true){
-                            //Means that it is only write !
-                                String s1 = m.textWrite($p.mipsCodeS, $w.write, $w.line, $w.pos);
-                                if(functionState == false){
-                                    m.addTextInstruction(s1);
-                                }else if(functionState == true){
-                                    m.addMipsCodeFunction(m.getNameFunction(),s1);
-                                }
-                            }else if($w.write == false){
-                            //Means that it is only writeln !
-                                String s2 = m.textWrite($p.mipsCodeS, $w.write, $w.line, $w.pos);
-                                if(functionState == false){
-                                    m.addTextInstruction(s2);
-                                }else if(functionState == true){
-                                    m.addMipsCodeFunction(m.getNameFunction(),s2);
-                                }
+                    if($p.mipsCodeS != null){
+                        if($w.write == true){
+                        //Means that it is only write !
+                            String s1 = m.textWrite($p.mipsCodeS, $w.write, $w.line, $w.pos);
+                            System.out.println("WRITE_STATEMENT : \n"+s1);
+                            if(functionState == false){
+                                m.addTextInstruction(s1);
+                            }else if(functionState == true){
+                                m.addMipsCodeFunction(m.getNameFunction(),s1);
+                            }
+                        }else if($w.write == false){
+                        //Means that it is only writeln !
+                            String s2 = m.textWrite($p.mipsCodeS, $w.write, $w.line, $w.pos);
+                            System.out.println("WRITE_STATEMENT : \n"+s2);
+                            if(functionState == false){
+                                m.addTextInstruction(s2);
+                            }else if(functionState == true){
+                                m.addMipsCodeFunction(m.getNameFunction(),s2);
                             }
                         }
                     }
@@ -1458,8 +1482,8 @@ read_statement [IdentifiersTable idTH]
                {
                   $line = $in.line;
                   $pos = $in.pos;
-                  if(functionState == false){
-                  Var v = (Var) $idTH.getInfoIdentifiersTable($i.text);
+                  //if(functionState == false){
+                      Var v = (Var) $idTH.getInfoIdentifiersTable($i.text);
                       if(!(v != null && v.getCategory().equals("VAR") && v.getInfoType().equals("integer"))){       //verificar se existe e é tipo inteiro e class VAR
                         e.addMessage($i.line,$i.pos,ErrorMessage.semantic($i.text,ErrorMessage.type(v.getInfoType(),"integer")));
                       }else{
@@ -1477,7 +1501,7 @@ read_statement [IdentifiersTable idTH]
                             m.addMipsCodeFunction(m.getNameFunction(),s);
                         }
                       }
-                  }
+                  //}
                }
                ;
 

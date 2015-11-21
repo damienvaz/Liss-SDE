@@ -15,10 +15,13 @@ declarations
 		subprogram factorial(n -> integer) -> integer
 		{
 		  	declarations
+		  	  b = true -> boolean;
 			  res = 1 -> integer;
+			  b1 = false -> boolean;
 
 			statements
 			    succ res;
+			    pred res;
 				while (n > 0)
 				{
 					a = res * n;
@@ -30,7 +33,7 @@ declarations
 		subprogram factorial2(n -> integer) -> integer
         		{
         		  	declarations
-        				//res = 1 -> integer;
+        				res = 1 -> integer;
 
         			statements
         				while (n > 0)
@@ -81,6 +84,7 @@ declarations
 
 statements
 
+    //pred a;
 	array2 = calculate(array1);  // Wth do we must to do with that ?? Copying array (each elements ?)
 	//a = factorial2(3);
 	//writeArray(array2);

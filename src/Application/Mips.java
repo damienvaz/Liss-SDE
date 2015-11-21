@@ -135,8 +135,11 @@ public class Mips {
     public String storeWordArray(String name, int line, int pos){
         StringBuilder s = new StringBuilder();
         String r[] = lastTwoRegisterOccupied();
-        resetRegister();
+
         s.append("\tsw "+r[0]+", "+name+"("+r[1]+")\t\t# "+line+":"+pos+"\n");
+
+        resetRegister();
+
         return s.toString();
     }
 
@@ -145,6 +148,10 @@ public class Mips {
         String r[] = lastTwoRegisterOccupied();
         resetRegister();
         s.append("\tsw "+r[1]+", "+name+"("+r[0]+")\t\t# "+line+":"+pos+"\n");
+
+        freeLastRegister();
+        freeLastRegister();
+
         return s.toString();
     }
 
@@ -158,8 +165,10 @@ public class Mips {
     public String storeWord(String name, int line, int pos){
         StringBuilder s = new StringBuilder();
             String r[] = lastRegisterOccupied();
-            resetRegister();
+
             s.append("\tsw "+r[0]+", "+name+"\t\t# "+line+":"+pos+"\n");
+
+            resetRegister();
         return s.toString();
     }
 
@@ -258,8 +267,10 @@ public class Mips {
         String r0 = res[0];
         String r1 = res[1];
 
-        freeLastRegister();
+        //freeLastRegister();
         s.append("\tsub "+r0+", "+r0+", "+r1+"\t# " + line + ":" + pos + "\n");
+
+        freeLastRegister();
 
         return s.toString();
     }
@@ -808,6 +819,7 @@ public class Mips {
         if(argumentsMipsCodeS!=null) {
             s.append(argumentsMipsCodeS); //See if this is here where it belongs
         }
+
         for(int i=0; i<this.registerSavedTemporaryName.length ; i++){
             s.append(textMove(this.registerName[i],this.registerSavedTemporaryName[i],line,pos));
         }
@@ -816,6 +828,7 @@ public class Mips {
         if(returnBoolean==true){
             String r0 = nextFreeRegister();
             s.append(textMove("$v0",r0,line,pos));
+
         }
 
         return s.toString();
@@ -846,8 +859,9 @@ public class Mips {
     public String storeWordSP(Integer positionFromSP){
         StringBuilder s = new StringBuilder();
 
-        String register = nextFreeRegister();
+        String register = lastRegisterOccupied()[0];
         s.append("\tsw " + register + ", " + positionFromSP.toString() + "($sp)\t\t \n");// + line + ":" + pos +"\n");
+        freeLastRegister();
 
         return s.toString();
     }
@@ -937,6 +951,7 @@ public class Mips {
             s.append(returnMipsCode);
             String[] r = lastRegisterOccupied();
             s.append(textMove(r[0],"$v0",0,0));
+            freeLastRegister();
         }
         s.append(this.decreaseStackFrameSP(sizeFrameStack));
         s.append(this.jumpReturnAddress());
