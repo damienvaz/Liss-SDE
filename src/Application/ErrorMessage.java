@@ -36,6 +36,14 @@ public class ErrorMessage {
         return " has return type '"+chosenType+"',when It should be '"+expectedType+"'.";
     }
 
+    public static String returnTypePossible(){
+        return " return type must be 'integer' || 'boolean'.";
+    }
+
+    public static String warningRecursivityFunction(){
+        return "has an infinite cycle.";
+    }
+
     public static String typeExpression(String leftChosenType,String operator, String rightChosenType, String leftExpectedType, String rightExpectedType){
         return " has type '"+leftChosenType+" "+operator+" "+rightChosenType+"',required type '"+leftExpectedType+" "+operator+" "+rightExpectedType+"'.";
     }

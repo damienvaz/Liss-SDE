@@ -5,12 +5,12 @@ declarations
 	a = 4, b= 5, c= 5 -> integer;
 	array1 = [10,20,30,40], array2, array3 -> array size 4;
 
-	subprogram calculate(m -> array size 4) -> array size 4
+	subprogram calculate(l -> integer, m -> array size 4) -> array size 4  //return can only be a scalar value (int or bool)
 	{
 	  declarations
 		fac = 6 -> integer;
 		res = 20 -> integer;
-		array5 = [10,20,30,40] -> array size 4;
+		array5 = [10,20,30,40], array6, p -> array size 4;
 
 		subprogram factorial(n -> integer) -> integer
 		{
@@ -24,9 +24,12 @@ declarations
 			    pred res;
 				while (n > 0)
 				{
-					a = res * n;
+					//res = a * n;
+					res = res * n;
 					n = n -1;
 				}
+				array6 = calculate(res,array5);  //Must give an error or exception because the function call is ahead of one level and probably a cycle will be run.
+
 				return res;
 		}
 
@@ -36,10 +39,10 @@ declarations
         				res = 1 -> integer;
 
         			statements
-        				while (n > 0)
+        				if(n > 0) then
         				{
-        					res = res * n;
-        					n = n -1;
+
+        					res = n * factorial2(n-1);
         				}
         				return res;
         		}
@@ -47,11 +50,12 @@ declarations
 			writeln(res);
 			for (a in 0..3) stepUp 1
 			{
-			  //m[a] = factorial(fac + a);  //need to know the concatenate function linkedlist+ the name of that function (for activing the fac
+			  //m[a] = factorial(fac + a);  //need to know the concatenate function linkedlist+ the name of that function (for activing the fac  &&
 			}
 			writeln(res);
 
-		return m;
+
+		return fac;
 	}
 
 	subprogram factorial(n -> integer) -> integer
@@ -85,7 +89,8 @@ declarations
 statements
 
     //pred a;
-	array2 = calculate(array1);  // Wth do we must to do with that ?? Copying array (each elements ?)
+	array2 = calculate(a,array1);  // Wth do we must to do with that ?? Copying array (each elements ?)
+	array2 = array1;
 	//a = factorial2(3);
 	//writeArray(array2);
 }

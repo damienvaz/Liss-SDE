@@ -61,6 +61,19 @@ public class Mips {
 
     //public String getFunctionMipsCode(){return this.functionMipsCode;}
 
+    public boolean cycleRecursivityFinder(String name){
+        boolean res = false;
+        int lastIndexNodeLinkedListFunctionName = this.functionName.size()-1;
+
+        for(int i=lastIndexNodeLinkedListFunctionName;i>=0;i--){
+            if(this.functionName.get(i).equals(name) && i<lastIndexNodeLinkedListFunctionName){
+                res = true;
+                i=-1;
+            }
+        }
+        return res;
+    }
+
     public Integer numberOfRegistersInBytes(){ return this.register.length* eachAddressOccupies;    }
 
     public Integer numberOfBytesForEachAddress(){return eachAddressOccupies;}
@@ -662,8 +675,18 @@ public class Mips {
             //Write code for inArray
             if(inArray == true){
                 s.append(loadWord("for_var"+i.toString(),line,pos));
-                s.append(loadWordArray(array, line, pos));
-                s.append(storeWord(variable,line,pos));
+                if(arrayLevel==0) {
+                    s.append(loadWordArray(array, line, pos));
+                }else if(arrayLevel!=0){
+                    //s.append(loadWordSP(positionFromSPArray));
+                    s.append(loadWordSP(positionFromSPArray));
+
+                }
+                if(variableLevel==0) {
+                    s.append(storeWord(variable, line, pos));
+                }else if(variableLevel!=0){
+                    s.append(storeArgumentsSP(positionFromSPvariable));
+                }
             }
         }else if(stepUp == false){
             //It means stepDown !  var >= Superior Limit
@@ -728,7 +751,11 @@ public class Mips {
         if(inArray == true) {
             s.append(storeWord("for_var"+i.toString(),line,pos));
         }else{
-            s.append(storeWord(variable, line, pos));
+            if(variableLevel==0) {
+                s.append(storeWord(variable, line, pos));
+            }else if (variableLevel!=0){
+                s.append(storeWordSP(positionFromSPVariable));
+            }
         }
         if(functionState == false) {
             s.append("  for_loop" + i.toString() + ":\n");
@@ -738,7 +765,11 @@ public class Mips {
         if(inArray == true) {
             s.append(loadWord("for_var" + i.toString(), line, pos));
         }else {
-            s.append(loadWord(variable, line, pos));
+            if(variableLevel==0) {
+                s.append(loadWord(variable, line, pos));
+            }else if(variableLevel!=0){
+                s.append(loadWordSP(positionFromSPVariable));
+            }
         }
 
         return s.toString();
@@ -762,13 +793,21 @@ public class Mips {
                 s.append(loadWord(variable, line, pos));
                 s.append(loadImmediateWord(stepValue, line, pos));
                 s.append(textAdd(line, pos));
-                s.append(storeWord(variable, line, pos));
+                if(variableLevel==0) {
+                    s.append(storeWord(variable, line, pos));
+                }else if(variableLevel!=0){
+                    s.append(storeWordSP(positionFromSP));
+                }
                 s.append("\tj for_loop"+i.toString()+"\t\t# " + line + ":" + pos + "\n");
             } else if(stepUp == false){
                 s.append(loadWord(variable, line, pos));
                 s.append(loadImmediateWord(stepValue, line, pos));
                 s.append(textSub(line, pos));
-                s.append(storeWord(variable,line,pos));
+                if(variableLevel==0){
+                    s.append(storeWord(variable, line, pos));
+                }else if(variableLevel!=0){
+                    s.append(storeWordSP(positionFromSP));
+                }
                 s.append("\tj for_loop"+i.toString()+"\t\t# " + line + ":" + pos + "\n");
             }
         }
@@ -1052,6 +1091,27 @@ public class Mips {
     }
 
     //textForCondition && textForStep && textForInit
+
+    public String copyArrayArgumentsForFunctions(Integer level, String nameOfArgument,Integer sizeOfArray, Integer addressOfArrayArgumentOnSF, Integer addressOfArrayArgumentsOnSFForLevelGreaterThan0, int line, int pos){
+        StringBuilder s = new StringBuilder();
+
+
+
+        for(int position=0; position<sizeOfArray; position+=1){
+            if(level.equals(0)){
+                s.append(loadImmediateWord((position*this.eachAddressOccupies)+"",line,pos));
+                s.append(loadWordArray(nameOfArgument,line,pos));
+                //Falta fazer o store agora para o novo
+                s.append(storeWordSP(-(addressOfArrayArgumentOnSF-(position*this.eachAddressOccupies)))); //Might not work due to calcule
+            }else{
+                //s.append(loadImmediateWord(position+"",line,pos));
+                s.append(loadWordSP(-(addressOfArrayArgumentsOnSFForLevelGreaterThan0-(position*this.eachAddressOccupies))));
+                s.append(storeWordSP(-(addressOfArrayArgumentOnSF-(position*this.eachAddressOccupies)))); //Might not work due to calcule
+            }
+        }
+
+        return s.toString();
+    }
 
     /***************************************************************************************************************************************/
 

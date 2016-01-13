@@ -103,6 +103,16 @@ public interface LissListener extends ParseTreeListener {
 	 */
 	void exitType(LissParser.TypeContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link LissParser#typeReturnSubProgram}.
+	 * @param ctx the parse tree
+	 */
+	void enterTypeReturnSubProgram(LissParser.TypeReturnSubProgramContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link LissParser#typeReturnSubProgram}.
+	 * @param ctx the parse tree
+	 */
+	void exitTypeReturnSubProgram(LissParser.TypeReturnSubProgramContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link LissParser#dimension}.
 	 * @param ctx the parse tree
 	 */

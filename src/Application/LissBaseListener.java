@@ -129,6 +129,18 @@ public class LissBaseListener implements LissListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterTypeReturnSubProgram(LissParser.TypeReturnSubProgramContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitTypeReturnSubProgram(LissParser.TypeReturnSubProgramContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterDimension(LissParser.DimensionContext ctx) { }
 	/**
 	 * {@inheritDoc}

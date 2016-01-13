@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.image.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<Pane xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <ImageView id="splash_logo" fitHeight="289.0" fitWidth="404.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../../Images/liss.png" />
+         </image>
+      </ImageView>
+   </children>
+</Pane>

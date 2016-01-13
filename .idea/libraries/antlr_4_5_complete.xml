@@ -1,7 +1,7 @@
 <component name="libraryTable">
   <library name="antlr-4.5-complete">
     <CLASSES>
-      <root url="jar://$USER_HOME$/Thesis/Thesis Work/Liss_Thesis/antlr-4.5-complete.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/antlr-4.5-complete.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />
