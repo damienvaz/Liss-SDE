@@ -1,18 +1,22 @@
-package Visual.SintaxDirectedEditor;/**
- * Created by damienvaz on 13/01/16.
- */
+package Visual.SintaxDirectedEditor;
 
-import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-public class Main extends Application {
+/**
+ * Created by damienvaz on 14/01/16.
+ */
+public class Main {
+    private Scene scene;
+    private Stage stage;
 
-    public static void main(String[] args) {
-        launch(args);
+
+    public Main() throws Exception{
+        scene = new Scene(FXMLLoader.load(getClass().getResource("sde.fxml")));
+        stage = new Stage();
+        stage.setScene(scene);
+        stage.show();
     }
 
-    @Override
-    public void start(Stage primaryStage) {
-
-    }
 }

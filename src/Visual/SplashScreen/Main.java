@@ -4,6 +4,7 @@ package Visual.SplashScreen;/**
 
 import javafx.animation.PauseTransition;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -13,6 +14,7 @@ import javafx.stage.StageStyle;
 import javafx.util.Duration;
 
 import java.awt.*;
+import java.io.IOException;
 
 public class Main extends Application {
 
@@ -49,7 +51,15 @@ public class Main extends Application {
 
         //Make a Pause to the splashscreen transition
         PauseTransition pause = new PauseTransition(Duration.seconds(2));
-        pause.setOnFinished(event -> {primaryStage.hide();});
+        pause.setOnFinished(event -> {
+            primaryStage.hide();
+            Platform.setImplicitExit(false);
+            try {
+                Visual.SintaxDirectedEditor.Main sde = new Visual.SintaxDirectedEditor.Main();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
         pause.play();
     }
 }
