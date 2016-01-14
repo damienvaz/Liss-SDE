@@ -8,7 +8,5 @@ import javafx.scene.Parent;
  */
 public class Controller {
 
-    public final Parent getParent() throws Exception{
-        return FXMLLoader.load(getClass().getResource("sde.fxml"));
-    }
+
 }
