@@ -10,9 +10,10 @@ grammar LissGIC;
 liss : 'program' identifier body
      ;
 
+
 body : '{'
        'declarations' declarations
-       'statements' statements 
+       'statements'   statements
        '}'
      ;
 
@@ -21,15 +22,15 @@ body : '{'
 declarations : declaration
              ;
 
-declaration : variable_declaration * subprogram_definition *
+declaration : variable_declaration* subprogram_definition*
             ;
 
 /* ****** Variables ****** */
 
-variable_declaration : vars  '->' type ';'
+variable_declaration : vars '->' type ';'
                      ;
 
-vars : var (',' var)*
+vars : var (',' var )*
      ;
 
 var : identifier value_var
@@ -46,7 +47,11 @@ type : 'integer'
      | 'array' 'size' dimension
      ;
 
-dimension : number (',' number)*
+typeReturnSubProgram : 'integer'
+                     | 'boolean'
+                     ;
+
+dimension : number (',' number )*
           ;
 
 inic_var : constant
@@ -86,7 +91,7 @@ sequence_initialization :
                         | values
                         ;
 
-values : number (',' number)*
+values : number (',' number )*
        ;
 
 /* ****** Set definition ****** */
@@ -100,14 +105,13 @@ set_initialization :
 
 /* ****** SubProgram definition ****** */
 
-subprogram_definition : 'subprogram' identifier '(' f=formal_args  ')' return_type f_body
-                      ;
+subprogram_definition: 'subprogram' identifier '(' formal_args ')' return_type f_body
+                     ;
 
-f_body 
-       : '{'
-         'declarations' declarations 
-         'statements' statements 
-         returnSubPrg 
+f_body : '{'
+         'declarations' declarations
+         'statements' statements
+         returnSubPrg
          '}'
        ;
 
@@ -117,8 +121,8 @@ formal_args :
             | f_args
             ;
 
-f_args   : formal_arg (';' formal_arg )*
-         ;
+f_args  : formal_arg (',' formal_arg )*
+        ;
 
 formal_arg : identifier '->' type
            ;
@@ -126,7 +130,7 @@ formal_arg : identifier '->' type
 /* ****** Return type ****** */
 
 return_type :
-            | '->' type
+            | '->' typeReturnSubProgram
             ;
 
 /* ****** Return ****** */
@@ -137,18 +141,18 @@ returnSubPrg :
 
 /* ****** Statements ****** */
 
-statements  : statement *
-            ;
+statements : statement*
+           ;
 
-statement : assignment  ';'
-          | write_statement  ';'
-          | read_statement  ';'
-          | conditional_statement 
-          | iterative_statement 
+statement : assignment ';'
+          | write_statement ';'
+          | read_statement ';'
+          | conditional_statement
+          | iterative_statement
           | function_call ';'
-          | succ_or_pred  ';'
-          | copy_statement  ';'
-          | cat_statement  ';'
+          | succ_or_pred ';'
+          | copy_statement ';'
+          | cat_statement ';'
           ;
 
 /* ****** Assignment ****** */
@@ -165,7 +169,7 @@ array_access :
              | '[' elem_array ']'
              ;
 
-elem_array : single_expression (',' s2=single_expression )*
+elem_array : single_expression (',' single_expression )*
            ;
 
 /* ****** Function call ****** */
@@ -182,16 +186,16 @@ args : expression (',' expression )*
 
 /* ****** Expression ****** */
 
-expression : single_expression (rel_op single_expression )?
+expression : single_expression ( rel_op single_expression )?
            ;
 
 /* ****** Single expression ****** */
 
-single_expression : term (add_op term )*
+single_expression : term ( add_op term )*
                   ;
 
 /* ****** Term ****** */
-term : factor (mul_op factor )*
+term : factor ( mul_op factor )*
      ;
 
 /* ****** Factor ****** */
@@ -215,18 +219,16 @@ specialFunctions : tail
 
 /* ****** add_op, mul_op, rel_op ****** */
 
-//o que tem menor prioridade
 add_op : '+'
        | '-'
        | '||'
-       | '++'  //( uniao de conjuntos)
+       | '++'
        ;
 
-//tem mais prioridade que add_op
 mul_op : '*'
        | '/'
        | '&&'
-       | '**'  //( interseccao de conjuntos)
+       | '**'
        ;
 
 rel_op : '=='
@@ -240,7 +242,7 @@ rel_op : '=='
 
 /* ****** Write statement ****** */
 
-write_statement : write_expr '(' print_what  ')'
+write_statement : write_expr '(' print_what ')'
                 ;
 
 write_expr : 'write'
@@ -248,7 +250,7 @@ write_expr : 'write'
            ;
 
 print_what :
-           | expression //conjuntos nao pode pertencer
+           | expression
            ;
 
 /* ****** Read statement ****** */
@@ -262,24 +264,24 @@ conditional_statement : if_then_else_stat
                       ;
 
 iterative_statement : for_stat
-                    | while_stat 
+                    | while_stat
                     ;
 
 /* ****** if_then_else_stat ****** */
 
 if_then_else_stat : 'if' '(' expression ')'
-                    'then' '{' statements  '}'
+                    'then' '{' statements '}'
                     else_expression
                   ;
 
 else_expression :
-                | 'else' '{' statements  '}'
+                | 'else' '{' statements '}'
                 ;
 
 /* ****** for_stat ****** */
 
-for_stat : 'for' '(' interval  ')' step satisfy
-           '{' statements  '}'
+for_stat : 'for' '(' interval ')' step satisfy
+           '{' statements '}'
          ;
 
 interval : identifier type_interval
@@ -287,20 +289,16 @@ interval : identifier type_interval
 
 type_interval : 'in' range
               | 'inArray' identifier
-              //| 'inFunction' identifier
               ;
 
-range  
-      : minimum  '..' maximum 
+range : minimum '..' maximum
       ;
 
-minimum  
-        : number
+minimum : number
         | identifier
         ;
 
-maximum  
-        : number
+maximum : number
         | identifier
         ;
 
@@ -317,9 +315,8 @@ satisfy :
         ;
 
 /* ****** While_Stat ****** */
-
 while_stat : 'while' '(' expression ')'
-             '{' statements  '}'
+             '{' statements '}'
            ;
 
 /* ****** Succ_Or_Predd ****** */
@@ -378,8 +375,8 @@ member // isMember : integer x sequence -> boolean
 string : STR
        ;
 
-number  : NBR
-        ;
+number : NBR
+       ;
 
 identifier : ID
            ;
@@ -391,7 +388,7 @@ identifier : ID
 NBR : ('0'..'9')+
     ;
 
-ID : ('a'..'z'|'A'..'Z')('a'..'z'|'A'..'Z'|'0'..'9'|'_')*
+ID : ('a'..'z'|'A'..'Z')('a'..'z'|'A'..'Z'|'0'..'9'|'_')* //removi o uso do signal '-' conflitos com os valores do signal
    ;
 
 WS  :   ( [ \t\r\n] | COMMENT) -> skip
