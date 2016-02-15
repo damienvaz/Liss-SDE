@@ -51,6 +51,12 @@ public class Main {
         parser.liss(idT);
 
 
+        //persons.stream().var
+        //persons.stream().filter(person->{person.getName().length()>15}).collect(Collectors.toList());
+        //.forEach(x-> System.out.println(x)) <=> .forEach(System.out::println);
+
+
+
 
         //Type st = new Type(new Integer(0),new Integer(1));
         /*System.out.println("Category: "+st.getCategory()+"\t");

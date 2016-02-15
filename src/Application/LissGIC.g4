@@ -1,8 +1,3 @@
-/*
- * Version eBNF of Liss
- * Author : Damien + PRH
- * Date : 2015.03.11
- */
 grammar LissGIC;
 
 /* ****** Program ****** */
