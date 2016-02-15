@@ -1,0 +1,28 @@
+program Teste {
+
+declarations
+
+	a =4, b -> integer;
+	d = true, flag, flag2, bool   -> boolean;
+	c = [1,2,3], vector -> array size 8;
+	j, k -> integer;
+	e, f = { x | x > 7}, g = {x | (x < 8) || (x > 15) && (x < 13) } -> set;
+
+
+statements
+
+// sets
+	e = f ++ g;
+	writeln(e);
+
+	f = g ** f;
+	writeln(f);
+
+	g = g ** { x | x > 6 };
+	writeln(g);
+
+	flag = a in e;
+	flag2 = a in g;
+	bool = 8 in {x | (x < 10) && (x > 7) };
+	d = 3 in g;
+}

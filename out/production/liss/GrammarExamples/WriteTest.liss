@@ -1,0 +1,16 @@
+program WriteTest {
+
+declarations
+
+	flag, bool = true  -> boolean;
+	a = 4, b -> integer;
+	c = [1,2,3], vector -> array size 8;
+	set1 = {x | (x < 8) || (x > 15) && (x < 13) } -> set;
+
+statements
+	writeln(a*3);
+	writeln(c[0]);
+	writeln();
+	write(a*b);
+	writeln(set1);
+}

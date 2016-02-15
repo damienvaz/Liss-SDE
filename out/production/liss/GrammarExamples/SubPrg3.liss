@@ -1,0 +1,96 @@
+program Test {
+
+declarations
+
+	a = 4, b= 5, c= 5 -> integer;
+	array1 = [10,20,30,40], array2, array3 -> array size 4;
+
+	subprogram calculate(l -> integer, m -> array size 4) -> array size 4  //return can only be a scalar value (int or bool)
+	{
+	  declarations
+		fac = 6 -> integer;
+		res = 20 -> integer;
+		array5 = [10,20,30,40], array6, p -> array size 4;
+
+		subprogram factorial(n -> integer) -> integer
+		{
+		  	declarations
+		  	  b = true -> boolean;
+			  res = 1 -> integer;
+			  b1 = false -> boolean;
+
+			statements
+			    succ res;
+			    pred res;
+				while (n > 0)
+				{
+					//res = a * n;
+					res = res * n;
+					n = n -1;
+				}
+				array6 = calculate(res,array5);  //Must give an error or exception because the function call is ahead of one level and probably a cycle will be run.
+
+				return res;
+		}
+
+		subprogram factorial2(n -> integer) -> integer
+        		{
+        		  	declarations
+        				res = 1 -> integer;
+
+        			statements
+        				if(n > 0) then
+        				{
+
+        					res = n * factorial2(n-1);
+        				}
+        				return res;
+        		}
+	  statements
+			writeln(res);
+			for (a in 0..3) stepUp 1
+			{
+			  //m[a] = factorial(fac + a);  //need to know the concatenate function linkedlist+ the name of that function (for activing the fac  &&
+			}
+			writeln(res);
+
+
+		return fac;
+	}
+
+	subprogram factorial(n -> integer) -> integer
+   	{
+    	declarations
+
+    	statements
+
+    		//return array1;
+    		return a;
+    }
+
+    //subprogram factorial(n -> integer) -> integer
+    //   	{
+    //    	declarations
+
+    //    	statements
+
+    //    		return array1;
+    //    }
+
+	subprogram writeArray(z -> array size 4)
+	{
+		declarations 																					
+			//q=0 -> integer;
+	  statements
+			writeln(z);
+	}
+
+
+statements
+
+    //pred a;
+	array2 = calculate(a,array1);  // Wth do we must to do with that ?? Copying array (each elements ?)
+	array2 = array1;
+	//a = factorial2(3);
+	//writeArray(array2);
+}
