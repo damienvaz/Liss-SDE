@@ -79,6 +79,7 @@ public class Main {
 
         //Creating a bridge for WebEngine to Java code application
         we.documentProperty().addListener((observable, oldValue, newValue) -> {
+            //Comment about this piece of code: When a user want to create a new liss file, we must add this piece of code into the function addListener function.
             JSObject jsobj = (JSObject) we.executeScript("window");
             LissProgram l = new LissProgram(codeArea);
             jsobj.setMember("liss", l);
