@@ -7,16 +7,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module-library" exported="">
-      <library>
-        <CLASSES>
-          <root url="jar://$USER_HOME$/Desktop/antlr/antlr-4.5-complete.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="library" name="antlr-4.5-complete" level="project" />
-    <orderEntry type="library" name="richtextfx-fat-0.6.10" level="project" />
+    <orderEntry type="library" exported="" name="antlr-4.5-complete" level="project" />
+    <orderEntry type="library" exported="" name="richtextfx-fat-0.6.10" level="project" />
   </component>
 </module>

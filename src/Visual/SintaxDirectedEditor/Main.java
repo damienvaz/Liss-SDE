@@ -1,8 +1,12 @@
 package Visual.SintaxDirectedEditor;
 
+import javafx.application.Platform;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
+import javafx.scene.control.MenuItem;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.web.WebEngine;
@@ -13,9 +17,8 @@ import netscape.javascript.JSObject;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 
-/**
- * Created by damienvaz on 14/01/16.
- */
+import java.io.File;
+
 public class Main {
     private Scene scene;
     private Stage stage;
@@ -31,7 +34,6 @@ public class Main {
         AnchorPane page = (AnchorPane) fxmlLoader.load();
         scene = new Scene(page);
 
-        //scene = new Scene(FXMLLoader.load(getClass().getResource("sde.fxml")));
         stage = new Stage();
         stage.setScene(scene);
         stage.setTitle(this.title);
@@ -61,6 +63,13 @@ public class Main {
         WebView wv = (WebView) fxmlLoader.getNamespace().get("tree");
         StackPane sp = (StackPane) fxmlLoader.getNamespace().get("code_editor");
 
+        //Add Html file to WebEngine and set the context menu of the HTML file false
+        File f = new File("ressources/html/index.html");
+        WebEngine we = wv.getEngine();
+        we.setJavaScriptEnabled(true);
+        we.load(f.toURI().toURL().toString());
+        wv.setContextMenuEnabled(false);
+
         //Add the RichText plugin to JavaFx application
         CodeArea codeArea = new CodeArea();
         codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
@@ -68,18 +77,31 @@ public class Main {
         codeArea.setStyle("-fx-font-size:15;");
         sp.getChildren().add(codeArea);
 
-        //ap.setLeftAnchor(codeArea,0.00);
-
-
-
-        String url = getClass().getResource("index.html").toExternalForm();
-        WebEngine we = wv.getEngine();
-        we.setJavaScriptEnabled(true);
-        we.load(url);
-
         //Creating a bridge for WebEngine to Java code application
-        JSObject jsobj = (JSObject) we.executeScript("window");
-        jsobj.setMember("liss",new LissProgram(codeArea));
+        we.documentProperty().addListener((observable, oldValue, newValue) -> {
+            JSObject jsobj = (JSObject) we.executeScript("window");
+            LissProgram l = new LissProgram(codeArea);
+            jsobj.setMember("liss", l);
+        });
+
+        //When "close menuitem" is clicked, then it exits the program
+        MenuItem closeMenuItem = (MenuItem) fxmlLoader.getNamespace().get("close");
+        closeMenuItem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                Platform.exit();
+            }
+        });
+
+        //When the "new menuitem" is clicked, then it must create
+        MenuItem newMenuItem = (MenuItem) fxmlLoader.getNamespace().get("new");
+        newMenuItem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                wv.getEngine().reload();
+                codeArea.replaceText("");
+            }
+        });
 
 
         stage.show();

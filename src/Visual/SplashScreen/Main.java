@@ -8,12 +8,14 @@ import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.image.ImageView;
+import javafx.scene.image.*;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
 
 import java.awt.*;
+import java.io.File;
 import java.io.IOException;
 
 public class Main extends Application {
@@ -25,7 +27,14 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         //Get the View of the splashscreen from JavaFX Scene Builder
-        Parent root = FXMLLoader.load(getClass().getResource("splashscreen.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("splashscreen.fxml"));
+        Parent root = fxmlLoader.load();
+        //Parent root = FXMLLoader.load(getClass().getResource("splashscreen.fxml"));
+        ImageView i = (ImageView) fxmlLoader.getNamespace().get("splash_logo");
+        File f = new File("ressources/images/liss.png");
+        System.out.println(f.toURI().toURL().toString());
+        Image t = new Image(f.toURI().toURL().toString());
+        i.setImage(t);
         Scene s = new Scene(root);
 
         //Get the resolution of the screen PC
