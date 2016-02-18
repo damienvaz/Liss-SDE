@@ -8,7 +8,7 @@
    <children>
       <ImageView fx:id="splash_logo" fitHeight="289.0" fitWidth="404.0" pickOnBounds="true" preserveRatio="true">
          <image>
-            <Image url="@../../../ressources/images/liss.png" />
+            <Image url="@../../../resources/images/liss.png" />
          </image>
       </ImageView>
    </children>

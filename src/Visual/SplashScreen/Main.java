@@ -31,8 +31,8 @@ public class Main extends Application {
         Parent root = fxmlLoader.load();
         //Parent root = FXMLLoader.load(getClass().getResource("splashscreen.fxml"));
         ImageView i = (ImageView) fxmlLoader.getNamespace().get("splash_logo");
-        File f = new File("ressources/images/liss.png");
-        System.out.println(f.toURI().toURL().toString());
+        File f = new File("resources/images/liss.png");
+        //System.out.println(f.toURI().toURL().toString());
         Image t = new Image(f.toURI().toURL().toString());
         i.setImage(t);
         Scene s = new Scene(root);
