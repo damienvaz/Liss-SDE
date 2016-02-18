@@ -18,8 +18,17 @@
 <!--<script src="dist/jstree.min.js"></script>-->
 <script src="dist/jstree.min.js"></script>
 <script>
-    var num = 0;
-    var tab = 0;
+    var num=0;
+    var tab=0;
+
+    function getStateJson(){
+        num = liss.getNum();
+        tab = liss.getTab();
+    }
+
+    function setStateJson(){
+        liss.setStateJsonLiss(num,tab);
+    }
 
     function produceTabs(tab){
         var res = "";
@@ -31,8 +40,12 @@
     }
 
     function saveTreeJSON(){
-        var v = $('#lissSyntax').jstree(true).get_json('#', {flat:true})
+        var v = $('#lissSyntax').jstree(true).get_json('#', {flat:true});
+        setStateJson();
+        var num = ""+liss.getNum();
+        var tab = ""+liss.getTab();
         var mytext = JSON.stringify(v);
+        mytext = num+"\n"+tab+"\n"+mytext;
         //alert(mytext);
         //liss.debugger(mytext);
         return mytext;
@@ -46,8 +59,8 @@
         var j = "[{\"id\":\"liss\",\"text\":\"liss\",\"icon\":true,\"li_attr\":{\"id\":\"liss\"},\"a_attr\":{\"href\":\"#\",\"class\":\"non-terminal\",\"id\":\"liss_anchor\"},\"state\":{\"loaded\":true,\"opened\":true,\"selected\":false,\"disabled\":false},\"data\":{},\"parent\":\"#\"},{\"id\":\"program_liss\",\"text\":\"program\",\"icon\":true,\"li_attr\":{\"id\":\"program_liss\"},\"a_attr\":{\"href\":\"#\",\"class\":\"terminal\",\"program\":\"program \",\"id\":\"program_liss_anchor\"},\"state\":{\"loaded\":true,\"opened\":false,\"selected\":false,\"disabled\":true},\"data\":{},\"parent\":\"liss\"},{\"id\":\"identifier_liss\",\"text\":\"cr5f67\",\"icon\":true,\"li_attr\":{\"id\":\"identifier_liss\"},\"a_attr\":{\"href\":\"#\",\"class\":\"terminal edit correct\",\"program\":\"\",\"expressionregularrule\":\"ID\",\"id\":\"identifier_liss_anchor\"},\"state\":{\"loaded\":true,\"opened\":false,\"selected\":true,\"disabled\":false},\"data\":{},\"parent\":\"liss\"},{\"id\":\"body\",\"text\":\"body\",\"icon\":true,\"li_attr\":{\"id\":\"body\"},\"a_attr\":{\"href\":\"#\",\"class\":\"non-terminal\",\"id\":\"body_anchor\"},\"state\":{\"loaded\":true,\"opened\":false,\"selected\":false,\"disabled\":false},\"data\":{},\"parent\":\"liss\"}]";
         var test = liss.getJSON();
 
-        liss.debugger(j);
-        liss.debugger(test);
+        //liss.debugger(j);
+        //liss.debugger(test);
         //var jsonString = liss.getJSON();
         //liss.debugger("Hello2");
         //liss.debugger(liss.getJSON());
@@ -60,6 +73,7 @@
             $('#lissSyntax').jstree(true).settings.core.data = json;
             $('#lissSyntax').jstree(true).refresh();
             liss.setText(getProgramLiss());
+            //liss.debugger("NUM: "+num+", TAB: "+tab);
         }
     }
 

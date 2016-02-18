@@ -75,9 +75,6 @@ public class Main {
         File f = new File("resources/html/index.html");
         WebEngine we = wv.getEngine();
         we.setJavaScriptEnabled(true);
-        we.load(f.toURI().toURL().toString());
-        we.executeScript("document.newTree");
-        wv.setContextMenuEnabled(false);
 
         //Add the RichText plugin to JavaFx application
         CodeArea codeArea = new CodeArea();
@@ -86,7 +83,6 @@ public class Main {
         codeArea.setStyle("-fx-font-size:15;");
         sp.getChildren().add(codeArea);
 
-
         LissProgram l = new LissProgram(codeArea);
         //Creating a bridge for WebEngine to Java code application
         we.documentProperty().addListener((observable, oldValue, newValue) -> {
@@ -94,6 +90,11 @@ public class Main {
             JSObject jsobj = (JSObject) we.executeScript("window");
             jsobj.setMember("liss", l);
         });
+
+        we.load(f.toURI().toURL().toString());
+        //we.executeScript("document.newTree");
+        wv.setContextMenuEnabled(false);
+
 
         //When the "new menuitem" is clicked, then it must create
         MenuItem newMenuItem = (MenuItem) fxmlLoader.getNamespace().get("new");
@@ -113,7 +114,7 @@ public class Main {
         loadMenuItem.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent e) {
-                System.out.println("Load button clicked...");
+                //System.out.println("Load button clicked...");
 
                 //View for loading file
                 FileChooser chooser = new FileChooser();
@@ -125,10 +126,16 @@ public class Main {
                     try {
                         String res = "";
                         List<String> collect = Files.lines(f.toPath()).collect(Collectors.toList());
-                        for (String s : collect) {
-                            res+=s;
+                        if(collect.size()==3){
+                            int num = Integer.valueOf(collect.remove(0));
+                            int tab = Integer.valueOf(collect.remove(0));
+                            for (String s : collect) {
+                                res+=s;
+                            }
+                            l.setStateJsonLiss(num,tab);
+                            we.executeScript("getStateJson()");
+                            l.setJsonLiss(res);
                         }
-                        l.setJsonLiss(res);
                     } catch (IOException e1) {
                         e1.printStackTrace();
                     }
@@ -146,6 +153,7 @@ public class Main {
             @Override
             public void handle(ActionEvent e) {
                 String jsonString = (String) we.executeScript("saveTreeJSON()");
+                //System.out.println(jsonString);
                 String lissProgramString = (String) we.executeScript("getProgramLiss()");
 
                 FileChooser saveFile = new FileChooser();
