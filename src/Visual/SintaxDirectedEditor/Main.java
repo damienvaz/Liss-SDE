@@ -7,6 +7,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.MenuItem;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.web.WebEngine;
@@ -100,6 +101,9 @@ public class Main {
 
         //When the "new menuitem" is clicked, then it must create
         MenuItem newMenuItem = (MenuItem) fxmlLoader.getNamespace().get("new");
+        newMenuItem.setAccelerator(
+                KeyCombination.keyCombination("SHORTCUT+N")
+        );
         newMenuItem.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent e) {
@@ -114,6 +118,9 @@ public class Main {
 
         //When "load menuitem" is clicked, then it exits the program
         MenuItem loadMenuItem = (MenuItem) fxmlLoader.getNamespace().get("load");
+        loadMenuItem.setAccelerator(
+                KeyCombination.keyCombination("SHORTCUT+L")
+        );
         loadMenuItem.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent e) {
@@ -156,6 +163,9 @@ public class Main {
 
         //When "save menuitem" is clicked, then it exits the program
         MenuItem saveMenuItem = (MenuItem) fxmlLoader.getNamespace().get("save");
+        saveMenuItem.setAccelerator(
+                KeyCombination.keyCombination("SHORTCUT+S")
+        );
         saveMenuItem.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent e) {
@@ -176,7 +186,6 @@ public class Main {
 
                             List<String> lines = Arrays.asList(jsonString);
                             Files.write(pathBuild, lines, Charset.forName("UTF-8"));
-                            //pathLiss = pathLiss.resolveSibling(pathLiss.getFileName() + ".liss");
                             lines = Arrays.asList(lissProgramString);
                             Files.write(pathLiss, lines, Charset.forName("UTF-8"));
                         }
@@ -200,11 +209,14 @@ public class Main {
 
         //When "quit menuitem" is clicked, then it exits the program
         MenuItem quitMenuItem = (MenuItem) fxmlLoader.getNamespace().get("quit");
+        quitMenuItem.setAccelerator(
+                KeyCombination.keyCombination("SHORTCUT+Q")
+        );
         quitMenuItem.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent e) {
                 Platform.exit();
-                System.setProperty("apple.eawt.quitStrategy", "CLOSE_ALL_WINDOWS");
+                //System.setProperty("apple.eawt.quitStrategy", "CLOSE_ALL_WINDOWS");
             }
         });
 
