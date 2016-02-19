@@ -6,6 +6,9 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
@@ -20,11 +23,13 @@ import org.fxmisc.richtext.LineNumberFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class Main {
@@ -163,14 +168,50 @@ public class Main {
                 File f = saveFile.showSaveDialog(stage);
                 try {
                     if(f!=null) {
-                        Path pathJson = f.toPath();
-                        Path pathLiss = f.toPath();
-                        pathJson = pathJson.resolveSibling(pathJson.getFileName() + ".json");
-                        List<String> lines = Arrays.asList(jsonString);
-                        Files.write(pathJson, lines, Charset.forName("UTF-8"));
-                        pathLiss = pathLiss.resolveSibling(pathLiss.getFileName() + ".liss");
-                        lines = Arrays.asList(lissProgramString);
-                        Files.write(pathLiss, lines, Charset.forName("UTF-8"));
+                        boolean res = true;
+
+                        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                        alert.setTitle("Liss|SDE");
+                        alert.setHeaderText("File already exists. Do you want to overwrite?");
+                        //alert.setContentText("Choose your option:");
+
+                        ButtonType buttonYes = new ButtonType("Yes");
+                        ButtonType buttonNo = new ButtonType("No");
+                        ButtonType buttonCancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+
+                        alert.getButtonTypes().setAll(buttonYes, buttonNo, buttonCancel);
+
+                        while(res) {
+                            Path pathJson = f.toPath().resolveSibling(f.toPath().getFileName() + ".json");
+                            Path pathLiss = f.toPath().resolveSibling(f.toPath().getFileName() + ".liss");
+                            if (!pathJson.toFile().exists() && !pathLiss.toFile().exists()) {
+                                //pathJson = pathJson.resolveSibling(pathJson.getFileName() + ".json");
+                                List<String> lines = Arrays.asList(jsonString);
+                                Files.write(pathJson, lines, Charset.forName("UTF-8"));
+                                //pathLiss = pathLiss.resolveSibling(pathLiss.getFileName() + ".liss");
+                                lines = Arrays.asList(lissProgramString);
+                                Files.write(pathLiss, lines, Charset.forName("UTF-8"));
+                                res = false;
+                            } else {
+                                Optional<ButtonType> result = alert.showAndWait();
+                                if (result.get() == buttonYes) {
+                                    //pathJson = pathJson.resolveSibling(pathJson.getFileName() + ".json");
+                                    List<String> lines = Arrays.asList(jsonString);
+                                    Files.write(pathJson, lines, Charset.forName("UTF-8"));
+                                    //pathLiss = pathLiss.resolveSibling(pathLiss.getFileName() + ".liss");
+                                    lines = Arrays.asList(lissProgramString);
+                                    Files.write(pathLiss, lines, Charset.forName("UTF-8"));
+                                    // ... user chose "Yes"
+                                    res = false;
+                                } else if (result.get() == buttonNo) {
+                                    // ... user chose "No"
+                                    f = saveFile.showSaveDialog(stage);
+                                }else{
+                                    res = false;
+                                }
+                                //f = saveFile.showSaveDialog(stage);
+                            }
+                        }
                     }
                 } catch (IOException e1) {
                     e1.printStackTrace();
