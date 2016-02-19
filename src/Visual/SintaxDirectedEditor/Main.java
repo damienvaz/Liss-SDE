@@ -6,14 +6,12 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonBar;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
@@ -23,13 +21,11 @@ import org.fxmisc.richtext.LineNumberFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class Main {
@@ -39,6 +35,7 @@ public class Main {
     private final double width = 600;
     private final double height = 400;
     private final double cX = 0.00, cY = 0.00;
+    private String pathDirectory = null;
 
 
     public Main() throws Exception {
@@ -106,6 +103,7 @@ public class Main {
         newMenuItem.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent e) {
+                pathDirectory = null;
                 wv.getEngine().reload();
                 JSObject jsobj = (JSObject) we.executeScript("window");
                 //LissProgram l = new LissProgram(codeArea);
@@ -122,27 +120,31 @@ public class Main {
                 //System.out.println("Load button clicked...");
 
                 //View for loading file
-                FileChooser chooser = new FileChooser();
-                chooser.setTitle("Open File");
-                FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("JSON files (*.json)", "*.json");
-                chooser.getExtensionFilters().addAll(extFilter);
-                File f = chooser.showOpenDialog(scene.getWindow());
-                if(f!=null){
-                    try {
-                        String res = "";
-                        List<String> collect = Files.lines(f.toPath()).collect(Collectors.toList());
-                        if(collect.size()==3){
-                            int num = Integer.valueOf(collect.remove(0));
-                            int tab = Integer.valueOf(collect.remove(0));
-                            for (String s : collect) {
-                                res+=s;
+                DirectoryChooser chooser = new DirectoryChooser();
+                chooser.setTitle("Open Project");
+                File f = chooser.showDialog(stage);
+
+                if(f!=null && f.isDirectory()){
+                    pathDirectory = f.getAbsolutePath();
+                    File build = new File(f.getAbsolutePath()+File.separator+f.getName()+".build");
+                    //System.out.println(build.toString());
+                    if(build.exists()){
+                        try{
+                            String res = "";
+                            List<String> collect = Files.lines(build.toPath()).collect(Collectors.toList());
+                            if(collect.size()==3){
+                                int num = Integer.valueOf(collect.remove(0));
+                                int tab = Integer.valueOf(collect.remove(0));
+                                for (String s : collect) {
+                                    res+=s;
+                                }
+                                l.setStateJsonLiss(num,tab);
+                                we.executeScript("getStateJson()");
+                                l.setJsonLiss(res);
                             }
-                            l.setStateJsonLiss(num,tab);
-                            we.executeScript("getStateJson()");
-                            l.setJsonLiss(res);
+                        }catch (IOException i){
+                            i.printStackTrace();
                         }
-                    } catch (IOException e1) {
-                        e1.printStackTrace();
                     }
                 }
                 //wv.getEngine().reload();
@@ -158,60 +160,35 @@ public class Main {
             @Override
             public void handle(ActionEvent e) {
                 String jsonString = (String) we.executeScript("saveTreeJSON()");
-                //System.out.println(jsonString);
                 String lissProgramString = (String) we.executeScript("getProgramLiss()");
 
-                FileChooser saveFile = new FileChooser();
-                //FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("JSON files (*.json)", "*.json");
-                //FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("JSON && LISS files","");
-                //saveFile.getExtensionFilters().add(extFilter);
-                File f = saveFile.showSaveDialog(stage);
                 try {
-                    if(f!=null) {
-                        boolean res = true;
+                    if(pathDirectory==null || (!new File(pathDirectory).isDirectory())){
+                        FileChooser saveFile = new FileChooser();
+                        saveFile.setTitle("Save Project");
+                        File f = saveFile.showSaveDialog(stage);
+                        if(f!=null) {
+                            File directory = new File(f.getAbsolutePath());
+                            directory.mkdir();
+                            pathDirectory = directory.getAbsolutePath();
+                            Path pathBuild = directory.toPath().resolveSibling(directory.toPath().toString() + File.separator + f.getName() + ".build");
+                            Path pathLiss = directory.toPath().resolveSibling(directory.toPath().toString() + File.separator + f.getName() + ".liss");   //pathJson = pathJson.resolveSibling(pathJson.getFileName() + ".json");
 
-                        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-                        alert.setTitle("Liss|SDE");
-                        alert.setHeaderText("File already exists. Do you want to overwrite?");
-                        //alert.setContentText("Choose your option:");
-
-                        ButtonType buttonYes = new ButtonType("Yes");
-                        ButtonType buttonNo = new ButtonType("No");
-                        ButtonType buttonCancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
-
-                        alert.getButtonTypes().setAll(buttonYes, buttonNo, buttonCancel);
-
-                        while(res) {
-                            Path pathJson = f.toPath().resolveSibling(f.toPath().getFileName() + ".json");
-                            Path pathLiss = f.toPath().resolveSibling(f.toPath().getFileName() + ".liss");
-                            if (!pathJson.toFile().exists() && !pathLiss.toFile().exists()) {
-                                //pathJson = pathJson.resolveSibling(pathJson.getFileName() + ".json");
-                                List<String> lines = Arrays.asList(jsonString);
-                                Files.write(pathJson, lines, Charset.forName("UTF-8"));
-                                //pathLiss = pathLiss.resolveSibling(pathLiss.getFileName() + ".liss");
-                                lines = Arrays.asList(lissProgramString);
-                                Files.write(pathLiss, lines, Charset.forName("UTF-8"));
-                                res = false;
-                            } else {
-                                Optional<ButtonType> result = alert.showAndWait();
-                                if (result.get() == buttonYes) {
-                                    //pathJson = pathJson.resolveSibling(pathJson.getFileName() + ".json");
-                                    List<String> lines = Arrays.asList(jsonString);
-                                    Files.write(pathJson, lines, Charset.forName("UTF-8"));
-                                    //pathLiss = pathLiss.resolveSibling(pathLiss.getFileName() + ".liss");
-                                    lines = Arrays.asList(lissProgramString);
-                                    Files.write(pathLiss, lines, Charset.forName("UTF-8"));
-                                    // ... user chose "Yes"
-                                    res = false;
-                                } else if (result.get() == buttonNo) {
-                                    // ... user chose "No"
-                                    f = saveFile.showSaveDialog(stage);
-                                }else{
-                                    res = false;
-                                }
-                                //f = saveFile.showSaveDialog(stage);
-                            }
+                            List<String> lines = Arrays.asList(jsonString);
+                            Files.write(pathBuild, lines, Charset.forName("UTF-8"));
+                            //pathLiss = pathLiss.resolveSibling(pathLiss.getFileName() + ".liss");
+                            lines = Arrays.asList(lissProgramString);
+                            Files.write(pathLiss, lines, Charset.forName("UTF-8"));
                         }
+                    }else {
+                        File directory = new File(pathDirectory);
+                        Path pathBuild = directory.toPath().resolveSibling(directory.toPath().toString() + File.separator + directory.getName() + ".build");
+                        Path pathLiss = directory.toPath().resolveSibling(directory.toPath().toString() + File.separator + directory.getName() + ".liss");   //pathJson = pathJson.resolveSibling(pathJson.getFileName() + ".json");
+
+                        List<String> lines = Arrays.asList(jsonString);
+                        Files.write(pathBuild, lines, Charset.forName("UTF-8"));
+                        lines = Arrays.asList(lissProgramString);
+                        Files.write(pathLiss, lines, Charset.forName("UTF-8"));
                     }
                 } catch (IOException e1) {
                     e1.printStackTrace();
