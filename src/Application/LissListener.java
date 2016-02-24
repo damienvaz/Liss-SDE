@@ -43,16 +43,6 @@ public interface LissListener extends ParseTreeListener {
 	 */
 	void exitDeclarations(LissParser.DeclarationsContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link LissParser#declaration}.
-	 * @param ctx the parse tree
-	 */
-	void enterDeclaration(LissParser.DeclarationContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link LissParser#declaration}.
-	 * @param ctx the parse tree
-	 */
-	void exitDeclaration(LissParser.DeclarationContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link LissParser#variable_declaration}.
 	 * @param ctx the parse tree
 	 */

@@ -41,10 +41,6 @@ body[IdentifiersTable idTH]
 /* ****** Declarations ****** */
 
 declarations[IdentifiersTable idTH, HashMap<String,Object> varInfo]
-             : declaration[idTH, varInfo]
-             ;
-
-declaration [IdentifiersTable idTH, HashMap<String,Object> varInfo]
             @init{
                  HashMap<String, HashMap<String, Object>> hashmapVar = new HashMap<String, HashMap<String,Object>>();
             }

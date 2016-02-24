@@ -148,16 +148,17 @@ public class Main {
                                 l.setStateJsonLiss(num,tab);
                                 we.executeScript("getStateJson()");
                                 l.setJsonLiss(res);
+
+                                //wv.getEngine().reload();
+                                JSObject jsobj = (JSObject) we.executeScript("window");
+                                jsobj.setMember("liss", l);
+                                we.executeScript("loadTreeJSON()");
                             }
                         }catch (IOException i){
                             i.printStackTrace();
                         }
                     }
                 }
-                //wv.getEngine().reload();
-                JSObject jsobj = (JSObject) we.executeScript("window");
-                jsobj.setMember("liss", l);
-                we.executeScript("loadTreeJSON()");
             }
         });
 

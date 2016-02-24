@@ -14,11 +14,8 @@ body : '{'
 
 /* ****** Declarations ****** */
 
-declarations : declaration
+declarations : variable_declaration* subprogram_definition*
              ;
-
-declaration : variable_declaration* subprogram_definition*
-            ;
 
 /* ****** Variables ****** */
 
