@@ -148,6 +148,7 @@ public class Main {
                                 l.setStateJsonLiss(num,tab);
                                 we.executeScript("getStateJson()");
                                 l.setJsonLiss(res);
+                                System.out.println(l.getJSON());
 
                                 //wv.getEngine().reload();
                                 JSObject jsobj = (JSObject) we.executeScript("window");
