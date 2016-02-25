@@ -3,6 +3,10 @@ package Visual.SintaxDirectedEditor;
 import javafx.scene.control.TextArea;
 import org.fxmisc.richtext.CodeArea;
 
+import java.util.LinkedList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * Created by damienvaz on 01/02/16.
  */
@@ -24,9 +28,17 @@ public class LissProgram {
 
     public CodeArea getTextArea(){return this.textArea;}
 
-    public void setText(String s){
-        this.textArea.replaceText("");
+    public void setText(String s) {
+        this.textArea.clear();
         this.textArea.replaceText(s);
+
+        String undefined = "undefined";
+        Pattern word = Pattern.compile(undefined);
+        Matcher match = word.matcher(s);
+
+        while(match.find()){
+            this.textArea.setStyleClass(match.start(), match.end(), "warning");
+        }
     }
 
     public String getText(){return this.textArea.getText();}

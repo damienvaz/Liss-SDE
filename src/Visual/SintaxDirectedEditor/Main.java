@@ -22,6 +22,7 @@ import org.fxmisc.richtext.LineNumberFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -81,6 +82,11 @@ public class Main {
 
         //Add the RichText plugin to JavaFx application
         CodeArea codeArea = new CodeArea();
+        //Add our proper css style to the codeArea
+        File css = new File("resources/html/liss.css");
+        codeArea.getStylesheets().add(css.toURI().toURL().toExternalForm());
+
+        //Set Number to the CodeArea
         codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
         codeArea.setEditable(false);
         codeArea.setStyle("-fx-font-size:15;");
@@ -148,7 +154,7 @@ public class Main {
                                 l.setStateJsonLiss(num,tab);
                                 we.executeScript("getStateJson()");
                                 l.setJsonLiss(res);
-                                System.out.println(l.getJSON());
+                                //System.out.println(l.getJSON());
 
                                 //wv.getEngine().reload();
                                 JSObject jsobj = (JSObject) we.executeScript("window");

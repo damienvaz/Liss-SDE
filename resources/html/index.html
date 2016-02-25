@@ -70,19 +70,28 @@
         for(var i=0; i<jsonObj.length; i++){
             var arrayClassName = jsonObj[i].a_attr.class.split(" ");
             if(arrayClassName[0] === "terminal"){
-                if(arrayClassName.length === 3 && arrayClassName[1] === "edit"){
-                    if(jsonObj[i].a_attr.class.indexOf("correct")){
-                        if(jsonObj[i].a_attr.expressionregularrule === "ID"){
-                            res+=jsonObj[i].a_attr.program+jsonObj[i].text;
+                if(arrayClassName.length <= 3 && arrayClassName[1] === "edit"){
+                    //if(jsonObj[i].a_attr.class.indexOf("correct")){
+                    if(jsonObj[i].a_attr.expressionregularrule === "ID"){
+                        if(arrayClassName.length === 3 && arrayClassName[2] === "correct") {
+                            res += jsonObj[i].a_attr.program + jsonObj[i].text;
 //                            console.log(jsonObj[i].a_attr.program+jsonObj[i].text);
-                        }else if(jsonObj[i].a_attr.expressionregularrule === "NBR"){
-                            res+=jsonObj[i].a_attr.program+jsonObj[i].text;
+                        }else{
+                            res += jsonObj[i].a_attr.program + "undefined";
+                        }
+                    }else if(jsonObj[i].a_attr.expressionregularrule === "NBR"){
+                        if(arrayClassName.length === 3 && arrayClassName[2] === "correct") {
+                            res += jsonObj[i].a_attr.program + jsonObj[i].text;
 //                            console.log(jsonObj[i].a_attr.program+jsonObj[i].text);
+                        }else{
+                            res += jsonObj[i].a_attr.program + "undefined";
                         }
                     }
-                }else{
+
+                }
+                else{
                     res+=jsonObj[i].a_attr.program;
-                    console.log(jsonObj[i].a_attr.program);
+//                    console.log(jsonObj[i].a_attr.program);
                 }
             }
         }
@@ -132,6 +141,7 @@
             //Pr.C.:Check which type of node is it. (Ex.: NBR|ID|STR)
             if(node.attr("expressionregularrule")==="NBR"){
                 //console.log("regra NBR");
+                //liss.debugger("regra NBR");
                 //Pr.C:When edition is actived, the text element is empty
                 if(object.obj.text!=="") {
                     //Pr.C.: Check the regular expression of NBR
@@ -168,7 +178,8 @@
                     }
                 }
             }else if(node.attr("expressionregularrule")==="ID"){
-                //console.log("regra ID");
+                console.log("regra ID");
+                //liss.debugger("regra ID");
                 //Pr.C:When edition is actived, the text element is empty
                 if(object.obj.text!=="") {
                     //Pr.C.: Check the regular expression of NBR
@@ -1509,8 +1520,7 @@
             }
 
     });
-
-
+    
     //Code for ContextMenu to open with left click
     /*setTimeout(function () {
      data.instance.show_contextmenu(data.node)
