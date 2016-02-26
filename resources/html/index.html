@@ -297,6 +297,7 @@
     var patternRelOp = /^rel_op[0-9]+$/;
     var patternFactors = /^factors+[0-9]+$/;
     var patternFactor = /^factor[0-9]+$/;
+    var patternElemArray = /^elem_array[0-9]+$/;
     /*********LEXER*********/
     var patternInt = /^int[0-9]+$/;
     var patternIdentifier = /^identifier[0-9]+$/;
@@ -1498,67 +1499,97 @@
                     }
                 };
         }else if(patternSingleExpressions.test(node.id)){
-            if(node.children.length == 1){
-                items = {
-                    "add_single_expression":{
-                        "label": "Add Single_Expression",
-                        "action": function () {
-                            //Node : rel_op
-                            $('#lissSyntax').jstree().create_node(node, {
-                                "id": "rel_op" + num, "text": "rel_op",
-                                state: {
-                                    opened: false,  // is the node open
-                                    disabled: false,  // is the node disabled
-                                }, a_attr: {"class": "non-terminal"}
-                            }, "last", function () {
-                            });
-                            num++;
+            if(patternExpression.test(node.parent)) {
+                if (node.children.length == 1) {
+                    items = {
+                        "add_single_expression": {
+                            "label": "Add Single_Expression",
+                            "action": function () {
+                                //Node : rel_op
+                                $('#lissSyntax').jstree().create_node(node, {
+                                    "id": "rel_op" + num, "text": "rel_op",
+                                    state: {
+                                        opened: false,  // is the node open
+                                        disabled: false,  // is the node disabled
+                                    }, a_attr: {"class": "non-terminal"}
+                                }, "last", function () {
+                                });
+                                num++;
 
-                            //Node : single_expression
-                            $('#lissSyntax').jstree().create_node(node, {
-                                "id": "single_expression" + num, "text": "single_expression",
-                                state: {
-                                    opened: false,  // is the node open
-                                    disabled: false,  // is the node disabled
-                                }, a_attr: {"class": "non-terminal"}
-                            }, "last", function () {
-                            });
-                            num++;
+                                //Node : single_expression
+                                $('#lissSyntax').jstree().create_node(node, {
+                                    "id": "single_expression" + num, "text": "single_expression",
+                                    state: {
+                                        opened: false,  // is the node open
+                                        disabled: false,  // is the node disabled
+                                    }, a_attr: {"class": "non-terminal"}
+                                }, "last", function () {
+                                });
+                                num++;
 
-                            //$("#lissSyntax").jstree("open_node", $("#" + data.node.id));
+                                //$("#lissSyntax").jstree("open_node", $("#" + data.node.id));
+                            }
                         }
                     }
+                } else {
+                    items = {
+                        "delete": {
+                            "label": "Delete Rule",
+                            "action": function () {
+                                $("#lissSyntax").jstree(this).delete_node(node.children);
+
+                                //Node : single_expression
+                                $('#lissSyntax').jstree().create_node(node, {
+                                    "id": "single_expression" + num, "text": "single_expression",
+                                    state: {
+                                        opened: false,  // is the node open
+                                        disabled: false,  // is the node disabled
+                                    }, a_attr: {"class": "non-terminal"}
+                                }, "last", function () {
+                                });
+                                num++;
+                            }
+                        }
+                    };
                 }
-            }else{
+            }else if(patternElemArray.test(node.parent)){
+                //to complete
+
+
+                
+            }
+        }else if(patternSingleExpression.test(node.id)){
+
+            var nodeParent = $("#lissSyntax").jstree(this).get_node(node.parent);
+            var positionNodeInParent = function(nodeParent,node){
+                var res=-1;
+                for(var i=0; i < nodeParent.children.length;i++){
+                    if(nodeParent.children[i]===node.id){res=i;}
+                }
+                return res;
+            };
+            var position = positionNodeInParent(nodeParent,node);
+
+            if(nodeParent.children.length===1) {
                 items = {
                     "delete": {
                         "label": "Delete Rule",
                         "action": function () {
                             $("#lissSyntax").jstree(this).delete_node(node.children);
-
-                            //Node : single_expression
-                            $('#lissSyntax').jstree().create_node(node, {
-                                "id": "single_expression"+ num, "text": "single_expression",
-                                state: {
-                                    opened: false,  // is the node open
-                                    disabled: false,  // is the node disabled
-                                }, a_attr: {"class": "non-terminal"}
-                            }, "last", function () {
-                            });
-                            num++;
                         }
                     }
                 };
-            }
-        }else if(patternSingleExpression.test(node.id)){
-            items = {
-                "delete": {
-                    "label": "Delete Rule",
-                    "action": function () {
-                        $("#lissSyntax").jstree(this).delete_node(node.children);
+            }else if( nodeParent.children.length>1 && position >= 2 && position!= -1){
+                items = {
+                    "delete": {
+                        "label": "Delete Rule",
+                        "action": function () {
+                            $("#lissSyntax").jstree(this).delete_node(nodeParent.children[position]);
+                            $("#lissSyntax").jstree(this).delete_node(nodeParent.children[position - 1]);
+                        }
                     }
                 }
-            };
+            }
         }else if(patternRelOp.test(node.id)){
             if(node.children.length < 1){
                 items ={
@@ -1776,11 +1807,33 @@
                 };
             }
         }else if(patternTerm.test(node.id)){
-            items ={
-                "delete": {
-                    "label": "Delete Rule",
-                    "action": function () {
-                        $("#lissSyntax").jstree(this).delete_node(node.children);
+            var nodeParent = $("#lissSyntax").jstree(this).get_node(node.parent);
+            var positionNodeInParent = function(nodeParent,node){
+                var res=-1;
+                for(var i=0; i < nodeParent.children.length;i++){
+                    if(nodeParent.children[i]===node.id){res=i;}
+                }
+                return res;
+            };
+            var position = positionNodeInParent(nodeParent,node);
+
+            if(nodeParent.children.length===1) {
+                items = {
+                    "delete": {
+                        "label": "Delete Rule",
+                        "action": function () {
+                            $("#lissSyntax").jstree(this).delete_node(node.children);
+                        }
+                    }
+                };
+            }else if( nodeParent.children.length>1 && position >= 2 && position!= -1){
+                items = {
+                    "delete": {
+                        "label": "Delete Rule",
+                        "action": function () {
+                            $("#lissSyntax").jstree(this).delete_node(nodeParent.children[position]);
+                            $("#lissSyntax").jstree(this).delete_node(nodeParent.children[position - 1]);
+                        }
                     }
                 }
             };
@@ -1950,7 +2003,36 @@
                 };
             }
         }else if(patternFactor.test(node.id)){
+            var nodeParent = $("#lissSyntax").jstree(this).get_node(node.parent);
+            var positionNodeInParent = function(nodeParent,node){
+                var res=-1;
+                for(var i=0; i < nodeParent.children.length;i++){
+                    if(nodeParent.children[i]===node.id){res=i;}
+                }
+                return res;
+            };
+            var position = positionNodeInParent(nodeParent,node);
 
+            if(nodeParent.children.length===1) {
+                items = {
+                    "delete": {
+                        "label": "Delete Rule",
+                        "action": function () {
+                            $("#lissSyntax").jstree(this).delete_node(node.children);
+                        }
+                    }
+                };
+            }else if( nodeParent.children.length>1 && position >= 2 && position!= -1){
+                items = {
+                    "delete": {
+                        "label": "Delete Rule",
+                        "action": function () {
+                            $("#lissSyntax").jstree(this).delete_node(nodeParent.children[position]);
+                            $("#lissSyntax").jstree(this).delete_node(nodeParent.children[position - 1]);
+                        }
+                    }
+                }
+            }
         }else if(patternMulOp.test(node.id)){
             if(node.children.length < 1){
                 items ={
@@ -2713,6 +2795,10 @@
                     data.instance.show_contextmenu(data.node)
                 }, 100);
             }else if(patternMulOp.test(data.node.id)){
+                setTimeout(function () {
+                    data.instance.show_contextmenu(data.node)
+                }, 100);
+            }else if(patternFactor.test(data.node.id)){
                 setTimeout(function () {
                     data.instance.show_contextmenu(data.node)
                 }, 100);
