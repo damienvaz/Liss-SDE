@@ -304,6 +304,14 @@
     var patternSubPrgArgs = /^sub_prg_args[0-9]+$/;
     var patternArgs = /^args[0-9]+$/;
     var patternExpressions = /^expressions[0-9]+$/;
+    var patternSpecialFunctions = /^special_functions[0-9]+$/;
+    var patternTailFunction = /^tail_function[0-9]+$/;
+    var patternHeadFunction = /^head_function[0-9]+$/;
+    var patternConsFunction = /^cons_function[0-9]+$/;
+    var patternMemberFunction = /^member_function[0-9]+$/;
+    var patternIsEmptyFunction = /^is_empty_function[0-9]+$/;
+    var patternLengthFunction = /^length_function[0-9]+$/;
+    var patternDeleteFunction = /^delete_function[0-9]+$/;
     /*********LEXER*********/
     var patternInt = /^int[0-9]+$/;
     var patternIdentifier = /^identifier[0-9]+$/;
@@ -2876,6 +2884,151 @@
                     }
                 };
             }
+        }else if(patternSpecialFunctions.test(node.id)){
+            if(node.children.length < 1){
+                items = {
+                    "add_tail": {
+                        "label": "Add Tail_Function",
+                        "action": function () {
+                            //Node : Tail_Function
+                            $('#lissSyntax').jstree().create_node(node, {
+                                "id": "tail_function"+num, "text": "tail_function",
+                                state: {
+                                    opened: false,  // is the node open
+                                    disabled: false,  // is the node disabled
+                                }, a_attr: {"class": "non-terminal"}
+                            }, "last", function () {
+                            });
+                            num++;
+
+                            $("#lissSyntax").jstree("open_node", $("#" +node.id));
+                        }
+                    },
+                    "add_head": {
+                        "label": "Add Head_Function",
+                        "action": function () {
+                            //Node : Head_Function
+                            $('#lissSyntax').jstree().create_node(node, {
+                                "id": "head_function"+num, "text": "head_function",
+                                state: {
+                                    opened: false,  // is the node open
+                                    disabled: false,  // is the node disabled
+                                }, a_attr: {"class": "non-terminal"}
+                            }, "last", function () {
+                            });
+                            num++;
+
+                            $("#lissSyntax").jstree("open_node", $("#" +node.id));
+                        }
+                    },
+                    "add_cons": {
+                        "label": "Add Cons_Function",
+                        "action": function () {
+                            //Node : Cons_Function
+                            $('#lissSyntax').jstree().create_node(node, {
+                                "id": "cons_function"+num, "text": "cons_function",
+                                state: {
+                                    opened: false,  // is the node open
+                                    disabled: false,  // is the node disabled
+                                }, a_attr: {"class": "non-terminal"}
+                            }, "last", function () {
+                            });
+                            num++;
+
+                            $("#lissSyntax").jstree("open_node", $("#" +node.id));
+                        }
+                    },
+                    "add_member": {
+                        "label": "Add Member_Function",
+                        "action": function () {
+                            //Node : member_Function
+                            $('#lissSyntax').jstree().create_node(node, {
+                                "id": "member_function"+num, "text": "member_function",
+                                state: {
+                                    opened: false,  // is the node open
+                                    disabled: false,  // is the node disabled
+                                }, a_attr: {"class": "non-terminal"}
+                            }, "last", function () {
+                            });
+                            num++;
+
+                            $("#lissSyntax").jstree("open_node", $("#" +node.id));
+                        }
+                    },
+                    "add_is_empty": {
+                        "label": "Add Is_Empty_Function",
+                        "action": function () {
+                            //Node : Is_Empty_Function
+                            $('#lissSyntax').jstree().create_node(node, {
+                                "id": "is_empty_function"+num, "text": "is_empty_function",
+                                state: {
+                                    opened: false,  // is the node open
+                                    disabled: false,  // is the node disabled
+                                }, a_attr: {"class": "non-terminal"}
+                            }, "last", function () {
+                            });
+                            num++;
+
+                            $("#lissSyntax").jstree("open_node", $("#" +node.id));
+                        }
+                    },
+                    "add_length": {
+                        "label": "Add Length_Function",
+                        "action": function () {
+                            //Node : Length_Function
+                            $('#lissSyntax').jstree().create_node(node, {
+                                "id": "length_function"+num, "text": "length_function",
+                                state: {
+                                    opened: false,  // is the node open
+                                    disabled: false,  // is the node disabled
+                                }, a_attr: {"class": "non-terminal"}
+                            }, "last", function () {
+                            });
+                            num++;
+
+                            $("#lissSyntax").jstree("open_node", $("#" +node.id));
+                        }
+                    },
+                    "add_delete": {
+                        "label": "Add Delete_Function",
+                        "action": function () {
+                            //Node : Delete_Function
+                            $('#lissSyntax').jstree().create_node(node, {
+                                "id": "delete_function"+num, "text": "delete_function",
+                                state: {
+                                    opened: false,  // is the node open
+                                    disabled: false,  // is the node disabled
+                                }, a_attr: {"class": "non-terminal"}
+                            }, "last", function () {
+                            });
+                            num++;
+
+                            $("#lissSyntax").jstree("open_node", $("#" +node.id));
+                        }
+                    }
+                };
+            }else{
+                items = {
+                    "delete": {
+                        "label": "Delete Rule",
+                        "action": function () {
+                            $("#lissSyntax").jstree(this).delete_node(node.children);
+                        }
+                    }
+                };
+            }
+        }else if(patternTailFunction.test(node.id) || patternHeadFunction.test(node.id) ||
+                patternConsFunction.test(node.id) || patternMemberFunction.test(node.id) ||
+                patternIsEmptyFunction.test(node.id) || patternLengthFunction.test(node.id) ||
+                patternDeleteFunction.test(node.id)){
+            items = {
+                "delete": {
+                    "label": "Delete Rule",
+                    "action": function () {
+                        $("#lissSyntax").jstree(this).delete_node(node.children);
+                    }
+                }
+            };
         }
         return items;
     }
@@ -3718,6 +3871,440 @@
                 setTimeout(function () {
                     data.instance.show_contextmenu(data.node)
                 }, 100);
+            }else if(patternSpecialFunctions.test(data.node.id)){
+                setTimeout(function () {
+                    data.instance.show_contextmenu(data.node)
+                }, 100);
+            }else if(patternTailFunction.test(data.node.id)){
+                if(data.node.children.length < 1){
+                    //Node : tail
+                    $('#lissSyntax').jstree().create_node(data.node, {
+                        "id": "tail" + num, "text": "tail",
+                        state: {
+                            opened: false,  // is the node open
+                            disabled: true,  // is the node disabled
+                        }, a_attr: {"class": "terminal", "program" : "tail"}
+                    }, "last", function () {
+                    });
+                    num++;
+
+                    //Node : (
+                    $('#lissSyntax').jstree().create_node(data.node, {
+                        "id": "parenthesis_open" + num, "text": "(",
+                        state: {
+                            opened: false,  // is the node open
+                            disabled: true,  // is the node disabled
+                        }, a_attr: {"class": "terminal", "program" : "("}
+                    }, "last", function () {
+                    });
+                    num++;
+
+                    //Node : expression
+                    $('#lissSyntax').jstree().create_node(data.node, {
+                        "id": "expression" + num, "text": "expression",
+                        state: {
+                            opened: false,  // is the node open
+                            disabled: false,  // is the node disabled
+                        }, a_attr: {"class": "non-terminal"}
+                    }, "last", function () {
+                    });
+                    num++;
+
+                    //Node : )
+                    $('#lissSyntax').jstree().create_node(data.node, {
+                        "id": "parenthesis_close" + num, "text": ")",
+                        state: {
+                            opened: false,  // is the node open
+                            disabled: true,  // is the node disabled
+                        }, a_attr: {"class": "terminal", "program" : ")"}
+                    }, "last", function () {
+                    });
+                    num++;
+
+                    $("#lissSyntax").jstree("open_node", $("#" + data.node.id));
+                }else{
+                    setTimeout(function () {
+                        data.instance.show_contextmenu(data.node)
+                    }, 100);
+                }
+            }else if(patternHeadFunction.test(data.node.id)){
+                if(data.node.children.length < 1){
+                    //Node : head
+                    $('#lissSyntax').jstree().create_node(data.node, {
+                        "id": "head" + num, "text": "head",
+                        state: {
+                            opened: false,  // is the node open
+                            disabled: true,  // is the node disabled
+                        }, a_attr: {"class": "terminal", "program" : "head"}
+                    }, "last", function () {
+                    });
+                    num++;
+
+                    //Node : (
+                    $('#lissSyntax').jstree().create_node(data.node, {
+                        "id": "parenthesis_open" + num, "text": "(",
+                        state: {
+                            opened: false,  // is the node open
+                            disabled: true,  // is the node disabled
+                        }, a_attr: {"class": "terminal", "program" : "("}
+                    }, "last", function () {
+                    });
+                    num++;
+
+                    //Node : expression
+                    $('#lissSyntax').jstree().create_node(data.node, {
+                        "id": "expression" + num, "text": "expression",
+                        state: {
+                            opened: false,  // is the node open
+                            disabled: false,  // is the node disabled
+                        }, a_attr: {"class": "non-terminal"}
+                    }, "last", function () {
+                    });
+                    num++;
+
+                    //Node : )
+                    $('#lissSyntax').jstree().create_node(data.node, {
+                        "id": "parenthesis_close" + num, "text": ")",
+                        state: {
+                            opened: false,  // is the node open
+                            disabled: true,  // is the node disabled
+                        }, a_attr: {"class": "terminal", "program" : ")"}
+                    }, "last", function () {
+                    });
+                    num++;
+
+                    $("#lissSyntax").jstree("open_node", $("#" + data.node.id));
+                }else{
+                    setTimeout(function () {
+                        data.instance.show_contextmenu(data.node)
+                    }, 100);
+                }
+            }else if(patternConsFunction.test(data.node.id)){
+                if(data.node.children.length < 1){
+                    //Node : cons
+                    $('#lissSyntax').jstree().create_node(data.node, {
+                        "id": "cons" + num, "text": "cons",
+                        state: {
+                            opened: false,  // is the node open
+                            disabled: true,  // is the node disabled
+                        }, a_attr: {"class": "terminal", "program" : "cons"}
+                    }, "last", function () {
+                    });
+                    num++;
+
+                    //Node : (
+                    $('#lissSyntax').jstree().create_node(data.node, {
+                        "id": "parenthesis_open" + num, "text": "(",
+                        state: {
+                            opened: false,  // is the node open
+                            disabled: true,  // is the node disabled
+                        }, a_attr: {"class": "terminal", "program" : "("}
+                    }, "last", function () {
+                    });
+                    num++;
+
+                    //Node : expression
+                    $('#lissSyntax').jstree().create_node(data.node, {
+                        "id": "expression" + num, "text": "expression",
+                        state: {
+                            opened: false,  // is the node open
+                            disabled: false,  // is the node disabled
+                        }, a_attr: {"class": "non-terminal"}
+                    }, "last", function () {
+                    });
+                    num++;
+
+                    //Node : ,
+                    $('#lissSyntax').jstree().create_node(data.node, {
+                        "id": "comma" + num, "text": ",",
+                        state: {
+                            opened: false,  // is the node open
+                            disabled: true,  // is the node disabled
+                        }, a_attr: {"class": "terminal", "program" : ","}
+                    }, "last", function () {
+                    });
+                    num++;
+
+                    //Node : expression
+                    $('#lissSyntax').jstree().create_node(data.node, {
+                        "id": "expression" + num, "text": "expression",
+                        state: {
+                            opened: false,  // is the node open
+                            disabled: false,  // is the node disabled
+                        }, a_attr: {"class": "non-terminal"}
+                    }, "last", function () {
+                    });
+                    num++;
+
+                    //Node : )
+                    $('#lissSyntax').jstree().create_node(data.node, {
+                        "id": "parenthesis_close" + num, "text": ")",
+                        state: {
+                            opened: false,  // is the node open
+                            disabled: true,  // is the node disabled
+                        }, a_attr: {"class": "terminal", "program" : ")"}
+                    }, "last", function () {
+                    });
+                    num++;
+
+                    $("#lissSyntax").jstree("open_node", $("#" + data.node.id));
+                }else{
+                    setTimeout(function () {
+                        data.instance.show_contextmenu(data.node)
+                    }, 100);
+                }
+            }else if(patternMemberFunction.test(data.node.id)){
+                if(data.node.children.length < 1){
+                    //Node : is_member
+                    $('#lissSyntax').jstree().create_node(data.node, {
+                        "id": "is_member" + num, "text": "isMember",
+                        state: {
+                            opened: false,  // is the node open
+                            disabled: true,  // is the node disabled
+                        }, a_attr: {"class": "terminal", "program" : "isMember"}
+                    }, "last", function () {
+                    });
+                    num++;
+
+                    //Node : (
+                    $('#lissSyntax').jstree().create_node(data.node, {
+                        "id": "parenthesis_open" + num, "text": "(",
+                        state: {
+                            opened: false,  // is the node open
+                            disabled: true,  // is the node disabled
+                        }, a_attr: {"class": "terminal", "program" : "("}
+                    }, "last", function () {
+                    });
+                    num++;
+
+                    //Node : expression
+                    $('#lissSyntax').jstree().create_node(data.node, {
+                        "id": "expression" + num, "text": "expression",
+                        state: {
+                            opened: false,  // is the node open
+                            disabled: false,  // is the node disabled
+                        }, a_attr: {"class": "non-terminal"}
+                    }, "last", function () {
+                    });
+                    num++;
+
+                    //Node : ,
+                    $('#lissSyntax').jstree().create_node(data.node, {
+                        "id": "comma" + num, "text": ",",
+                        state: {
+                            opened: false,  // is the node open
+                            disabled: true,  // is the node disabled
+                        }, a_attr: {"class": "terminal", "program" : ","}
+                    }, "last", function () {
+                    });
+                    num++;
+
+                    //Node : identifier
+                    $('#lissSyntax').jstree().create_node(data.node, {
+                        "id": "identifier"+num, "text": "IDENTIFIER",
+                        state: {
+                            opened: false,  // is the node open
+                            disabled: false,  // is the node disabled
+                        }, a_attr: {"class": "terminal edit", "program": "", "expressionregularrule": "ID"}
+                    }, "last", function () {
+                    });
+                    num++;
+
+                    //Node : )
+                    $('#lissSyntax').jstree().create_node(data.node, {
+                        "id": "parenthesis_close" + num, "text": ")",
+                        state: {
+                            opened: false,  // is the node open
+                            disabled: true,  // is the node disabled
+                        }, a_attr: {"class": "terminal", "program" : ")"}
+                    }, "last", function () {
+                    });
+                    num++;
+
+                    $("#lissSyntax").jstree("open_node", $("#" + data.node.id));
+                }else{
+                    setTimeout(function () {
+                        data.instance.show_contextmenu(data.node)
+                    }, 100);
+                }
+            }else if(patternIsEmptyFunction.test(data.node.id)){
+                if(data.node.children.length < 1){
+                    //Node : is_empty
+                    $('#lissSyntax').jstree().create_node(data.node, {
+                        "id": "is_empty" + num, "text": "isEmpty",
+                        state: {
+                            opened: false,  // is the node open
+                            disabled: true,  // is the node disabled
+                        }, a_attr: {"class": "terminal", "program" : "isEmpty"}
+                    }, "last", function () {
+                    });
+                    num++;
+
+                    //Node : (
+                    $('#lissSyntax').jstree().create_node(data.node, {
+                        "id": "parenthesis_open" + num, "text": "(",
+                        state: {
+                            opened: false,  // is the node open
+                            disabled: true,  // is the node disabled
+                        }, a_attr: {"class": "terminal", "program" : "("}
+                    }, "last", function () {
+                    });
+                    num++;
+
+                    //Node : expression
+                    $('#lissSyntax').jstree().create_node(data.node, {
+                        "id": "expression" + num, "text": "expression",
+                        state: {
+                            opened: false,  // is the node open
+                            disabled: false,  // is the node disabled
+                        }, a_attr: {"class": "non-terminal"}
+                    }, "last", function () {
+                    });
+                    num++;
+
+                    //Node : )
+                    $('#lissSyntax').jstree().create_node(data.node, {
+                        "id": "parenthesis_close" + num, "text": ")",
+                        state: {
+                            opened: false,  // is the node open
+                            disabled: true,  // is the node disabled
+                        }, a_attr: {"class": "terminal", "program" : ")"}
+                    }, "last", function () {
+                    });
+                    num++;
+
+                    $("#lissSyntax").jstree("open_node", $("#" + data.node.id));
+                }else{
+                    setTimeout(function () {
+                        data.instance.show_contextmenu(data.node)
+                    }, 100);
+                }
+            }else if(patternLengthFunction.test(data.node.id)){
+                if(data.node.children.length < 1){
+                    //Node : length
+                    $('#lissSyntax').jstree().create_node(data.node, {
+                        "id": "length" + num, "text": "length",
+                        state: {
+                            opened: false,  // is the node open
+                            disabled: true,  // is the node disabled
+                        }, a_attr: {"class": "terminal", "program" : "length"}
+                    }, "last", function () {
+                    });
+                    num++;
+
+                    //Node : (
+                    $('#lissSyntax').jstree().create_node(data.node, {
+                        "id": "parenthesis_open" + num, "text": "(",
+                        state: {
+                            opened: false,  // is the node open
+                            disabled: true,  // is the node disabled
+                        }, a_attr: {"class": "terminal", "program" : "("}
+                    }, "last", function () {
+                    });
+                    num++;
+
+                    //Node : expression
+                    $('#lissSyntax').jstree().create_node(data.node, {
+                        "id": "expression" + num, "text": "expression",
+                        state: {
+                            opened: false,  // is the node open
+                            disabled: false,  // is the node disabled
+                        }, a_attr: {"class": "non-terminal"}
+                    }, "last", function () {
+                    });
+                    num++;
+
+                    //Node : )
+                    $('#lissSyntax').jstree().create_node(data.node, {
+                        "id": "parenthesis_close" + num, "text": ")",
+                        state: {
+                            opened: false,  // is the node open
+                            disabled: true,  // is the node disabled
+                        }, a_attr: {"class": "terminal", "program" : ")"}
+                    }, "last", function () {
+                    });
+                    num++;
+
+                    $("#lissSyntax").jstree("open_node", $("#" + data.node.id));
+                }else{
+                    setTimeout(function () {
+                        data.instance.show_contextmenu(data.node)
+                    }, 100);
+                }
+            }else if(patternDeleteFunction.test(data.node.id)){
+                if(data.node.children.length < 1){
+                    //Node : delete
+                    $('#lissSyntax').jstree().create_node(data.node, {
+                        "id": "delete" + num, "text": "del",
+                        state: {
+                            opened: false,  // is the node open
+                            disabled: true,  // is the node disabled
+                        }, a_attr: {"class": "terminal", "program" : "del"}
+                    }, "last", function () {
+                    });
+                    num++;
+
+                    //Node : (
+                    $('#lissSyntax').jstree().create_node(data.node, {
+                        "id": "parenthesis_open" + num, "text": "(",
+                        state: {
+                            opened: false,  // is the node open
+                            disabled: true,  // is the node disabled
+                        }, a_attr: {"class": "terminal", "program" : "("}
+                    }, "last", function () {
+                    });
+                    num++;
+
+                    //Node : expression
+                    $('#lissSyntax').jstree().create_node(data.node, {
+                        "id": "expression" + num, "text": "expression",
+                        state: {
+                            opened: false,  // is the node open
+                            disabled: false,  // is the node disabled
+                        }, a_attr: {"class": "non-terminal"}
+                    }, "last", function () {
+                    });
+                    num++;
+
+                    //Node : ,
+                    $('#lissSyntax').jstree().create_node(data.node, {
+                        "id": "comma" + num, "text": ",",
+                        state: {
+                            opened: false,  // is the node open
+                            disabled: true,  // is the node disabled
+                        }, a_attr: {"class": "terminal", "program" : ","}
+                    }, "last", function () {
+                    });
+                    num++;
+
+                    //Node : expression
+                    $('#lissSyntax').jstree().create_node(data.node, {
+                        "id": "expression" + num, "text": "expression",
+                        state: {
+                            opened: false,  // is the node open
+                            disabled: false,  // is the node disabled
+                        }, a_attr: {"class": "non-terminal"}
+                    }, "last", function () {
+                    });
+                    num++;
+
+                    //Node : )
+                    $('#lissSyntax').jstree().create_node(data.node, {
+                        "id": "parenthesis_close" + num, "text": ")",
+                        state: {
+                            opened: false,  // is the node open
+                            disabled: true,  // is the node disabled
+                        }, a_attr: {"class": "terminal", "program" : ")"}
+                    }, "last", function () {
+                    });
+                    num++;
+
+                    $("#lissSyntax").jstree("open_node", $("#" + data.node.id));
+                }else{
+                    setTimeout(function () {
+                        data.instance.show_contextmenu(data.node)
+                    }, 100);
+                }
             }else if(patternSubprogramDefinition.test(data.node.id)){
 
             }
