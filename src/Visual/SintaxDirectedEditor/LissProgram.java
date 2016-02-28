@@ -14,13 +14,11 @@ public class LissProgram {
     private CodeArea textArea;
     private String jsonLiss;
     private int num;
-//    private int tab;
 
     public LissProgram(CodeArea t){
         this.textArea = t;
         this.jsonLiss=null;
         this.num = 0;
-//        this.tab = 0;
     }
     public void setTextArea(CodeArea t){
         this.textArea = t;
@@ -57,7 +55,6 @@ public class LissProgram {
 
     public void setStateJsonLiss(int num){//}, int tab){
         this.num = num;
-//        this.tab = tab;
     }
 
     public int getNum() {
@@ -68,17 +65,8 @@ public class LissProgram {
         this.num = num;
     }
 
-//    public int getTab() {
-//        return tab;
-//    }
-
-//    public void setTab(int tab) {
-//        this.tab = tab;
-//    }
-
     public void resetStateNew(){
         this.jsonLiss = null;
-//        this.tab = 0;
         this.num = 0;
     }
 

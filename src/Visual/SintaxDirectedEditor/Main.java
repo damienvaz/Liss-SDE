@@ -147,7 +147,6 @@ public class Main {
                             List<String> collect = Files.lines(build.toPath()).collect(Collectors.toList());
                             if(collect.size()==2){
                                 int num = Integer.valueOf(collect.remove(0));
-//                                int tab = Integer.valueOf(collect.remove(0));
                                 for (String s : collect) {
                                     res+=s;
                                 }
