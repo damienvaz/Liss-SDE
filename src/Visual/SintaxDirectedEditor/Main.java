@@ -145,13 +145,13 @@ public class Main {
                         try{
                             String res = "";
                             List<String> collect = Files.lines(build.toPath()).collect(Collectors.toList());
-                            if(collect.size()==3){
+                            if(collect.size()==2){
                                 int num = Integer.valueOf(collect.remove(0));
-                                int tab = Integer.valueOf(collect.remove(0));
+//                                int tab = Integer.valueOf(collect.remove(0));
                                 for (String s : collect) {
                                     res+=s;
                                 }
-                                l.setStateJsonLiss(num,tab);
+                                l.setStateJsonLiss(num);//,tab);
                                 we.executeScript("getStateJson()");
                                 l.setJsonLiss(res);
                                 //System.out.println(l.getJSON());
