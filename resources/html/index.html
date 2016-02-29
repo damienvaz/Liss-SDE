@@ -112,9 +112,9 @@
                                 patternSubprogramDefinition.test(node.id)) {
                             res += produceTabs(node.a_attr.tab + 1) + "undefined\n";
                         }else if(patternReturnSubProgram.test(node.id)){
-                            res += produceTabs(node.a_attr.tab) + "undefined";
+                            res += produceTabs(node.a_attr.tab) + "undefined\n";
                         }else if(patternFBody.test(node.id)){
-                            res+="undefined\n";
+                            res+=" undefined\n";
                         }
                     }
                     //Others Non-terminal which i want to display "undefined"
@@ -128,8 +128,8 @@
                             //If our non-terminal isn't in the first position
                             if(position>0){
                                 node = $("#lissSyntax").jstree(this).get_node(nodeParent.children[position-1]); //<- might be the problem here houston
-                                liss.debugger("CLASS:");
-                                liss.debugger(node.a_attr.class);
+                                liss.debugger("NODE_PREVIOUS: "+node.id+" POSITION: "+position+" CHILDREN_lENGTH: "+node.children.length);
+                                liss.debugger("CLASS: "+node.a_attr.class);
                                 arrayClassName = node.a_attr.class.split(" "); //problem here houston
 
                                 //Then test the previous node and check if it is a terminal
@@ -3856,7 +3856,7 @@
                                 state       : {
                                     opened    : false,  // is the node open
                                     disabled  : true,  // is the node disabled
-                                }, a_attr : { "class" : "terminal","program":";"}
+                                }, a_attr : { "class" : "terminal","program":";\n"}
                             }, "last", function(){});
                             num++;
 
@@ -5440,7 +5440,7 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: true,  // is the node disabled
-                    }, a_attr: {"class": "terminal", "program": "\n"+produceTabs(data.node.a_attr.tab)+"}\n"}
+                    }, a_attr: {"class": "terminal", "program": produceTabs(data.node.a_attr.tab)+"}\n"}
                 }, "last", function () {
                 });
                 num++;
