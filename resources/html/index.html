@@ -53,11 +53,61 @@
             $('#lissSyntax').jstree(true).settings.core.data = json;
             $('#lissSyntax').jstree(true).refresh();
             //$('#lissSyntax').jstree(true).open_all($('#lissSyntax'));
-            liss.setText(getProgramLiss());
+            liss.setText(getProgramLissBeta());
         }
     }
 
-    function getProgramLiss(){
+    function getProgramLissBeta(){
+        var res="";
+        var jsonObj = $('#lissSyntax').jstree(true).get_json('#', {flat:true});
+        liss.debugger("[");
+        for(var i=0; i<jsonObj.length; i++) {
+            var node = $("#lissSyntax").jstree(this).get_node(jsonObj[i].id);
+            var arrayClassName = jsonObj[i].a_attr.class.split(" ");
+            liss.debugger("ArrayClassName [SIZE]:"+arrayClassName.length);
+            var tab = jsonObj[i].a_attr.tab;
+            if (arrayClassName[0] === "terminal") {
+                liss.debugger("NODE_T: "+node.id+" TAB: "+node.a_attr.tab);
+                if (arrayClassName.length >= 2 && arrayClassName.length <= 3 && arrayClassName[1] === "edit") {
+                    liss.debugger("NODE_T1: "+node.id+" TAB: "+node.a_attr.tab);
+                    var typeOfTerminal = jsonObj[i].a_attr.expressionregularrule;
+                    if (typeOfTerminal === "ID" || typeOfTerminal === "NBR") {
+                        //var tab = jsonObj[i].a_attr.tab;
+                        if (arrayClassName.length === 3 && arrayClassName[2] === "correct") {
+                            if(tab === 0) {
+                                res += jsonObj[i].text;
+                            }else{
+                                res += produceTabs(tab) + jsonObj[i].text;
+                            }
+                        } else {
+                            if(tab === 0) {
+                                res += jsonObj[i].a_attr.program;
+                            }else{
+                                res += produceTabs(tab) + jsonObj[i].a_attr.program;
+                            }
+                        }
+                    }
+                }else {
+                    if(tab === 0) {
+                        res += jsonObj[i].a_attr.program;
+                    }else{
+                        res += produceTabs(tab) + jsonObj[i].a_attr.program;
+                    }
+                }
+            }else{
+                //Means that it is a non-terminal
+                //liss.debugger("NODE_NT: "+node.id+" POSITION: "+position+" CHILDREN_lENGTH: "+node.children.length);
+                liss.debugger("NODE_NT: "+node.id+" TAB: "+node.a_attr.tab);
+                if(node.children.length === 0) {
+                    res += jsonObj[i].a_attr.program;
+                }
+            }
+        }
+        liss.debugger("]");
+        return res;
+    }
+
+    /*function getProgramLiss(){
         var res="";
         var jsonObj = $('#lissSyntax').jstree(true).get_json('#', {flat:true});
         liss.debugger("[");
@@ -102,7 +152,9 @@
                 liss.debugger("NODE_NT: "+node.id+" POSITION: "+position+" CHILDREN_lENGTH: "+node.children.length);
 
                 if (nonTerminalSpecialBehaviorTestDisplay(node.id)) {
-                    if (node.children.length === 0) {
+                    liss.debugger("NODE: "+node.id+",TAB: "+node.a_attr.tab+"WOOT2");
+                    if(node.children.length === 0) {
+                        liss.debugger("NODE: "+node.id+",TAB: "+node.a_attr.tab+"WOOT1");
                         if (patternVar.test(node.id)) {
                             if (position === 0) {
                                 res += produceTabs(node.a_attr.tab) + "undefined";
@@ -116,12 +168,20 @@
                                 patternStatement.test(node.id)||patternReturnSubProgram.test(node.id)||
                                 patternConditionalStatement.test(node.id)||patternIterativeStatement.test(node.id)) {
                             res += produceTabs(node.a_attr.tab) + "undefined\n";
-                        }/*else if(patternReturnSubProgram.test(node.id)){
-                            res += produceTabs(node.a_attr.tab) + "undefined\n";
-                        }*/else if(patternFBody.test(node.id)){
+                        }//else if(patternReturnSubProgram.test(node.id)){
+                         //   res += produceTabs(node.a_attr.tab) + "undefined\n";
+                        //}
+                        else if(patternFBody.test(node.id)){
                             res+=" undefined\n";
-                        }else{
+                        }else if(patternAssignment.test(node.parent)){
+                            //if(patternVariable.test(node.id)) {
+                                res += produceTabs(node.a_attr.tab) + "undefined";
+                            //}
+                        }else if(patternMultipleStatement.test(node.parent) ||
+                        patternStatement.test(node.parent)){
                             res += produceTabs(node.a_attr.tab) + "undefined";
+                        }else{
+                            res += "undefined";
                         }
                     }
                     //Others Non-terminal which i want to display "undefined"
@@ -160,10 +220,10 @@
         }
         liss.debugger("]\n");
         return res;
-    }
+    }*/
 
     $('#lissSyntax').on('mouseenter',function(){ //event optional : click
-        var res = getProgramLiss();
+        var res = getProgramLissBeta();
         liss.setText(res);
     });
 
@@ -277,7 +337,7 @@
             },
             "check_callback": true,
             "data": [{
-                "id": "liss", "parent": "#", "text": "liss", a_attr: {"class": "non-terminal", "tab":0}
+                "id": "liss", "parent": "#", "text": "liss", a_attr: {"class": "non-terminal", "tab":0,"program":""}
             }]
         },
         "plugins": ["contextmenu"],
@@ -340,6 +400,9 @@
             case patternCatStatement.test(str):
                 res = true;
                 break;
+            case patternVariable.test(str):
+                res = true;
+                break;
             default:
                 break;
         }
@@ -395,7 +458,7 @@
             case patternInicVar.test(str):
                 res = true;
                 break;
-            case patternConstant.test(str):
+            case patternValue.test(str):
                 res = true;
                 break;
             case patternArrayDefinition.test(str):
@@ -449,7 +512,7 @@
             case patternElemArray.test(str):
                 res = true;
                 break;
-            case patternDesignator.test(str):
+            case patternVariable.test(str):
                 res = true;
                 break;
             case patternFunctionCall.test(str):
@@ -506,7 +569,7 @@
             case patternTypeReturnSubProgram.test(str):
                 res = true;
                 break;
-            case patternAssignment.test(str):
+            /*case patternAssignment.test(str):
                 res = true;
                 break;
             case patternWriteStatement.test(str):
@@ -529,7 +592,7 @@
                 break;
             case patternCatStatement.test(str):
                 res = true;
-                break;
+                break;*/
             default:
                 break;
         }
@@ -711,6 +774,8 @@
     }*/
 
     //Regular expression for some node id !!!
+    var patternBody = /^body$/;
+    var patternName = /^name[0-9]+$/;
     var patternDeclarations=/^declarations[0-9]+$/;
     var patternStatements=/^statements[0-9]+$/;
     var patternVariablesDeclarations = /^variables_declarations[0-9]+$/;
@@ -738,7 +803,7 @@
     var patternVar = /^var[0-9]+$/;
     var patternValueVar=/^value_var[0-9]+$/;
     var patternInicVar = /^inic_var[0-9]+$/;
-    var patternConstant = /^constant[0-9]+$/;
+    var patternValue = /^value[0-9]+$/;
     var patternArrayDefinition = /^array_definition[0-9]+$/;
     var patternBracketsOpened = /^brackets_opened[0-9]+$/;
     var patternArrayInitialization = /^array_initialization[0-9]+$/;
@@ -763,7 +828,7 @@
     var patternFactors = /^factors+[0-9]+$/;
     var patternFactor = /^factor[0-9]+$/;
     var patternElemArray = /^elem_array[0-9]+$/;
-    var patternDesignator = /^designator[0-9]+$/;
+    var patternVariable = /^variable[0-9]+$/;
     var patternFunctionCall = /^function_call[0-9]+$/;
     var patternSpecialFunctions = /^special_functions[0-9]+$/;
     var patternArrayAccess = /^array_access[0-9]+$/;
@@ -810,29 +875,40 @@
                     "action" : function () {
                         $("#lissSyntax").jstree(this).delete_node(node.children);
                         //Refresh the content of TextArea
-                        liss.setText(getProgramLiss());
+                        liss.setText(getProgramLissBeta());
                     }
                 }
             };
-        }else if( node.id == "body" && node.children.length==6){
+        }else if(patternName.test(node.id)){
             items = {
                 "delete" : {
                     "label" : "Delete Rule",
                     "action" : function () {
                         $("#lissSyntax").jstree(this).delete_node(node.children);
                         //Refresh the content of TextArea
-                        liss.setText(getProgramLiss());
+                        liss.setText(getProgramLissBeta());
                     }
                 }
             };
-        }else if(patternDeclarations.test(node.id)/*node.id == "declarations"*/ && node.children.length==1){
+        }else if( patternBody.test(node.id)){
             items = {
                 "delete" : {
                     "label" : "Delete Rule",
                     "action" : function () {
                         $("#lissSyntax").jstree(this).delete_node(node.children);
                         //Refresh the content of TextArea
-                        liss.setText(getProgramLiss());
+                        liss.setText(getProgramLissBeta());
+                    }
+                }
+            };
+        }else if(patternDeclarations.test(node.id)/*node.id == "declarations"*/){
+            items = {
+                "delete" : {
+                    "label" : "Delete Rule",
+                    "action" : function () {
+                        $("#lissSyntax").jstree(this).delete_node(node.children);
+                        //Refresh the content of TextArea
+                        liss.setText(getProgramLissBeta());
                     }
                 }
             };
@@ -849,7 +925,7 @@
                                 state       : {
                                     opened    : false,  // is the node open
                                     disabled  : false,  // is the node disabled
-                                }, a_attr : { "class" : "non-terminal","tab":tab}
+                                }, a_attr : { "class" : "non-terminal", "program": produceTabs(tab)+"undefined\n","tab":tab}
                             }, "last", function(){});
 
                             num++;
@@ -865,11 +941,12 @@
                         "label" : "Add variable declaration",
                         "action" : function () {
                             //Node : variable_declaration
-                            $('#lissSyntax').jstree().create_node(node,  { "id" : "variable_declaration"+num, "text" : "variable_declaration",
+                            $('#lissSyntax').jstree().create_node(node,  {
+                                "id" : "variable_declaration"+num, "text" : "variable_declaration",
                                 state       : {
                                     opened    : false,  // is the node open
                                     disabled  : false,  // is the node disabled
-                                }, a_attr : { "class" : "non-terminal","tab":tab}
+                                }, a_attr : { "class" : "non-terminal","program":produceTabs(tab)+"undefined\n","tab":tab}
                             }, "last", function(){});
 
                             num++;
@@ -885,7 +962,7 @@
                             //liss.debugger(node.children);
                             $("#lissSyntax").jstree(this).delete_node(node.children);
                             //Refresh the content of TextArea
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                             //liss.debugger("WOOT2");
                         }
                     }
@@ -908,7 +985,7 @@
                     "action": function () {
                         $("#lissSyntax").jstree(this).delete_node(nodeParent.children[position]);
                         //$("#lissSyntax").jstree(this).delete_node(nodeParent.children[position-1]);
-                        liss.setText(getProgramLiss());
+                        liss.setText(getProgramLissBeta());
                     }
                 }
             };
@@ -927,24 +1004,25 @@
                                 state: {
                                     opened: false,  // is the node open
                                     disabled: true,  // is the node disabled
-                                }, a_attr: {"class": "terminal", "program": ", "}
+                                }, a_attr: {"class": "terminal", "program": ", ","tab":0}
                             }, "last", function () {
                             });
                             num++;
 
                             //Node : var
-                            $('#lissSyntax').jstree().create_node(node,  { "id" : "var"+num, "text" : "var",
+                            $('#lissSyntax').jstree().create_node(node,  {
+                                "id" : "var"+num, "text" : "var",
                                 state       : {
                                     opened    : false,  // is the node open
                                     disabled  : false,  // is the node disabled
-                                }, a_attr : { "class" : "non-terminal","tab":tab}
+                                }, a_attr : { "class" : "non-terminal","program":"undefined","tab":0}
                             }, "last", function(){});
 
                             num++;
 
                             //Instruction for opening the branch
                             $("#lissSyntax").jstree("open_node", $("#"+node.id));
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     }
                 };
@@ -959,7 +1037,7 @@
                                 state: {
                                     opened: false,  // is the node open
                                     disabled: true,  // is the node disabled
-                                }, a_attr: {"class": "terminal", "program": ", "}
+                                }, a_attr: {"class": "terminal", "program": ", ","tab":0}
                             }, "last", function () {
                             });
                             num++;
@@ -970,7 +1048,7 @@
                                 state: {
                                     opened: false,  // is the node open
                                     disabled: false,  // is the node disabled
-                                }, a_attr: {"class": "non-terminal","tab":tab}
+                                }, a_attr: {"class": "non-terminal","program":"undefined","tab":0}
                             }, "last", function () {
                             });
 
@@ -978,7 +1056,7 @@
 
                             //Instruction for opening the branch
                             $("#lissSyntax").jstree("open_node", $("#" + node.id));
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     },
                     "delete": {
@@ -992,7 +1070,7 @@
                                 state: {
                                     opened: false,  // is the node open
                                     disabled: false,  // is the node disabled
-                                }, a_attr: {"class": "non-terminal","tab":tab}
+                                }, a_attr: {"class": "non-terminal","program":produceTabs(tab)+"undefined","tab":tab}
                             }, "last", function () {
                             });
 
@@ -1001,7 +1079,7 @@
                             //$("#lissSyntax").jstree("open_node", $("#" + data.node.id));
 
                             //Refresh the content of TextArea
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     }
                 }
@@ -1024,7 +1102,7 @@
                         "label": "Delete Rule",
                         "action": function () {var numb
                             $("#lissSyntax").jstree(this).delete_node(node.children);
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     }
                 }
@@ -1035,13 +1113,14 @@
                         "action": function () {
                             $("#lissSyntax").jstree(this).delete_node(nodeParent.children[position]);
                             $("#lissSyntax").jstree(this).delete_node(nodeParent.children[position-1]);
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     }
                 }
             }
         }else if(patternValueVar.test(node.id)){
-            var tab = node.a_attr.tab;
+//            var tab = node.a_attr.tab;
+            var tab=0;
 
             if(node.children<1){
                 items = {
@@ -1054,14 +1133,14 @@
                                 state: {
                                     opened: false,  // is the node open
                                     disabled: true,  // is the node disabled
-                                }, a_attr: {"class": "terminal", "program": ""}
+                                }, a_attr: {"class": "terminal", "program": "","tab":0}
                             }, "last", function () {
                             });
                             num++;
 
                             //Instruction for opening the branch
                             $("#lissSyntax").jstree("open_node", $("#" + node.id));
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     },
                     "add_inic_var": {
@@ -1073,7 +1152,7 @@
                                 state: {
                                     opened: false,  // is the node open
                                     disabled: true,  // is the node disabled
-                                }, a_attr: {"class": "terminal", "program": "="}
+                                }, a_attr: {"class": "terminal", "program": "=","tab":0}
                             }, "last", function () {
                             });
                             num++;
@@ -1084,7 +1163,7 @@
                                 state: {
                                     opened: false,  // is the node open
                                     disabled: false,  // is the node disabled
-                                }, a_attr: {"class": "non-terminal","tab":tab}
+                                }, a_attr: {"class": "non-terminal","program":"undefined","tab":tab}
                             }, "last", function () {
                             });
 
@@ -1092,7 +1171,7 @@
 
                             //Instruction for opening the branch
                             $("#lissSyntax").jstree("open_node", $("#" + node.id));
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     }
                 };
@@ -1103,7 +1182,7 @@
                         "action": function () {
                             $("#lissSyntax").jstree(this).delete_node(node.children);
                             //Refresh the content of TextArea
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     }
                 }
@@ -1114,15 +1193,15 @@
             if(node.children.length<1){
                 items = {
                     "add_constant":{
-                        "label": "Add Constant",
+                        "label": "Add Value",
                         "action": function () {
                             //Node : contant
                             $('#lissSyntax').jstree().create_node(node, {
-                                "id": "constant" + num, "text": "constant",
+                                "id": "value" + num, "text": "value",
                                 state: {
                                     opened: false,  // is the node open
                                     disabled: false,  // is the node disabled
-                                }, a_attr: {"class": "non-terminal","tab":tab}
+                                }, a_attr: {"class": "non-terminal","program":"undefined", "tab":tab}
                             }, "last", function () {
                             });
                             num++;
@@ -1140,7 +1219,7 @@
                                 state: {
                                     opened: false,  // is the node open
                                     disabled: false,  // is the node disabled
-                                }, a_attr: {"class": "non-terminal","tab":tab}
+                                }, a_attr: {"class": "non-terminal","program":"undefined", "tab":tab}
                             }, "last", function () {
                             });
                             num++;
@@ -1158,7 +1237,7 @@
                                 state: {
                                     opened: false,  // is the node open
                                     disabled: false,  // is the node disabled
-                                }, a_attr: {"class": "non-terminal","tab":tab}
+                                }, a_attr: {"class": "non-terminal","program":"undefined", "tab":tab}
                             }, "last", function () {
                             });
                             num++;
@@ -1176,7 +1255,7 @@
                                 state: {
                                     opened: false,  // is the node open
                                     disabled: false,  // is the node disabled
-                                }, a_attr: {"class": "non-terminal","tab":tab}
+                                }, a_attr: {"class": "non-terminal","program":"undefined", "tab":tab}
                             }, "last", function () {
                             });
                             num++;
@@ -1193,7 +1272,7 @@
                         "action": function () {
                             $("#lissSyntax").jstree(this).delete_node(node.children);
                             //Refresh the content of TextArea
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     }
                 }
@@ -1212,14 +1291,14 @@
                                 state: {
                                     opened: false,  // is the node open
                                     disabled: true,  // is the node disabled
-                                }, a_attr: {"class": "terminal", "program": "integer"}
+                                }, a_attr: {"class": "terminal", "program": "integer","tab":tab}
                             }, "last", function () {
                             });
                             num++;
 
                             //Instruction for opening the branch
                             $("#lissSyntax").jstree("open_node", $("#" + node.id));
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     },
                     "add_boolean": {
@@ -1231,14 +1310,14 @@
                                 state: {
                                     opened: false,  // is the node open
                                     disabled: true,  // is the node disabled
-                                }, a_attr: {"class": "terminal", "program": "boolean"}
+                                }, a_attr: {"class": "terminal", "program": "boolean","tab":tab}
                             }, "last", function () {
                             });
                             num++;
 
                             //Instruction for opening the branch
                             $("#lissSyntax").jstree("open_node", $("#" + node.id));
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     },
                     "add_set": {
@@ -1250,14 +1329,14 @@
                                 state: {
                                     opened: false,  // is the node open
                                     disabled: true,  // is the node disabled
-                                }, a_attr: {"class": "terminal", "program": "set"}
+                                }, a_attr: {"class": "terminal", "program": "set","tab":tab}
                             }, "last", function () {
                             });
                             num++;
 
                             //Instruction for opening the branch
                             $("#lissSyntax").jstree("open_node", $("#" + node.id));
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     },
                     "add_sequence": {
@@ -1269,14 +1348,14 @@
                                 state: {
                                     opened: false,  // is the node open
                                     disabled: true,  // is the node disabled
-                                }, a_attr: {"class": "terminal", "program": "sequence"}
+                                }, a_attr: {"class": "terminal", "program": "sequence","tab":tab}
                             }, "last", function () {
                             });
                             num++;
 
                             //Instruction for opening the branch
                             $("#lissSyntax").jstree("open_node", $("#" + node.id));
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     },
                     "add_array_size_dimension": {
@@ -1288,7 +1367,7 @@
                                 state: {
                                     opened: false,  // is the node open
                                     disabled: true,  // is the node disabled
-                                }, a_attr: {"class": "terminal", "program": "array "}
+                                }, a_attr: {"class": "terminal", "program": "array ","tab":tab}
                             }, "last", function () {
                             });
                             num++;
@@ -1299,7 +1378,7 @@
                                 state: {
                                     opened: false,  // is the node open
                                     disabled: true,  // is the node disabled
-                                }, a_attr: {"class": "terminal", "program": "size "}
+                                }, a_attr: {"class": "terminal", "program": "size ","tab":tab}
                             }, "last", function () {
                             });
                             num++;
@@ -1310,14 +1389,14 @@
                                 state: {
                                     opened: false,  // is the node open
                                     disabled: false,  // is the node disabled
-                                }, a_attr: {"class": "non-terminal","tab":tab}
+                                }, a_attr: {"class": "non-terminal","program":"undefined","tab":tab}
                             }, "last", function () {
                             });
                             num++;
 
                             //Instruction for opening the branch
                             $("#lissSyntax").jstree("open_node", $("#" + node.id));
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     }
                 }
@@ -1328,7 +1407,7 @@
                         "action": function () {
                             $("#lissSyntax").jstree(this).delete_node(node.children);
                             //Refresh the content of TextArea
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     }
                 }
@@ -1340,7 +1419,7 @@
                     "action": function () {
                         $("#lissSyntax").jstree(this).delete_node(node.children);
                         //Refresh the content of TextArea
-                        liss.setText(getProgramLiss());
+                        liss.setText(getProgramLissBeta());
                     }
                 }
             }
@@ -1358,7 +1437,7 @@
                                 state: {
                                     opened: false,  // is the node open
                                     disabled: true,  // is the node disabled
-                                }, a_attr: {"class": "terminal", "program": ","}
+                                }, a_attr: {"class": "terminal", "program": ",","tab":0}
                             }, "last", function () {
                             });
                             num++;
@@ -1369,13 +1448,13 @@
                                 state: {
                                     opened: false,  // is the node open
                                     disabled: false,  // is the node disabled
-                                }, a_attr: {"class": "non-terminal","tab":tab}
+                                }, a_attr: {"class": "non-terminal","program":"undefined","tab":0}
                             }, "last", function () {
                             });
                             num++;
 
                             //Refresh the content of TextArea
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     }
                 }
@@ -1391,7 +1470,7 @@
                                 state: {
                                     opened: false,  // is the node open
                                     disabled: true,  // is the node disabled
-                                }, a_attr: {"class": "terminal", "program": ","}
+                                }, a_attr: {"class": "terminal", "program": ",","tab":0}
                             }, "last", function () {
                             });
                             num++;
@@ -1402,7 +1481,7 @@
                                 state: {
                                     opened: false,  // is the node open
                                     disabled: false,  // is the node disabled
-                                }, a_attr: {"class": "non-terminal","tab":tab}
+                                }, a_attr: {"class": "non-terminal","program":"undefined","tab":0}
                             }, "last", function () {
                             });
                             num++;
@@ -1410,7 +1489,7 @@
                             //$("#lissSyntax").jstree("open_node", $("#" + data.node.id));
 
                             //Refresh the content of TextArea
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     },
                     "delete": {
@@ -1424,7 +1503,7 @@
                                 state: {
                                     opened: false,  // is the node open
                                     disabled: false,  // is the node disabled
-                                }, a_attr: {"class": "non-terminal","tab":tab}
+                                }, a_attr: {"class": "non-terminal","program":"undefined","tab":tab}
                             }, "last", function () {
                             });
                             num++;
@@ -1432,7 +1511,7 @@
                             //$("#lissSyntax").jstree("open_node", $("#" + data.node.id));
 
                             //Refresh the content of TextArea
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     }
                 }
@@ -1455,7 +1534,7 @@
                         "label": "Delete Rule",
                         "action": function () {var numb
                             $("#lissSyntax").jstree(this).delete_node(node.children);
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     }
                 }
@@ -1466,12 +1545,12 @@
                         "action": function () {
                             $("#lissSyntax").jstree(this).delete_node(nodeParent.children[position]);
                             $("#lissSyntax").jstree(this).delete_node(nodeParent.children[position-1]);
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     }
                 }
             }
-        }else if(patternConstant.test(node.id)){
+        }else if(patternValue.test(node.id)){
             var tab = node.a_attr.tab;
 
             if(node.children.length<1) {
@@ -1485,7 +1564,7 @@
                                 state: {
                                     opened: false,  // is the node open
                                     disabled: false,  // is the node disabled
-                                }, a_attr: {"class": "non-terminal","tab":tab}
+                                }, a_attr: {"class": "non-terminal","program":"undefined ","tab":tab}
                             }, "last", function () {
                             });
                             num++;
@@ -1496,7 +1575,7 @@
                                 state: {
                                     opened: false,  // is the node open
                                     disabled: false,  // is the node disabled
-                                }, a_attr: {"class": "non-terminal","tab":tab}
+                                }, a_attr: {"class": "non-terminal","program":"undefined","tab":tab}
                             }, "last", function () {
                             });
                             num++;
@@ -1504,7 +1583,7 @@
                             $("#lissSyntax").jstree("open_node", $("#" + node.id));
 
                             //Refresh the content of TextArea
-                            //liss.setText(getProgramLiss());
+                            //liss.setText(getProgramLissBeta());
                         }
                     },
                     "add_true":{
@@ -1516,7 +1595,7 @@
                                 state: {
                                     opened: false,  // is the node open
                                     disabled: true,  // is the node disabled
-                                }, a_attr: {"class": "terminal", "program": "true"}
+                                }, a_attr: {"class": "terminal", "program": "true","tab":0}
                             }, "last", function () {
                             });
                             num++;
@@ -1524,7 +1603,7 @@
                             $("#lissSyntax").jstree("open_node", $("#" + node.id));
 
                             //Refresh the content of TextArea
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     },
                     "add_false":{
@@ -1536,7 +1615,7 @@
                                 state: {
                                     opened: false,  // is the node open
                                     disabled: true,  // is the node disabled
-                                }, a_attr: {"class": "terminal", "program": "false"}
+                                }, a_attr: {"class": "terminal", "program": "false","tab":0}
                             }, "last", function () {
                             });
                             num++;
@@ -1544,7 +1623,7 @@
                             $("#lissSyntax").jstree("open_node", $("#" + node.id));
 
                             //Refresh the content of TextArea
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     }
                 };
@@ -1555,7 +1634,7 @@
                             "label": "Delete Rule",
                             "action": function () {
                                 $("#lissSyntax").jstree(this).delete_node(node.children[0]);
-                                liss.setText(getProgramLiss());
+                                liss.setText(getProgramLissBeta());
                             }
                         }
                     }
@@ -1566,7 +1645,7 @@
                             "action": function () {
                                 $("#lissSyntax").jstree(this).delete_node(node.children[1]);
                                 $("#lissSyntax").jstree(this).delete_node(node.children[0]);
-                                liss.setText(getProgramLiss());
+                                liss.setText(getProgramLissBeta());
                             }
                         }
                     }
@@ -1591,7 +1670,7 @@
 
                             //Instruction for opening the branch
                             $("#lissSyntax").jstree("open_node", $("#" + node.id));
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     },
                     "add_plus_sign":{
@@ -1610,7 +1689,7 @@
 
                             //Instruction for opening the branch
                             $("#lissSyntax").jstree("open_node", $("#" + node.id));
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     },"add_minus_sign":{
                         "label": "Add Minus_Sign",
@@ -1628,7 +1707,7 @@
 
                             //Instruction for opening the branch
                             $("#lissSyntax").jstree("open_node", $("#" + node.id));
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     }
                 };
@@ -1639,7 +1718,7 @@
                         "action": function () {
                             $("#lissSyntax").jstree(this).delete_node(node.children[1]);
                             $("#lissSyntax").jstree(this).delete_node(node.children[0]);
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     }
                 }
@@ -1650,7 +1729,7 @@
                     "label": "Delete Rule",
                     "action": function () {
                         $("#lissSyntax").jstree(this).delete_node(node.children);
-                        liss.setText(getProgramLiss());
+                        liss.setText(getProgramLissBeta());
                     }
                 }
             }
@@ -1660,7 +1739,7 @@
                     "label": "Delete Rule",
                     "action": function () {
                         $("#lissSyntax").jstree(this).delete_node(node.children);
-                        liss.setText(getProgramLiss());
+                        liss.setText(getProgramLissBeta());
                     }
                 }
             }
@@ -1678,7 +1757,7 @@
                                 state: {
                                     opened: false,  // is the node open
                                     disabled: true,  // is the node disabled
-                                }, a_attr: {"class": "terminal", "program": ","}
+                                }, a_attr: {"class": "terminal", "program": ",","tab":0}
                             }, "last", function () {
                             });
                             num++;
@@ -1689,14 +1768,14 @@
                                 state       : {
                                     opened    : false,  // is the node open
                                     disabled  : false,  // is the node disabled
-                                }, a_attr : { "class" : "non-terminal","tab":tab}
+                                }, a_attr : { "class" : "non-terminal","program":"undefined","tab":tab}
                             }, "last", function(){});
 
                             num++;
 
                             //Instruction for opening the branch
                             $("#lissSyntax").jstree("open_node", $("#"+node.id));
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     }
                 };
@@ -1711,7 +1790,7 @@
                                 state: {
                                     opened: false,  // is the node open
                                     disabled: true,  // is the node disabled
-                                }, a_attr: {"class": "terminal", "program": ","}
+                                }, a_attr: {"class": "terminal", "program": ",","tab":0}
                             }, "last", function () {
                             });
                             num++;
@@ -1722,7 +1801,7 @@
                                 state: {
                                     opened: false,  // is the node open
                                     disabled: false,  // is the node disabled
-                                }, a_attr: {"class": "non-terminal","tab":tab}
+                                }, a_attr: {"class": "non-terminal","program":"undefined","tab":tab}
                             }, "last", function () {
                             });
 
@@ -1730,7 +1809,7 @@
 
                             //Instruction for opening the branch
                             $("#lissSyntax").jstree("open_node", $("#" + node.id));
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     },
                     "delete": {
@@ -1753,7 +1832,7 @@
                             //$("#lissSyntax").jstree("open_node", $("#" + data.node.id));
 
                             //Refresh the content of TextArea
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     }
                 }
@@ -1784,7 +1863,7 @@
                                     state: {
                                         opened: false,  // is the node open
                                         disabled: false,  // is the node disabled
-                                    }, a_attr: {"class": "non-terminal","tab":tab}
+                                    }, a_attr: {"class": "non-terminal","program":"undefined","tab":tab}
                                 }, "last", function () {
                                 });
                                 num++;
@@ -1802,7 +1881,7 @@
                                     state: {
                                         opened: false,  // is the node open
                                         disabled: false,  // is the node disabled
-                                    }, a_attr: {"class": "non-terminal","tab":tab}
+                                    }, a_attr: {"class": "non-terminal","program":"undefined","tab":tab}
                                 }, "last", function () {
                                 });
                                 num++;
@@ -1823,7 +1902,7 @@
                                     state: {
                                         opened: false,  // is the node open
                                         disabled: false,  // is the node disabled
-                                    }, a_attr: {"class": "non-terminal","tab":tab}
+                                    }, a_attr: {"class": "non-terminal","program":"undefined","tab":tab}
                                 }, "last", function () {
                                 });
                                 num++;
@@ -1841,7 +1920,7 @@
                                     state: {
                                         opened: false,  // is the node open
                                         disabled: false,  // is the node disabled
-                                    }, a_attr: {"class": "non-terminal","tab":tab}
+                                    }, a_attr: {"class": "non-terminal","program":"undefined","tab":tab}
                                 }, "last", function () {
                                 });
                                 num++;
@@ -1855,7 +1934,7 @@
                             "action": function () {
                                 $("#lissSyntax").jstree(this).delete_node(nodeParent.children[position]);
                                 $("#lissSyntax").jstree(this).delete_node(nodeParent.children[position - 1]);
-                                liss.setText(getProgramLiss());
+                                liss.setText(getProgramLissBeta());
                             }
                         }
                     };
@@ -1878,7 +1957,7 @@
                             "label": "Change Rule",
                             "action": function () {
                                 $("#lissSyntax").jstree(this).delete_node(node.children);
-                                liss.setText(getProgramLiss());
+                                liss.setText(getProgramLissBeta());
                             }
                         }
                     };
@@ -1889,7 +1968,7 @@
                                 "label": "Change Rule",
                                 "action": function () {
                                     $("#lissSyntax").jstree(this).delete_node(node.children);
-                                    liss.setText(getProgramLiss());
+                                    liss.setText(getProgramLissBeta());
                                 }
                             },
                             "delete": {
@@ -1897,7 +1976,7 @@
                                 "action": function () {
                                     $("#lissSyntax").jstree(this).delete_node(nodeParent.children[position]);
                                     $("#lissSyntax").jstree(this).delete_node(nodeParent.children[position - 1]);
-                                    liss.setText(getProgramLiss());
+                                    liss.setText(getProgramLissBeta());
                                 }
                             }
                         }
@@ -1907,7 +1986,7 @@
                                 "label": "Change Rule",
                                 "action": function () {
                                     $("#lissSyntax").jstree(this).delete_node(node.children);
-                                    liss.setText(getProgramLiss());
+                                    liss.setText(getProgramLissBeta());
                                 }
                             }
                         }
@@ -1920,7 +1999,7 @@
                     "label": "Delete Rule",
                     "action": function () {
                         $("#lissSyntax").jstree(this).delete_node(node.children);
-                        liss.setText(getProgramLiss());
+                        liss.setText(getProgramLissBeta());
                     }
                 }
             }
@@ -1938,14 +2017,14 @@
                                 state: {
                                     opened: false,  // is the node open
                                     disabled: true,  // is the node disabled
-                                }, a_attr: {"class": "terminal", "program": ""}
+                                }, a_attr: {"class": "terminal", "program": "","tab":0}
                             }, "last", function () {
                             });
                             num++;
 
                             //Instruction for opening the branch
                             $("#lissSyntax").jstree("open_node", $("#" + node.id));
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     },
                     "add_values": {
@@ -1957,7 +2036,7 @@
                                 state: {
                                     opened: false,  // is the node open
                                     disabled: false,  // is the node disabled
-                                }, a_attr: {"class": "non-terminal","tab":tab}
+                                }, a_attr: {"class": "non-terminal","program":"undefined","tab":tab}
                             }, "last", function () {
                             });
                             num++;
@@ -1973,7 +2052,7 @@
                         "label": "Delete Rule",
                         "action": function () {
                             $("#lissSyntax").jstree(this).delete_node(node.children);
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     }
                 }
@@ -1984,7 +2063,7 @@
                     "label": "Delete Rule",
                     "action": function () {
                         $("#lissSyntax").jstree(this).delete_node(node.children);
-                        liss.setText(getProgramLiss());
+                        liss.setText(getProgramLissBeta());
                     }
                 }
             }
@@ -1994,7 +2073,7 @@
                     "label": "Delete Rule",
                     "action": function () {
                         $("#lissSyntax").jstree(this).delete_node(node.children);
-                        liss.setText(getProgramLiss());
+                        liss.setText(getProgramLissBeta());
                     }
                 }
             }
@@ -2012,14 +2091,14 @@
                                 state: {
                                     opened: false,  // is the node open
                                     disabled: true,  // is the node disabled
-                                }, a_attr: {"class": "terminal", "program": ""}
+                                }, a_attr: {"class": "terminal", "program": "","tab":0}
                             }, "last", function () {
                             });
                             num++;
 
                             //Instruction for opening the branch
                             $("#lissSyntax").jstree("open_node", $("#" + node.id));
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     },
                     "add_expression": {
@@ -2032,7 +2111,7 @@
                                 state: {
                                     opened: false,  // is the node open
                                     disabled: false,  // is the node disabled
-                                }, a_attr: {"class": "terminal edit", "program": "", "expressionregularrule": "ID"}
+                                }, a_attr: {"class": "terminal edit", "program": "undefined","tab":0,"expressionregularrule": "ID"}
                             }, "last", function () {
                             });
                             num++;
@@ -2043,7 +2122,7 @@
                                 state: {
                                     opened: false,  // is the node open
                                     disabled: true,  // is the node disabled
-                                }, a_attr: {"class": "terminal", "program": " | "}
+                                }, a_attr: {"class": "terminal", "program": " | ","tab":0}
                             }, "last", function () {
                             });
                             num++;
@@ -2054,13 +2133,13 @@
                                 state       : {
                                     opened    : false,  // is the node open
                                     disabled  : false,  // is the node disabled
-                                }, a_attr : { "class" : "non-terminal","tab":tab}
+                                }, a_attr : { "class" : "non-terminal","program":"undefined","tab":tab}
                             }, "last", function(){});
                             num++;
 
                             //Instruction for opening the branch
                             $("#lissSyntax").jstree("open_node", $("#" + node.id));
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     }
                 }
@@ -2070,7 +2149,7 @@
                         "label": "Delete Rule",
                         "action": function () {
                             $("#lissSyntax").jstree(this).delete_node(node.children);
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     }
                 };
@@ -2095,7 +2174,7 @@
                             "label": "Delete Rule",
                             "action": function () {
                                 $("#lissSyntax").jstree(this).delete_node(node.children);
-                                liss.setText(getProgramLiss());
+                                liss.setText(getProgramLissBeta());
                             }
                         }
                     };
@@ -2106,7 +2185,7 @@
                             "action": function () {
                                 $("#lissSyntax").jstree(this).delete_node(nodeParent.children[position]);
                                 $("#lissSyntax").jstree(this).delete_node(nodeParent.children[position - 1]);
-                                liss.setText(getProgramLiss());
+                                liss.setText(getProgramLissBeta());
                             }
                         }
                     };
@@ -2117,7 +2196,7 @@
                         "label": "Delete Rule",
                         "action": function () {
                             $("#lissSyntax").jstree(this).delete_node(node.children);
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     }
                 };
@@ -2137,7 +2216,7 @@
                                     state: {
                                         opened: false,  // is the node open
                                         disabled: false,  // is the node disabled
-                                    }, a_attr: {"class": "non-terminal", "tab":tab}
+                                    }, a_attr: {"class": "non-terminal","program":" undefined ","tab":tab}
                                 }, "last", function () {
                                 });
                                 num++;
@@ -2148,7 +2227,7 @@
                                     state: {
                                         opened: false,  // is the node open
                                         disabled: false,  // is the node disabled
-                                    }, a_attr: {"class": "non-terminal","tab":tab}
+                                    }, a_attr: {"class": "non-terminal","program":"undefined","tab":tab}
                                 }, "last", function () {
                                 });
                                 num++;
@@ -2170,7 +2249,7 @@
                                     state: {
                                         opened: false,  // is the node open
                                         disabled: false,  // is the node disabled
-                                    }, a_attr: {"class": "non-terminal","tab":tab}
+                                    }, a_attr: {"class": "non-terminal","program":"undefined","tab":tab}
                                 }, "last", function () {
                                 });
                                 num++;
@@ -2209,7 +2288,7 @@
                                 num++;
 
                                 $("#lissSyntax").jstree("open_node", $("#" +node.id));
-                                liss.setText(getProgramLiss());
+                                liss.setText(getProgramLissBeta());
                             }
                         }
                     };
@@ -2241,7 +2320,7 @@
                                 num++;
 
                                 $("#lissSyntax").jstree("open_node", $("#" +node.id));
-                                liss.setText(getProgramLiss());
+                                liss.setText(getProgramLissBeta());
                             }
                         },
                         "delete": {
@@ -2284,7 +2363,7 @@
                         "label": "Delete Rule",
                         "action": function () {
                             $("#lissSyntax").jstree(this).delete_node(node.children);
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     }
                 };
@@ -2295,7 +2374,7 @@
                         "action": function () {
                             $("#lissSyntax").jstree(this).delete_node(nodeParent.children[position]);
                             $("#lissSyntax").jstree(this).delete_node(nodeParent.children[position - 1]);
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     }
                 }
@@ -2312,13 +2391,13 @@
                                 state: {
                                     opened: false,  // is the node open
                                     disabled: true,  // is the node disabled
-                                }, a_attr: {"class": "terminal", "program": "=="}
+                                }, a_attr: {"class": "terminal", "program": "==","tab":0}
                             }, "last", function () {
                             });
                             num++;
 
                             $("#lissSyntax").jstree("open_node", $("#" +node.id));
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     },
                     "add_different_sign": {
@@ -2330,13 +2409,13 @@
                                     state: {
                                         opened: false,  // is the node open
                                         disabled: true,  // is the node disabled
-                                    }, a_attr: {"class": "terminal", "program": "!="}
+                                    }, a_attr: {"class": "terminal", "program": "!=","tab":0}
                                 }, "last", function () {
                                 });
                                 num++;
 
                                 $("#lissSyntax").jstree("open_node", $("#" +node.id));
-                                liss.setText(getProgramLiss());
+                                liss.setText(getProgramLissBeta());
                         }
                     },
                     "add_less_sign": {
@@ -2348,13 +2427,13 @@
                                 state: {
                                     opened: false,  // is the node open
                                     disabled: true,  // is the node disabled
-                                }, a_attr: {"class": "terminal", "program": "<"}
+                                }, a_attr: {"class": "terminal", "program": "<","tab":0}
                             }, "last", function () {
                             });
                             num++;
 
                             $("#lissSyntax").jstree("open_node", $("#" +node.id));
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     },
                     "add_greater_sign": {
@@ -2366,13 +2445,13 @@
                                 state: {
                                     opened: false,  // is the node open
                                     disabled: true,  // is the node disabled
-                                }, a_attr: {"class": "terminal", "program": ">"}
+                                }, a_attr: {"class": "terminal", "program": ">","tab":0}
                             }, "last", function () {
                             });
                             num++;
 
                             $("#lissSyntax").jstree("open_node", $("#" +node.id));
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     },
                     "add_less_or_equal_sign": {
@@ -2384,13 +2463,13 @@
                                 state: {
                                     opened: false,  // is the node open
                                     disabled: true,  // is the node disabled
-                                }, a_attr: {"class": "terminal", "program": "<="}
+                                }, a_attr: {"class": "terminal", "program": "<=","tab":0}
                             }, "last", function () {
                             });
                             num++;
 
                             $("#lissSyntax").jstree("open_node", $("#" +node.id));
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     },
                     "add_greater_or_equal_sign": {
@@ -2402,13 +2481,13 @@
                                 state: {
                                     opened: false,  // is the node open
                                     disabled: true,  // is the node disabled
-                                }, a_attr: {"class": "terminal", "program": ">="}
+                                }, a_attr: {"class": "terminal", "program": ">=","tab":0}
                             }, "last", function () {
                             });
                             num++;
 
                             $("#lissSyntax").jstree("open_node", $("#" +node.id));
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     },
                     "add_contains_sign": {
@@ -2420,13 +2499,13 @@
                                 state: {
                                     opened: false,  // is the node open
                                     disabled: true,  // is the node disabled
-                                }, a_attr: {"class": "terminal", "program": "in"}
+                                }, a_attr: {"class": "terminal", "program": "in","tab":0}
                             }, "last", function () {
                             });
                             num++;
 
                             $("#lissSyntax").jstree("open_node", $("#" +node.id));
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     }
                 };
@@ -2436,7 +2515,7 @@
                         "label": "Delete Rule",
                         "action": function () {
                             $("#lissSyntax").jstree(this).delete_node(node.children);
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     }
                 };
@@ -2455,7 +2534,7 @@
                                 state: {
                                     opened: false,  // is the node open
                                     disabled: false,  // is the node disabled
-                                }, a_attr: {"class": "non-terminal", "tab": tab}
+                                }, a_attr: {"class": "non-terminal", "program":" undefined ","tab": tab}
                             }, "last", function () {
                             });
                             num++;
@@ -2466,7 +2545,7 @@
                                 state: {
                                     opened: false,  // is the node open
                                     disabled: false,  // is the node disabled
-                                }, a_attr: {"class": "non-terminal", "tab": tab}
+                                }, a_attr: {"class": "non-terminal", "program":"undefined","tab": tab}
                             }, "last", function () {
                             });
                             num++;
@@ -2486,7 +2565,7 @@
                                 state: {
                                     opened: false,  // is the node open
                                     disabled: false,  // is the node disabled
-                                }, a_attr: {"class": "non-terminal","tab":tab}
+                                }, a_attr: {"class": "non-terminal","program":" undefined ","tab":tab}
                             }, "last", function () {
                             });
                             num++;
@@ -2497,7 +2576,7 @@
                                 state: {
                                     opened: false,  // is the node open
                                     disabled: false,  // is the node disabled
-                                }, a_attr: {"class": "non-terminal","tab":tab}
+                                }, a_attr: {"class": "non-terminal","program":"undefined","tab":tab}
                             }, "last", function () {
                             });
                             num++;
@@ -2517,7 +2596,7 @@
                                 state: {
                                     opened: false,  // is the node open
                                     disabled: false,  // is the node disabled
-                                }, a_attr: {"class": "non-terminal","tab":tab}
+                                }, a_attr: {"class": "non-terminal","program":"undefined","tab":tab}
                             }, "last", function () {
                             });
                             num++;
@@ -2547,7 +2626,7 @@
                         "label": "Delete Rule",
                         "action": function () {
                             $("#lissSyntax").jstree(this).delete_node(node.children);
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     }
                 };
@@ -2558,7 +2637,7 @@
                         "action": function () {
                             $("#lissSyntax").jstree(this).delete_node(nodeParent.children[position]);
                             $("#lissSyntax").jstree(this).delete_node(nodeParent.children[position - 1]);
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     }
                 };
@@ -2575,13 +2654,13 @@
                                 state: {
                                     opened: false,  // is the node open
                                     disabled: true,  // is the node disabled
-                                }, a_attr: {"class": "terminal", "program": "+"}
+                                }, a_attr: {"class": "terminal", "program": "+","tab":0}
                             }, "last", function () {
                             });
                             num++;
 
                             $("#lissSyntax").jstree("open_node", $("#" +node.id));
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     },
                     "add_minus_sign": {
@@ -2593,13 +2672,13 @@
                                 state: {
                                     opened: false,  // is the node open
                                     disabled: true,  // is the node disabled
-                                }, a_attr: {"class": "terminal", "program": "-"}
+                                }, a_attr: {"class": "terminal", "program": "-","tab":0}
                             }, "last", function () {
                             });
                             num++;
 
                             $("#lissSyntax").jstree("open_node", $("#" +node.id));
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     },
                     "add_or_sign": {
@@ -2611,13 +2690,13 @@
                                 state: {
                                     opened: false,  // is the node open
                                     disabled: true,  // is the node disabled
-                                }, a_attr: {"class": "terminal", "program": "||"}
+                                }, a_attr: {"class": "terminal", "program": "||","tab":0}
                             }, "last", function () {
                             });
                             num++;
 
                             $("#lissSyntax").jstree("open_node", $("#" +node.id));
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     },
                     "add_union_sign": {
@@ -2629,13 +2708,13 @@
                                 state: {
                                     opened: false,  // is the node open
                                     disabled: true,  // is the node disabled
-                                }, a_attr: {"class": "terminal", "program": "++"}
+                                }, a_attr: {"class": "terminal", "program": "++","tab":0}
                             }, "last", function () {
                             });
                             num++;
 
                             $("#lissSyntax").jstree("open_node", $("#" +node.id));
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     }
                 };
@@ -2645,7 +2724,7 @@
                         "label": "Delete Rule",
                         "action": function () {
                             $("#lissSyntax").jstree(this).delete_node(node.children);
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     }
                 };
@@ -2664,7 +2743,7 @@
                                 state: {
                                     opened: false,  // is the node open
                                     disabled: false,  // is the node disabled
-                                }, a_attr: {"class": "non-terminal","tab":tab}
+                                }, a_attr: {"class": "non-terminal","program":" undefined ","tab":tab}
                             }, "last", function () {
                             });
                             num++;
@@ -2675,7 +2754,7 @@
                                 state: {
                                     opened: false,  // is the node open
                                     disabled: false,  // is the node disabled
-                                }, a_attr: {"class": "non-terminal","tab":tab}
+                                }, a_attr: {"class": "non-terminal","program":"undefined","tab":tab}
                             }, "last", function () {
                             });
                             num++;
@@ -2696,7 +2775,7 @@
                                 state: {
                                     opened: false,  // is the node open
                                     disabled: false,  // is the node disabled
-                                }, a_attr: {"class": "non-terminal","tab":tab}
+                                }, a_attr: {"class": "non-terminal","program":" undefined ","tab":tab}
                             }, "last", function () {
                             });
                             num++;
@@ -2707,7 +2786,7 @@
                                 state: {
                                     opened: false,  // is the node open
                                     disabled: false,  // is the node disabled
-                                }, a_attr: {"class": "non-terminal","tab":tab}
+                                }, a_attr: {"class": "non-terminal","program":"undefined","tab":tab}
                             }, "last", function () {
                             });
                             num++;
@@ -2727,7 +2806,7 @@
                                 state: {
                                     opened: false,  // is the node open
                                     disabled: false,  // is the node disabled
-                                }, a_attr: {"class": "non-terminal","tab":tab}
+                                }, a_attr: {"class": "non-terminal","program":"undefined","tab":tab}
                             }, "last", function () {
                             });
                             num++;
@@ -2764,7 +2843,7 @@
                                     state: {
                                         opened: false,  // is the node open
                                         disabled: false,  // is the node disabled
-                                    }, a_attr: {"class": "non-terminal","tab":tab}
+                                    }, a_attr: {"class": "non-terminal","program":"undefined","tab":tab}
                                 }, "last", function () {
                                 });
                                 num++;
@@ -2773,16 +2852,16 @@
 
                             }
                         },
-                        "add_designator":{
-                            "label": "Add Designator",
+                        "add_variable":{
+                            "label": "Add Variable",
                             "action": function(){
-                                //Node : designator
+                                //Node : variable
                                 $('#lissSyntax').jstree().create_node(node, {
-                                    "id": "designator" + num, "text": "designator",
+                                    "id": "variable" + num, "text": "variable",
                                     state: {
                                         opened: false,  // is the node open
                                         disabled: false,  // is the node disabled
-                                    }, a_attr: {"class": "non-terminal","tab":tab}
+                                    }, a_attr: {"class": "non-terminal","program":"undefined","tab":tab}
                                 }, "last", function () {
                                 });
                                 num++;
@@ -2800,7 +2879,7 @@
                                     state: {
                                         opened: false,  // is the node open
                                         disabled: true,  // is the node disabled
-                                    }, a_attr: {"class": "terminal", "program":"("}
+                                    }, a_attr: {"class": "terminal", "program":"(","tab":0}
                                 }, "last", function () {
                                 });
                                 num++;
@@ -2811,7 +2890,7 @@
                                     state: {
                                         opened: false,  // is the node open
                                         disabled: false,  // is the node disabled
-                                    }, a_attr: {"class": "non-terminal","tab":tab}
+                                    }, a_attr: {"class": "non-terminal","program":"undefined","tab":tab}
                                 }, "last", function () {
                                 });
                                 num++;
@@ -2822,13 +2901,13 @@
                                     state: {
                                         opened: false,  // is the node open
                                         disabled: true,  // is the node disabled
-                                    }, a_attr: {"class": "terminal", "program":")"}
+                                    }, a_attr: {"class": "terminal", "program":")","tab":0}
                                 }, "last", function () {
                                 });
                                 num++;
 
                                 $("#lissSyntax").jstree("open_node", $("#" + node.id));
-                                liss.setText(getProgramLiss());
+                                liss.setText(getProgramLissBeta());
                             }
                         },
                         "add_factor":{
@@ -2840,7 +2919,7 @@
                                     state: {
                                         opened: false,  // is the node open
                                         disabled: true,  // is the node disabled
-                                    }, a_attr: {"class": "terminal", "program":"!"}
+                                    }, a_attr: {"class": "terminal", "program":"!","tab":0}
                                 }, "last", function () {
                                 });
                                 num++;
@@ -2851,13 +2930,13 @@
                                     state: {
                                         opened: false,  // is the node open
                                         disabled: false,  // is the node disabled
-                                    }, a_attr: {"class": "non-terminal","tab":tab}
+                                    }, a_attr: {"class": "non-terminal","program":"undefined","tab":tab}
                                 }, "last", function () {
                                 });
                                 num++;
 
                                 $("#lissSyntax").jstree("open_node", $("#" + node.id));
-                                liss.setText(getProgramLiss());
+                                liss.setText(getProgramLissBeta());
                             }
                         },
                         "add_function_call":{
@@ -2869,7 +2948,7 @@
                                     state: {
                                         opened: false,  // is the node open
                                         disabled: false,  // is the node disabled
-                                    }, a_attr: {"class": "non-terminal","tab":tab}
+                                    }, a_attr: {"class": "non-terminal","program":"undefined","tab":tab}
                                 }, "last", function () {
                                 });
                                 num++;
@@ -2887,7 +2966,7 @@
                                     state: {
                                         opened: false,  // is the node open
                                         disabled: false,  // is the node disabled
-                                    }, a_attr: {"class": "non-terminal","tab":tab}
+                                    }, a_attr: {"class": "non-terminal","program":"undefined","tab":tab}
                                 }, "last", function () {
                                 });
                                 num++;
@@ -2909,7 +2988,7 @@
                                     state: {
                                         opened: false,  // is the node open
                                         disabled: false,  // is the node disabled
-                                    }, a_attr: {"class": "non-terminal","tab":tab}
+                                    }, a_attr: {"class": "non-terminal","program":"undefined","tab":tab}
                                 }, "last", function () {
                                 });
                                 num++;
@@ -2918,16 +2997,16 @@
 
                             }
                         },
-                        "add_designator":{
-                            "label": "Add Designator",
+                        "add_variable":{
+                            "label": "Add Variable",
                             "action": function(){
-                                //Node : designator
+                                //Node : variable
                                 $('#lissSyntax').jstree().create_node(node, {
-                                    "id": "designator" + num, "text": "designator",
+                                    "id": "variable" + num, "text": "variable",
                                     state: {
                                         opened: false,  // is the node open
                                         disabled: false,  // is the node disabled
-                                    }, a_attr: {"class": "non-terminal","tab":tab}
+                                    }, a_attr: {"class": "non-terminal","program":"undefined","tab":tab}
                                 }, "last", function () {
                                 });
                                 num++;
@@ -2945,7 +3024,7 @@
                                     state: {
                                         opened: false,  // is the node open
                                         disabled: true,  // is the node disabled
-                                    }, a_attr: {"class": "terminal", "program":"("}
+                                    }, a_attr: {"class": "terminal", "program":"(","tab":0}
                                 }, "last", function () {
                                 });
                                 num++;
@@ -2956,7 +3035,7 @@
                                     state: {
                                         opened: false,  // is the node open
                                         disabled: false,  // is the node disabled
-                                    }, a_attr: {"class": "non-terminal","tab":tab}
+                                    }, a_attr: {"class": "non-terminal","program":"undefined","tab":tab}
                                 }, "last", function () {
                                 });
                                 num++;
@@ -2967,13 +3046,13 @@
                                     state: {
                                         opened: false,  // is the node open
                                         disabled: true,  // is the node disabled
-                                    }, a_attr: {"class": "terminal", "program":")"}
+                                    }, a_attr: {"class": "terminal", "program":")","tab":0}
                                 }, "last", function () {
                                 });
                                 num++;
 
                                 $("#lissSyntax").jstree("open_node", $("#" + node.id));
-                                liss.setText(getProgramLiss());
+                                liss.setText(getProgramLissBeta());
                             }
                         },
                         "add_factor":{
@@ -2985,7 +3064,7 @@
                                     state: {
                                         opened: false,  // is the node open
                                         disabled: true,  // is the node disabled
-                                    }, a_attr: {"class": "terminal", "program":"!"}
+                                    }, a_attr: {"class": "terminal", "program":"!","tab":0}
                                 }, "last", function () {
                                 });
                                 num++;
@@ -2996,13 +3075,13 @@
                                     state: {
                                         opened: false,  // is the node open
                                         disabled: false,  // is the node disabled
-                                    }, a_attr: {"class": "non-terminal","tab":tab}
+                                    }, a_attr: {"class": "non-terminal","program":"undefined","tab":tab}
                                 }, "last", function () {
                                 });
                                 num++;
 
                                 $("#lissSyntax").jstree("open_node", $("#" + node.id));
-                                liss.setText(getProgramLiss());
+                                liss.setText(getProgramLissBeta());
                             }
                         },
                         "add_function_call":{
@@ -3014,7 +3093,7 @@
                                     state: {
                                         opened: false,  // is the node open
                                         disabled: false,  // is the node disabled
-                                    }, a_attr: {"class": "non-terminal","tab":tab}
+                                    }, a_attr: {"class": "non-terminal","program":"undefined","tab":tab}
                                 }, "last", function () {
                                 });
                                 num++;
@@ -3032,7 +3111,7 @@
                                     state: {
                                         opened: false,  // is the node open
                                         disabled: false,  // is the node disabled
-                                    }, a_attr: {"class": "non-terminal","tab":tab}
+                                    }, a_attr: {"class": "non-terminal","program":"undefined","tab":tab}
                                 }, "last", function () {
                                 });
                                 num++;
@@ -3046,7 +3125,7 @@
                             "action": function () {
                                 $("#lissSyntax").jstree(this).delete_node(nodeParent.children[position]);
                                 $("#lissSyntax").jstree(this).delete_node(nodeParent.children[position - 1]);
-                                liss.setText(getProgramLiss());
+                                liss.setText(getProgramLissBeta());
                             }
                         }
 
@@ -3071,7 +3150,7 @@
                             "label": "Change Rule",
                             "action": function () {
                                 $("#lissSyntax").jstree(this).delete_node(node.children);
-                                liss.setText(getProgramLiss());
+                                liss.setText(getProgramLissBeta());
                             }
                         }
                     };
@@ -3082,7 +3161,7 @@
                                 "label": "Change Rule",
                                 "action": function () {
                                     $("#lissSyntax").jstree(this).delete_node(node.children);
-                                    liss.setText(getProgramLiss());
+                                    liss.setText(getProgramLissBeta());
                                 }
                             },
                             "delete": {
@@ -3090,7 +3169,7 @@
                                 "action": function () {
                                     $("#lissSyntax").jstree(this).delete_node(nodeParent.children[position]);
                                     $("#lissSyntax").jstree(this).delete_node(nodeParent.children[position - 1]);
-                                    liss.setText(getProgramLiss());
+                                    liss.setText(getProgramLissBeta());
                                 }
                             }
                         };
@@ -3100,7 +3179,7 @@
                                 "label": "Change Rule",
                                 "action": function () {
                                     $("#lissSyntax").jstree(this).delete_node(node.children);
-                                    liss.setText(getProgramLiss());
+                                    liss.setText(getProgramLissBeta());
                                 }
                             }
                         };
@@ -3119,13 +3198,13 @@
                                 state: {
                                     opened: false,  // is the node open
                                     disabled: true,  // is the node disabled
-                                }, a_attr: {"class": "terminal", "program": "*"}
+                                }, a_attr: {"class": "terminal", "program": "*","tab":0}
                             }, "last", function () {
                             });
                             num++;
 
                             $("#lissSyntax").jstree("open_node", $("#" +node.id));
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     },
                     "add_division_sign": {
@@ -3137,13 +3216,13 @@
                                 state: {
                                     opened: false,  // is the node open
                                     disabled: true,  // is the node disabled
-                                }, a_attr: {"class": "terminal", "program": "/"}
+                                }, a_attr: {"class": "terminal", "program": "/","tab":0}
                             }, "last", function () {
                             });
                             num++;
 
                             $("#lissSyntax").jstree("open_node", $("#" +node.id));
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     },
                     "add_and_sign": {
@@ -3155,13 +3234,13 @@
                                 state: {
                                     opened: false,  // is the node open
                                     disabled: true,  // is the node disabled
-                                }, a_attr: {"class": "terminal", "program": "&&"}
+                                }, a_attr: {"class": "terminal", "program": "&&","tab":0}
                             }, "last", function () {
                             });
                             num++;
 
                             $("#lissSyntax").jstree("open_node", $("#" +node.id));
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     },
                     "add_intersection_sign": {
@@ -3173,13 +3252,13 @@
                                 state: {
                                     opened: false,  // is the node open
                                     disabled: true,  // is the node disabled
-                                }, a_attr: {"class": "terminal", "program": "**"}
+                                }, a_attr: {"class": "terminal", "program": "**","tab":0}
                             }, "last", function () {
                             });
                             num++;
 
                             $("#lissSyntax").jstree("open_node", $("#" +node.id));
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     }
                 };
@@ -3189,18 +3268,18 @@
                         "label": "Delete Rule",
                         "action": function () {
                             $("#lissSyntax").jstree(this).delete_node(node.children);
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     }
                 };
             }
-        }else if(patternDesignator.test(node.id)){
+        }else if(patternVariable.test(node.id)){
             items = {
                 "delete": {
                     "label": "Delete Rule",
                     "action": function () {
                         $("#lissSyntax").jstree(this).delete_node(node.children);
-                        liss.setText(getProgramLiss());
+                        liss.setText(getProgramLissBeta());
                     }
                 }
             };
@@ -3225,7 +3304,7 @@
 
                             //Instruction for opening the branch
                             $("#lissSyntax").jstree("open_node", $("#" + node.id));
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     },
                     "add_elem_array": {
@@ -3266,7 +3345,7 @@
 
                             //Instruction for opening the branch
                             $("#lissSyntax").jstree("open_node", $("#" + node.id));
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     }
                 }
@@ -3276,7 +3355,7 @@
                         "label": "Delete Rule",
                         "action": function () {
                             $("#lissSyntax").jstree(this).delete_node(node.children);
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     }
                 };
@@ -3287,7 +3366,7 @@
                     "label": "Delete Rule",
                     "action": function () {
                         $("#lissSyntax").jstree(this).delete_node(node.children);
-                        liss.setText(getProgramLiss());
+                        liss.setText(getProgramLissBeta());
                     }
                 }
             };
@@ -3297,7 +3376,7 @@
                     "label": "Delete Rule",
                     "action": function () {
                         $("#lissSyntax").jstree(this).delete_node(node.children);
-                        liss.setText(getProgramLiss());
+                        liss.setText(getProgramLissBeta());
                     }
                 }
             };
@@ -3315,14 +3394,14 @@
                                 state: {
                                     opened: false,  // is the node open
                                     disabled: true,  // is the node disabled
-                                }, a_attr: {"class": "terminal", "program": ""}
+                                }, a_attr: {"class": "terminal", "program": "","tab":tab}
                             }, "last", function () {
                             });
                             num++;
 
                             //Instruction for opening the branch
                             $("#lissSyntax").jstree("open_node", $("#" + node.id));
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     },
                     "add_args": {
@@ -3334,7 +3413,7 @@
                                 state: {
                                     opened: false,  // is the node open
                                     disabled: false,  // is the node disabled
-                                }, a_attr: {"class": "non-terminal","tab":tab}
+                                }, a_attr: {"class": "non-terminal","program":"undefined","tab":tab}
                             }, "last", function () {
                             });
                             num++;
@@ -3351,7 +3430,7 @@
                         "label": "Delete Rule",
                         "action": function () {
                             $("#lissSyntax").jstree(this).delete_node(node.children);
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     }
                 };
@@ -3362,7 +3441,7 @@
                     "label": "Delete Rule",
                     "action": function () {
                         $("#lissSyntax").jstree(this).delete_node(node.children);
-                        liss.setText(getProgramLiss());
+                        liss.setText(getProgramLissBeta());
                     }
                 }
             };
@@ -3380,7 +3459,7 @@
                                 state: {
                                     opened: false,  // is the node open
                                     disabled: true,  // is the node disabled
-                                }, a_attr: {"class": "terminal", "program" : ","}
+                                }, a_attr: {"class": "terminal", "program" : ",","tab":tab}
                             }, "last", function () {
                             });
                             num++;
@@ -3391,13 +3470,13 @@
                                 state: {
                                     opened: false,  // is the node open
                                     disabled: false,  // is the node disabled
-                                }, a_attr: {"class": "non-terminal","tab":tab}
+                                }, a_attr: {"class": "non-terminal","program":"undefined","tab":tab}
                             }, "last", function () {
                             });
                             num++;
 
                             $("#lissSyntax").jstree("open_node", $("#" +node.id));
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     }
                 };
@@ -3412,7 +3491,7 @@
                                 state: {
                                     opened: false,  // is the node open
                                     disabled: true,  // is the node disabled
-                                }, a_attr: {"class": "terminal", "program" : ","}
+                                }, a_attr: {"class": "terminal", "program" : ",","tab":tab}
                             }, "last", function () {
                             });
                             num++;
@@ -3423,13 +3502,13 @@
                                 state: {
                                     opened: false,  // is the node open
                                     disabled: false,  // is the node disabled
-                                }, a_attr: {"class": "non-terminal","tab":tab}
+                                }, a_attr: {"class": "non-terminal","program":"undefined","tab":tab}
                             }, "last", function () {
                             });
                             num++;
 
                             $("#lissSyntax").jstree("open_node", $("#" +node.id));
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     },
                     "delete": {
@@ -3443,7 +3522,7 @@
                                 state: {
                                     opened: false,  // is the node open
                                     disabled: false,  // is the node disabled
-                                }, a_attr: {"class": "non-terminal","tab":tab}
+                                }, a_attr: {"class": "non-terminal","program":"undefined","tab":tab}
                             }, "last", function () {
                             });
                             num++;
@@ -3468,7 +3547,7 @@
                                 state: {
                                     opened: false,  // is the node open
                                     disabled: false,  // is the node disabled
-                                }, a_attr: {"class": "non-terminal","tab":tab}
+                                }, a_attr: {"class": "non-terminal","program":"undefined","tab":tab}
                             }, "last", function () {
                             });
                             num++;
@@ -3486,7 +3565,7 @@
                                 state: {
                                     opened: false,  // is the node open
                                     disabled: false,  // is the node disabled
-                                }, a_attr: {"class": "non-terminal","tab":tab}
+                                }, a_attr: {"class": "non-terminal","program":"undefined","tab":tab}
                             }, "last", function () {
                             });
                             num++;
@@ -3504,7 +3583,7 @@
                                 state: {
                                     opened: false,  // is the node open
                                     disabled: false,  // is the node disabled
-                                }, a_attr: {"class": "non-terminal","tab":tab}
+                                }, a_attr: {"class": "non-terminal","program":"undefined","tab":tab}
                             }, "last", function () {
                             });
                             num++;
@@ -3522,7 +3601,7 @@
                                 state: {
                                     opened: false,  // is the node open
                                     disabled: false,  // is the node disabled
-                                }, a_attr: {"class": "non-terminal","tab":tab}
+                                }, a_attr: {"class": "non-terminal","program":"undefined","tab":tab}
                             }, "last", function () {
                             });
                             num++;
@@ -3540,7 +3619,7 @@
                                 state: {
                                     opened: false,  // is the node open
                                     disabled: false,  // is the node disabled
-                                }, a_attr: {"class": "non-terminal","tab":tab}
+                                }, a_attr: {"class": "non-terminal","program":"undefined","tab":tab}
                             }, "last", function () {
                             });
                             num++;
@@ -3558,7 +3637,7 @@
                                 state: {
                                     opened: false,  // is the node open
                                     disabled: false,  // is the node disabled
-                                }, a_attr: {"class": "non-terminal","tab":tab}
+                                }, a_attr: {"class": "non-terminal","program":"undefined","tab":tab}
                             }, "last", function () {
                             });
                             num++;
@@ -3576,7 +3655,7 @@
                                 state: {
                                     opened: false,  // is the node open
                                     disabled: false,  // is the node disabled
-                                }, a_attr: {"class": "non-terminal","tab":tab}
+                                }, a_attr: {"class": "non-terminal","program":"undefined","tab":tab}
                             }, "last", function () {
                             });
                             num++;
@@ -3592,7 +3671,7 @@
                         "label": "Delete Rule",
                         "action": function () {
                             $("#lissSyntax").jstree(this).delete_node(node.children);
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     }
                 };
@@ -3606,7 +3685,7 @@
                     "label": "Delete Rule",
                     "action": function () {
                         $("#lissSyntax").jstree(this).delete_node(node.children);
-                        liss.setText(getProgramLiss());
+                        liss.setText(getProgramLissBeta());
                     }
                 }
             };
@@ -3624,7 +3703,7 @@
                                 state       : {
                                     opened    : false,  // is the node open
                                     disabled  : false,  // is the node disabled
-                                }, a_attr : { "class" : "non-terminal","tab":tab}
+                                }, a_attr : { "class" : "non-terminal","program":produceTabs(tab)+"undefined\n","tab":tab}
                             }, "last", function(){});
 
                             num++;
@@ -3646,7 +3725,7 @@
                                 state       : {
                                     opened    : false,  // is the node open
                                     disabled  : false,  // is the node disabled
-                                }, a_attr : { "class" : "non-terminal","tab":tab}
+                                }, a_attr : { "class" : "non-terminal","program":produceTabs(tab)+"undefined\n","tab":tab}
                             }, "last", function(){});
 
                             num++;
@@ -3661,7 +3740,7 @@
                         "action" : function () {
                             $("#lissSyntax").jstree(this).delete_node(node.children);
                             //Refresh the content of TextArea
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     }
                 };
@@ -3683,7 +3762,7 @@
                     "action": function () {
                         $("#lissSyntax").jstree(this).delete_node(nodeParent.children[position]);
                         //$("#lissSyntax").jstree(this).delete_node(nodeParent.children[position-1]);
-                        liss.setText(getProgramLiss());
+                        liss.setText(getProgramLissBeta());
                     }
                 }
             };
@@ -3706,7 +3785,7 @@
 
                             //Instruction for opening the branch
                             $("#lissSyntax").jstree("open_node", $("#"+node.id));
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     },
                     "add_f_args":{
@@ -3718,7 +3797,7 @@
                                 state       : {
                                     opened    : false,  // is the node open
                                     disabled  : false,  // is the node disabled
-                                }, a_attr : { "class" : "non-terminal","tab":tab}
+                                }, a_attr : { "class" : "non-terminal","program":"undefined","tab":tab}
                             }, "last", function(){});
 
                             num++;
@@ -3736,7 +3815,7 @@
                         "action": function () {
                             $("#lissSyntax").jstree(this).delete_node(node.children);
                             //$("#lissSyntax").jstree(this).delete_node(nodeParent.children[position-1]);
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     }
                 };
@@ -3748,7 +3827,7 @@
                     "action": function () {
                         $("#lissSyntax").jstree(this).delete_node(node.children);
                         //$("#lissSyntax").jstree(this).delete_node(nodeParent.children[position-1]);
-                        liss.setText(getProgramLiss());
+                        liss.setText(getProgramLissBeta());
                     }
                 }
             };
@@ -3767,7 +3846,7 @@
                                 state: {
                                     opened: false,  // is the node open
                                     disabled: true,  // is the node disabled
-                                }, a_attr: {"class": "terminal", "program": ", "}
+                                }, a_attr: {"class": "terminal", "program": ", ","tab":tab}
                             }, "last", function () {
                             });
                             num++;
@@ -3778,14 +3857,14 @@
                                 state       : {
                                     opened    : false,  // is the node open
                                     disabled  : false,  // is the node disabled
-                                }, a_attr : { "class" : "non-terminal","tab":tab}
+                                }, a_attr : { "class" : "non-terminal","program":"undefined","tab":tab}
                             }, "last", function(){});
 
                             num++;
 
                             //Instruction for opening the branch
                             $("#lissSyntax").jstree("open_node", $("#"+node.id));
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     }
                 };
@@ -3800,7 +3879,7 @@
                                 state: {
                                     opened: false,  // is the node open
                                     disabled: true,  // is the node disabled
-                                }, a_attr: {"class": "terminal", "program": ", "}
+                                }, a_attr: {"class": "terminal", "program": ", ","tab":tab}
                             }, "last", function () {
                             });
                             num++;
@@ -3811,7 +3890,7 @@
                                 state: {
                                     opened: false,  // is the node open
                                     disabled: false,  // is the node disabled
-                                }, a_attr: {"class": "non-terminal","tab":tab}
+                                }, a_attr: {"class": "non-terminal","program":"undefined","tab":tab}
                             }, "last", function () {
                             });
 
@@ -3819,7 +3898,7 @@
 
                             //Instruction for opening the branch
                             $("#lissSyntax").jstree("open_node", $("#" + node.id));
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     },
                     "delete": {
@@ -3833,12 +3912,12 @@
                                 state: {
                                     opened: false,  // is the node open
                                     disabled: false,  // is the node disabled
-                                }, a_attr: {"class": "non-terminal","tab":tab}
+                                }, a_attr: {"class": "non-terminal","program":"undefined","tab":tab}
                             }, "last", function () {
                             });
 
                             num++;
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     }
                 }
@@ -3861,7 +3940,7 @@
                         "label": "Delete Rule",
                         "action": function () {
                             $("#lissSyntax").jstree(this).delete_node(node.children);
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     }
                 }
@@ -3872,7 +3951,7 @@
                         "action": function () {
                             $("#lissSyntax").jstree(this).delete_node(nodeParent.children[position]);
                             $("#lissSyntax").jstree(this).delete_node(nodeParent.children[position-1]);
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     }
                 }
@@ -3890,13 +3969,13 @@
                                 state       : {
                                     opened    : false,  // is the node open
                                     disabled  : true,  // is the node disabled
-                                }, a_attr : { "class" : "terminal","program":""}
+                                }, a_attr : { "class" : "terminal","program":"","tab":tab}
                             }, "last", function(){});
                             num++;
 
                             //Instruction for opening the branch
                             $("#lissSyntax").jstree("open_node", $("#"+node.id));
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     },
                     "add_type_return_subrprogram":{
@@ -3908,7 +3987,7 @@
                                 state       : {
                                     opened    : false,  // is the node open
                                     disabled  : true,  // is the node disabled
-                                }, a_attr : { "class" : "terminal","program":"->"}
+                                }, a_attr : { "class" : "terminal","program":"->","tab":tab}
                             }, "last", function(){});
                             num++;
 
@@ -3918,14 +3997,14 @@
                                 state       : {
                                     opened    : false,  // is the node open
                                     disabled  : false,  // is the node disabled
-                                }, a_attr : { "class" : "non-terminal","tab":tab}
+                                }, a_attr : { "class" : "non-terminal","program":"undefined","tab":tab}
                             }, "last", function(){});
 
                             num++;
 
                             //Instruction for opening the branch
                             $("#lissSyntax").jstree("open_node", $("#"+node.id));
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     }
                 };
@@ -3935,7 +4014,7 @@
                         "label": "Delete Rule",
                         "action": function () {
                             $("#lissSyntax").jstree(this).delete_node(node.children);
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     }
                 };
@@ -3952,13 +4031,13 @@
                                 state       : {
                                     opened    : false,  // is the node open
                                     disabled  : true,  // is the node disabled
-                                }, a_attr : { "class" : "terminal","program":"integer"}
+                                }, a_attr : { "class" : "terminal","program":"integer","tab":tab}
                             }, "last", function(){});
                             num++;
 
                             //Instruction for opening the branch
                             $("#lissSyntax").jstree("open_node", $("#"+node.id));
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     },
                     "add_boolean":{
@@ -3971,13 +4050,13 @@
                                 state       : {
                                     opened    : false,  // is the node open
                                     disabled  : true,  // is the node disabled
-                                }, a_attr : { "class" : "terminal","program":"boolean"}
+                                }, a_attr : { "class" : "terminal","program":"boolean","tab":tab}
                             }, "last", function(){});
                             num++;
 
                             //Instruction for opening the branch
                             $("#lissSyntax").jstree("open_node", $("#"+node.id));
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     }
                 };
@@ -3988,7 +4067,7 @@
                         "label": "Delete Rule",
                         "action": function () {
                             $("#lissSyntax").jstree(this).delete_node(node.children);
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     }
                 };
@@ -3999,7 +4078,7 @@
                     "label": "Delete Rule",
                     "action": function () {
                         $("#lissSyntax").jstree(this).delete_node(node.children);
-                        liss.setText(getProgramLiss());
+                        liss.setText(getProgramLissBeta());
                     }
                 }
             };
@@ -4022,7 +4101,7 @@
 
                             //Instruction for opening the branch
                             $("#lissSyntax").jstree("open_node", $("#"+node.id));
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     },
                     "add_return":{
@@ -4044,7 +4123,7 @@
                                 state       : {
                                     opened    : false,  // is the node open
                                     disabled  : false,  // is the node disabled
-                                }, a_attr : { "class" : "non-terminal","tab":tab}
+                                }, a_attr : { "class" : "non-terminal","tab":0}
                             }, "last", function(){});
                             num++;
 
@@ -4060,7 +4139,7 @@
 
                             //Instruction for opening the branch
                             $("#lissSyntax").jstree("open_node", $("#"+node.id));
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     }
                 };
@@ -4070,7 +4149,7 @@
                         "label": "Delete Rule",
                         "action": function () {
                             $("#lissSyntax").jstree(this).delete_node(node.children);
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     }
                 };
@@ -4081,7 +4160,7 @@
                     "label": "Delete Rule",
                     "action": function () {
                         $("#lissSyntax").jstree(this).delete_node(node.children);
-                        liss.setText(getProgramLiss());
+                        liss.setText(getProgramLissBeta());
                     }
                 }
             };
@@ -4098,7 +4177,7 @@
                                 state       : {
                                     opened    : false,  // is the node open
                                     disabled  : false,  // is the node disabled
-                                }, a_attr : { "class" : "non-terminal","tab":tab}
+                                }, a_attr : { "class" : "non-terminal","program":produceTabs(tab)+"undefined\n","tab":tab}
                             }, "last", function(){});
 
                             num++;
@@ -4120,7 +4199,7 @@
                                 state       : {
                                     opened    : false,  // is the node open
                                     disabled  : false,  // is the node disabled
-                                }, a_attr : { "class" : "non-terminal","tab":tab}
+                                }, a_attr : { "class" : "non-terminal","program":produceTabs(tab)+"undefined\n","tab":tab}
                             }, "last", function(){});
 
                             num++;
@@ -4137,7 +4216,7 @@
                             //liss.debugger(node.children);
                             $("#lissSyntax").jstree(this).delete_node(node.children);
                             //Refresh the content of TextArea
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                             //liss.debugger("WOOT2");
                         }
                     }
@@ -4156,7 +4235,7 @@
                                 state       : {
                                     opened    : false,  // is the node open
                                     disabled  : false,  // is the node disabled
-                                }, a_attr : { "class" : "non-terminal","tab":tab}
+                                }, a_attr : { "class" : "non-terminal","program":produceTabs(tab)+"undefined","tab":tab}
                             }, "last", function(){});
                             num++;
 
@@ -4166,13 +4245,13 @@
                                 state       : {
                                     opened    : false,  // is the node open
                                     disabled  : true,  // is the node disabled
-                                }, a_attr : { "class" : "terminal","program": ";\n"}
+                                }, a_attr : { "class" : "terminal","program": ";\n","tab":0}
                             }, "last", function(){});
                             num++;
 
                             //Instruction for opening the branch
                             $("#lissSyntax").jstree("open_node", $("#"+node.id));
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     },
                     "add_write_statement": {
@@ -4184,7 +4263,7 @@
                                 state       : {
                                     opened    : false,  // is the node open
                                     disabled  : false,  // is the node disabled
-                                }, a_attr : { "class" : "non-terminal","tab":tab}
+                                }, a_attr : { "class" : "non-terminal","program":produceTabs(tab)+"undefined","tab":tab}
                             }, "last", function(){});
                             num++;
 
@@ -4194,13 +4273,13 @@
                                 state       : {
                                     opened    : false,  // is the node open
                                     disabled  : true,  // is the node disabled
-                                }, a_attr : { "class" : "terminal","program": ";\n"}
+                                }, a_attr : { "class" : "terminal","program": ";\n","tab":0}
                             }, "last", function(){});
                             num++;
 
                             //Instruction for opening the branch
                             $("#lissSyntax").jstree("open_node", $("#"+node.id));
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     },
                     "add_read_statement": {
@@ -4212,7 +4291,7 @@
                                 state       : {
                                     opened    : false,  // is the node open
                                     disabled  : false,  // is the node disabled
-                                }, a_attr : { "class" : "non-terminal","tab":tab}
+                                }, a_attr : { "class" : "non-terminal","program":produceTabs(tab)+"undefined","tab":tab}
                             }, "last", function(){});
                             num++;
 
@@ -4222,13 +4301,13 @@
                                 state       : {
                                     opened    : false,  // is the node open
                                     disabled  : true,  // is the node disabled
-                                }, a_attr : { "class" : "terminal","program": ";\n"}
+                                }, a_attr : { "class" : "terminal","program": ";\n","tab":0}
                             }, "last", function(){});
                             num++;
 
                             //Instruction for opening the branch
                             $("#lissSyntax").jstree("open_node", $("#"+node.id));
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     },
                     "add_conditional_statement": {
@@ -4240,7 +4319,7 @@
                                 state       : {
                                     opened    : false,  // is the node open
                                     disabled  : false,  // is the node disabled
-                                }, a_attr : { "class" : "non-terminal","tab":tab}
+                                }, a_attr : { "class" : "non-terminal","program":produceTabs(tab)+"undefined\n","tab":tab}
                             }, "last", function(){});
                             num++;
 
@@ -4258,7 +4337,7 @@
                                 state       : {
                                     opened    : false,  // is the node open
                                     disabled  : false,  // is the node disabled
-                                }, a_attr : { "class" : "non-terminal","tab":tab}
+                                }, a_attr : { "class" : "non-terminal","program":produceTabs(tab)+"undefined\n","tab":tab}
                             }, "last", function(){});
                             num++;
 
@@ -4276,7 +4355,7 @@
                                 state       : {
                                     opened    : false,  // is the node open
                                     disabled  : false,  // is the node disabled
-                                }, a_attr : { "class" : "non-terminal","tab":tab}
+                                }, a_attr : { "class" : "non-terminal","program":produceTabs(tab)+"undefined","tab":tab}
                             }, "last", function(){});
                             num++;
 
@@ -4286,13 +4365,13 @@
                                 state       : {
                                     opened    : false,  // is the node open
                                     disabled  : true,  // is the node disabled
-                                }, a_attr : { "class" : "terminal","program": ";\n"}
+                                }, a_attr : { "class" : "terminal","program": ";\n","tab":0}
                             }, "last", function(){});
                             num++;
 
                             //Instruction for opening the branch
                             $("#lissSyntax").jstree("open_node", $("#"+node.id));
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     },
                     "add_succ_or_pred": {
@@ -4304,7 +4383,7 @@
                                 state       : {
                                     opened    : false,  // is the node open
                                     disabled  : false,  // is the node disabled
-                                }, a_attr : { "class" : "non-terminal","tab":tab}
+                                }, a_attr : { "class" : "non-terminal","program":produceTabs(tab)+"undefined","tab":tab}
                             }, "last", function(){});
                             num++;
 
@@ -4314,13 +4393,13 @@
                                 state       : {
                                     opened    : false,  // is the node open
                                     disabled  : true,  // is the node disabled
-                                }, a_attr : { "class" : "terminal","program": ";\n"}
+                                }, a_attr : { "class" : "terminal","program": ";\n","tab":0}
                             }, "last", function(){});
                             num++;
 
                             //Instruction for opening the branch
                             $("#lissSyntax").jstree("open_node", $("#"+node.id));
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     },
                     "add_copy_statement": {
@@ -4332,7 +4411,7 @@
                                 state       : {
                                     opened    : false,  // is the node open
                                     disabled  : false,  // is the node disabled
-                                }, a_attr : { "class" : "non-terminal","tab":tab}
+                                }, a_attr : { "class" : "non-terminal","program":produceTabs(tab)+"undefined","tab":tab}
                             }, "last", function(){});
                             num++;
 
@@ -4342,13 +4421,13 @@
                                 state       : {
                                     opened    : false,  // is the node open
                                     disabled  : true,  // is the node disabled
-                                }, a_attr : { "class" : "terminal","program": ";\n"}
+                                }, a_attr : { "class" : "terminal","program": ";\n","tab":0}
                             }, "last", function(){});
                             num++;
 
                             //Instruction for opening the branch
                             $("#lissSyntax").jstree("open_node", $("#"+node.id));
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     },
                     "add_cat_statement": {
@@ -4360,7 +4439,7 @@
                                 state       : {
                                     opened    : false,  // is the node open
                                     disabled  : false,  // is the node disabled
-                                }, a_attr : { "class" : "non-terminal","tab":tab}
+                                }, a_attr : { "class" : "non-terminal","program":produceTabs(tab)+"undefined","tab":tab}
                             }, "last", function(){});
                             num++;
 
@@ -4370,13 +4449,13 @@
                                 state       : {
                                     opened    : false,  // is the node open
                                     disabled  : true,  // is the node disabled
-                                }, a_attr : { "class" : "terminal","program": ";\n"}
+                                }, a_attr : { "class" : "terminal","program": ";\n","tab":0}
                             }, "last", function(){});
                             num++;
 
                             //Instruction for opening the branch
                             $("#lissSyntax").jstree("open_node", $("#"+node.id));
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     },
                     "delete" : {
@@ -4397,7 +4476,7 @@
                             //liss.debugger(node.children);
                             $("#lissSyntax").jstree(this).delete_node(nodeParent.children[position]);
                             //Refresh the content of TextArea
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                             //liss.debugger("WOOT2");
                         }
                     }
@@ -4408,7 +4487,7 @@
                         "label" : "Change rule",
                         "action" : function () {
                             $("#lissSyntax").jstree(this).delete_node(node.children);
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                         }
                     },
                     "delete" : {
@@ -4427,12 +4506,26 @@
                             //liss.debugger(node.children);
                             $("#lissSyntax").jstree(this).delete_node(nodeParent.children[position]);
                             //Refresh the content of TextArea
-                            liss.setText(getProgramLiss());
+                            liss.setText(getProgramLissBeta());
                             //liss.debugger("WOOT2");
                         }
                     }
                 };
             }
+        }else if(patternAssignment.test(node.id)){
+            items ={
+                "delete" : {
+                    "label" : "Delete Rule",
+                    "action" : function () {
+                        //liss.debugger("WOOT1");
+                        //liss.debugger(node.children);
+                        $("#lissSyntax").jstree(this).delete_node(node.children);
+                        //Refresh the content of TextArea
+                        liss.setText(getProgramLissBeta());
+                        //liss.debugger("WOOT2");
+                    }
+                }
+            };
         }
         return items;
     }
@@ -4461,18 +4554,18 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: true,  // is the node disabled
-                    }, a_attr: {"class": "terminal", "program": produceTabs(tab)+"program "}
+                    }, a_attr: {"class": "terminal", "program": "program ", "tab":tab}
                 }, "last", function () {
                 });
 
-                //Node : identifier
-                $('#lissSyntax').jstree().create_node(data.node, {
-                    "id": "identifier"+num, "text": "IDENTIFIER",
-                    state: {
-                        opened: false,  // is the node open
-                        disabled: false,  // is the node disabled
-                    }, a_attr: {"class": "terminal edit", "program": "", "expressionregularrule": "ID"}
-                }, "last", function () {
+                //Node : name
+                $('#lissSyntax').jstree().create_node(data.node,{
+                    "id":"name"+num, "text": "name",
+                    state:{
+                        opened: true,
+                        disabled: false,
+                    }, a_attr:{"class":"non-terminal","program":"undefined","tab":tab}
+                },"last",function(){
                 });
                 num++;
 
@@ -4480,19 +4573,38 @@
                 $('#lissSyntax').jstree().create_node(data.node, {
                     "id": "body",
                     "text": "body",
-                    a_attr: {"class": "non-terminal", "tab":tab}
+                    a_attr: {"class": "non-terminal", "program": " undefined","tab":tab}
                 }, "last", function () {
                 });
 
                 //Instruction for opening the branch
                 $("#lissSyntax").jstree("open_node", $("#" + data.node.id));
-                liss.setText(getProgramLiss());
+                liss.setText(getProgramLissBeta());
             }else{
                 setTimeout(function () {
                     data.instance.show_contextmenu(data.node)
                 }, 100);
             }
-        } else if (data.node.id == "body") {
+        }else if(patternName.test(data.node.id)){
+            if(data.node.children.length<1) {
+                var tab = data.node.a_attr.tab;
+                $('#lissSyntax').jstree().create_node(data.node, {
+                    "id": "identifier" + num,
+                    "text": "IDENTIFIER",
+                    state: {
+                        opened: false,  // is the node open
+                        disabled: false,  // is the node disabled
+                    },
+                    a_attr: {"class": "terminal edit", "program": "undefined", "tab": 0, "expressionregularrule": "ID"}
+                }, "last", function () {
+                });
+                num++;
+            }else{
+                setTimeout(function () {
+                    data.instance.show_contextmenu(data.node)
+                }, 100);
+            }
+        }else if (patternBody.test(data.node.id)) {
             if(data.node.children < 1) {
                 var tab = data.node.a_attr.tab+1;
 
@@ -4502,7 +4614,7 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: true,  // is the node disabled
-                    }, a_attr: {"class": "terminal", "program": "{\n"}
+                    }, a_attr: {"class": "terminal", "program": "{\n", "tab":0}
                 }, "last", function () {
                 });
                 num++;
@@ -4513,7 +4625,7 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: true,  // is the node disabled
-                    }, a_attr: {"class": "terminal", "program": produceTabs(tab)+"declarations\n"}
+                    }, a_attr: {"class": "terminal", "program": "declarations\n", "tab":tab}
                 }, "last", function () {
                 });
 
@@ -4523,7 +4635,7 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: false,  // is the node disabled
-                    }, a_attr: {"class": "non-terminal", "tab" : tab}
+                    }, a_attr: {"class": "non-terminal", "program": produceTabs(tab+1)+"undefined\n","tab" : tab}
                 }, "last", function () {
                 });
                 num++;
@@ -4534,7 +4646,7 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: true,  // is the node disabled
-                    }, a_attr: {"class": "terminal", "program": produceTabs(tab) + "statements\n"}
+                    }, a_attr: {"class": "terminal", "program": "statements\n","tab":tab}
                 }, "last", function () {
                 });
 
@@ -4544,7 +4656,7 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: false,  // is the node disabled
-                    }, a_attr: {"class": "non-terminal", "tab" : tab}
+                    }, a_attr: {"class": "non-terminal", "program": produceTabs(tab+1)+"undefined\n","tab" : tab}
                 }, "last", function () {
                 });
                 num++;
@@ -4555,14 +4667,14 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: true,  // is the node disabled
-                    }, a_attr: {"class": "terminal", "program": "}"}
+                    }, a_attr: {"class": "terminal", "program": "}","tab":0}
                 }, "last", function () {
                 });
                 num++;
 
                 //Instruction for opening the branch
                 $("#lissSyntax").jstree("open_node", $("#" + data.node.id));
-                liss.setText(getProgramLiss());
+                liss.setText(getProgramLissBeta());
             }else{
                 setTimeout(function () {
                     data.instance.show_contextmenu(data.node)
@@ -4578,7 +4690,7 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: false,  // is the node disabled
-                    }, a_attr: {"class": "non-terminal", "tab":tab}
+                    }, a_attr: {"class": "non-terminal", "program":"","tab":tab}
                 }, "last", function () {
                 });
                 num++;
@@ -4589,7 +4701,7 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: false,  // is the node disabled
-                    }, a_attr: {"class": "non-terminal", "tab":tab}
+                    }, a_attr: {"class": "non-terminal","program":"", "tab":tab}
                 }, "last", function () {
                 });
                 num++;
@@ -4613,7 +4725,7 @@
                     state: {
                         opened: true,  // is the node open
                         disabled: false,  // is the node disabled
-                    }, a_attr: {"class": "non-terminal", "tab":tab}
+                    }, a_attr: {"class": "non-terminal", "program":produceTabs(tab)+"undefined","tab":tab}
                 }, "last", function () {
                 });
                 num++;
@@ -4624,7 +4736,7 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: false,  // is the node disabled
-                    }, a_attr: {"class": "non-terminal","tab":tab}
+                    }, a_attr: {"class": "non-terminal","program": produceTabs(tab)+"undefined","tab":tab}
                 }, "last", function () {
                 });
                 num++;
@@ -4635,7 +4747,7 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: true,  // is the node disabled
-                    }, a_attr: {"class": "terminal", "program": " -> "}
+                    }, a_attr: {"class": "terminal", "program": " -> ","tab":0}
                 }, "last", function () {
                 });
                 num++;
@@ -4646,7 +4758,7 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: false,  // is the node disabled
-                    }, a_attr: {"class": "non-terminal","tab":tab}
+                    }, a_attr: {"class": "non-terminal","program":"undefined","tab":0}
                 }, "last", function () {
                 });
                 num++;
@@ -4657,13 +4769,13 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: true,  // is the node disabled
-                    }, a_attr: {"class": "terminal", "program": ";\n"}
+                    }, a_attr: {"class": "terminal", "program": ";\n","tab":0}
                 }, "last", function () {
                 });
                 num++;
 
                 $("#lissSyntax").jstree("open_node", $("#" + data.node.id));
-                liss.setText(getProgramLiss());
+                liss.setText(getProgramLissBeta());
             }else{
                 setTimeout(function () {
                     data.instance.show_contextmenu(data.node)
@@ -4675,19 +4787,56 @@
             }, 100);
         }else if(patternVar.test(data.node.id)){
             var nodeParent = $("#lissSyntax").jstree(this).get_node(data.node.parent);
-            if(data.node.children<2 && nodeParent.children[0] === data.node.id) {
-                var tab = data.node.a_attr.tab+1;
+            var positionNodeInParent = function (nodeParent, node) {
+                var res = -1;
+                for (var i = 0; i < nodeParent.children.length; i++) {
+                    if (nodeParent.children[i] === node.id) {
+                        res = i;
+                    }
+                }
+                return res;
+            };
+            var position = positionNodeInParent(nodeParent, data.node);
+            if(data.node.children.length<1) {
+                var tab = data.node.a_attr.tab;
 
-                //Node : identifier_var
-                $('#lissSyntax').jstree().create_node(data.node, {
-                    "id": "identifier" + num, "text": "IDENTIFIER",
-                    state: {
-                        opened: false,  // is the node open
-                        disabled: false,  // is the node disabled
-                    }, a_attr: {"class": "terminal edit", "program": produceTabs(tab)+"", "expressionregularrule": "ID"}
-                }, "last", function () {
-                });
-                num++;
+                if(position === 0) {
+                    //Node : identifier_var
+                    $('#lissSyntax').jstree().create_node(data.node, {
+                        "id": "identifier" + num,
+                        "text": "IDENTIFIER",
+                        state: {
+                            opened: false,  // is the node open
+                            disabled: false,  // is the node disabled
+                        },
+                        a_attr: {
+                            "class": "terminal edit",
+                            "program": "undefined",
+                            "expressionregularrule": "ID",
+                            "tab": tab
+                        }
+                    }, "last", function () {
+                    });
+                    num++;
+                }else{
+                    //Node : identifier_var
+                    $('#lissSyntax').jstree().create_node(data.node, {
+                        "id": "identifier" + num,
+                        "text": "IDENTIFIER",
+                        state: {
+                            opened: false,  // is the node open
+                            disabled: false,  // is the node disabled
+                        },
+                        a_attr: {
+                            "class": "terminal edit",
+                            "program": "undefined",
+                            "expressionregularrule": "ID",
+                            "tab": 0
+                        }
+                    }, "last", function () {
+                    });
+                    num++;
+                }
 
                 //Node : value_var
                 $('#lissSyntax').jstree().create_node(data.node, {
@@ -4695,38 +4844,13 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: false,  // is the node disabled
-                    }, a_attr: {"class": "non-terminal","tab":tab}
+                    }, a_attr: {"class": "non-terminal","program":" undefined","tab":tab}
                 }, "last", function () {
                 });
                 num++;
 
                 $("#lissSyntax").jstree("open_node", $("#" + data.node.id));
-            }else if(data.node.children<2 && nodeParent.children.length > 1){
-                //Node : identifier_var
-                $('#lissSyntax').jstree().create_node(data.node, {
-                    "id": "identifier" + num, "text": "IDENTIFIER",
-                    state: {
-                        opened: false,  // is the node open
-                        disabled: false,  // is the node disabled
-                    }, a_attr: {"class": "terminal edit", "program": "", "expressionregularrule": "ID"}
-                }, "last", function () {
-                });
-                num++;
-
-                //Node : value_var
-                $('#lissSyntax').jstree().create_node(data.node, {
-                    "id": "value_var" + num, "text": "value_var",
-                    state: {
-                        opened: false,  // is the node open
-                        disabled: false,  // is the node disabled
-                    }, a_attr: {"class": "non-terminal","tab":tab}
-                }, "last", function () {
-                });
-                num++;
-
-                $("#lissSyntax").jstree("open_node", $("#" + data.node.id));
-                liss.setText(getProgramLiss());
-            }else if(data.node.children.length===2){
+            }else{
                 setTimeout(function () {
                     data.instance.show_contextmenu(data.node)
                 }, 100);
@@ -4752,7 +4876,7 @@
                     state: {
                         opened: true,  // is the node open
                         disabled: false,  // is the node disabled
-                    }, a_attr: {"class": "non-terminal","tab":tab}
+                    }, a_attr: {"class": "non-terminal","program":"undefined","tab":tab}
                 }, "last", function () {
                 });
                 num++;
@@ -4763,7 +4887,7 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: false,  // is the node disabled
-                    }, a_attr: {"class": "non-terminal","tab":tab}
+                    }, a_attr: {"class": "non-terminal","program":"undefined","tab":tab}
                 }, "last", function () {
                 });
                 num++;
@@ -4786,19 +4910,19 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: false,  // is the node disabled
-                    }, a_attr: {"class": "terminal edit", "program": "", "expressionregularrule": "NBR"}
+                    }, a_attr: {"class": "terminal edit", "program": "undefined", "expressionregularrule": "NBR","tab":0}
                 }, "last", function () {
                 });
                 num++;
 
                 $("#lissSyntax").jstree("open_node", $("#" + data.node.id));
-                liss.setText(getProgramLiss());
+                liss.setText(getProgramLissBeta());
             }else{
                 setTimeout(function () {
                     data.instance.show_contextmenu(data.node)
                 }, 100);
             }
-        }else if(patternConstant.test(data.node.id)){
+        }else if(patternValue.test(data.node.id)){
             setTimeout(function () {
                 data.instance.show_contextmenu(data.node)
             }, 100);
@@ -4815,7 +4939,7 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: true,  // is the node disabled
-                    }, a_attr: {"class": "terminal", "program": "["}
+                    }, a_attr: {"class": "terminal", "program": "[","tab":0}
                 }, "last", function () {
                 });
                 num++;
@@ -4826,7 +4950,7 @@
                     state       : {
                         opened    : false,  // is the node open
                         disabled  : false,  // is the node disabled
-                    }, a_attr : { "class" : "non-terminal","tab":tab}
+                    }, a_attr : { "class" : "non-terminal","program":"undefined","tab":tab}
                 }, "last", function(){});
                 num++;
 
@@ -4836,13 +4960,13 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: true,  // is the node disabled
-                    }, a_attr: {"class": "terminal", "program": "]"}
+                    }, a_attr: {"class": "terminal", "program": "]","tab":0}
                 }, "last", function () {
                 });
                 num++;
 
                 $("#lissSyntax").jstree("open_node", $("#" + data.node.id));
-                liss.setText(getProgramLiss());
+                liss.setText(getProgramLissBeta());
             }else{
                 setTimeout(function () {
                     data.instance.show_contextmenu(data.node)
@@ -4857,7 +4981,7 @@
                     state       : {
                         opened    : false,  // is the node open
                         disabled  : false,  // is the node disabled
-                    }, a_attr : { "class" : "non-terminal","tab":tab}
+                    }, a_attr : { "class" : "non-terminal","program":"undefined","tab":tab}
                 }, "last", function(){});
                 num++;
 
@@ -4867,7 +4991,7 @@
                     state       : {
                         opened    : false,  // is the node open
                         disabled  : false,  // is the node disabled
-                    }, a_attr : { "class" : "non-terminal","tab":tab}
+                    }, a_attr : { "class" : "non-terminal","program":"undefined","tab":tab}
                 }, "last", function(){});
                 num++;
 
@@ -4894,7 +5018,7 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: true,  // is the node disabled
-                    }, a_attr: {"class": "terminal", "program": "<<"}
+                    }, a_attr: {"class": "terminal", "program": "<<","tab":tab}
                 }, "last", function () {
                 });
                 num++;
@@ -4905,7 +5029,7 @@
                     state       : {
                         opened    : false,  // is the node open
                         disabled  : false,  // is the node disabled
-                    }, a_attr : { "class" : "non-terminal","tab":tab}
+                    }, a_attr : { "class" : "non-terminal","program":"undefined","tab":tab}
                 }, "last", function(){});
                 num++;
 
@@ -4915,13 +5039,13 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: true,  // is the node disabled
-                    }, a_attr: {"class": "terminal", "program": ">>"}
+                    }, a_attr: {"class": "terminal", "program": ">>","tab":0}
                 }, "last", function () {
                 });
                 num++;
 
                 $("#lissSyntax").jstree("open_node", $("#" + data.node.id));
-                liss.setText(getProgramLiss());
+                liss.setText(getProgramLissBeta());
             }else{
                 setTimeout(function () {
                     data.instance.show_contextmenu(data.node)
@@ -4940,7 +5064,7 @@
                     state       : {
                         opened    : false,  // is the node open
                         disabled  : false,  // is the node disabled
-                    }, a_attr : { "class" : "non-terminal","tab":tab}
+                    }, a_attr : { "class" : "non-terminal","program":"undefined","tab":tab}
                 }, "last", function(){});
                 num++;
 
@@ -4950,7 +5074,7 @@
                     state       : {
                         opened    : false,  // is the node open
                         disabled  : false,  // is the node disabled
-                    }, a_attr : { "class" : "non-terminal","tab":tab}
+                    }, a_attr : { "class" : "non-terminal","program":"undefined","tab":tab}
                 }, "last", function(){});
                 num++;
 
@@ -4969,7 +5093,7 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: true,  // is the node disabled
-                    }, a_attr: {"class": "terminal", "program": "{"}
+                    }, a_attr: {"class": "terminal", "program": "{","tab":0}
                 }, "last", function () {
                 });
                 num++;
@@ -4980,7 +5104,7 @@
                     state       : {
                         opened    : false,  // is the node open
                         disabled  : false,  // is the node disabled
-                    }, a_attr : { "class" : "non-terminal","tab":tab}
+                    }, a_attr : { "class" : "non-terminal","program":"undefined","tab":tab}
                 }, "last", function(){});
                 num++;
 
@@ -4990,13 +5114,13 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: true,  // is the node disabled
-                    }, a_attr: {"class": "terminal", "program": "}"}
+                    }, a_attr: {"class": "terminal", "program": "}","tab":0}
                 }, "last", function () {
                 });
                 num++;
 
                 $("#lissSyntax").jstree("open_node", $("#" + data.node.id));
-                liss.setText(getProgramLiss());
+                liss.setText(getProgramLissBeta());
             }else{
                 setTimeout(function () {
                     data.instance.show_contextmenu(data.node)
@@ -5015,7 +5139,7 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: false,  // is the node disabled
-                    }, a_attr: {"class": "non-terminal","tab":tab}
+                    }, a_attr: {"class": "non-terminal","program":"undefined","tab":tab}
                 }, "last", function () {
                 });
                 num++;
@@ -5026,7 +5150,7 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: false,  // is the node disabled
-                    }, a_attr: {"class": "non-terminal","tab":tab}
+                    }, a_attr: {"class": "non-terminal","program":"undefined","tab":tab}
                 }, "last", function () {
                 });
                 num++;
@@ -5089,7 +5213,7 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: false,  // is the node disabled
-                    }, a_attr: {"class": "non-terminal","tab":tab}
+                    }, a_attr: {"class": "non-terminal","program":"undefined","tab":tab}
                 }, "last", function () {
                 });
                 num++;
@@ -5100,7 +5224,7 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: false,  // is the node disabled
-                    }, a_attr: {"class": "non-terminal","tab":tab}
+                    }, a_attr: {"class": "non-terminal","program":"undefined","tab":tab}
                 }, "last", function () {
                 });
                 num++;
@@ -5128,16 +5252,17 @@
             setTimeout(function () {
                 data.instance.show_contextmenu(data.node)
             }, 100);
-        }else if(patternDesignator.test(data.node.id)){
+        }else if(patternVariable.test(data.node.id)){
             if(data.node.children.length < 1){
                 var tab = data.node.a_attr.tab;
+                liss.debugger("TAB_DESIGNATOR: "+tab);
                 //Node : identifier
                 $('#lissSyntax').jstree().create_node(data.node, {
                     "id": "identifier"+num, "text": "IDENTIFIER",
                     state: {
                         opened: false,  // is the node open
                         disabled: false,  // is the node disabled
-                    }, a_attr: {"class": "terminal edit", "program": "", "expressionregularrule": "ID"}
+                    }, a_attr: {"class": "terminal edit", "program": "undefined","tab":tab,"expressionregularrule": "ID"}
                 }, "last", function () {
                 });
                 num++;
@@ -5148,13 +5273,13 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: false,  // is the node disabled
-                    }, a_attr: {"class": "non-terminal","tab":tab}
+                    }, a_attr: {"class": "non-terminal","program":" undefined","tab":0}
                 }, "last", function () {
                 });
                 num++;
 
                 $("#lissSyntax").jstree("open_node", $("#" + data.node.id));
-                liss.setText(getProgramLiss());
+                liss.setText(getProgramLissBeta());
             }else{
                 setTimeout(function () {
                     data.instance.show_contextmenu(data.node)
@@ -5197,29 +5322,18 @@
             }
         }else if(patternFunctionCall.test(data.node.id)){
             if(data.node.children.length < 1){
-                if(patternStatement.test(data.node.parent)){
-                    //Node : identifier
-                    $('#lissSyntax').jstree().create_node(data.node, {
-                        "id": "identifier" + num, "text": "IDENTIFIER",
-                        state: {
-                            opened: false,  // is the node open
-                            disabled: false,  // is the node disabled
-                        }, a_attr: {"class": "terminal edit", "program": produceTabs(data.node.a_attr.tab)+"", "expressionregularrule": "ID"}
-                    }, "last", function () {
-                    });
-                    num++;
-                }else {
-                    //Node : identifier
-                    $('#lissSyntax').jstree().create_node(data.node, {
-                        "id": "identifier" + num, "text": "IDENTIFIER",
-                        state: {
-                            opened: false,  // is the node open
-                            disabled: false,  // is the node disabled
-                        }, a_attr: {"class": "terminal edit", "program": "", "expressionregularrule": "ID"}
-                    }, "last", function () {
-                    });
-                    num++;
-                }
+                var tab = data.node.a_attr.tab;
+
+                //Node : identifier
+                $('#lissSyntax').jstree().create_node(data.node, {
+                    "id": "identifier" + num, "text": "IDENTIFIER",
+                    state: {
+                        opened: false,  // is the node open
+                        disabled: false,  // is the node disabled
+                    }, a_attr: {"class": "terminal edit", "program": "undefined","tab":tab,"expressionregularrule": "ID"}
+                }, "last", function () {
+                });
+                num++;
 
                 //Node : (
                 $('#lissSyntax').jstree().create_node(data.node, {
@@ -5227,7 +5341,7 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: true,  // is the node disabled
-                    }, a_attr: {"class": "terminal", "program":"("}
+                    }, a_attr: {"class": "terminal","tab":0,"program":"("}
                 }, "last", function () {
                 });
                 num++;
@@ -5238,7 +5352,7 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: false,  // is the node disabled
-                    }, a_attr: {"class": "non-terminal","tab":tab}
+                    }, a_attr: {"class": "non-terminal","program":"undefined","tab":0}
                 }, "last", function () {
                 });
                 num++;
@@ -5249,13 +5363,13 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: true,  // is the node disabled
-                    }, a_attr: {"class": "terminal", "program":")"}
+                    }, a_attr: {"class": "terminal", "program":")","tab":0}
                 }, "last", function () {
                 });
                 num++;
 
                 $("#lissSyntax").jstree("open_node", $("#" + data.node.id));
-                liss.setText(getProgramLiss());
+                liss.setText(getProgramLissBeta());
             }else{
                 setTimeout(function () {
                     data.instance.show_contextmenu(data.node)
@@ -5274,7 +5388,7 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: false,  // is the node disabled
-                    }, a_attr: {"class": "non-terminal","tab":tab}
+                    }, a_attr: {"class": "non-terminal","program":"undefined","tab":tab}
                 }, "last", function () {
                 });
                 num++;
@@ -5285,7 +5399,7 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: false,  // is the node disabled
-                    }, a_attr: {"class": "non-terminal","tab":tab}
+                    }, a_attr: {"class": "non-terminal","program":"undefined","tab":tab}
                 }, "last", function () {
                 });
                 num++;
@@ -5313,7 +5427,7 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: true,  // is the node disabled
-                    }, a_attr: {"class": "terminal", "program" : "tail"}
+                    }, a_attr: {"class": "terminal", "program" : "tail","tab":tab}
                 }, "last", function () {
                 });
                 num++;
@@ -5324,7 +5438,7 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: true,  // is the node disabled
-                    }, a_attr: {"class": "terminal", "program" : "("}
+                    }, a_attr: {"class": "terminal", "program" : "(","tab":0}
                 }, "last", function () {
                 });
                 num++;
@@ -5335,7 +5449,7 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: false,  // is the node disabled
-                    }, a_attr: {"class": "non-terminal","tab":tab}
+                    }, a_attr: {"class": "non-terminal","program":"undefined","tab":0}
                 }, "last", function () {
                 });
                 num++;
@@ -5346,13 +5460,13 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: true,  // is the node disabled
-                    }, a_attr: {"class": "terminal", "program" : ")"}
+                    }, a_attr: {"class": "terminal", "program" : ")","tab":0}
                 }, "last", function () {
                 });
                 num++;
 
                 $("#lissSyntax").jstree("open_node", $("#" + data.node.id));
-                liss.setText(getProgramLiss());
+                liss.setText(getProgramLissBeta());
             }else{
                 setTimeout(function () {
                     data.instance.show_contextmenu(data.node)
@@ -5367,7 +5481,7 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: true,  // is the node disabled
-                    }, a_attr: {"class": "terminal", "program" : "head"}
+                    }, a_attr: {"class": "terminal", "program" : "head","tab":tab}
                 }, "last", function () {
                 });
                 num++;
@@ -5378,7 +5492,7 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: true,  // is the node disabled
-                    }, a_attr: {"class": "terminal", "program" : "("}
+                    }, a_attr: {"class": "terminal", "program" : "(","tab":0}
                 }, "last", function () {
                 });
                 num++;
@@ -5389,7 +5503,7 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: false,  // is the node disabled
-                    }, a_attr: {"class": "non-terminal","tab":tab}
+                    }, a_attr: {"class": "non-terminal","program":"undefined","tab":0}
                 }, "last", function () {
                 });
                 num++;
@@ -5400,13 +5514,13 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: true,  // is the node disabled
-                    }, a_attr: {"class": "terminal", "program" : ")"}
+                    }, a_attr: {"class": "terminal", "program" : ")","tab":0}
                 }, "last", function () {
                 });
                 num++;
 
                 $("#lissSyntax").jstree("open_node", $("#" + data.node.id));
-                liss.setText(getProgramLiss());
+                liss.setText(getProgramLissBeta());
             }else{
                 setTimeout(function () {
                     data.instance.show_contextmenu(data.node)
@@ -5421,7 +5535,7 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: true,  // is the node disabled
-                    }, a_attr: {"class": "terminal", "program" : "cons"}
+                    }, a_attr: {"class": "terminal", "program" : "cons","tab":tab}
                 }, "last", function () {
                 });
                 num++;
@@ -5432,7 +5546,7 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: true,  // is the node disabled
-                    }, a_attr: {"class": "terminal", "program" : "("}
+                    }, a_attr: {"class": "terminal", "program" : "(","tab":0}
                 }, "last", function () {
                 });
                 num++;
@@ -5443,7 +5557,7 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: false,  // is the node disabled
-                    }, a_attr: {"class": "non-terminal","tab":tab}
+                    }, a_attr: {"class": "non-terminal","program":"undefined","tab":0}
                 }, "last", function () {
                 });
                 num++;
@@ -5454,7 +5568,7 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: true,  // is the node disabled
-                    }, a_attr: {"class": "terminal", "program" : ","}
+                    }, a_attr: {"class": "terminal", "program" : ",","tab":0}
                 }, "last", function () {
                 });
                 num++;
@@ -5465,7 +5579,7 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: false,  // is the node disabled
-                    }, a_attr: {"class": "non-terminal","tab":tab}
+                    }, a_attr: {"class": "non-terminal","program":"undefined","tab":0}
                 }, "last", function () {
                 });
                 num++;
@@ -5476,13 +5590,13 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: true,  // is the node disabled
-                    }, a_attr: {"class": "terminal", "program" : ")"}
+                    }, a_attr: {"class": "terminal", "program" : ")","tab":0}
                 }, "last", function () {
                 });
                 num++;
 
                 $("#lissSyntax").jstree("open_node", $("#" + data.node.id));
-                liss.setText(getProgramLiss());
+                liss.setText(getProgramLissBeta());
             }else{
                 setTimeout(function () {
                     data.instance.show_contextmenu(data.node)
@@ -5497,7 +5611,7 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: true,  // is the node disabled
-                    }, a_attr: {"class": "terminal", "program" : "isMember"}
+                    }, a_attr: {"class": "terminal", "program" : "isMember","tab":tab}
                 }, "last", function () {
                 });
                 num++;
@@ -5508,7 +5622,7 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: true,  // is the node disabled
-                    }, a_attr: {"class": "terminal", "program" : "("}
+                    }, a_attr: {"class": "terminal", "program" : "(","tab":0}
                 }, "last", function () {
                 });
                 num++;
@@ -5519,7 +5633,7 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: false,  // is the node disabled
-                    }, a_attr: {"class": "non-terminal","tab":tab}
+                    }, a_attr: {"class": "non-terminal","program":"undefined","tab":0}
                 }, "last", function () {
                 });
                 num++;
@@ -5530,7 +5644,7 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: true,  // is the node disabled
-                    }, a_attr: {"class": "terminal", "program" : ","}
+                    }, a_attr: {"class": "terminal", "program" : ",","tab":0}
                 }, "last", function () {
                 });
                 num++;
@@ -5541,7 +5655,7 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: false,  // is the node disabled
-                    }, a_attr: {"class": "terminal edit", "program": "", "expressionregularrule": "ID"}
+                    }, a_attr: {"class": "terminal edit", "program": "undefined","tab":0, "expressionregularrule": "ID"}
                 }, "last", function () {
                 });
                 num++;
@@ -5552,13 +5666,13 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: true,  // is the node disabled
-                    }, a_attr: {"class": "terminal", "program" : ")"}
+                    }, a_attr: {"class": "terminal", "program" : ")","tab":0}
                 }, "last", function () {
                 });
                 num++;
 
                 $("#lissSyntax").jstree("open_node", $("#" + data.node.id));
-                liss.setText(getProgramLiss());
+                liss.setText(getProgramLissBeta());
             }else{
                 setTimeout(function () {
                     data.instance.show_contextmenu(data.node)
@@ -5573,7 +5687,7 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: true,  // is the node disabled
-                    }, a_attr: {"class": "terminal", "program" : "isEmpty"}
+                    }, a_attr: {"class": "terminal", "program" : "isEmpty","tab":tab}
                 }, "last", function () {
                 });
                 num++;
@@ -5584,7 +5698,7 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: true,  // is the node disabled
-                    }, a_attr: {"class": "terminal", "program" : "("}
+                    }, a_attr: {"class": "terminal", "program" : "(","tab":0}
                 }, "last", function () {
                 });
                 num++;
@@ -5595,7 +5709,7 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: false,  // is the node disabled
-                    }, a_attr: {"class": "non-terminal","tab":tab}
+                    }, a_attr: {"class": "non-terminal","program":"undefined","tab":tab}
                 }, "last", function () {
                 });
                 num++;
@@ -5606,13 +5720,13 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: true,  // is the node disabled
-                    }, a_attr: {"class": "terminal", "program" : ")"}
+                    }, a_attr: {"class": "terminal", "program" : ")","tab":0}
                 }, "last", function () {
                 });
                 num++;
 
                 $("#lissSyntax").jstree("open_node", $("#" + data.node.id));
-                liss.setText(getProgramLiss());
+                liss.setText(getProgramLissBeta());
             }else{
                 setTimeout(function () {
                     data.instance.show_contextmenu(data.node)
@@ -5627,7 +5741,7 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: true,  // is the node disabled
-                    }, a_attr: {"class": "terminal", "program" : "length"}
+                    }, a_attr: {"class": "terminal", "program" : "length","tab":tab}
                 }, "last", function () {
                 });
                 num++;
@@ -5638,7 +5752,7 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: true,  // is the node disabled
-                    }, a_attr: {"class": "terminal", "program" : "("}
+                    }, a_attr: {"class": "terminal", "program" : "(","tab":0}
                 }, "last", function () {
                 });
                 num++;
@@ -5649,7 +5763,7 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: false,  // is the node disabled
-                    }, a_attr: {"class": "non-terminal","tab":tab}
+                    }, a_attr: {"class": "non-terminal","program":"undefined","tab":tab}
                 }, "last", function () {
                 });
                 num++;
@@ -5660,13 +5774,13 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: true,  // is the node disabled
-                    }, a_attr: {"class": "terminal", "program" : ")"}
+                    }, a_attr: {"class": "terminal", "program" : ")","tab":0}
                 }, "last", function () {
                 });
                 num++;
 
                 $("#lissSyntax").jstree("open_node", $("#" + data.node.id));
-                liss.setText(getProgramLiss());
+                liss.setText(getProgramLissBeta());
             }else{
                 setTimeout(function () {
                     data.instance.show_contextmenu(data.node)
@@ -5681,7 +5795,7 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: true,  // is the node disabled
-                    }, a_attr: {"class": "terminal", "program" : "del"}
+                    }, a_attr: {"class": "terminal", "program" : "del","tab":tab}
                 }, "last", function () {
                 });
                 num++;
@@ -5692,7 +5806,7 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: true,  // is the node disabled
-                    }, a_attr: {"class": "terminal", "program" : "("}
+                    }, a_attr: {"class": "terminal", "program" : "(","tab":0}
                 }, "last", function () {
                 });
                 num++;
@@ -5703,7 +5817,7 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: false,  // is the node disabled
-                    }, a_attr: {"class": "non-terminal","tab":tab}
+                    }, a_attr: {"class": "non-terminal","program":"undefined","tab":tab}
                 }, "last", function () {
                 });
                 num++;
@@ -5714,7 +5828,7 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: true,  // is the node disabled
-                    }, a_attr: {"class": "terminal", "program" : ","}
+                    }, a_attr: {"class": "terminal", "program" : ",","tab":0}
                 }, "last", function () {
                 });
                 num++;
@@ -5725,7 +5839,7 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: false,  // is the node disabled
-                    }, a_attr: {"class": "non-terminal","tab":tab}
+                    }, a_attr: {"class": "non-terminal","program":"undefined","tab":tab}
                 }, "last", function () {
                 });
                 num++;
@@ -5736,13 +5850,13 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: true,  // is the node disabled
-                    }, a_attr: {"class": "terminal", "program" : ")"}
+                    }, a_attr: {"class": "terminal", "program" : ")","tab":0}
                 }, "last", function () {
                 });
                 num++;
 
                 $("#lissSyntax").jstree("open_node", $("#" + data.node.id));
-                liss.setText(getProgramLiss());
+                liss.setText(getProgramLissBeta());
             }else{
                 setTimeout(function () {
                     data.instance.show_contextmenu(data.node)
@@ -5763,40 +5877,38 @@
                     return res;
                 };
                 var position = positionNodeInParent(nodeParent,data.node);
-                var tab = data.node.a_attr.tab+1;
+                var tab = data.node.a_attr.tab;
 
-                if(position === 0) {
-                    //Node : subprogram
-                    $('#lissSyntax').jstree().create_node(data.node, {
-                        "id": "subprogram" + num, "text": "subprogram",
-                        state: {
-                            opened: false,  // is the node open
-                            disabled: true,  // is the node disabled
-                        }, a_attr: {"class": "terminal", "program": produceTabs(tab) + "subprogram "}
-                    }, "last", function () {
-                    });
-                    num++;
-                }else{
-                    //Node : subprogram
-                    $('#lissSyntax').jstree().create_node(data.node, {
-                        "id": "subprogram" + num, "text": "subprogram",
-                        state: {
-                            opened: false,  // is the node open
-                            disabled: true,  // is the node disabled
-                        }, a_attr: {"class": "terminal", "program": "\n"+produceTabs(tab) + "subprogram "}
-                    }, "last", function () {
-                    });
-                    num++;
-                }
+                //Node : subprogram
+                $('#lissSyntax').jstree().create_node(data.node, {
+                    "id": "subprogram" + num, "text": "subprogram",
+                    state: {
+                        opened: false,  // is the node open
+                        disabled: true,  // is the node disabled
+                    }, a_attr: {"class": "terminal", "program": "subprogram ","tab":tab}
+                }, "last", function () {
+                });
+                num++;
 
                 //Node : identifier
-                $('#lissSyntax').jstree().create_node(data.node, {
+                /*$('#lissSyntax').jstree().create_node(data.node, {
                     "id": "identifier"+num, "text": "IDENTIFIER",
                     state: {
                         opened: false,  // is the node open
                         disabled: false,  // is the node disabled
-                    }, a_attr: {"class": "terminal edit", "program": "", "expressionregularrule": "ID"}
+                    }, a_attr: {"class": "terminal edit", "program": "undefined","tab":0, "expressionregularrule": "ID"}
                 }, "last", function () {
+                });
+                num++;*/
+
+                //Node : name
+                $('#lissSyntax').jstree().create_node(data.node,{
+                    "id":"name"+num, "text": "name",
+                    state:{
+                        opened: true,
+                        disabled: false,
+                    }, a_attr:{"class":"non-terminal","program":"undefined","tab":tab}
+                },"last",function(){
                 });
                 num++;
 
@@ -5806,7 +5918,7 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: true,  // is the node disabled
-                    }, a_attr: {"class": "terminal", "program" : "("}
+                    }, a_attr: {"class": "terminal", "program" : "(","tab":0}
                 }, "last", function () {
                 });
                 num++;
@@ -5817,7 +5929,7 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: false,  // is the node disabled
-                    }, a_attr: {"class": "non-terminal","tab":tab}
+                    }, a_attr: {"class": "non-terminal","program":"undefined","tab":0}
                 }, "last", function () {
                 });
                 num++;
@@ -5828,7 +5940,7 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: true,  // is the node disabled
-                    }, a_attr: {"class": "terminal", "program" : ")"}
+                    }, a_attr: {"class": "terminal", "program" : ")","tab":0}
                 }, "last", function () {
                 });
                 num++;
@@ -5839,7 +5951,7 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: false,  // is the node disabled
-                    }, a_attr: {"class": "non-terminal","tab":tab}
+                    }, a_attr: {"class": "non-terminal","program":"undefined","tab":0}
                 }, "last", function () {
                 });
                 num++;
@@ -5850,13 +5962,13 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: false,  // is the node disabled
-                    }, a_attr: {"class": "non-terminal","tab":tab}
+                    }, a_attr: {"class": "non-terminal","program":" undefined\n","tab":tab}
                 }, "last", function () {
                 });
                 num++;
 
                 $("#lissSyntax").jstree("open_node", $("#" + data.node.id));
-                liss.setText(getProgramLiss());
+                liss.setText(getProgramLissBeta());
             }else{
                 setTimeout(function () {
                     data.instance.show_contextmenu(data.node)
@@ -5875,7 +5987,7 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: false,  // is the node disabled
-                    }, a_attr: {"class": "non-terminal","tab":tab}
+                    }, a_attr: {"class": "non-terminal","program":"undefined","tab":tab}
                 }, "last", function () {
                 });
                 num++;
@@ -5886,7 +5998,7 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: false,  // is the node disabled
-                    }, a_attr: {"class": "non-terminal","tab":tab}
+                    }, a_attr: {"class": "non-terminal","program":"undefined","tab":tab}
                 }, "last", function () {
                 });
                 num++;
@@ -5912,7 +6024,7 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: false,  // is the node disabled
-                    }, a_attr: {"class": "terminal edit", "program": "", "expressionregularrule": "ID"}
+                    }, a_attr: {"class": "terminal edit", "program": "undefined", "tab":tab,"expressionregularrule": "ID"}
                 }, "last", function () {
                 });
                 num++;
@@ -5923,7 +6035,7 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: true,  // is the node disabled
-                    }, a_attr: {"class": "terminal","program":"->"}
+                    }, a_attr: {"class": "terminal","program":"->","tab":tab}
                 }, "last", function () {
                 });
                 num++;
@@ -5934,13 +6046,13 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: false,  // is the node disabled
-                    }, a_attr: {"class": "non-terminal","tab":tab}
+                    }, a_attr: {"class": "non-terminal","program":"undefined","tab":tab}
                 }, "last", function () {
                 });
                 num++;
 
                 $("#lissSyntax").jstree("open_node", $("#" + data.node.id));
-                liss.setText(getProgramLiss());
+                liss.setText(getProgramLissBeta());
             }else{
                 setTimeout(function () {
                     data.instance.show_contextmenu(data.node)
@@ -5964,7 +6076,7 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: true,  // is the node disabled
-                    }, a_attr: {"class": "terminal", "program": "{\n"}
+                    }, a_attr: {"class": "terminal", "program": "{\n","tab":0}
                 }, "last", function () {
                 });
                 num++;
@@ -5975,7 +6087,7 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: true,  // is the node disabled
-                    }, a_attr: {"class": "terminal", "program": produceTabs(tab)+"declarations\n"}
+                    }, a_attr: {"class": "terminal", "program": "declarations\n","tab":tab}
                 }, "last", function () {
                 });
                 num++
@@ -5986,7 +6098,7 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: false,  // is the node disabled
-                    }, a_attr: {"class": "non-terminal", "tab" : tab}
+                    }, a_attr: {"class": "non-terminal","program":produceTabs(tab+1)+"undefined\n", "tab" : tab}
                 }, "last", function () {
                 });
                 num++;
@@ -5997,7 +6109,7 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: true,  // is the node disabled
-                    }, a_attr: {"class": "terminal", "program": produceTabs(tab) + "statements\n"}
+                    }, a_attr: {"class": "terminal", "program": "statements\n","tab":tab}
                 }, "last", function () {
                 });
                 num++
@@ -6008,7 +6120,7 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: false,  // is the node disabled
-                    }, a_attr: {"class": "non-terminal", "tab" : tab}
+                    }, a_attr: {"class": "non-terminal", "program": produceTabs(tab+1)+"undefined\n","tab" : tab}
                 }, "last", function () {
                 });
                 num++;
@@ -6019,7 +6131,7 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: false,  // is the node disabled
-                    }, a_attr: {"class": "non-terminal", "tab" : tab}
+                    }, a_attr: {"class": "non-terminal", "program": produceTabs(tab)+"undefined\n","tab" : tab}
                 }, "last", function () {
                 });
                 num++;
@@ -6037,7 +6149,7 @@
 
                 //Instruction for opening the branch
                 $("#lissSyntax").jstree("open_node", $("#" + data.node.id));
-                liss.setText(getProgramLiss());
+                liss.setText(getProgramLissBeta());
             }else{
                 setTimeout(function () {
                     data.instance.show_contextmenu(data.node)
@@ -6057,7 +6169,7 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: false,  // is the node disabled
-                    }, a_attr: {"class": "non-terminal", "tab" : tab}
+                    }, a_attr: {"class": "non-terminal", "program":"","tab" : tab}
                 }, "last", function () {
                 });
                 num++;
@@ -6077,6 +6189,54 @@
             setTimeout(function () {
                 data.instance.show_contextmenu(data.node)
             }, 100);
+        }else if(patternAssignment.test(data.node.id)){
+            if(data.node.children.length < 1){
+                var tab = data.node.a_attr.tab;
+
+                console.log(data.node);
+                liss.debugger("TAB_ASSIGNMENT: "+data.node.a_attr.tab);
+
+                //Node : variable
+                $('#lissSyntax').jstree().create_node(data.node, {
+                    "id": "variable" + num, "text": "variable",
+                    state: {
+                        opened: false,  // is the node open
+                        disabled: false,  // is the node disabled
+                    }, a_attr: {"class": "non-terminal","program":produceTabs(tab)+"undefined", "tab" : tab}
+                }, "last", function () {
+                });
+                num++;
+
+                //Node : equal
+                $('#lissSyntax').jstree().create_node(data.node, {
+                    "id": "equal" + num, "text": "=",
+                    state: {
+                        opened: false,  // is the node open
+                        disabled: true,  // is the node disabled
+                    }, a_attr: {"class": "terminal", "tab" : 0, "program":"="}
+                }, "last", function () {
+                });
+                num++;
+
+                //Node : expression
+                $('#lissSyntax').jstree().create_node(data.node, {
+                    "id": "expression" + num, "text": "expression",
+                    state: {
+                        opened: false,  // is the node open
+                        disabled: false,  // is the node disabled
+                    }, a_attr: {"class": "non-terminal","program":"undefined","tab" : 0}
+                }, "last", function () {
+                });
+                num++;
+
+                //Instruction for opening the branch
+                $("#lissSyntax").jstree("open_node", $("#" + data.node.id));
+                liss.setText(getProgramLissBeta());
+            }else{
+                setTimeout(function () {
+                    data.instance.show_contextmenu(data.node)
+                }, 100);
+            }
         }
     });
     
