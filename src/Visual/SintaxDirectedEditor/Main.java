@@ -118,7 +118,7 @@ public class Main {
                 JSObject jsobj = (JSObject) we.executeScript("window");
                 //LissProgram l = new LissProgram(codeArea);
                 jsobj.setMember("liss", l);
-                codeArea.replaceText("");
+                codeArea.clear();
             }
         });
 

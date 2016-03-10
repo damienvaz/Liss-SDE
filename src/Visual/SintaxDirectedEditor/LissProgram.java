@@ -39,6 +39,10 @@ public class LissProgram {
         }
     }
 
+    public void clear(){
+        this.textArea.clear();
+    }
+
     public String getText(){return this.textArea.getText();}
 
     public String toString(){
