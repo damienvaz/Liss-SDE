@@ -1,6 +1,9 @@
 package Visual.SintaxDirectedEditor;
 
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.concurrent.Worker;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
@@ -22,7 +25,6 @@ import org.fxmisc.richtext.LineNumberFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -110,17 +112,43 @@ public class Main {
         newMenuItem.setAccelerator(
                 KeyCombination.keyCombination("SHORTCUT+N")
         );
+
+
+        /*newMenuItem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                pathDirectory = null;
+                l.clear();
+                wv.getEngine().reload();
+                JSObject jsobj = (JSObject) we.executeScript("window");
+                //LissProgram l = new LissProgram(codeArea);
+                //l.clear();
+                jsobj.setMember("liss", l);
+                System.out.println("PASSEI POR AQUI ");
+                //codeArea.clear();
+                //codeArea.replaceText("");
+            }
+        });*/
         newMenuItem.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent e) {
                 pathDirectory = null;
-                wv.getEngine().reload();
-                JSObject jsobj = (JSObject) we.executeScript("window");
-                //LissProgram l = new LissProgram(codeArea);
-                jsobj.setMember("liss", l);
-                codeArea.clear();
+                final WebEngine webEngine = wv.getEngine();
+                webEngine .reload();
+                webEngine.getLoadWorker().stateProperty().addListener(
+                    new ChangeListener<Worker.State>() {
+                        public void changed(ObservableValue ov, Worker.State oldState, Worker.State newState) {
+                            if (newState == Worker.State.SUCCEEDED) {
+                                JSObject jsobj = (JSObject) we.executeScript("window");
+                                jsobj.setMember("liss", l);
+                                l.clear();
+                            }
+                        }
+                    }
+                );
             }
         });
+
 
         //When "load menuitem" is clicked, then it exits the program
         MenuItem loadMenuItem = (MenuItem) fxmlLoader.getNamespace().get("load");
@@ -223,7 +251,6 @@ public class Main {
             @Override
             public void handle(ActionEvent e) {
                 Platform.exit();
-                //System.setProperty("apple.eawt.quitStrategy", "CLOSE_ALL_WINDOWS");
             }
         });
 

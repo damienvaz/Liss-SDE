@@ -114,14 +114,14 @@
 
     $('#lissSyntax').on("set_text.jstree",function(event,object){
         var id = object.obj.a_attr.id;
+
         var node = $("#"+id);
         //ID : ('a'..'z'|'A'..'Z')('a'..'z'|'A'..'Z'|'0'..'9'|'_')* //removi o uso do signal '-' conflitos com os valores do signal
         var patternId = /^([a-z]|[A-Z])([a-z]|[A-Z]|[0-9]|[_])*$/;
         //NBR : ('0'..'9')+
         var patternNbr = /^[0-9]+$/;
-
-        var patternEscSeq = /\\(b|t|n|f|r|"|'|\\)/;
-        var patternStr = /^.*$/;     // -> /"(\\(b|t|n|f|r|"|'|\\)|[^"])*"/;
+        //STR: '"'(\\(b|t|n|f|r|\"|\'|\\)|~('"'))*'"'
+        var patternStr = /^\"((\\(b|t|n|f|r|"|'|\\))|[^\"])*\"$/;              //  ->   /^.*$/;
 
         console.log("ENTREI");
         //Pr.C.:Check if the node has an expression regular rule as attribute
