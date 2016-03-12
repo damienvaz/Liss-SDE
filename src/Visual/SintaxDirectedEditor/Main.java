@@ -10,6 +10,9 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
+import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
@@ -28,6 +31,9 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalTime;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -93,8 +99,10 @@ public class Main {
         codeArea.setEditable(false);
         codeArea.setStyle("-fx-font-size:15;");
         sp.getChildren().add(codeArea);
+        codeArea.replaceText("undefined");
+        codeArea.setStyleClass(0, 9, "warning");
 
-        LissProgram l = new LissProgram(codeArea);
+        LissProgramVisual l = new LissProgramVisual(codeArea);
         //Creating a bridge for WebEngine to Java code application
         we.documentProperty().addListener((observable, oldValue, newValue) -> {
             //Comment about this piece of code: When a user want to create a new liss file, we must add this piece of code into the function addListener function.
@@ -112,23 +120,6 @@ public class Main {
         newMenuItem.setAccelerator(
                 KeyCombination.keyCombination("SHORTCUT+N")
         );
-
-
-        /*newMenuItem.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent e) {
-                pathDirectory = null;
-                l.clear();
-                wv.getEngine().reload();
-                JSObject jsobj = (JSObject) we.executeScript("window");
-                //LissProgram l = new LissProgram(codeArea);
-                //l.clear();
-                jsobj.setMember("liss", l);
-                System.out.println("PASSEI POR AQUI ");
-                //codeArea.clear();
-                //codeArea.replaceText("");
-            }
-        });*/
         newMenuItem.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent e) {
@@ -141,7 +132,9 @@ public class Main {
                             if (newState == Worker.State.SUCCEEDED) {
                                 JSObject jsobj = (JSObject) we.executeScript("window");
                                 jsobj.setMember("liss", l);
-                                l.clear();
+                                //l.clear();
+                                l.getTextArea().replaceText("undefined");
+                                codeArea.setStyleClass(0, 9, "warning");
                             }
                         }
                     }
@@ -251,6 +244,54 @@ public class Main {
             @Override
             public void handle(ActionEvent e) {
                 Platform.exit();
+            }
+        });
+
+        TextArea errorsTextArea = (TextArea)  fxmlLoader.getNamespace().get("errors_textarea");
+        errorsTextArea.setWrapText(true);
+        final int errorsTab = 0;
+        TextArea compilerTextArea = (TextArea)  fxmlLoader.getNamespace().get("compiler_textarea");
+        final int compilerTab = 1;
+        TabPane tabpane = (TabPane) fxmlLoader.getNamespace().get("tabpane");
+
+
+        //When "run compilerTextArea menuitem" is clicked, then it runs the compilerTextArea
+        MenuItem runCompilerMenuItem = (MenuItem) fxmlLoader.getNamespace().get("run_compiler");
+        runCompilerMenuItem.setAccelerator(
+                KeyCombination.keyCombination("SHORTCUT+SHIFT+C")
+        );
+        runCompilerMenuItem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                boolean validateLissProgram = (boolean) we.executeScript("validatingProgramLiss()");
+                //ZonedDateTime zdt = ZonedDateTime.now();
+                if(validateLissProgram){
+                    LocalTime hour = ZonedDateTime.now().toLocalTime().truncatedTo(ChronoUnit.SECONDS);
+                    String messageRunningCompiler = "Running compiler...";
+                    String compilerMessage = "["+hour+"] "+messageRunningCompiler;
+                    //compilerTab.getContent().requestFocus();
+//                    System.out.println(tabpane.getSelectionModel().getSelectedIndex());
+                    if(tabpane.getSelectionModel().getSelectedIndex()==compilerTab){
+                        compilerTextArea.appendText(compilerMessage);
+                    }else{
+                        tabpane.getSelectionModel().select(compilerTab);
+                        compilerTextArea.appendText(compilerMessage);
+                    }
+                    //System.out.println("O COMPILADOR PODE FUNCIONAR");
+                }else{
+                    LocalTime hour = ZonedDateTime.now().toLocalTime().truncatedTo(ChronoUnit.SECONDS);
+                    String messageErrorNotCompletedLissProgram = "Liss program isn't complete, some \"undefined\" are left. Please, fix it.\n";
+                    String errorMessage = "["+hour+"] "+messageErrorNotCompletedLissProgram;
+                    //System.out.println(errorMessage);
+                    //errorsTab.getContent().requestFocus();
+//                    System.out.println(tabpane.getSelectionModel().getSelectedIndex());
+                    if(tabpane.getSelectionModel().getSelectedIndex()==errorsTab){
+                        errorsTextArea.appendText(errorMessage);
+                    }else{
+                        tabpane.getSelectionModel().select(errorsTab);
+                        errorsTextArea.appendText(errorMessage);
+                    }
+                }
             }
         });
 

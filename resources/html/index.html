@@ -57,19 +57,52 @@
         }
     }
 
-    function getProgramLiss(){
-        var res="";
+    function nonTerminalHasMultiplicityZeroOrMore(id){
+        var res = true;
+        switch(true){
+            case patternVariablesDeclarations.test(id):
+                break;
+            case patternSubprogramsDefinitions.test(id):
+                break;
+            case patternMultipleStatement.test(id):
+                break;
+            default:
+                res=false;
+        }
+        return res;
+    }
+
+    function validatingProgramLiss(){
+        var res = true;
         var jsonObj = $('#lissSyntax').jstree(true).get_json('#', {flat:true});
-        liss.debugger("[");
         for(var i=0; i<jsonObj.length; i++) {
             var node = $("#lissSyntax").jstree(this).get_node(jsonObj[i].id);
             var arrayClassName = jsonObj[i].a_attr.class.split(" ");
-            liss.debugger("ArrayClassName [SIZE]:"+arrayClassName.length);
+
+            if(node.children.length === 0 && arrayClassName[0] === "non-terminal"){
+//                liss.debugger("*********NODE: " + node.id + " LENGTH_CHILDREN: " + node.children.length + " TAB: " + node.a_attr.tab + "**********");
+                if(!nonTerminalHasMultiplicityZeroOrMore(node.id)) {
+                    res = false;
+                    break;
+                }
+            }
+        }
+        return res;
+    }
+
+    function getProgramLiss(){
+        var res="";
+        var jsonObj = $('#lissSyntax').jstree(true).get_json('#', {flat:true});
+//        liss.debugger("[");
+        for(var i=0; i<jsonObj.length; i++) {
+            var node = $("#lissSyntax").jstree(this).get_node(jsonObj[i].id);
+            var arrayClassName = jsonObj[i].a_attr.class.split(" ");
+//            liss.debugger("ArrayClassName [SIZE]:"+arrayClassName.length);
             var tab = jsonObj[i].a_attr.tab;
             if (arrayClassName[0] === "terminal") {
-                liss.debugger("NODE_T: "+node.id+" TAB: "+node.a_attr.tab);
+//                liss.debugger("NODE_T: "+node.id+" LENGTH_CHILDREN: "+node.children.length+" TAB: "+node.a_attr.tab);
                 if (arrayClassName.length >= 2 && arrayClassName.length <= 3 && arrayClassName[1] === "edit") {
-                    liss.debugger("NODE_T1: "+node.id+" TAB: "+node.a_attr.tab);
+//                    liss.debugger("NODE_T1: "+node.id+" LENGTH_CHILDREN: "+node.children.length+" TAB: "+node.a_attr.tab);
                     var typeOfTerminal = jsonObj[i].a_attr.expressionregularrule;
                     if (typeOfTerminal === "ID" || typeOfTerminal === "NBR" || typeOfTerminal==="STR") {
                         //var tab = jsonObj[i].a_attr.tab;
@@ -97,13 +130,13 @@
             }else{
                 //Means that it is a non-terminal
                 //liss.debugger("NODE_NT: "+node.id+" POSITION: "+position+" CHILDREN_lENGTH: "+node.children.length);
-                liss.debugger("NODE_NT: "+node.id+" TAB: "+node.a_attr.tab);
+//                liss.debugger("NODE_NT: "+node.id+" LENGTH_CHILDREN: "+node.children.length+" TAB: "+node.a_attr.tab);
                 if(node.children.length === 0) {
                     res += jsonObj[i].a_attr.program;
                 }
             }
         }
-        liss.debugger("]");
+//        liss.debugger("]");
         return res;
     }
 
@@ -258,7 +291,7 @@
             },
             "check_callback": true,
             "data": [{
-                "id": "liss", "parent": "#", "text": "liss", a_attr: {"class": "non-terminal", "tab":0,"program":""}
+                "id": "liss", "parent": "#", "text": "liss", a_attr: {"class": "non-terminal", "tab":0,"program":"undefined"}
             }]
         },
         "plugins": ["contextmenu"],

@@ -10,12 +10,12 @@ import java.util.regex.Pattern;
 /**
  * Created by damienvaz on 01/02/16.
  */
-public class LissProgram {
+public class LissProgramVisual {
     private CodeArea textArea;
     private String jsonLiss;
     private int num;
 
-    public LissProgram(CodeArea t){
+    public LissProgramVisual(CodeArea t){
         this.textArea = t;
         this.jsonLiss=null;
         this.num = 0;
@@ -30,6 +30,7 @@ public class LissProgram {
         this.textArea.clear();
         this.textArea.replaceText(s);
 
+        //Create a regex for the word "undefined"
         String undefined = "undefined";
         Pattern word = Pattern.compile(undefined);
         Matcher match = word.matcher(s);
