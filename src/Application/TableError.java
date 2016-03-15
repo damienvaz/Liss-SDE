@@ -1,6 +1,9 @@
 package Application;
 
 
+import java.time.LocalTime;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.TreeMap;
 
@@ -60,6 +63,36 @@ public class TableError {
                         //s.append("\t" + v.get(pos));
                         s.append("\t" + message);
                         s.append("\n");
+                    }
+                }
+            }
+        }
+        return s.toString();
+    }
+
+    public String toStringSDE(){
+        StringBuilder s = new StringBuilder();
+        LocalTime hour = ZonedDateTime.now().toLocalTime().truncatedTo(ChronoUnit.SECONDS);
+
+        if(this.tableError.keySet().size()>0) {
+            s.append("[" + hour + "] Semantic errors found:\n");
+            for (Integer line : this.tableError.keySet()) {
+                TreeMap<Integer, ArrayList<String>> v = this.tableError.get(line);
+                for (Integer pos : v.keySet()) {
+                    ArrayList<String> messages = v.get(pos);
+                    for (String message : messages) {
+                        s.append("[" + hour + "] ");
+                        s.append("line: " + line);
+                        if (pos == -1) { // -1 significa que é um tipo assignment !
+                            //s.append("\t" + v.get(pos));
+                            s.append("  " + message);
+                            s.append("\n");
+                        } else {
+                            s.append(":" + pos);
+                            //s.append("\t" + v.get(pos));
+                            s.append("  " + message);
+                            s.append("\n");
+                        }
                     }
                 }
             }

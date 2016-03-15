@@ -13,7 +13,8 @@ grammar Liss;
 
 @members{
     int level = 0;
-    TableError e = new TableError();
+    //TableError e = new TableError();
+    TableError e;
     boolean isSet = false;
     int i= 0;
 
@@ -21,13 +22,18 @@ grammar Liss;
 
     boolean functionState = false;
 
-     Mips m = new Mips();
+     //Mips m = new Mips();
+     Mips m;
 }
 
 /* ****** Program ****** */
 
-liss [IdentifiersTable idTH]
-     : 'program' identifier body[idTH] { m.addDataInstruction(m.dataTextOriginal()); m.textExitCode(); System.out.println(e.toString()); if(e.isNull()){ m.write();}}
+liss [IdentifiersTable idTH, TableError tableError,Mips mips]
+      @init{
+        e = tableError;
+        m = mips;
+      }
+     : 'program' identifier body[idTH] { m.addDataInstruction(m.dataTextOriginal()); m.textExitCode(); System.out.println(e.toString()); /*if(e.isNull()){ m.write();}*/}
      ;
 
 
@@ -73,11 +79,11 @@ declarations[IdentifiersTable idTH, HashMap<String,Object> varInfo]
               }
               subprogram_definition[idTH]*
               {
-                System.out.println("-------");
-                $idTH.printSP();
+                //System.out.println("-------");
+                //$idTH.printSP();
                 //$idTH.popSP();
                 //$idTH.printSP();
-                System.out.println("-------");
+                //System.out.println("-------");
               }
             ;
 

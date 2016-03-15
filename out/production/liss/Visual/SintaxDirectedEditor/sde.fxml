@@ -22,20 +22,21 @@
                         <MenuItem fx:id="quit" mnemonicParsing="false" text="Quit" />
                   </items>
                 </Menu>
-                <Menu mnemonicParsing="false" text="Compile">
-                  <items>
-                    <MenuItem fx:id="run_compiler" mnemonicParsing="false" text="Run" />
-                  </items>
-                </Menu>
                   <Menu mnemonicParsing="false" text="Run">
                      <items>
-                        <MenuItem mnemonicParsing="false" text="Delete" />
+                        <MenuItem fx:id="run_compiler" mnemonicParsing="false" text="Compile" />
+                        <MenuItem mnemonicParsing="false" text="Compile and Run" />
                      </items>
                   </Menu>
                   <Menu mnemonicParsing="false" text="Help">
                      <items>
-                        <MenuItem mnemonicParsing="false" text="Delete" />
+                        <MenuItem mnemonicParsing="false" text="Overview" />
                      </items>
+                  </Menu>
+                  <Menu mnemonicParsing="false" text="About">
+                    <items>
+                      <MenuItem mnemonicParsing="false" text="Action 1" />
+                    </items>
                   </Menu>
               </menus>
             </MenuBar>

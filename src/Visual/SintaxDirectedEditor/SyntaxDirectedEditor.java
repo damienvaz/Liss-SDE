@@ -10,7 +10,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyCombination;
@@ -25,9 +24,9 @@ import javafx.stage.Stage;
 import netscape.javascript.JSObject;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
+import Application.Main;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -38,7 +37,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class Main {
+public class SyntaxDirectedEditor {
     private Scene scene;
     private Stage stage;
     private final String title = "liss | SDE";
@@ -48,7 +47,7 @@ public class Main {
     private String pathDirectory = null;
 
 
-    public Main() throws Exception {
+    public SyntaxDirectedEditor() throws Exception {
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("sde.fxml"));
         AnchorPane page = (AnchorPane) fxmlLoader.load();
@@ -264,27 +263,65 @@ public class Main {
             @Override
             public void handle(ActionEvent e) {
                 boolean validateLissProgram = (boolean) we.executeScript("validatingProgramLiss()");
-                //ZonedDateTime zdt = ZonedDateTime.now();
                 if(validateLissProgram){
+                    compilerTextArea.clear();
                     LocalTime hour = ZonedDateTime.now().toLocalTime().truncatedTo(ChronoUnit.SECONDS);
-                    String messageRunningCompiler = "Running compiler...";
-                    String compilerMessage = "["+hour+"] "+messageRunningCompiler;
-                    //compilerTab.getContent().requestFocus();
-//                    System.out.println(tabpane.getSelectionModel().getSelectedIndex());
+                    String syntaxValidity = "Syntax validity : valid.\n";
+                    String compilerMessage = "["+hour+"] "+syntaxValidity;
+                    String messageRunningCompiler = "Running compiler...\n";
+                    compilerMessage += "["+hour+"] "+messageRunningCompiler;
+                    //Choose tab and add message.
                     if(tabpane.getSelectionModel().getSelectedIndex()==compilerTab){
                         compilerTextArea.appendText(compilerMessage);
                     }else{
                         tabpane.getSelectionModel().select(compilerTab);
                         compilerTextArea.appendText(compilerMessage);
                     }
-                    //System.out.println("O COMPILADOR PODE FUNCIONAR");
+                    try{
+                        //create a temp file
+                        File temp = File.createTempFile("mips_assembly_code", ".liss");
+                        FileWriter fw = new FileWriter(temp.getAbsoluteFile());
+                        BufferedWriter bw = new BufferedWriter(fw);
+                        // write in file
+                        bw.write(l.getText());
+                        // close connection
+                        bw.close();
+
+                        Application.Main m = new Application.Main();
+                        String[] args = new String[1];
+                        args[0] = temp.getAbsolutePath();
+                        m.compile(args); //<- Houston we have a problem !!!!!
+                        compilerTextArea.appendText(m.getTableError().toStringSDE());
+
+                        //System.out.println("Temp file : " + temp.getAbsolutePath());
+                        /*FileReader reader = null;
+                        try {
+                            reader = new FileReader(temp);
+                            char[] chars = new char[(int) temp.length()];
+                            reader.read(chars);
+                            //content = new String(chars);
+                            System.out.println(chars);
+                            reader.close();
+                        } catch (IOException ex) {
+                            ex.printStackTrace();
+                        } finally {
+                            if(reader !=null){reader.close();}
+                        }*/
+
+                    }catch(IOException exception){
+
+                        exception.printStackTrace();
+
+                    }
+
+
                 }else{
                     LocalTime hour = ZonedDateTime.now().toLocalTime().truncatedTo(ChronoUnit.SECONDS);
+                    String syntaxValidity = "Syntax validity : invalid.\n";
+                    String errorMessage = "["+hour+"] "+syntaxValidity;
+                    hour = ZonedDateTime.now().toLocalTime().truncatedTo(ChronoUnit.SECONDS);
                     String messageErrorNotCompletedLissProgram = "Liss program isn't complete, some \"undefined\" are left. Please, fix it.\n";
-                    String errorMessage = "["+hour+"] "+messageErrorNotCompletedLissProgram;
-                    //System.out.println(errorMessage);
-                    //errorsTab.getContent().requestFocus();
-//                    System.out.println(tabpane.getSelectionModel().getSelectedIndex());
+                    errorMessage += "["+hour+"] "+messageErrorNotCompletedLissProgram;
                     if(tabpane.getSelectionModel().getSelectedIndex()==errorsTab){
                         errorsTextArea.appendText(errorMessage);
                     }else{

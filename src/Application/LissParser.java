@@ -137,7 +137,8 @@ public class LissParser extends Parser {
 
 
 	    int level = 0;
-	    TableError e = new TableError();
+	    //TableError e = new TableError();
+	    TableError e;
 	    boolean isSet = false;
 	    int i= 0;
 
@@ -145,7 +146,8 @@ public class LissParser extends Parser {
 
 	    boolean functionState = false;
 
-	     Mips m = new Mips();
+	     //Mips m = new Mips();
+	     Mips m;
 
 	public LissParser(TokenStream input) {
 		super(input);
@@ -153,6 +155,8 @@ public class LissParser extends Parser {
 	}
 	public static class LissContext extends ParserRuleContext {
 		public IdentifiersTable idTH;
+		public TableError tableError;
+		public Mips mips;
 		public IdentifierContext identifier() {
 			return getRuleContext(IdentifierContext.class,0);
 		}
@@ -160,9 +164,11 @@ public class LissParser extends Parser {
 			return getRuleContext(BodyContext.class,0);
 		}
 		public LissContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public LissContext(ParserRuleContext parent, int invokingState, IdentifiersTable idTH) {
+		public LissContext(ParserRuleContext parent, int invokingState, IdentifiersTable idTH, TableError tableError, Mips mips) {
 			super(parent, invokingState);
 			this.idTH = idTH;
+			this.tableError = tableError;
+			this.mips = mips;
 		}
 		@Override public int getRuleIndex() { return RULE_liss; }
 		@Override
@@ -175,9 +181,13 @@ public class LissParser extends Parser {
 		}
 	}
 
-	public final LissContext liss(IdentifiersTable idTH) throws RecognitionException {
-		LissContext _localctx = new LissContext(_ctx, getState(), idTH);
+	public final LissContext liss(IdentifiersTable idTH,TableError tableError,Mips mips) throws RecognitionException {
+		LissContext _localctx = new LissContext(_ctx, getState(), idTH, tableError, mips);
 		enterRule(_localctx, 0, RULE_liss);
+
+		        e = tableError;
+		        m = mips;
+		      
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
@@ -187,7 +197,7 @@ public class LissParser extends Parser {
 			identifier();
 			setState(156);
 			body(idTH);
-			 m.addDataInstruction(m.dataTextOriginal()); m.textExitCode(); System.out.println(e.toString()); if(e.isNull()){ m.write();}
+			 m.addDataInstruction(m.dataTextOriginal()); m.textExitCode(); System.out.println(e.toString()); /*if(e.isNull()){ m.write();}*/
 			}
 		}
 		catch (RecognitionException re) {
@@ -357,11 +367,11 @@ public class LissParser extends Parser {
 				_la = _input.LA(1);
 			}
 
-			                System.out.println("-------");
-			                _localctx.idTH.printSP();
+			                //System.out.println("-------");
+			                //_localctx.idTH.printSP();
 			                //_localctx.idTH.popSP();
 			                //_localctx.idTH.printSP();
-			                System.out.println("-------");
+			                //System.out.println("-------");
 			              
 			}
 		}

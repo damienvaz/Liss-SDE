@@ -2,6 +2,7 @@ package Visual.SplashScreen;/**
  * Created by damienvaz on 13/01/16.
  */
 
+import Visual.SintaxDirectedEditor.SyntaxDirectedEditor;
 import javafx.animation.PauseTransition;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -16,7 +17,6 @@ import javafx.util.Duration;
 
 import java.awt.*;
 import java.io.File;
-import java.io.IOException;
 
 public class Main extends Application {
 
@@ -64,7 +64,7 @@ public class Main extends Application {
             primaryStage.hide();
             Platform.setImplicitExit(false);
             try {
-                Visual.SintaxDirectedEditor.Main sde = new Visual.SintaxDirectedEditor.Main();
+                SyntaxDirectedEditor sde = new SyntaxDirectedEditor();
             } catch (Exception e) {
                 e.printStackTrace();
             }

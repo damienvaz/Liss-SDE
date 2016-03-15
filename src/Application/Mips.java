@@ -132,17 +132,23 @@ public class Mips {
     }
 
     public void addDataInstruction(String name, String instruction){
-        this.data +="\t"+name+" : "+instruction;
+        if(name!=null && instruction!=null) {
+            this.data += "\t" + name + " : " + instruction;
+        }
     }
 
     public void addDataInstruction(String instruction){ this.data += instruction;}
 
     public void addLineInstruction(String name, String instruction){
-        this.text += "  "+name+": \n"+instruction;
+        if(name!=null && instruction!=null) {
+            this.text += "  " + name + ": \n" + instruction;
+        }
     }
 
     public void addTextInstruction(String instruction){
-        this.text += instruction;
+        if(instruction!=null){
+            this.text += instruction;
+        }
     }
 
     public String storeWordArray(String name, int line, int pos){
