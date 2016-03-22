@@ -3,7 +3,7 @@ package Application;
 
     import java.util.HashMap;
     import java.util.LinkedList;
-    import SymbolTable.*;
+    import Application.SymbolTable.*;
 
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.CharStream;

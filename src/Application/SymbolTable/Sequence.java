@@ -1,4 +1,4 @@
-package SymbolTable;
+package Application.SymbolTable;
 
 /**
  * Created by damienvaz on 3/18/15.

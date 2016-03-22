@@ -8,7 +8,7 @@ grammar Liss;
 @header{
     import java.util.HashMap;
     import java.util.LinkedList;
-    import SymbolTable.*;
+    import Application.SymbolTable.*;
 }
 
 @members{
@@ -1203,11 +1203,11 @@ single_expression [IdentifiersTable idTH, Set set]
                                                     Set s1 = $t1.setS ;
                                                     Set s2 = $t2.setS;
                                                     if(s1 == null ){
-                                                        SymbolTable.Set s = (SymbolTable.Set) $idTH.getInfoIdentifiersTable($t1.text);
+                                                        Application.SymbolTable.Set s = (Application.SymbolTable.Set) $idTH.getInfoIdentifiersTable($t1.text);
                                                         s1 = s.getSet();
                                                     }
                                                     if(s2 == null ){
-                                                        SymbolTable.Set s = (SymbolTable.Set) $idTH.getInfoIdentifiersTable($t2.text);
+                                                        Application.SymbolTable.Set s = (Application.SymbolTable.Set) $idTH.getInfoIdentifiersTable($t2.text);
                                                         s2 = s.getSet();
                                                     }
                                                     $setS = new Set(s1,s2,$a.text);
@@ -1250,11 +1250,11 @@ single_expression [IdentifiersTable idTH, Set set]
                                                 Set s1 = $setS ;
                                                 Set s2 = $t2.setS;
                                                 if(s1 == null ){
-                                                    SymbolTable.Set s = (SymbolTable.Set) $idTH.getInfoIdentifiersTable($t1.text);
+                                                    Application.SymbolTable.Set s = (Application.SymbolTable.Set) $idTH.getInfoIdentifiersTable($t1.text);
                                                     s1 = s.getSet();
                                                 }
                                                 if(s2 == null ){
-                                                    SymbolTable.Set s = (SymbolTable.Set) $idTH.getInfoIdentifiersTable($t2.text);
+                                                    Application.SymbolTable.Set s = (Application.SymbolTable.Set) $idTH.getInfoIdentifiersTable($t2.text);
                                                     s2 = s.getSet();
                                                 }
                                                 $setS = new Set(s1,s2,$a.text);
@@ -1292,7 +1292,7 @@ term [IdentifiersTable idTH, Set set]
         //Tratar os erros com mais especificaçoes (queue de erros de informaçoes)
         LinkedList<ErrorInfo> errorManagement = new LinkedList<ErrorInfo>();
      }
-     : f1=factor[idTH, set] { $line = $f1.line; $pos = $f1.pos;  errorManagement.add(new ErrorInfo($f1.text, $f1.typeS, $f1.line,$f1.pos)); n = $f1.treeS; if($f1.setS == null && !isDeclarations){ if($idTH.doesExist($f1.text)){if($idTH.getInfoIdentifiersTable($f1.text) instanceof SymbolTable.Set){SymbolTable.Set s = (SymbolTable.Set) $idTH.getInfoIdentifiersTable($f1.text); $setS = s.getSet();}}}else{$setS = $f1.setS;} $mipsCodeS = $f1.mipsCodeS; }
+     : f1=factor[idTH, set] { $line = $f1.line; $pos = $f1.pos;  errorManagement.add(new ErrorInfo($f1.text, $f1.typeS, $f1.line,$f1.pos)); n = $f1.treeS; if($f1.setS == null && !isDeclarations){ if($idTH.doesExist($f1.text)){if($idTH.getInfoIdentifiersTable($f1.text) instanceof Application.SymbolTable.Set){Application.SymbolTable.Set s = (Application.SymbolTable.Set) $idTH.getInfoIdentifiersTable($f1.text); $setS = s.getSet();}}}else{$setS = $f1.setS;} $mipsCodeS = $f1.mipsCodeS; }
      (m=mul_op f2=factor[idTH, set] {
 
                                 errorManagement.add(new ErrorInfo($mul_op.text,$mul_op.typeS,$mul_op.line,$mul_op.pos));
@@ -1329,11 +1329,11 @@ term [IdentifiersTable idTH, Set set]
                                             Set s1 = $f1.setS ;
                                             Set s2 = $f2.setS;
                                             if(s1 == null ){
-                                                SymbolTable.Set s = (SymbolTable.Set) $idTH.getInfoIdentifiersTable($f1.text);
+                                                Application.SymbolTable.Set s = (Application.SymbolTable.Set) $idTH.getInfoIdentifiersTable($f1.text);
                                                 s1 = s.getSet();
                                             }
                                             if(s2 == null ){
-                                                SymbolTable.Set s = (SymbolTable.Set) $idTH.getInfoIdentifiersTable($f2.text);
+                                                Application.SymbolTable.Set s = (Application.SymbolTable.Set) $idTH.getInfoIdentifiersTable($f2.text);
                                                 s2 = s.getSet();
                                             }
                                             $setS = new Set(s1,s2,$m.text);
@@ -1381,11 +1381,11 @@ term [IdentifiersTable idTH, Set set]
                                                 Set s1 = $setS ;
                                                 Set s2 = $f2.setS;
                                                 if(s1 == null ){
-                                                    SymbolTable.Set s = (SymbolTable.Set) $idTH.getInfoIdentifiersTable($f1.text);
+                                                    Application.SymbolTable.Set s = (Application.SymbolTable.Set) $idTH.getInfoIdentifiersTable($f1.text);
                                                     s1 = s.getSet();
                                                 }
                                                 if(s2 == null ){
-                                                    SymbolTable.Set s = (SymbolTable.Set) $idTH.getInfoIdentifiersTable($f2.text);
+                                                    Application.SymbolTable.Set s = (Application.SymbolTable.Set) $idTH.getInfoIdentifiersTable($f2.text);
                                                     s2 = s.getSet();
                                                 }
                                                 $setS = new Set(s1,s2,$m.text);

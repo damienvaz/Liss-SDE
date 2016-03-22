@@ -4,7 +4,7 @@ package Application;
  * @author damienvaz
  */
 
-import SymbolTable.IdentifiersTable;
+import Application.SymbolTable.IdentifiersTable;
 import org.antlr.v4.runtime.ANTLRFileStream;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CharStream;

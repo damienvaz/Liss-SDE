@@ -1,4 +1,4 @@
-package SymbolTable;
+package Application.SymbolTable;
 
 import Application.TableError;
 import Application.ErrorMessage;

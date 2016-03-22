@@ -1,6 +1,6 @@
 package Application;
 
-import SymbolTable.InfoIdentifiersTable;
+import Application.SymbolTable.InfoIdentifiersTable;
 
 import java.util.HashMap;
 

@@ -1,8 +1,8 @@
 package Application;
 
-import SymbolTable.Array;
-import SymbolTable.IdentifiersTable;
-import SymbolTable.Int;
+import Application.SymbolTable.Array;
+import Application.SymbolTable.IdentifiersTable;
+import Application.SymbolTable.Int;
 
 
 import java.util.ArrayList;
