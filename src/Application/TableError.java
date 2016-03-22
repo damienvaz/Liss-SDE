@@ -75,7 +75,7 @@ public class TableError {
         LocalTime hour = ZonedDateTime.now().toLocalTime().truncatedTo(ChronoUnit.SECONDS);
 
         if(this.tableError.keySet().size()>0) {
-            s.append("[" + hour + "] Semantic errors found:\n");
+            s.append("[" + hour + "] Semantics errors found:\n");
             for (Integer line : this.tableError.keySet()) {
                 TreeMap<Integer, ArrayList<String>> v = this.tableError.get(line);
                 for (Integer pos : v.keySet()) {

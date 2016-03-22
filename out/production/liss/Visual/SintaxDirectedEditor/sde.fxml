@@ -25,7 +25,7 @@
                   <Menu mnemonicParsing="false" text="Run">
                      <items>
                         <MenuItem fx:id="run_compiler" mnemonicParsing="false" text="Compile" />
-                        <MenuItem mnemonicParsing="false" text="Compile and Run" />
+                        <MenuItem fx:id="run_project" mnemonicParsing="false" text="Compile and Run" />
                      </items>
                   </Menu>
                   <Menu mnemonicParsing="false" text="Help">
@@ -71,7 +71,7 @@
                                     </AnchorPane>
                               </content>
                             </Tab>
-                              <Tab fx:id="compiler_tab" text="Compiler">
+                              <Tab fx:id="compiler_tab" text="Output">
                                 <content>
                                   <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                        <children>

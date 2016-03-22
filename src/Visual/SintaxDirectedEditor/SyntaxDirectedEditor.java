@@ -209,7 +209,7 @@ public class SyntaxDirectedEditor {
                             directory.mkdir();
                             pathDirectory = directory.getAbsolutePath();
                             Path pathBuild = directory.toPath().resolveSibling(directory.toPath().toString() + File.separator + f.getName() + ".build");
-                            Path pathLiss = directory.toPath().resolveSibling(directory.toPath().toString() + File.separator + f.getName() + ".liss");   //pathJson = pathJson.resolveSibling(pathJson.getFileName() + ".json");
+                            Path pathLiss = directory.toPath().resolveSibling(directory.toPath().toString() + File.separator + f.getName() + ".liss");
 
                             List<String> lines = Arrays.asList(jsonString);
                             Files.write(pathBuild, lines, Charset.forName("UTF-8"));
@@ -219,7 +219,7 @@ public class SyntaxDirectedEditor {
                     }else {
                         File directory = new File(pathDirectory);
                         Path pathBuild = directory.toPath().resolveSibling(directory.toPath().toString() + File.separator + directory.getName() + ".build");
-                        Path pathLiss = directory.toPath().resolveSibling(directory.toPath().toString() + File.separator + directory.getName() + ".liss");   //pathJson = pathJson.resolveSibling(pathJson.getFileName() + ".json");
+                        Path pathLiss = directory.toPath().resolveSibling(directory.toPath().toString() + File.separator + directory.getName() + ".liss");
 
                         List<String> lines = Arrays.asList(jsonString);
                         Files.write(pathBuild, lines, Charset.forName("UTF-8"));
@@ -249,12 +249,12 @@ public class SyntaxDirectedEditor {
         TextArea errorsTextArea = (TextArea)  fxmlLoader.getNamespace().get("errors_textarea");
         errorsTextArea.setWrapText(true);
         final int errorsTab = 0;
-        TextArea compilerTextArea = (TextArea)  fxmlLoader.getNamespace().get("compiler_textarea");
+        TextArea outputTextArea = (TextArea)  fxmlLoader.getNamespace().get("compiler_textarea");
         final int compilerTab = 1;
         TabPane tabpane = (TabPane) fxmlLoader.getNamespace().get("tabpane");
 
 
-        //When "run compilerTextArea menuitem" is clicked, then it runs the compilerTextArea
+        //When "run outputTextArea menuitem" is clicked, then it runs the outputTextArea
         MenuItem runCompilerMenuItem = (MenuItem) fxmlLoader.getNamespace().get("run_compiler");
         runCompilerMenuItem.setAccelerator(
                 KeyCombination.keyCombination("SHORTCUT+SHIFT+C")
@@ -264,7 +264,7 @@ public class SyntaxDirectedEditor {
             public void handle(ActionEvent e) {
                 boolean validateLissProgram = (boolean) we.executeScript("validatingProgramLiss()");
                 if(validateLissProgram){
-                    compilerTextArea.clear();
+                    outputTextArea.clear();
                     LocalTime hour = ZonedDateTime.now().toLocalTime().truncatedTo(ChronoUnit.SECONDS);
                     String syntaxValidity = "Syntax validity : valid.\n";
                     String compilerMessage = "["+hour+"] "+syntaxValidity;
@@ -272,14 +272,15 @@ public class SyntaxDirectedEditor {
                     compilerMessage += "["+hour+"] "+messageRunningCompiler;
                     //Choose tab and add message.
                     if(tabpane.getSelectionModel().getSelectedIndex()==compilerTab){
-                        compilerTextArea.appendText(compilerMessage);
+                        outputTextArea.appendText(compilerMessage);
                     }else{
                         tabpane.getSelectionModel().select(compilerTab);
-                        compilerTextArea.appendText(compilerMessage);
+                        outputTextArea.appendText(compilerMessage);
                     }
                     try{
                         //create a temp file
-                        File temp = File.createTempFile("mips_assembly_code", ".liss");
+                        File temp = File.createTempFile("temporaryLissFile", ".liss");
+                        //System.out.println(temp.getAbsolutePath());
                         FileWriter fw = new FileWriter(temp.getAbsoluteFile());
                         BufferedWriter bw = new BufferedWriter(fw);
                         // write in file
@@ -290,26 +291,61 @@ public class SyntaxDirectedEditor {
                         Application.Main m = new Application.Main();
                         String[] args = new String[1];
                         args[0] = temp.getAbsolutePath();
-                        m.compile(args); //<- Houston we have a problem !!!!!
-                        compilerTextArea.appendText(m.getTableError().toStringSDE());
+                        m.compile(args);
+                        File tempAssembly = null;
+                        if(!m.getTableError().toStringSDE().equals("")) {    //<----- checkar aqui
+                            errorsTextArea.clear();
+                            tabpane.getSelectionModel().select(errorsTab);
+                            errorsTextArea.appendText(m.getTableError().toStringSDE());
+                            hour = ZonedDateTime.now().toLocalTime().truncatedTo(ChronoUnit.SECONDS);
+                            String semanticError = "Compiler stopped. Verify informations in Errors tab of SDE.\n";
+                            compilerMessage = "["+hour+"] "+semanticError;
+                            outputTextArea.appendText(compilerMessage);
+                        }else{
+                            hour = ZonedDateTime.now().toLocalTime().truncatedTo(ChronoUnit.SECONDS);
+                            String compilerDone = "Compiler executed successfully.\n";
+                            compilerMessage = "["+hour+"] "+compilerDone;
+                            outputTextArea.appendText(compilerMessage);
+                            //Save .asm file in directory. and output the message to
+                            if(pathDirectory!=null){
+                                File directory = new File(pathDirectory);
+                                Path pathAsm = directory.toPath().resolveSibling(directory.toPath().toString() + File.separator + directory.getName() + ".asm");
 
-                        //System.out.println("Temp file : " + temp.getAbsolutePath());
-                        /*FileReader reader = null;
-                        try {
-                            reader = new FileReader(temp);
-                            char[] chars = new char[(int) temp.length()];
-                            reader.read(chars);
-                            //content = new String(chars);
-                            System.out.println(chars);
-                            reader.close();
-                        } catch (IOException ex) {
-                            ex.printStackTrace();
-                        } finally {
-                            if(reader !=null){reader.close();}
-                        }*/
+                                tempAssembly = pathAsm.toFile();
+
+                                List<String> lines = Arrays.asList(m.getMips().getAssemblyCode());
+                                Files.write(pathAsm, lines, Charset.forName("UTF-8"));
+
+                                //Write output message to the Output Tab.
+                                String savedAssemblyMessage = " Assembly file saved under the project:"+pathAsm.toString()+" .";
+                                compilerMessage = "["+hour+"] "+savedAssemblyMessage;
+                                outputTextArea.appendText(compilerMessage);
+                            }else{
+                                //PathDirectory is not set and FileChooserDialog must appear for saving purpose.
+                                FileChooser saveFile = new FileChooser();
+
+                                //Set extension Filter
+                                FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("ASM files (*.asm)", "*.asm");
+                                saveFile.getExtensionFilters().add(extFilter);
+                                saveFile.setTitle("Save Mips assembly code");
+
+                                File f = saveFile.showSaveDialog(stage);
+                                if(f!=null) {
+                                    Path pathAsm = f.toPath();
+                                    tempAssembly = pathAsm.toFile();
+
+                                    List<String> lines = Arrays.asList(m.getMips().getAssemblyCode());
+                                    Files.write(pathAsm, lines, Charset.forName("UTF-8"));
+
+                                    //Write output message to the Output Tab.
+                                    String savedAssemblyMessage = " Assembly file saved to this path: "+pathAsm.toString()+" .";
+                                    compilerMessage = "["+hour+"] "+savedAssemblyMessage;
+                                    outputTextArea.appendText(compilerMessage);
+                                }
+                            }
+                        }
 
                     }catch(IOException exception){
-
                         exception.printStackTrace();
 
                     }
@@ -332,6 +368,172 @@ public class SyntaxDirectedEditor {
             }
         });
 
+        //When "run compilerandrunTextArea menuitem" is clicked, then it runs the outputTextArea
+        MenuItem runProjectMenuItem = (MenuItem) fxmlLoader.getNamespace().get("run_project");
+        runProjectMenuItem.setAccelerator(
+                KeyCombination.keyCombination("SHORTCUT+SHIFT+R")
+        );
+        runProjectMenuItem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                boolean validateLissProgram = (boolean) we.executeScript("validatingProgramLiss()");
+                if(validateLissProgram){
+                    outputTextArea.clear();
+                    LocalTime hour = ZonedDateTime.now().toLocalTime().truncatedTo(ChronoUnit.SECONDS);
+                    String syntaxValidity = "Syntax validity : valid.\n";
+                    String compilerMessage = "["+hour+"] "+syntaxValidity;
+                    String messageRunningCompiler = "Running compiler...\n";
+                    compilerMessage += "["+hour+"] "+messageRunningCompiler;
+                    //Choose tab and add message.
+                    if(tabpane.getSelectionModel().getSelectedIndex()==compilerTab){
+                        outputTextArea.appendText(compilerMessage);
+                    }else{
+                        tabpane.getSelectionModel().select(compilerTab);
+                        outputTextArea.appendText(compilerMessage);
+                    }
+                    try{
+                        //create a temp file
+                        File temp = File.createTempFile("temporaryLissFile", ".liss");
+                        //System.out.println(temp.getAbsolutePath());
+                        FileWriter fw = new FileWriter(temp.getAbsoluteFile());
+                        BufferedWriter bw = new BufferedWriter(fw);
+                        // write in file
+                        bw.write(l.getText());
+                        // close connection
+                        bw.close();
+
+                        Application.Main m = new Application.Main();
+                        String[] args = new String[1];
+                        args[0] = temp.getAbsolutePath();
+                        m.compile(args);
+                        File tempAssembly = null;
+                        if(!m.getTableError().toStringSDE().equals("")) {    //<----- checkar aqui
+                            errorsTextArea.clear();
+                            tabpane.getSelectionModel().select(errorsTab);
+                            errorsTextArea.appendText(m.getTableError().toStringSDE());
+                            hour = ZonedDateTime.now().toLocalTime().truncatedTo(ChronoUnit.SECONDS);
+                            String semanticError = "Compiler stopped. Verify informations in Errors tab of SDE.\n";
+                            compilerMessage = "["+hour+"] "+semanticError;
+                            outputTextArea.appendText(compilerMessage);
+                        }else{
+                            hour = ZonedDateTime.now().toLocalTime().truncatedTo(ChronoUnit.SECONDS);
+                            String compilerDone = "Compiler executed successfully.\n";
+                            compilerMessage = "["+hour+"] "+compilerDone;
+                            outputTextArea.appendText(compilerMessage);
+
+                            //Save .asm file in directory. and output the message to
+                            if(pathDirectory!=null){
+                                File directory = new File(pathDirectory);
+                                Path pathAsm = directory.toPath().resolveSibling(directory.toPath().toString() + File.separator + directory.getName() + ".asm");
+
+                                tempAssembly = pathAsm.toFile();
+
+                                List<String> lines = Arrays.asList(m.getMips().getAssemblyCode());
+                                Files.write(pathAsm, lines, Charset.forName("UTF-8"));
+
+                                //Write output message to the Output Tab.
+                                String savedAssemblyMessage = " Assembly file saved under the project:"+pathAsm.toString()+" .\n";
+                                compilerMessage = "["+hour+"] "+savedAssemblyMessage;
+                                outputTextArea.appendText(compilerMessage);
+
+                                File marsSimulator = new File("resources/mars_simulator/Mars4_5.jar");
+                                if(marsSimulator.exists() && temp.exists()){
+                                    String res="";
+
+                                    try {
+                                        Process p = Runtime.getRuntime().exec("java -jar "+marsSimulator.getAbsolutePath()+" "+tempAssembly.getAbsolutePath());
+                                        p.waitFor();
+
+                                        InputStream is = p.getInputStream();
+
+                                        byte b[] = new byte[is.available()];
+                                        is.read(b, 0, b.length); // probably try b.length-1 or -2 to remove "new-line(s)"
+
+                                        res = new String(b);
+
+                                    } catch (Exception ex) {
+                                        ex.printStackTrace();
+                                    }
+                                    //System.out.println(res);
+                                    outputTextArea.appendText(res+"\n");
+
+                                }else{
+                                    //File doesnt exist  throw message!!
+                                }
+                            }else{
+                                //PathDirectory is not set and FileChooserDialog must appear for saving purpose.
+                                FileChooser saveFile = new FileChooser();
+
+                                //Set extension Filter
+                                FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("ASM files (*.asm)", "*.asm");
+                                saveFile.getExtensionFilters().add(extFilter);
+                                saveFile.setTitle("Save Mips assembly code");
+
+                                File f = saveFile.showSaveDialog(stage);
+                                if(f!=null) {
+                                    Path pathAsm = f.toPath();
+                                    tempAssembly = pathAsm.toFile();
+
+                                    List<String> lines = Arrays.asList(m.getMips().getAssemblyCode());
+                                    Files.write(pathAsm, lines, Charset.forName("UTF-8"));
+
+                                    //Write output message to the Output Tab.
+                                    String savedAssemblyMessage = " Assembly file saved to this path: "+pathAsm.toString()+" .\n";
+                                    compilerMessage = "["+hour+"] "+savedAssemblyMessage;
+                                    outputTextArea.appendText(compilerMessage);
+
+
+                                    File marsSimulator = new File("resources/mars_simulator/Mars4_5.jar");
+                                    if(marsSimulator.exists() && temp.exists()){
+                                        String res="";
+
+                                        try {
+                                            Process p = Runtime.getRuntime().exec("java -jar "+marsSimulator.getAbsolutePath()+" "+tempAssembly.getAbsolutePath());
+                                            p.waitFor();
+
+                                            InputStream is = p.getInputStream();
+
+                                            byte b[] = new byte[is.available()];
+                                            is.read(b, 0, b.length); // probably try b.length-1 or -2 to remove "new-line(s)"
+
+                                            res = new String(b);
+
+                                        } catch (Exception ex) {
+                                            ex.printStackTrace();
+                                        }
+                                        //System.out.println(res);
+                                        outputTextArea.appendText(res+"\n");
+
+
+                                    }else{
+                                        //File doesnt exist !!
+                                    }
+                                }
+                            }
+                        }
+
+                    }catch(IOException exception){
+                        exception.printStackTrace();
+
+                    }
+
+
+                }else{
+                    LocalTime hour = ZonedDateTime.now().toLocalTime().truncatedTo(ChronoUnit.SECONDS);
+                    String syntaxValidity = "Syntax validity : invalid.\n";
+                    String errorMessage = "["+hour+"] "+syntaxValidity;
+                    hour = ZonedDateTime.now().toLocalTime().truncatedTo(ChronoUnit.SECONDS);
+                    String messageErrorNotCompletedLissProgram = "Liss program isn't complete, some \"undefined\" are left. Please, fix it.\n";
+                    errorMessage += "["+hour+"] "+messageErrorNotCompletedLissProgram;
+                    if(tabpane.getSelectionModel().getSelectedIndex()==errorsTab){
+                        errorsTextArea.appendText(errorMessage);
+                    }else{
+                        tabpane.getSelectionModel().select(errorsTab);
+                        errorsTextArea.appendText(errorMessage);
+                    }
+                }
+            }
+        });
 
         stage.show();
     }

@@ -1233,6 +1233,9 @@ public class Mips {
         addTextInstruction(instruction);
     }
 
+    public String getAssemblyCode(){
+        return this.data+this.text;
+    }
 
     public void write(){
         try {
