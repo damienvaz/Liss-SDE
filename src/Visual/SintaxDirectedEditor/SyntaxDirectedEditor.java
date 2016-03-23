@@ -13,18 +13,18 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyCombination;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
-import javafx.stage.DirectoryChooser;
-import javafx.stage.FileChooser;
-import javafx.stage.Screen;
-import javafx.stage.Stage;
+import javafx.stage.*;
 import netscape.javascript.JSObject;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
-import Application.Main;
 
 import java.io.*;
 import java.nio.charset.Charset;
@@ -40,6 +40,8 @@ import java.util.stream.Collectors;
 public class SyntaxDirectedEditor {
     private Scene scene;
     private Stage stage;
+    private Scene sceneAbout=null;
+    private Stage stageAbout=null;
     private final String title = "liss | SDE";
     private final double width = 600;
     private final double height = 400;
@@ -52,6 +54,15 @@ public class SyntaxDirectedEditor {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("sde.fxml"));
         AnchorPane page = (AnchorPane) fxmlLoader.load();
         scene = new Scene(page);
+        scene.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                if(stageAbout!=null) {
+                    System.out.println("mouse click detected! " + mouseEvent.getSource());
+                    stageAbout.close();
+                }
+            }
+        });
 
         stage = new Stage();
         stage.setScene(scene);
@@ -533,6 +544,38 @@ public class SyntaxDirectedEditor {
                     }
                 }
             }
+        });
+
+        //When "run compilerandrunTextArea menuitem" is clicked, then it runs the outputTextArea
+        MenuItem aboutMenuItem = (MenuItem) fxmlLoader.getNamespace().get("about_liss_sde");
+        aboutMenuItem.setOnAction(new EventHandler<ActionEvent>() {
+           @Override
+           public void handle(ActionEvent e) {
+               FXMLLoader fxmlLoaderAbout = new FXMLLoader(getClass().getResource("about.fxml"));
+               Pane pagePane = null;
+               try {
+                   pagePane = (Pane) fxmlLoaderAbout.load();
+               } catch (IOException e1) {
+                   e1.printStackTrace();
+               }
+               if(sceneAbout==null && stageAbout==null) {
+                   sceneAbout = new Scene(pagePane);
+                   stageAbout = new Stage();
+                   stageAbout.initStyle(StageStyle.UNDECORATED);
+                   stageAbout.setScene(sceneAbout);
+                   stageAbout.show();
+                   //Add click event on the scene for closing the whole scene
+                   sceneAbout.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
+                       @Override
+                       public void handle(MouseEvent mouseEvent) {
+                           System.out.println("mouse click detected! " + mouseEvent.getSource());
+                           stageAbout.close();
+                       }
+                   });
+               }else{
+                   stageAbout.show();
+               }
+           }
         });
 
         stage.show();
