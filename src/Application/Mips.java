@@ -1105,14 +1105,14 @@ public class Mips {
 
         for(int position=0; position<sizeOfArray; position+=1){
             if(level.equals(0)){
-                s.append(loadImmediateWord((position*this.eachAddressOccupies)+"",line,pos));
+                s.append(loadImmediateWord((position* eachAddressOccupies)+"",line,pos));
                 s.append(loadWordArray(nameOfArgument,line,pos));
                 //Falta fazer o store agora para o novo
-                s.append(storeWordSP(-(addressOfArrayArgumentOnSF-(position*this.eachAddressOccupies)))); //Might not work due to calcule
+                s.append(storeWordSP(-(addressOfArrayArgumentOnSF-(position* eachAddressOccupies)))); //Might not work due to calcule
             }else{
                 //s.append(loadImmediateWord(position+"",line,pos));
-                s.append(loadWordSP(-(addressOfArrayArgumentsOnSFForLevelGreaterThan0-(position*this.eachAddressOccupies))));
-                s.append(storeWordSP(-(addressOfArrayArgumentOnSF-(position*this.eachAddressOccupies)))); //Might not work due to calcule
+                s.append(loadWordSP(-(addressOfArrayArgumentsOnSFForLevelGreaterThan0-(position* eachAddressOccupies))));
+                s.append(storeWordSP(-(addressOfArrayArgumentOnSF-(position* eachAddressOccupies)))); //Might not work due to calcule
             }
         }
 

@@ -12,6 +12,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -27,6 +29,7 @@ import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 
 import java.io.*;
+import java.net.MalformedURLException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -42,7 +45,7 @@ public class SyntaxDirectedEditor {
     private Stage stage;
     private Scene sceneAbout=null;
     private Stage stageAbout=null;
-    private final String title = "liss | SDE";
+    private final String title = "liss|SDE";
     private final double width = 600;
     private final double height = 400;
     private final double cX = 0.00, cY = 0.00;
@@ -52,7 +55,7 @@ public class SyntaxDirectedEditor {
     public SyntaxDirectedEditor() throws Exception {
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("sde.fxml"));
-        AnchorPane page = (AnchorPane) fxmlLoader.load();
+        AnchorPane page = fxmlLoader.load();
         scene = new Scene(page);
         scene.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
             @Override
@@ -265,7 +268,7 @@ public class SyntaxDirectedEditor {
         TabPane tabpane = (TabPane) fxmlLoader.getNamespace().get("tabpane");
 
 
-        //When "run outputTextArea menuitem" is clicked, then it runs the outputTextArea
+        //When "run compiler menuitem" is clicked, then it runs the outputTextArea
         MenuItem runCompilerMenuItem = (MenuItem) fxmlLoader.getNamespace().get("run_compiler");
         runCompilerMenuItem.setAccelerator(
                 KeyCombination.keyCombination("SHORTCUT+SHIFT+C")
@@ -328,7 +331,7 @@ public class SyntaxDirectedEditor {
                                 Files.write(pathAsm, lines, Charset.forName("UTF-8"));
 
                                 //Write output message to the Output Tab.
-                                String savedAssemblyMessage = " Assembly file saved under the project:"+pathAsm.toString()+" .";
+                                String savedAssemblyMessage = "Assembly file saved under the project:"+pathAsm.toString()+" .";
                                 compilerMessage = "["+hour+"] "+savedAssemblyMessage;
                                 outputTextArea.appendText(compilerMessage);
                             }else{
@@ -349,7 +352,7 @@ public class SyntaxDirectedEditor {
                                     Files.write(pathAsm, lines, Charset.forName("UTF-8"));
 
                                     //Write output message to the Output Tab.
-                                    String savedAssemblyMessage = " Assembly file saved to this path: "+pathAsm.toString()+" .";
+                                    String savedAssemblyMessage = "Assembly file saved to this path: "+pathAsm.toString()+" .";
                                     compilerMessage = "["+hour+"] "+savedAssemblyMessage;
                                     outputTextArea.appendText(compilerMessage);
                                 }
@@ -443,16 +446,20 @@ public class SyntaxDirectedEditor {
                                 Files.write(pathAsm, lines, Charset.forName("UTF-8"));
 
                                 //Write output message to the Output Tab.
-                                String savedAssemblyMessage = " Assembly file saved under the project:"+pathAsm.toString()+" .\n";
+                                String savedAssemblyMessage = "Assembly file saved to this path:"+pathAsm.toString()+" .\n";
                                 compilerMessage = "["+hour+"] "+savedAssemblyMessage;
+                                outputTextArea.appendText(compilerMessage);
+
+                                //Write output message to the Output Tab
+                                String executingMessage = "Executing program...\n";
+                                compilerMessage = "["+hour+"] "+executingMessage;
                                 outputTextArea.appendText(compilerMessage);
 
                                 File marsSimulator = new File("resources/mars_simulator/Mars4_5.jar");
                                 if(marsSimulator.exists() && temp.exists()){
                                     String res="";
-
                                     try {
-                                        Process p = Runtime.getRuntime().exec("java -jar "+marsSimulator.getAbsolutePath()+" "+tempAssembly.getAbsolutePath());
+                                        Process p = Runtime.getRuntime().exec(new String[]{"java","-jar",marsSimulator.getAbsolutePath(),tempAssembly.getAbsolutePath()});
                                         p.waitFor();
 
                                         InputStream is = p.getInputStream();
@@ -489,17 +496,20 @@ public class SyntaxDirectedEditor {
                                     Files.write(pathAsm, lines, Charset.forName("UTF-8"));
 
                                     //Write output message to the Output Tab.
-                                    String savedAssemblyMessage = " Assembly file saved to this path: "+pathAsm.toString()+" .\n";
+                                    String savedAssemblyMessage = "Assembly file saved to this path: "+pathAsm.toString()+" .\n";
                                     compilerMessage = "["+hour+"] "+savedAssemblyMessage;
                                     outputTextArea.appendText(compilerMessage);
 
+                                    //Write output message to the Output Tab
+                                    String executingMessage = "Executing program...\n";
+                                    compilerMessage = "["+hour+"] "+executingMessage;
+                                    outputTextArea.appendText(compilerMessage);
 
                                     File marsSimulator = new File("resources/mars_simulator/Mars4_5.jar");
                                     if(marsSimulator.exists() && temp.exists()){
                                         String res="";
-
                                         try {
-                                            Process p = Runtime.getRuntime().exec("java -jar "+marsSimulator.getAbsolutePath()+" "+tempAssembly.getAbsolutePath());
+                                            Process p = Runtime.getRuntime().exec(new String[]{"java","-jar",marsSimulator.getAbsolutePath(),tempAssembly.getAbsolutePath()});
                                             p.waitFor();
 
                                             InputStream is = p.getInputStream();
@@ -546,7 +556,7 @@ public class SyntaxDirectedEditor {
             }
         });
 
-        //When "run compilerandrunTextArea menuitem" is clicked, then it runs the outputTextArea
+        //When "aboutmenuitem" is clicked, then it show a Pane
         MenuItem aboutMenuItem = (MenuItem) fxmlLoader.getNamespace().get("about_liss_sde");
         aboutMenuItem.setOnAction(new EventHandler<ActionEvent>() {
            @Override
@@ -554,11 +564,21 @@ public class SyntaxDirectedEditor {
                FXMLLoader fxmlLoaderAbout = new FXMLLoader(getClass().getResource("about.fxml"));
                Pane pagePane = null;
                try {
-                   pagePane = (Pane) fxmlLoaderAbout.load();
+                   pagePane = fxmlLoaderAbout.load();
                } catch (IOException e1) {
                    e1.printStackTrace();
                }
                if(sceneAbout==null && stageAbout==null) {
+                   ImageView i = (ImageView) fxmlLoaderAbout.getNamespace().get("liss_sde_logo");
+                   File f = new File("resources/images/about.png");
+                   //System.out.println(f.toURI().toURL().toString());
+                   Image t = null;
+                   try {
+                       t = new Image(f.toURI().toURL().toString());
+                   } catch (MalformedURLException e1) {
+                       e1.printStackTrace();
+                   }
+                   i.setImage(t);
                    sceneAbout = new Scene(pagePane);
                    stageAbout = new Stage();
                    stageAbout.initStyle(StageStyle.UNDECORATED);

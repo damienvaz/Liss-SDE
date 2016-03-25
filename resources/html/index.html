@@ -646,7 +646,7 @@
                 items = {
                     "delete_var": {
                         "label": "Delete Rule",
-                        "action": function () {var numb
+                        "action": function () {var numb;
                             $("#lissSyntax").jstree(this).delete_node(node.children);
                             liss.setText(getProgramLiss());
                         }
@@ -1078,7 +1078,7 @@
                 items = {
                     "delete_number": {
                         "label": "Delete Rule",
-                        "action": function () {var numb
+                        "action": function () {var numb;
                             $("#lissSyntax").jstree(this).delete_node(node.children);
                             liss.setText(getProgramLiss());
                         }
@@ -6481,7 +6481,7 @@
                     }, a_attr: {"class": "terminal", "program": "declarations\n","tab":tab}
                 }, "last", function () {
                 });
-                num++
+                num++;
 
                 //Node : declarations_nt
                 $('#lissSyntax').jstree().create_node(data.node, {
@@ -6503,7 +6503,7 @@
                     }, a_attr: {"class": "terminal", "program": "statements\n","tab":tab}
                 }, "last", function () {
                 });
-                num++
+                num++;
 
                 //Node : statements_nt
                 $('#lissSyntax').jstree().create_node(data.node, {
