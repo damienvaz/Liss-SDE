@@ -2045,7 +2045,7 @@
                                 state: {
                                     opened: false,  // is the node open
                                     disabled: true,  // is the node disabled
-                                }, a_attr: {"class": "terminal", "program": "in","tab":0}
+                                }, a_attr: {"class": "terminal", "program": " in ","tab":0}
                             }, "last", function () {
                             });
                             num++;
@@ -5530,7 +5530,7 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: false,  // is the node disabled
-                    }, a_attr: {"class": "non-terminal","program":"undefined","tab":tab}
+                    }, a_attr: {"class": "non-terminal","program":"undefined","tab":tab,"title":"Possibility of adding those operands: ==, !=, <, >, <=, >=, in."}
                 }, "last", function () {
                 });
                 num++;
@@ -5565,7 +5565,7 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: false,  // is the node disabled
-                    }, a_attr: {"class": "non-terminal","tab":tab}
+                    }, a_attr: {"class": "non-terminal","tab":tab,"title":"Possibility of adding those operands: +, -, ||, ++."}
                 }, "last", function () {
                 });
                 num++;
@@ -5604,7 +5604,7 @@
                     state: {
                         opened: false,  // is the node open
                         disabled: false,  // is the node disabled
-                    }, a_attr: {"class": "non-terminal","program":"undefined","tab":tab}
+                    }, a_attr: {"class": "non-terminal","program":"undefined","tab":tab,"title":"Possibility of adding those operands: *, /, &&, **."}
                 }, "last", function () {
                 });
                 num++;
@@ -5646,7 +5646,7 @@
         }else if(patternVariable.test(data.node.id)){
             if(data.node.children.length < 1){
                 var tab = data.node.a_attr.tab;
-                liss.debugger("TAB_DESIGNATOR: "+tab);
+//                liss.debugger("TAB_DESIGNATOR: "+tab);
                 //Node : identifier
                 $('#lissSyntax').jstree().create_node(data.node, {
                     "id": "identifier"+num, "text": "IDENTIFIER",
