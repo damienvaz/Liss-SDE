@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <TextArea editable="false" layoutX="10.0" layoutY="10.0" prefHeight="400.0" prefWidth="600.0" text="liss|SDE is a syntax-directed editor that helps to write programs in Liss language.&#10;The application, itself, is divided into two important areas which are separated horizontally.&#10;The top area is used  for the construction of a Liss program.&#10;It is divided vertically into two parts, the left part represented by the Liss syntactic rules and the right part is reserved to display the final program under construction in the left part.&#10;The bottom area is used to output some information like compiler semantic errors or runtime errors.&#10;&#10;The interaction that a developer can have with the liss|SDE application is restricted to the creation of a program following the syntactic rules of Liss language. This part is made by point-and-click and keyboard interaction. &#10;Let’s explain deeper this part:&#10;   - It is represented by an abstract syntax tree, with terminal and non-terminal rules interaction.&#10;   - Terminal and non-terminal rules are represented as text.&#10;- Non-terminal rules are clickable; when the pointer mouse is on a non-terminal rule, a blue box appears and envelop the non-terminal rule; non-terminal that exists and wasn’t clicked, will appear as undefined (colored as red) on the right part of the liss|SDE application. &#10;- Terminal symbols are non-clickable and displayed in bold. &#10;- Some extra informations can appear when you don’t know the meaning of a rule by simply letting your pointer mouse on a rule (do not click on the rule).&#10;- Black dotted boxes are user interaction with the keyboard; a regular expression will be tested after hitting ENTER key on keyboard (Red color means that it is invalid, Green color mean that it is valid).&#10;- Left click on a non-terminal rule, will expand the syntax rule or show a menu with informations; the menu can add, delete or change the rules (depending on the context).&#10;- black tiny arrows will appear to the left of a non-terminal rules and it means that It is possible to hide this rule when clicked (as well as expand it when it is hidden).&#10;&#10;&#10;" wrapText="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+   </children>
+</AnchorPane>

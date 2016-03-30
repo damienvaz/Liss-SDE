@@ -556,6 +556,29 @@ public class SyntaxDirectedEditor {
             }
         });
 
+        //When "overviewmenuitem" is clicked, then it show a Pane
+        MenuItem overviewMenuItem = ( MenuItem) fxmlLoader.getNamespace().get("overview");
+        overviewMenuItem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                FXMLLoader fxmlLoaderAbout = new FXMLLoader(getClass().getResource("Overview.fxml"));
+                AnchorPane anchorPane = null;
+
+                try {
+                    anchorPane = fxmlLoaderAbout.load();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+                if(anchorPane != null){
+                    Scene s = new Scene(anchorPane);
+                    Stage st = new Stage();
+                    st.setTitle("Overview");
+                    st.setScene(s);
+                    st.show();
+                }
+            }
+        });
+
         //When "aboutmenuitem" is clicked, then it show a Pane
         MenuItem aboutMenuItem = (MenuItem) fxmlLoader.getNamespace().get("about_liss_sde");
         aboutMenuItem.setOnAction(new EventHandler<ActionEvent>() {
