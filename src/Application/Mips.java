@@ -59,8 +59,6 @@ public class Mips {
 
     }
 
-    //public String getFunctionMipsCode(){return this.functionMipsCode;}
-
     public boolean cycleRecursivityFinder(String name){
         boolean res = false;
         int lastIndexNodeLinkedListFunctionName = this.functionName.size()-1;
@@ -1166,24 +1164,23 @@ public class Mips {
 
                 break;
             case "array":
-                for(String var : vars.keySet()){
-                    HashMap<String,Object> info = vars.get(var);
+                for(String var : vars.keySet()) {
+                    HashMap<String, Object> info = vars.get(var);
                     Integer res = new Integer(1);
-                    for(Integer i : (ArrayList<Integer>) info.get("dimension")){
-                        res = res*i;
+                    for (Integer i : (ArrayList<Integer>) info.get("dimension")) {
+                        res = res * i;
                     }
 
                     String s = dataArray(res, (int) info.get("line"), (int) info.get("pos"));
                     addDataInstruction(var, s);
 
                     String s1 = (String) info.get("mips");
-                    if(s1 != null) {
+                    if (s1 != null && info.get("accessArray")!=null) { //Testing accessArray means if the variable is an array or not! Why? Because arrays are considered Integer for arithmetic operations ! And instead of being an array, the type is integer ! Not sure if we need to fix this!
                         addTextInstruction(s1);
                     }
                 }
-
                 break;
-            default:
+            default: //We don't need to implement sequences and sets normally because they are dinamics structure (not sure)
                 break;
         }
 

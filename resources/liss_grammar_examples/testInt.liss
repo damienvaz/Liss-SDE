@@ -1,0 +1,6 @@
+program w{
+    declarations
+        int=2 -> integer;
+    statements
+        writeln(int+3);
+}

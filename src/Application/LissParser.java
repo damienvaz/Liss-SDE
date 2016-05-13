@@ -197,7 +197,7 @@ public class LissParser extends Parser {
 			identifier();
 			setState(156);
 			body(idTH);
-			 m.addDataInstruction(m.dataTextOriginal()); m.textExitCode(); System.out.println(e.toString()); /*if(e.isNull()){ m.write();}*/
+			 m.addDataInstruction(m.dataTextOriginal()); m.textExitCode(); System.out.println(e.toString()); System.out.println("/***************************************/\n"+m.getAssemblyCode()+"/***************************************/\n");/*if(e.isNull()){ m.write();}*/
 			}
 		}
 		catch (RecognitionException re) {
@@ -431,7 +431,6 @@ public class LissParser extends Parser {
 			                            if(((Variable_declarationContext)_localctx).type.typeS == "array" ){
 			                                for(String i : varsH.keySet()){
 			                                    varsH.get(i).put("dimension",((Variable_declarationContext)_localctx).type.arrayDimension);
-			                                    varsH.get(i).put("type",((Variable_declarationContext)_localctx).type.typeS);
 			                                    if(varsH.get(i).get("accessArray") != null){
 			                                        ArrayList<ArrayList<Integer>> accessArray = (ArrayList<ArrayList<Integer>>) varsH.get(i).get("accessArray");
 
@@ -505,6 +504,8 @@ public class LissParser extends Parser {
 			                                        varsH.get(i).put("mips",mipsCodeS);
 			                                        address += typeSpace.getSpace();
 			                                    }
+			                                }else{
+
 			                                }
 			                            }else if(((Variable_declarationContext)_localctx).type.typeS == "integer"){
 			                                if(functionState == true){
@@ -516,6 +517,8 @@ public class LissParser extends Parser {
 			                                        varsH.get(i).put("mips",mipsCodeS);
 			                                        address += typeSpace.getSpace();
 			                                    }
+			                                }else{
+
 			                                }
 			                            }
 
@@ -534,9 +537,9 @@ public class LissParser extends Parser {
 
 
 			                            //Print the HashMap<String, HashMap<String,Object>> varsH
-			                            //for(String i : varsH.keySet()){
-			                            //    System.out.println("Variable: "+i+" "+varsH.get(i).toString());
-			                            //}
+			                            for(String i : varsH.keySet()){
+			                                System.out.println("Variable: "+i+" "+varsH.get(i).toString()+"\n");
+			                            }
 
 
 			                            _localctx.idTH.add(e,varsH,((Variable_declarationContext)_localctx).type.typeS,level);
@@ -1171,7 +1174,19 @@ public class LissParser extends Parser {
 				((ConstantContext)_localctx).sign = sign();
 				setState(263);
 				((ConstantContext)_localctx).number = number();
-				((ConstantContext)_localctx).typeS =  "integer"; ((ConstantContext)_localctx).line =  ((ConstantContext)_localctx).number.line; ((ConstantContext)_localctx).pos =  ((ConstantContext)_localctx).number.pos; if(isDeclarations){ if(functionState == false){((ConstantContext)_localctx).mipsCodeS =  m.dataWord((((ConstantContext)_localctx).sign!=null?_input.getText(((ConstantContext)_localctx).sign.start,((ConstantContext)_localctx).sign.stop):null)+(((ConstantContext)_localctx).number!=null?_input.getText(((ConstantContext)_localctx).number.start,((ConstantContext)_localctx).number.stop):null),((ConstantContext)_localctx).number.line,((ConstantContext)_localctx).number.pos);}else{ ((ConstantContext)_localctx).mipsCodeS =  m.loadImmediateWord((((ConstantContext)_localctx).sign!=null?_input.getText(((ConstantContext)_localctx).sign.start,((ConstantContext)_localctx).sign.stop):null)+(((ConstantContext)_localctx).number!=null?_input.getText(((ConstantContext)_localctx).number.start,((ConstantContext)_localctx).number.stop):null),((ConstantContext)_localctx).number.line,((ConstantContext)_localctx).number.pos);}}else{ ((ConstantContext)_localctx).mipsCodeS =  m.loadImmediateWord((((ConstantContext)_localctx).sign!=null?_input.getText(((ConstantContext)_localctx).sign.start,((ConstantContext)_localctx).sign.stop):null)+(((ConstantContext)_localctx).number!=null?_input.getText(((ConstantContext)_localctx).number.start,((ConstantContext)_localctx).number.stop):null),((ConstantContext)_localctx).number.line,((ConstantContext)_localctx).number.pos);} 
+
+				                            ((ConstantContext)_localctx).typeS =  "integer"; ((ConstantContext)_localctx).line =  ((ConstantContext)_localctx).number.line; ((ConstantContext)_localctx).pos =  ((ConstantContext)_localctx).number.pos;
+				                            if(isDeclarations){
+				                                if(functionState == false){
+				                                    //Works perfectly
+				                                    ((ConstantContext)_localctx).mipsCodeS =  m.dataWord((((ConstantContext)_localctx).sign!=null?_input.getText(((ConstantContext)_localctx).sign.start,((ConstantContext)_localctx).sign.stop):null)+(((ConstantContext)_localctx).number!=null?_input.getText(((ConstantContext)_localctx).number.start,((ConstantContext)_localctx).number.stop):null),((ConstantContext)_localctx).number.line,((ConstantContext)_localctx).number.pos);
+				                                }else{
+				                                    ((ConstantContext)_localctx).mipsCodeS =  m.loadImmediateWord((((ConstantContext)_localctx).sign!=null?_input.getText(((ConstantContext)_localctx).sign.start,((ConstantContext)_localctx).sign.stop):null)+(((ConstantContext)_localctx).number!=null?_input.getText(((ConstantContext)_localctx).number.start,((ConstantContext)_localctx).number.stop):null),((ConstantContext)_localctx).number.line,((ConstantContext)_localctx).number.pos);
+				                                }
+				                            }else{
+				                                ((ConstantContext)_localctx).mipsCodeS =  m.loadImmediateWord((((ConstantContext)_localctx).sign!=null?_input.getText(((ConstantContext)_localctx).sign.start,((ConstantContext)_localctx).sign.stop):null)+(((ConstantContext)_localctx).number!=null?_input.getText(((ConstantContext)_localctx).number.start,((ConstantContext)_localctx).number.stop):null),((ConstantContext)_localctx).number.line,((ConstantContext)_localctx).number.pos);
+				                            }
+				                         
 				}
 				break;
 			case T__15:
@@ -4542,7 +4557,7 @@ public class LissParser extends Parser {
 			                        if(((Write_statementContext)_localctx).w.write == true){
 			                        //Means that it is only write !
 			                            String s1 = m.textWrite(((Write_statementContext)_localctx).p.mipsCodeS, ((Write_statementContext)_localctx).w.write, ((Write_statementContext)_localctx).w.line, ((Write_statementContext)_localctx).w.pos);
-			                            System.out.println("WRITE_STATEMENT : \n"+s1);
+			                            //System.out.println("WRITE_STATEMENT : \n"+s1);
 			                            if(functionState == false){
 			                                m.addTextInstruction(s1);
 			                            }else if(functionState == true){
@@ -4551,7 +4566,7 @@ public class LissParser extends Parser {
 			                        }else if(((Write_statementContext)_localctx).w.write == false){
 			                        //Means that it is only writeln !
 			                            String s2 = m.textWrite(((Write_statementContext)_localctx).p.mipsCodeS, ((Write_statementContext)_localctx).w.write, ((Write_statementContext)_localctx).w.line, ((Write_statementContext)_localctx).w.pos);
-			                            System.out.println("WRITE_STATEMENT : \n"+s2);
+			                            //System.out.println("WRITE_STATEMENT : \n"+s2);
 			                            if(functionState == false){
 			                                m.addTextInstruction(s2);
 			                            }else if(functionState == true){
@@ -4759,17 +4774,21 @@ public class LissParser extends Parser {
 			                      if(!(v != null && v.getCategory().equals("VAR") && v.getInfoType().equals("integer"))){       //verificar se existe e é tipo inteiro e class VAR
 			                        e.addMessage(((Read_statementContext)_localctx).i.line,((Read_statementContext)_localctx).i.pos,ErrorMessage.semantic((((Read_statementContext)_localctx).i!=null?_input.getText(((Read_statementContext)_localctx).i.start,((Read_statementContext)_localctx).i.stop):null),ErrorMessage.type(v.getInfoType(),"integer")));
 			                      }else{
-			                        String mipsCodeS,s;
-
-			                        if(_localctx.idTH.getInfoIdentifiersTable((((Read_statementContext)_localctx).i!=null?_input.getText(((Read_statementContext)_localctx).i.start,((Read_statementContext)_localctx).i.stop):null)).getLevel().equals(0)){
-			                            mipsCodeS = m.storeWord((((Read_statementContext)_localctx).i!=null?_input.getText(((Read_statementContext)_localctx).i.start,((Read_statementContext)_localctx).i.stop):null),((Read_statementContext)_localctx).i.line,((Read_statementContext)_localctx).i.pos);
+			                        String mipsCodeS=null,s=null;
+			                        /*if(_localctx.idTH.getInfoIdentifiersTable((((Read_statementContext)_localctx).i!=null?_input.getText(((Read_statementContext)_localctx).i.start,((Read_statementContext)_localctx).i.stop):null)).getLevel().equals(0)){
+			                            s = m.textRead((((Read_statementContext)_localctx).i!=null?_input.getText(((Read_statementContext)_localctx).i.start,((Read_statementContext)_localctx).i.stop):null), ((Read_statementContext)_localctx).i.line, ((Read_statementContext)_localctx).i.pos);
 			                        }else{
-			                            mipsCodeS = m.storeWordSP(_localctx.idTH.getValueSP(level,(((Read_statementContext)_localctx).i!=null?_input.getText(((Read_statementContext)_localctx).i.start,((Read_statementContext)_localctx).i.stop):null)));
-			                        }
-			                        s = m.textRead(mipsCodeS, ((Read_statementContext)_localctx).i.line, ((Read_statementContext)_localctx).i.pos);
-			                        if(functionState == false){
+			                            //mipsCodeS = m.storeWordSP(_localctx.idTH.getValueSP(level,(((Read_statementContext)_localctx).i!=null?_input.getText(((Read_statementContext)_localctx).i.start,((Read_statementContext)_localctx).i.stop):null)));
+			                            s = m.textRead((((Read_statementContext)_localctx).i!=null?_input.getText(((Read_statementContext)_localctx).i.start,((Read_statementContext)_localctx).i.stop):null), ((Read_statementContext)_localctx).i.line, ((Read_statementContext)_localctx).i.pos);
+			                        }*/
+
+			                        //We only need to read the value !!!!! wtf was i doing with this piece of code !!!
+			                        //s = m.textRead(mipsCodeS, ((Read_statementContext)_localctx).i.line, ((Read_statementContext)_localctx).i.pos);
+			                        //s = m.textRead((((Read_statementContext)_localctx).i!=null?_input.getText(((Read_statementContext)_localctx).i.start,((Read_statementContext)_localctx).i.stop):null), ((Read_statementContext)_localctx).i.line, ((Read_statementContext)_localctx).i.pos);
+			                        s = m.textRead((((Read_statementContext)_localctx).i!=null?_input.getText(((Read_statementContext)_localctx).i.start,((Read_statementContext)_localctx).i.stop):null), ((Read_statementContext)_localctx).i.line, ((Read_statementContext)_localctx).i.pos);
+			                        if(functionState == false && s!=null){
 			                            m.addTextInstruction(s);
-			                        }else if(functionState == true){
+			                        }else if(functionState == true && s!=null){
 			                            m.addMipsCodeFunction(m.getNameFunction(),s);
 			                        }
 			                      }
