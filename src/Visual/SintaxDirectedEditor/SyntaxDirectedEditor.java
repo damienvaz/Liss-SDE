@@ -27,6 +27,7 @@ import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 
 import javax.swing.*;
+import java.awt.*;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.nio.charset.Charset;
@@ -524,6 +525,23 @@ public class SyntaxDirectedEditor {
 //                                        p.waitFor();
 //                                     #####################################################
                                         //TESTING MARS SIMULATOR
+
+//                                        String answer = JOptionPane.showInputDialog(new JFrame("showInputDialog() Test"),
+//                                                "What's you name?",
+//                                                "Input Dialog Box", JOptionPane.INFORMATION_MESSAGE);
+                                       // String test1= JOptionPane.showInputDialog("Please input mark for test 1: ");
+
+
+
+
+                                        //This code works like a charm
+                                        //Thread t = new Thread(new Runnable(){
+                                        //    public void run(){
+                                        //        String test1 = JOptionPane.showInputDialog("Hello");
+                                        //    }
+                                        //});
+                                        //t.start();
+//                                        System.out.println(answer);
 
                                     } catch (Exception ex) {
                                         ex.printStackTrace();
