@@ -26,6 +26,7 @@ import netscape.javascript.JSObject;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 
+import javax.swing.*;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.nio.charset.Charset;
@@ -36,6 +37,7 @@ import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Scanner;
 import java.util.stream.Collectors;
 
 public class SyntaxDirectedEditor {
@@ -455,23 +457,79 @@ public class SyntaxDirectedEditor {
 
                                 File marsSimulator = new File("resources/mars_simulator/Mars4_5.jar");
                                 if(marsSimulator.exists() && temp.exists()){
-                                    String res="";
+                                    String output="";
                                     try {
-                                        Process p = Runtime.getRuntime().exec(new String[]{"java","-jar",marsSimulator.getAbsolutePath(),tempAssembly.getAbsolutePath()});
-                                        p.waitFor();
+                                        //Process p = Runtime.getRuntime().exec(new String[]{"java","-jar",marsSimulator.getAbsolutePath(),tempAssembly.getAbsolutePath()});
+//Testing an example of the outputstream with sending the number 3 to the file readInt.liss
+//                                        OutputStream os = p.getOutputStream();
 
-                                        InputStream is = p.getInputStream();
+                                        //We need to make a window for the user to input those values !!!
+//                                        os.write("3\n4\n".getBytes()); //See if it does work on windows !!!! probably \n\r or \r\n
+//                                        os.flush();
+//
+//
+//                                        p.waitFor();
+                                        //p.getOutputStream();
+//                                        InputStream is = p.getInputStream();
+//
+//
+//
+//                                        byte b[] = new byte[is.available()];
+//                                        is.read(b, 0, b.length); // probably try b.length-1 or -2 to remove "new-line(s)"
+//
+//                                        output = new String(b);
+//
+//                                        is.close();
+//                                        os.close();
 
-                                        byte b[] = new byte[is.available()];
-                                        is.read(b, 0, b.length); // probably try b.length-1 or -2 to remove "new-line(s)"
+                                        //Working under
+                                        //BufferedWriter out = new BufferedWriter(new OutputStreamWriter(p.getOutputStream()));
+                                        //BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
 
-                                        res = new String(b);
+//                                        out.write("3\n"); // we need to put \n for every input asked
+//                                        out.write("2\n");
+//                                        out.flush();
+
+//                                        String res;
+//                                        String s = JOptionPane.showInputDialog("Hello:");
+                                        /*while (( res = in.readLine())!=null) {
+                                            //out.write("3\n");
+                                            String s = JOptionPane.showInputDialog("Hello:");
+                                            out.write(s+"\n");
+                                            outputTextArea.appendText(res+"\n");
+                                            //output += res+"\n";
+                                            System.out.println(res);
+                                        }*/
+
+
+
+
+                                        //out.flush();
+
+//                                        p.waitFor();
+
+//                                     ##########################
+//                                        InputStream inStream = p.getInputStream();
+//                                        OutputStream ouStream = p.getOutputStream();
+
+//                                        new Thread(new StreamGobbler("in", outputTextArea, inStream)).start();
+
+//                                        ouStream.write("3\n".getBytes()); // we need to put \n for every input asked
+//                                        ouStream.write("2\n".getBytes());
+//                                        ouStream.flush();
+
+//                                        out = new PrintStream(new BufferedOutputStream(ouStream));
+
+
+//                                        p.waitFor();
+//                                     #####################################################
+                                        //TESTING MARS SIMULATOR
 
                                     } catch (Exception ex) {
                                         ex.printStackTrace();
                                     }
                                     //System.out.println(res);
-                                    outputTextArea.appendText(res+"\n");
+                                    outputTextArea.appendText(output+"\n");
 
                                 }else{
                                     //File doesnt exist  throw message!!
@@ -623,5 +681,3 @@ public class SyntaxDirectedEditor {
     }
 
 }
-
-

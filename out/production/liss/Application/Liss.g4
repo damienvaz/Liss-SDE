@@ -168,8 +168,6 @@ variable_declaration [IdentifiersTable idTH]
                                         varsH.get(i).put("mips",mipsCodeS);
                                         address += typeSpace.getSpace();
                                     }
-                                }else{
-
                                 }
                             }else if($type.typeS == "integer"){
                                 if(functionState == true){
@@ -181,8 +179,6 @@ variable_declaration [IdentifiersTable idTH]
                                         varsH.get(i).put("mips",mipsCodeS);
                                         address += typeSpace.getSpace();
                                     }
-                                }else{
-
                                 }
                             }
 
@@ -1551,6 +1547,7 @@ print_what [IdentifiersTable idTH]
                     $mipsCodeS = $e.mipsCodeS;
                 }
             } //conjuntos nao pode pertencer
+           | string //TODO this part
            ;
 
 /* ****** Read statement ****** */
