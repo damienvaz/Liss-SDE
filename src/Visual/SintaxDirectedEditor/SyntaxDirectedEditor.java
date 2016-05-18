@@ -22,12 +22,11 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.*;
+import mars.MarsLaunch;
 import netscape.javascript.JSObject;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 
-import javax.swing.*;
-import java.awt.*;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.nio.charset.Charset;
@@ -38,7 +37,6 @@ import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Scanner;
 import java.util.stream.Collectors;
 
 public class SyntaxDirectedEditor {
@@ -531,8 +529,19 @@ public class SyntaxDirectedEditor {
 //                                                "Input Dialog Box", JOptionPane.INFORMATION_MESSAGE);
                                        // String test1= JOptionPane.showInputDialog("Please input mark for test 1: ");
 
+                                        String assemblyFile = tempAssembly.getAbsolutePath();
+                                        String[] argsMars = new String[]{assemblyFile};
 
+                                        //This thread is used for calling the mars simulator !!! Otherwise it will block the main program !
+                                        Thread t = new Thread(new Runnable(){
+                                            public void run(){
+                                                MarsLaunch mars = new MarsLaunch(argsMars);
+                                            }
+                                        });
+                                        t.start();
+                                        //It is working but quit the program..... Probably it is due to the command line !!! SOLVED !!!!!! FUCK YOU !!!!
 
+//                                        MarsLaunch mars = new MarsLaunch(argsMars);
 
                                         //This code works like a charm
                                         //Thread t = new Thread(new Runnable(){
