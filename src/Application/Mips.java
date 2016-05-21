@@ -236,6 +236,7 @@ public class Mips {
         s.append("\tindexoutofbound: .asciiz \"Index out of bound. \" \n");
         s.append("\tline: .asciiz \"line: \" \n");
         s.append("\tnewline: .asciiz \"\\n\" \n");
+        s.append("\tmessagereadvalue: .asciiz \"Enter integer value:\\n\" \n");
 
         return s.toString();
     }
@@ -843,6 +844,10 @@ public class Mips {
 
     public String textReadFunction(){
         StringBuilder s = new StringBuilder();
+
+        s.append("\tli $v0,4\n");
+        s.append("\tla $a0,messagereadvalue\n");
+        s.append("\tsyscall\n");
 
         s.append("\tli $v0,5\n");
         s.append("\tsyscall\n");
