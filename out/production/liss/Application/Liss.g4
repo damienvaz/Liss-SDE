@@ -265,9 +265,7 @@ var [IdentifiersTable idTH]
             info.put("mips",$v.mipsCodeS);
 
         }
-        if($v.type_ != null && $v.type_.equals("array")){
-            //System.out.println("I HAVE BEEN HERE "+$v.text);
-            //info.put("type_", $v.type_);
+        if($v.typeS != null && $v.typeS.equals("array")){
             info.put("accessArray", $v.accessArrayS);
         }
 
@@ -277,11 +275,11 @@ var [IdentifiersTable idTH]
     ;
 
 value_var [IdentifiersTable idTH]
-          returns [Set setS, String typeS, String type_, String mipsCodeS, ArrayList<ArrayList<Integer>> accessArrayS]
+          returns [Set setS, String typeS, String mipsCodeS, ArrayList<ArrayList<Integer>> accessArrayS]
           @init{
             Set set = null;
             $mipsCodeS = null;
-            $type_ = null;
+            $typeS = null;
           }
           :                            { $setS = set; $typeS = null;}
           | '=' i=inic_var[idTH, set]  {
@@ -289,8 +287,7 @@ value_var [IdentifiersTable idTH]
                 set = $i.setS; $setS = set;
                 $typeS = $i.typeS;
                 $mipsCodeS = $i.mipsCodeS;
-                if($i.type_ != null && $i.type_.equals("array")){
-                    $type_ = $i.type_;
+                if($i.typeS != null && $i.typeS.equals("array")){
                     $accessArrayS = $i.accessArrayS;
                 }
           }
@@ -319,18 +316,19 @@ dimension returns [ArrayList<Integer> arrayDimension]
           ;
 
 inic_var [IdentifiersTable idTH, Set set]
-         returns [String typeS, String type_, int line, int pos,Set setS, Node treeS, String mipsCodeS, ArrayList<ArrayList<Integer>> accessArrayS]
+         returns [String typeS, int line, int pos,Set setS, Node treeS, String mipsCodeS, ArrayList<ArrayList<Integer>> accessArrayS]
          @init{
             $treeS = null;
-            $type_ = null;
+
             $mipsCodeS = null;
             ArrayList<Integer> a= new ArrayList<Integer>();
             ArrayList<ArrayList<Integer>> accessArray = new ArrayList<ArrayList<Integer>>();
          }
          : c=constant               {$typeS = $constant.typeS; $line = $constant.line; $pos = $constant.pos; $mipsCodeS = $c.mipsCodeS; Node n = new Node(new String($c.text)); $treeS = n; /*if(isSet && $set!=null){ Node n = new Node(new String($c.text)); $treeS = n; }*/ }
          | a=array_definition[a, accessArray] {
-                                                    $typeS = "integer";
-                                                    $type_ = "array";
+                                                    //$typeS = "integer";
+                                                    $typeS = "array";
+
                                                     $accessArrayS = accessArray;
                                               }
          | s1=set_definition[idTH]  {$typeS = "set"; $line = $s1.line; $pos = $s1.pos; $treeS = $s1.treeS; $setS = $s1.setS;/*if(isSet && $s1.treeS!=null){$treeS = $s1.treeS;} if(isSet && $s1.setS!=null){$setS = $s1.setS;}*/}
@@ -1547,7 +1545,10 @@ print_what [IdentifiersTable idTH]
                     $mipsCodeS = $e.mipsCodeS;
                 }
             } //conjuntos nao pode pertencer
-           | string //TODO this part
+           | string
+            {
+
+            }
            ;
 
 /* ****** Read statement ****** */

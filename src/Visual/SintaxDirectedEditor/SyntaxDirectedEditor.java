@@ -601,31 +601,13 @@ public class SyntaxDirectedEditor {
 
                                     File marsSimulator = new File("resources/mars_simulator/Mars4_5.jar");
                                     if(marsSimulator.exists() && temp.exists()){
-                                        //TODO usaro codigo do process acima aqui em baixo
-                                        /*String res="";
-                                        try {
-                                            Process p = Runtime.getRuntime().exec(new String[]{"java","-jar",marsSimulator.getAbsolutePath(),tempAssembly.getAbsolutePath()});
-                                            p.waitFor();
-
-                                            InputStream is = p.getInputStream();
-
-                                            byte b[] = new byte[is.available()];
-                                            is.read(b, 0, b.length); // probably try b.length-1 or -2 to remove "new-line(s)"
-
-                                            res = new String(b);
-
-                                        } catch (Exception ex) {
-                                            ex.printStackTrace();
-                                        }
-                                        //System.out.println(res);
-                                        outputTextArea.appendText(res+"\n");*/
 
                                         Process p = Runtime.getRuntime().exec(new String[]{"java","-jar",marsSimulator.getAbsolutePath(),tempAssembly.getAbsolutePath()});
 
                                         //This code does the interaction from the process with the GUI ! Implied, input interaction+output interaction from the process
                                         ObservableStream out = new ObservableStream();
-// Observer that simply sends to my external process line by line what we put in
-// the variable output
+                                        // Observer that simply sends to my external process line by line what we put in
+                                        // the variable output
                                         PrintWriter writer = new PrintWriter(p.getOutputStream(), true);
                                         out.addObserver(
                                                 (o, arg) -> {
@@ -650,7 +632,7 @@ public class SyntaxDirectedEditor {
                                         );
 
                                         // The thread that reads the standard output stream of the external process
-// and put the lines into my variable input
+                                        // and put the lines into my variable input
                                         new Thread(
                                                 () -> {
                                                     try (BufferedReader reader = new BufferedReader(
@@ -672,15 +654,12 @@ public class SyntaxDirectedEditor {
                                                     while(p.isAlive()){
                                                         String res = input.getLine();
                                                         if(res!=null && res.equals("Enter integer value:")) {
-//                                                            System.out.println("BLABLABLA> " + res);
-                                                            //out.addLine("1");
                                                             boolean integerIsRequested=true;
                                                             Thread t=null;
                                                             while(integerIsRequested){
                                                                 if(t==null) {
                                                                     t = new Thread(new Runnable() {
                                                                         public void run() {
-                                                                            System.out.println("entrei aqui na thread do showinputdialog");
                                                                             String test1 = JOptionPane.showInputDialog("Enter Integer value:");
                                                                             while(!test1.matches("^\\d+$")){
                                                                                 test1 = JOptionPane.showInputDialog("Error: Not a valid Integer.\nEnter a correct Integer value:");
@@ -688,14 +667,8 @@ public class SyntaxDirectedEditor {
                                                                             Integer i = Integer.valueOf(test1);
 
                                                                             if (i != null) {
-                                                                                System.out.println(test1);
                                                                                 out.addLine(test1);
-                                                                                System.out.println("passei por aqui");
-                                                                                //return;
-                                                                            }else{
-
                                                                             }
-                                                                            System.out.println("acabei isto");
                                                                         }
                                                                     });
                                                                     t.start();
@@ -703,15 +676,12 @@ public class SyntaxDirectedEditor {
                                                                 }
                                                                 if(!t.isAlive()){
                                                                     integerIsRequested=false;
-//                                                                    System.out.println("A thread morreu"+integerIsRequested);
                                                                 }
-//                                                                System.out.println("supostamente deveria ter um loop aqui...");
                                                             }
                                                         }
                                                     }
                                                     outputTextArea.appendText("Program executed\n");
-//                                                    System.out.println("sai da thred");
-                                                }
+                                              }
                                         ).start();
 
 
@@ -827,41 +797,6 @@ public class SyntaxDirectedEditor {
                 for (String line : chunks) area.appendText(line);
             }
         }.execute();
-
-        // handle "System.in"
-        /*area.setOnKeyPressed(new EventHandler<KeyEvent>() {
-            private StringBuffer line = new StringBuffer();
-            @Override
-            public void handle(KeyEvent keyEvent) {
-                String c = keyEvent.getCharacter();
-                if (keyEvent.getCode() == KeyCode.ENTER)  {
-                    //String text = area.getText();
-                    System.out.println("GAY");
-                    //in.println(line);
-                    //line.setLength(0);
-                    // do your thing...
-
-                    // clear text
-                    //area.setText("");
-                }
-            }
-        });*/
-
-
-        /*area.addKeyListener(new KeyAdapter() {
-            private StringBuffer line = new StringBuffer();
-            @Override public void keyTyped(KeyEvent e) {
-                char c = e.getKeyChar();
-                if (c == KeyEvent.VK_ENTER) {
-                    in.println(line);
-                    line.setLength(0);
-                } else if (c == KeyEvent.VK_BACK_SPACE) {
-                    line.setLength(line.length() - 1);
-                } else if (!Character.isISOControl(c)) {
-                    line.append(e.getKeyChar());
-                }
-            }
-        });*/
     }
 }
 

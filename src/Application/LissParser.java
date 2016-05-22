@@ -704,9 +704,7 @@ public class LissParser extends Parser {
 			            info.put("mips",((VarContext)_localctx).v.mipsCodeS);
 
 			        }
-			        if(((VarContext)_localctx).v.type_ != null && ((VarContext)_localctx).v.type_.equals("array")){
-			            //System.out.println("I HAVE BEEN HERE "+(((VarContext)_localctx).v!=null?_input.getText(((VarContext)_localctx).v.start,((VarContext)_localctx).v.stop):null));
-			            //info.put("type_", ((VarContext)_localctx).v.type_);
+			        if(((VarContext)_localctx).v.typeS != null && ((VarContext)_localctx).v.typeS.equals("array")){
 			            info.put("accessArray", ((VarContext)_localctx).v.accessArrayS);
 			        }
 
@@ -730,7 +728,6 @@ public class LissParser extends Parser {
 		public IdentifiersTable idTH;
 		public Set setS;
 		public String typeS;
-		public String type_;
 		public String mipsCodeS;
 		public ArrayList<ArrayList<Integer>> accessArrayS;
 		public Inic_varContext i;
@@ -759,7 +756,7 @@ public class LissParser extends Parser {
 
 		            Set set = null;
 		            ((Value_varContext)_localctx).mipsCodeS =  null;
-		            ((Value_varContext)_localctx).type_ =  null;
+		            ((Value_varContext)_localctx).typeS =  null;
 		          
 		try {
 			setState(212);
@@ -783,8 +780,7 @@ public class LissParser extends Parser {
 				                set = ((Value_varContext)_localctx).i.setS; ((Value_varContext)_localctx).setS =  set;
 				                ((Value_varContext)_localctx).typeS =  ((Value_varContext)_localctx).i.typeS;
 				                ((Value_varContext)_localctx).mipsCodeS =  ((Value_varContext)_localctx).i.mipsCodeS;
-				                if(((Value_varContext)_localctx).i.type_ != null && ((Value_varContext)_localctx).i.type_.equals("array")){
-				                    ((Value_varContext)_localctx).type_ =  ((Value_varContext)_localctx).i.type_;
+				                if(((Value_varContext)_localctx).i.typeS != null && ((Value_varContext)_localctx).i.typeS.equals("array")){
 				                    ((Value_varContext)_localctx).accessArrayS =  ((Value_varContext)_localctx).i.accessArrayS;
 				                }
 				          
@@ -1017,7 +1013,6 @@ public class LissParser extends Parser {
 		public IdentifiersTable idTH;
 		public Set set;
 		public String typeS;
-		public String type_;
 		public int line;
 		public int pos;
 		public Set setS;
@@ -1063,7 +1058,7 @@ public class LissParser extends Parser {
 		enterRule(_localctx, 20, RULE_inic_var);
 
 		            ((Inic_varContext)_localctx).treeS =  null;
-		            ((Inic_varContext)_localctx).type_ =  null;
+
 		            ((Inic_varContext)_localctx).mipsCodeS =  null;
 		            ArrayList<Integer> a= new ArrayList<Integer>();
 		            ArrayList<ArrayList<Integer>> accessArray = new ArrayList<ArrayList<Integer>>();
@@ -1089,8 +1084,9 @@ public class LissParser extends Parser {
 				setState(251);
 				((Inic_varContext)_localctx).a = array_definition(a, accessArray);
 
-				                                                    ((Inic_varContext)_localctx).typeS =  "integer";
-				                                                    ((Inic_varContext)_localctx).type_ =  "array";
+				                                                    //((Inic_varContext)_localctx).typeS =  "integer";
+				                                                    ((Inic_varContext)_localctx).typeS =  "array";
+
 				                                                    ((Inic_varContext)_localctx).accessArrayS =  accessArray;
 				                                              
 				}
@@ -4673,7 +4669,7 @@ public class LissParser extends Parser {
 		              Set tree = null;
 		           
 		try {
-			setState(636);
+			setState(638);
 			switch (_input.LA(1)) {
 			case T__26:
 				enterOuterAlt(_localctx, 1);
@@ -4716,6 +4712,9 @@ public class LissParser extends Parser {
 				{
 				setState(635);
 				string();
+
+
+				            
 				}
 				break;
 			default:
@@ -4764,13 +4763,13 @@ public class LissParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(638);
-			((Read_statementContext)_localctx).in = match(T__44);
-			setState(639);
-			match(T__25);
 			setState(640);
-			((Read_statementContext)_localctx).i = identifier();
+			((Read_statementContext)_localctx).in = match(T__44);
 			setState(641);
+			match(T__25);
+			setState(642);
+			((Read_statementContext)_localctx).i = identifier();
+			setState(643);
 			match(T__26);
 
 			                  ((Read_statementContext)_localctx).line =  (((Read_statementContext)_localctx).in!=null?((Read_statementContext)_localctx).in.getLine():0);
@@ -4843,7 +4842,7 @@ public class LissParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(644);
+			setState(646);
 			((Conditional_statementContext)_localctx).i = if_then_else_stat(idTH);
 			 ((Conditional_statementContext)_localctx).line =  ((Conditional_statementContext)_localctx).i.line; ((Conditional_statementContext)_localctx).pos =  ((Conditional_statementContext)_localctx).i.pos; m.removeLastStack();
 			}
@@ -4891,12 +4890,12 @@ public class LissParser extends Parser {
 		Iterative_statementContext _localctx = new Iterative_statementContext(_ctx, getState(), idTH);
 		enterRule(_localctx, 100, RULE_iterative_statement);
 		try {
-			setState(653);
+			setState(655);
 			switch (_input.LA(1)) {
 			case T__48:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(647);
+				setState(649);
 				((Iterative_statementContext)_localctx).f = for_stat(idTH);
 				((Iterative_statementContext)_localctx).line =  ((Iterative_statementContext)_localctx).f.line; ((Iterative_statementContext)_localctx).pos =  ((Iterative_statementContext)_localctx).f.pos;
 				}
@@ -4904,7 +4903,7 @@ public class LissParser extends Parser {
 			case T__54:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(650);
+				setState(652);
 				((Iterative_statementContext)_localctx).w = while_stat(idTH);
 				((Iterative_statementContext)_localctx).line =  ((Iterative_statementContext)_localctx).w.line; ((Iterative_statementContext)_localctx).pos =  ((Iterative_statementContext)_localctx).w.pos;
 				}
@@ -4967,13 +4966,13 @@ public class LissParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(655);
-			((If_then_else_statContext)_localctx).i = match(T__45);
-			setState(656);
-			match(T__25);
 			setState(657);
-			((If_then_else_statContext)_localctx).e1 = expression(idTH, tree);
+			((If_then_else_statContext)_localctx).i = match(T__45);
 			setState(658);
+			match(T__25);
+			setState(659);
+			((If_then_else_statContext)_localctx).e1 = expression(idTH, tree);
+			setState(660);
 			match(T__26);
 
 			                          ((If_then_else_statContext)_localctx).line =  (((If_then_else_statContext)_localctx).i!=null?((If_then_else_statContext)_localctx).i.getLine():0);
@@ -4990,15 +4989,15 @@ public class LissParser extends Parser {
 			                            }
 			                          }
 			                        
-			setState(660);
-			match(T__46);
-			setState(661);
-			match(T__1);
 			setState(662);
-			((If_then_else_statContext)_localctx).s = statements(idTH);
+			match(T__46);
 			setState(663);
-			match(T__4);
+			match(T__1);
 			setState(664);
+			((If_then_else_statContext)_localctx).s = statements(idTH);
+			setState(665);
+			match(T__4);
+			setState(666);
 			((If_then_else_statContext)_localctx).e2 = else_expression(idTH, (((If_then_else_statContext)_localctx).i!=null?((If_then_else_statContext)_localctx).i.getLine():0), (((If_then_else_statContext)_localctx).i!=null?((If_then_else_statContext)_localctx).i.getCharPositionInLine():0));
 			}
 		}
@@ -5047,7 +5046,7 @@ public class LissParser extends Parser {
 		                    String mipsCodeS = null;
 		                
 		try {
-			setState(674);
+			setState(676);
 			switch (_input.LA(1)) {
 			case T__4:
 			case T__27:
@@ -5070,9 +5069,9 @@ public class LissParser extends Parser {
 			case T__47:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(667);
+				setState(669);
 				((Else_expressionContext)_localctx).e = match(T__47);
-				setState(668);
+				setState(670);
 				match(T__1);
 
 				                        String s2 = m.textJumpBeforeElse((((Else_expressionContext)_localctx).e!=null?((Else_expressionContext)_localctx).e.getLine():0), (((Else_expressionContext)_localctx).e!=null?((Else_expressionContext)_localctx).e.getCharPositionInLine():0));
@@ -5084,10 +5083,10 @@ public class LissParser extends Parser {
 				                            }
 				                        }
 				                    
-				setState(670);
+				setState(672);
 				((Else_expressionContext)_localctx).s = statements(idTH);
 				 String s3 = m.textJumpAfterElse((((Else_expressionContext)_localctx).e!=null?((Else_expressionContext)_localctx).e.getLine():0), (((Else_expressionContext)_localctx).e!=null?((Else_expressionContext)_localctx).e.getCharPositionInLine():0)); if(s3 != null){ if(functionState == false){m.addTextInstruction(s3);}else if(functionState == true){ m.addMipsCodeFunction(m.getNameFunction(),s3);}}
-				setState(672);
+				setState(674);
 				match(T__4);
 				}
 				break;
@@ -5149,15 +5148,15 @@ public class LissParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(676);
-			((For_statContext)_localctx).f = match(T__48);
-			setState(677);
-			match(T__25);
 			setState(678);
-			((For_statContext)_localctx).i = interval(idTH);
+			((For_statContext)_localctx).f = match(T__48);
 			setState(679);
-			match(T__26);
+			match(T__25);
 			setState(680);
+			((For_statContext)_localctx).i = interval(idTH);
+			setState(681);
+			match(T__26);
+			setState(682);
 			((For_statContext)_localctx).s = step();
 
 			                ((For_statContext)_localctx).line =  (((For_statContext)_localctx).f!=null?((For_statContext)_localctx).f.getLine():0);
@@ -5184,7 +5183,7 @@ public class LissParser extends Parser {
 			                }
 
 			            
-			setState(682);
+			setState(684);
 			((For_statContext)_localctx).s2 = satisfy(idTH);
 
 
@@ -5200,11 +5199,11 @@ public class LissParser extends Parser {
 			                }
 
 			            
-			setState(684);
-			match(T__1);
-			setState(685);
-			((For_statContext)_localctx).s3 = statements(idTH);
 			setState(686);
+			match(T__1);
+			setState(687);
+			((For_statContext)_localctx).s3 = statements(idTH);
+			setState(688);
 			match(T__4);
 
 			                String  l = null;
@@ -5285,9 +5284,9 @@ public class LissParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(689);
+			setState(691);
 			((IntervalContext)_localctx).i = identifier();
-			setState(690);
+			setState(692);
 			((IntervalContext)_localctx).t = type_interval(idTH,(((IntervalContext)_localctx).i!=null?_input.getText(((IntervalContext)_localctx).i.start,((IntervalContext)_localctx).i.stop):null));
 
 			            Var v = (Var) _localctx.idTH.getInfoIdentifiersTable((((IntervalContext)_localctx).i!=null?_input.getText(((IntervalContext)_localctx).i.start,((IntervalContext)_localctx).i.stop):null));
@@ -5355,14 +5354,14 @@ public class LissParser extends Parser {
 		                ((Type_intervalContext)_localctx).arrayS =  null;
 		              
 		try {
-			setState(701);
+			setState(703);
 			switch (_input.LA(1)) {
 			case T__41:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(693);
+				setState(695);
 				match(T__41);
-				setState(694);
+				setState(696);
 				((Type_intervalContext)_localctx).r = range(idTH,variable,_localctx.inArrayS);
 				((Type_intervalContext)_localctx).minimumMipsCodeS =  ((Type_intervalContext)_localctx).r.minimumMipsCodeS; ((Type_intervalContext)_localctx).maximumMipsCodeS =  ((Type_intervalContext)_localctx).r.maximumMipsCodeS;
 				}
@@ -5370,9 +5369,9 @@ public class LissParser extends Parser {
 			case T__49:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(697);
+				setState(699);
 				match(T__49);
-				setState(698);
+				setState(700);
 				((Type_intervalContext)_localctx).i = identifier();
 
 				                                        ((Type_intervalContext)_localctx).inArrayS =  true;
@@ -5459,11 +5458,11 @@ public class LissParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(703);
-			((RangeContext)_localctx).m1 = minimum(idTH,variable,_localctx.inArray);
-			setState(704);
-			match(T__50);
 			setState(705);
+			((RangeContext)_localctx).m1 = minimum(idTH,variable,_localctx.inArray);
+			setState(706);
+			match(T__50);
+			setState(707);
 			((RangeContext)_localctx).m2 = maximum(idTH);
 			 ((RangeContext)_localctx).minimumMipsCodeS =  ((RangeContext)_localctx).m1.mipsCodeS; ((RangeContext)_localctx).maximumMipsCodeS =  ((RangeContext)_localctx).m2.mipsCodeS;
 			}
@@ -5514,12 +5513,12 @@ public class LissParser extends Parser {
 		MinimumContext _localctx = new MinimumContext(_ctx, getState(), idTH, variable, inArray);
 		enterRule(_localctx, 114, RULE_minimum);
 		try {
-			setState(714);
+			setState(716);
 			switch (_input.LA(1)) {
 			case NBR:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(708);
+				setState(710);
 				((MinimumContext)_localctx).n = number();
 
 				                            String s = m.loadImmediateWord((((MinimumContext)_localctx).n!=null?_input.getText(((MinimumContext)_localctx).n.start,((MinimumContext)_localctx).n.stop):null), ((MinimumContext)_localctx).n.line, ((MinimumContext)_localctx).n.pos);
@@ -5535,7 +5534,7 @@ public class LissParser extends Parser {
 			case ID:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(711);
+				setState(713);
 				((MinimumContext)_localctx).i = identifier();
 
 				            Var v = (Var) _localctx.idTH.getInfoIdentifiersTable((((MinimumContext)_localctx).i!=null?_input.getText(((MinimumContext)_localctx).i.start,((MinimumContext)_localctx).i.stop):null));
@@ -5604,12 +5603,12 @@ public class LissParser extends Parser {
 		MaximumContext _localctx = new MaximumContext(_ctx, getState(), idTH);
 		enterRule(_localctx, 116, RULE_maximum);
 		try {
-			setState(722);
+			setState(724);
 			switch (_input.LA(1)) {
 			case NBR:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(716);
+				setState(718);
 				((MaximumContext)_localctx).n = number();
 				 ((MaximumContext)_localctx).mipsCodeS =  m.loadImmediateWord((((MaximumContext)_localctx).n!=null?_input.getText(((MaximumContext)_localctx).n.start,((MaximumContext)_localctx).n.stop):null), ((MaximumContext)_localctx).n.line, ((MaximumContext)_localctx).n.pos); 
 				}
@@ -5617,7 +5616,7 @@ public class LissParser extends Parser {
 			case ID:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(719);
+				setState(721);
 				((MaximumContext)_localctx).i = identifier();
 
 				            Var v = (Var) _localctx.idTH.getInfoIdentifiersTable((((MaximumContext)_localctx).i!=null?_input.getText(((MaximumContext)_localctx).i.start,((MaximumContext)_localctx).i.stop):null));
@@ -5680,7 +5679,7 @@ public class LissParser extends Parser {
 		StepContext _localctx = new StepContext(_ctx, getState());
 		enterRule(_localctx, 118, RULE_step);
 		try {
-			setState(729);
+			setState(731);
 			switch (_input.LA(1)) {
 			case T__1:
 			case T__53:
@@ -5693,9 +5692,9 @@ public class LissParser extends Parser {
 			case T__52:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(725);
+				setState(727);
 				((StepContext)_localctx).u = up_down();
-				setState(726);
+				setState(728);
 				((StepContext)_localctx).n = number();
 
 				                              ((StepContext)_localctx).stepUp =  ((StepContext)_localctx).u.stepUp; ((StepContext)_localctx).numberS =  (((StepContext)_localctx).n!=null?_input.getText(((StepContext)_localctx).n.start,((StepContext)_localctx).n.stop):null); ((StepContext)_localctx).stepS =  true;
@@ -5740,12 +5739,12 @@ public class LissParser extends Parser {
 		            ((Up_downContext)_localctx).stepUp =  false;
 		        
 		try {
-			setState(734);
+			setState(736);
 			switch (_input.LA(1)) {
 			case T__51:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(731);
+				setState(733);
 				match(T__51);
 				 ((Up_downContext)_localctx).stepUp =  true; 
 				}
@@ -5753,7 +5752,7 @@ public class LissParser extends Parser {
 			case T__52:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(733);
+				setState(735);
 				match(T__52);
 				}
 				break;
@@ -5806,7 +5805,7 @@ public class LissParser extends Parser {
 		            ((SatisfyContext)_localctx).mipsCodeS =  null;
 		        
 		try {
-			setState(741);
+			setState(743);
 			switch (_input.LA(1)) {
 			case T__1:
 				enterOuterAlt(_localctx, 1);
@@ -5817,9 +5816,9 @@ public class LissParser extends Parser {
 			case T__53:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(737);
+				setState(739);
 				match(T__53);
-				setState(738);
+				setState(740);
 				((SatisfyContext)_localctx).e = expression(idTH, tree);
 				   ((SatisfyContext)_localctx).line =  ((SatisfyContext)_localctx).e.line;
 				            ((SatisfyContext)_localctx).pos =  ((SatisfyContext)_localctx).e.pos;
@@ -5885,13 +5884,13 @@ public class LissParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(743);
-			((While_statContext)_localctx).w = match(T__54);
-			setState(744);
-			match(T__25);
 			setState(745);
-			((While_statContext)_localctx).e = expression(idTH, tree);
+			((While_statContext)_localctx).w = match(T__54);
 			setState(746);
+			match(T__25);
+			setState(747);
+			((While_statContext)_localctx).e = expression(idTH, tree);
+			setState(748);
 			match(T__26);
 
 			                  ((While_statContext)_localctx).line =  (((While_statContext)_localctx).w!=null?((While_statContext)_localctx).w.getLine():0);
@@ -5911,11 +5910,11 @@ public class LissParser extends Parser {
 			                    }
 			                  }
 			                
-			setState(748);
-			match(T__1);
-			setState(749);
-			statements(idTH);
 			setState(750);
+			match(T__1);
+			setState(751);
+			statements(idTH);
+			setState(752);
 			((While_statContext)_localctx).l = match(T__4);
 
 			                if(((While_statContext)_localctx).e.mipsCodeS != null){
@@ -5975,9 +5974,9 @@ public class LissParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(753);
+			setState(755);
 			((Succ_or_predContext)_localctx).s = succ_pred();
-			setState(754);
+			setState(756);
 			((Succ_or_predContext)_localctx).i = identifier();
 
 			                ((Succ_or_predContext)_localctx).line =  ((Succ_or_predContext)_localctx).s.line;
@@ -6057,12 +6056,12 @@ public class LissParser extends Parser {
 		Succ_predContext _localctx = new Succ_predContext(_ctx, getState());
 		enterRule(_localctx, 128, RULE_succ_pred);
 		try {
-			setState(761);
+			setState(763);
 			switch (_input.LA(1)) {
 			case T__55:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(757);
+				setState(759);
 				((Succ_predContext)_localctx).s = match(T__55);
 				 ((Succ_predContext)_localctx).succ =  true; ((Succ_predContext)_localctx).line =  (((Succ_predContext)_localctx).s!=null?((Succ_predContext)_localctx).s.getLine():0); ((Succ_predContext)_localctx).pos = (((Succ_predContext)_localctx).s!=null?((Succ_predContext)_localctx).s.getCharPositionInLine():0);
 				}
@@ -6070,7 +6069,7 @@ public class LissParser extends Parser {
 			case T__56:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(759);
+				setState(761);
 				((Succ_predContext)_localctx).p = match(T__56);
 				 ((Succ_predContext)_localctx).succ =  false; ((Succ_predContext)_localctx).line =  (((Succ_predContext)_localctx).p!=null?((Succ_predContext)_localctx).p.getLine():0); ((Succ_predContext)_localctx).pos =  (((Succ_predContext)_localctx).p!=null?((Succ_predContext)_localctx).p.getCharPositionInLine():0);
 				}
@@ -6128,13 +6127,13 @@ public class LissParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(763);
-			((TailContext)_localctx).t = match(T__57);
-			setState(764);
-			match(T__25);
 			setState(765);
-			((TailContext)_localctx).e = expression(idTH, set);
+			((TailContext)_localctx).t = match(T__57);
 			setState(766);
+			match(T__25);
+			setState(767);
+			((TailContext)_localctx).e = expression(idTH, set);
+			setState(768);
 			match(T__26);
 
 			        ((TailContext)_localctx).line =  (((TailContext)_localctx).t!=null?((TailContext)_localctx).t.getLine():0);
@@ -6206,13 +6205,13 @@ public class LissParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(769);
-			((HeadContext)_localctx).h = match(T__58);
-			setState(770);
-			match(T__25);
 			setState(771);
-			((HeadContext)_localctx).e = expression(idTH, set);
+			((HeadContext)_localctx).h = match(T__58);
 			setState(772);
+			match(T__25);
+			setState(773);
+			((HeadContext)_localctx).e = expression(idTH, set);
+			setState(774);
 			match(T__26);
 
 			        ((HeadContext)_localctx).line =  (((HeadContext)_localctx).h!=null?((HeadContext)_localctx).h.getLine():0);
@@ -6288,17 +6287,17 @@ public class LissParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(775);
-			((ConsContext)_localctx).c = match(T__59);
-			setState(776);
-			match(T__25);
 			setState(777);
-			((ConsContext)_localctx).e1 = expression(idTH, set);
+			((ConsContext)_localctx).c = match(T__59);
 			setState(778);
-			match(T__7);
+			match(T__25);
 			setState(779);
-			((ConsContext)_localctx).e2 = expression(idTH, set);
+			((ConsContext)_localctx).e1 = expression(idTH, set);
 			setState(780);
+			match(T__7);
+			setState(781);
+			((ConsContext)_localctx).e2 = expression(idTH, set);
+			setState(782);
 			match(T__26);
 
 			            ((ConsContext)_localctx).line =  (((ConsContext)_localctx).c!=null?((ConsContext)_localctx).c.getLine():0);
@@ -6377,17 +6376,17 @@ public class LissParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(783);
-			((DeleteContext)_localctx).d = match(T__60);
-			setState(784);
-			match(T__25);
 			setState(785);
-			((DeleteContext)_localctx).e1 = expression(idTH, set);
+			((DeleteContext)_localctx).d = match(T__60);
 			setState(786);
-			match(T__7);
+			match(T__25);
 			setState(787);
-			((DeleteContext)_localctx).e2 = expression(idTH, set);
+			((DeleteContext)_localctx).e1 = expression(idTH, set);
 			setState(788);
+			match(T__7);
+			setState(789);
+			((DeleteContext)_localctx).e2 = expression(idTH, set);
+			setState(790);
 			match(T__26);
 
 			            ((DeleteContext)_localctx).line =  (((DeleteContext)_localctx).d!=null?((DeleteContext)_localctx).d.getLine():0);
@@ -6459,17 +6458,17 @@ public class LissParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(791);
-			match(T__61);
-			setState(792);
-			match(T__25);
 			setState(793);
-			((Copy_statementContext)_localctx).i1 = identifier();
+			match(T__61);
 			setState(794);
-			match(T__7);
+			match(T__25);
 			setState(795);
-			((Copy_statementContext)_localctx).i2 = identifier();
+			((Copy_statementContext)_localctx).i1 = identifier();
 			setState(796);
+			match(T__7);
+			setState(797);
+			((Copy_statementContext)_localctx).i2 = identifier();
+			setState(798);
 			match(T__26);
 
 			                  Var v1 = (Var) _localctx.idTH.getInfoIdentifiersTable((((Copy_statementContext)_localctx).i1!=null?_input.getText(((Copy_statementContext)_localctx).i1.start,((Copy_statementContext)_localctx).i1.stop):null));
@@ -6530,17 +6529,17 @@ public class LissParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(799);
-			match(T__62);
-			setState(800);
-			match(T__25);
 			setState(801);
-			((Cat_statementContext)_localctx).i1 = identifier();
+			match(T__62);
 			setState(802);
-			match(T__7);
+			match(T__25);
 			setState(803);
-			((Cat_statementContext)_localctx).i2 = identifier();
+			((Cat_statementContext)_localctx).i1 = identifier();
 			setState(804);
+			match(T__7);
+			setState(805);
+			((Cat_statementContext)_localctx).i2 = identifier();
+			setState(806);
 			match(T__26);
 
 			                Var v1 = (Var) _localctx.idTH.getInfoIdentifiersTable((((Cat_statementContext)_localctx).i1!=null?_input.getText(((Cat_statementContext)_localctx).i1.start,((Cat_statementContext)_localctx).i1.stop):null));
@@ -6605,13 +6604,13 @@ public class LissParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(807);
-			((Is_emptyContext)_localctx).i = match(T__63);
-			setState(808);
-			match(T__25);
 			setState(809);
-			((Is_emptyContext)_localctx).e1 = expression(idTH, set);
+			((Is_emptyContext)_localctx).i = match(T__63);
 			setState(810);
+			match(T__25);
+			setState(811);
+			((Is_emptyContext)_localctx).e1 = expression(idTH, set);
+			setState(812);
 			match(T__26);
 
 			            ((Is_emptyContext)_localctx).line =  (((Is_emptyContext)_localctx).i!=null?((Is_emptyContext)_localctx).i.getLine():0);
@@ -6682,13 +6681,13 @@ public class LissParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(813);
-			((LengthContext)_localctx).l = match(T__64);
-			setState(814);
-			match(T__25);
 			setState(815);
-			((LengthContext)_localctx).e1 = expression(idTH, set);
+			((LengthContext)_localctx).l = match(T__64);
 			setState(816);
+			match(T__25);
+			setState(817);
+			((LengthContext)_localctx).e1 = expression(idTH, set);
+			setState(818);
 			match(T__26);
 
 			          ((LengthContext)_localctx).line =  (((LengthContext)_localctx).l!=null?((LengthContext)_localctx).l.getLine():0);
@@ -6762,17 +6761,17 @@ public class LissParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(819);
-			((MemberContext)_localctx).im = match(T__65);
-			setState(820);
-			match(T__25);
 			setState(821);
-			((MemberContext)_localctx).e = expression(idTH, set);
+			((MemberContext)_localctx).im = match(T__65);
 			setState(822);
-			match(T__7);
+			match(T__25);
 			setState(823);
-			((MemberContext)_localctx).i = identifier();
+			((MemberContext)_localctx).e = expression(idTH, set);
 			setState(824);
+			match(T__7);
+			setState(825);
+			((MemberContext)_localctx).i = identifier();
+			setState(826);
 			match(T__26);
 
 			          ((MemberContext)_localctx).line =  (((MemberContext)_localctx).im!=null?((MemberContext)_localctx).im.getLine():0);
@@ -6847,7 +6846,7 @@ public class LissParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(827);
+			setState(829);
 			match(STR);
 			}
 		}
@@ -6889,7 +6888,7 @@ public class LissParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(829);
+			setState(831);
 			((NumberContext)_localctx).NBR = match(NBR);
 			((NumberContext)_localctx).numberS =  Integer.parseInt((((NumberContext)_localctx).NBR!=null?((NumberContext)_localctx).NBR.getText():null));((NumberContext)_localctx).line =  (((NumberContext)_localctx).NBR!=null?((NumberContext)_localctx).NBR.getLine():0);((NumberContext)_localctx).pos =  (((NumberContext)_localctx).NBR!=null?((NumberContext)_localctx).NBR.getCharPositionInLine():0); ((NumberContext)_localctx).valueS =  (((NumberContext)_localctx).NBR!=null?((NumberContext)_localctx).NBR.getText():null);
 			}
@@ -6930,7 +6929,7 @@ public class LissParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(832);
+			setState(834);
 			((IdentifierContext)_localctx).ID = match(ID);
 			((IdentifierContext)_localctx).line =  (((IdentifierContext)_localctx).ID!=null?((IdentifierContext)_localctx).ID.getLine():0);((IdentifierContext)_localctx).pos =  (((IdentifierContext)_localctx).ID!=null?((IdentifierContext)_localctx).ID.getCharPositionInLine():0);
 			}
@@ -6947,7 +6946,7 @@ public class LissParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3H\u0346\4\2\t\2\4"+
+		"\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3H\u0348\4\2\t\2\4"+
 		"\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13\t"+
 		"\13\4\f\t\f\4\r\t\r\4\16\t\16\4\17\t\17\4\20\t\20\4\21\t\21\4\22\t\22"+
 		"\4\23\t\23\4\24\t\24\4\25\t\25\4\26\t\26\4\27\t\27\4\30\t\30\4\31\t\31"+
@@ -6988,39 +6987,39 @@ public class LissParser extends Parser {
 		"+\3+\3+\3+\3+\3+\3+\3+\3+\3+\3+\3+\3+\3+\3+\3+\3+\3+\3+\3+\5+\u0248\n"+
 		"+\3,\3,\3,\3,\3,\3,\3,\3,\5,\u0252\n,\3-\3-\3-\3-\3-\3-\3-\3-\5-\u025c"+
 		"\n-\3.\3.\3.\3.\3.\3.\3.\3.\3.\3.\3.\3.\3.\3.\5.\u026c\n.\3/\3/\3/\3/"+
-		"\3/\3/\3\60\3\60\3\60\3\60\5\60\u0278\n\60\3\61\3\61\3\61\3\61\3\61\5"+
-		"\61\u027f\n\61\3\62\3\62\3\62\3\62\3\62\3\62\3\63\3\63\3\63\3\64\3\64"+
-		"\3\64\3\64\3\64\3\64\5\64\u0290\n\64\3\65\3\65\3\65\3\65\3\65\3\65\3\65"+
-		"\3\65\3\65\3\65\3\65\3\66\3\66\3\66\3\66\3\66\3\66\3\66\3\66\5\66\u02a5"+
-		"\n\66\3\67\3\67\3\67\3\67\3\67\3\67\3\67\3\67\3\67\3\67\3\67\3\67\3\67"+
-		"\38\38\38\38\39\39\39\39\39\39\39\39\59\u02c0\n9\3:\3:\3:\3:\3:\3;\3;"+
-		"\3;\3;\3;\3;\5;\u02cd\n;\3<\3<\3<\3<\3<\3<\5<\u02d5\n<\3=\3=\3=\3=\3="+
-		"\5=\u02dc\n=\3>\3>\3>\5>\u02e1\n>\3?\3?\3?\3?\3?\5?\u02e8\n?\3@\3@\3@"+
-		"\3@\3@\3@\3@\3@\3@\3@\3A\3A\3A\3A\3B\3B\3B\3B\5B\u02fc\nB\3C\3C\3C\3C"+
-		"\3C\3C\3D\3D\3D\3D\3D\3D\3E\3E\3E\3E\3E\3E\3E\3E\3F\3F\3F\3F\3F\3F\3F"+
-		"\3F\3G\3G\3G\3G\3G\3G\3G\3G\3H\3H\3H\3H\3H\3H\3H\3H\3I\3I\3I\3I\3I\3I"+
-		"\3J\3J\3J\3J\3J\3J\3K\3K\3K\3K\3K\3K\3K\3K\3L\3L\3M\3M\3M\3N\3N\3N\3N"+
-		"\2\2O\2\4\6\b\n\f\16\20\22\24\26\30\32\34\36 \"$&(*,.\60\62\64\668:<>"+
-		"@BDFHJLNPRTVXZ\\^`bdfhjlnprtvxz|~\u0080\u0082\u0084\u0086\u0088\u008a"+
-		"\u008c\u008e\u0090\u0092\u0094\u0096\u0098\u009a\2\2\u0345\2\u009c\3\2"+
-		"\2\2\4\u00a1\3\2\2\2\6\u00ae\3\2\2\2\b\u00ba\3\2\2\2\n\u00c0\3\2\2\2\f"+
-		"\u00cd\3\2\2\2\16\u00d6\3\2\2\2\20\u00e5\3\2\2\2\22\u00eb\3\2\2\2\24\u00ed"+
-		"\3\2\2\2\26\u0106\3\2\2\2\30\u0110\3\2\2\2\32\u0115\3\2\2\2\34\u0117\3"+
-		"\2\2\2\36\u011b\3\2\2\2 \u012e\3\2\2\2\"\u0130\3\2\2\2$\u0139\3\2\2\2"+
-		"&\u013b\3\2\2\2(\u0148\3\2\2\2*\u0155\3\2\2\2,\u0157\3\2\2\2.\u0162\3"+
-		"\2\2\2\60\u0172\3\2\2\2\62\u0174\3\2\2\2\64\u0181\3\2\2\2\66\u018b\3\2"+
-		"\2\28\u0193\3\2\2\2:\u019b\3\2\2\2<\u01be\3\2\2\2>\u01c0\3\2\2\2@\u01c5"+
-		"\3\2\2\2B\u01cf\3\2\2\2D\u01d1\3\2\2\2F\u01de\3\2\2\2H\u01e8\3\2\2\2J"+
-		"\u01ea\3\2\2\2L\u01f7\3\2\2\2N\u0201\3\2\2\2P\u020e\3\2\2\2R\u0230\3\2"+
-		"\2\2T\u0247\3\2\2\2V\u0251\3\2\2\2X\u025b\3\2\2\2Z\u026b\3\2\2\2\\\u026d"+
-		"\3\2\2\2^\u0277\3\2\2\2`\u027e\3\2\2\2b\u0280\3\2\2\2d\u0286\3\2\2\2f"+
-		"\u028f\3\2\2\2h\u0291\3\2\2\2j\u02a4\3\2\2\2l\u02a6\3\2\2\2n\u02b3\3\2"+
-		"\2\2p\u02bf\3\2\2\2r\u02c1\3\2\2\2t\u02cc\3\2\2\2v\u02d4\3\2\2\2x\u02db"+
-		"\3\2\2\2z\u02e0\3\2\2\2|\u02e7\3\2\2\2~\u02e9\3\2\2\2\u0080\u02f3\3\2"+
-		"\2\2\u0082\u02fb\3\2\2\2\u0084\u02fd\3\2\2\2\u0086\u0303\3\2\2\2\u0088"+
-		"\u0309\3\2\2\2\u008a\u0311\3\2\2\2\u008c\u0319\3\2\2\2\u008e\u0321\3\2"+
-		"\2\2\u0090\u0329\3\2\2\2\u0092\u032f\3\2\2\2\u0094\u0335\3\2\2\2\u0096"+
-		"\u033d\3\2\2\2\u0098\u033f\3\2\2\2\u009a\u0342\3\2\2\2\u009c\u009d\7\3"+
+		"\3/\3/\3\60\3\60\3\60\3\60\5\60\u0278\n\60\3\61\3\61\3\61\3\61\3\61\3"+
+		"\61\3\61\5\61\u0281\n\61\3\62\3\62\3\62\3\62\3\62\3\62\3\63\3\63\3\63"+
+		"\3\64\3\64\3\64\3\64\3\64\3\64\5\64\u0292\n\64\3\65\3\65\3\65\3\65\3\65"+
+		"\3\65\3\65\3\65\3\65\3\65\3\65\3\66\3\66\3\66\3\66\3\66\3\66\3\66\3\66"+
+		"\5\66\u02a7\n\66\3\67\3\67\3\67\3\67\3\67\3\67\3\67\3\67\3\67\3\67\3\67"+
+		"\3\67\3\67\38\38\38\38\39\39\39\39\39\39\39\39\59\u02c2\n9\3:\3:\3:\3"+
+		":\3:\3;\3;\3;\3;\3;\3;\5;\u02cf\n;\3<\3<\3<\3<\3<\3<\5<\u02d7\n<\3=\3"+
+		"=\3=\3=\3=\5=\u02de\n=\3>\3>\3>\5>\u02e3\n>\3?\3?\3?\3?\3?\5?\u02ea\n"+
+		"?\3@\3@\3@\3@\3@\3@\3@\3@\3@\3@\3A\3A\3A\3A\3B\3B\3B\3B\5B\u02fe\nB\3"+
+		"C\3C\3C\3C\3C\3C\3D\3D\3D\3D\3D\3D\3E\3E\3E\3E\3E\3E\3E\3E\3F\3F\3F\3"+
+		"F\3F\3F\3F\3F\3G\3G\3G\3G\3G\3G\3G\3G\3H\3H\3H\3H\3H\3H\3H\3H\3I\3I\3"+
+		"I\3I\3I\3I\3J\3J\3J\3J\3J\3J\3K\3K\3K\3K\3K\3K\3K\3K\3L\3L\3M\3M\3M\3"+
+		"N\3N\3N\3N\2\2O\2\4\6\b\n\f\16\20\22\24\26\30\32\34\36 \"$&(*,.\60\62"+
+		"\64\668:<>@BDFHJLNPRTVXZ\\^`bdfhjlnprtvxz|~\u0080\u0082\u0084\u0086\u0088"+
+		"\u008a\u008c\u008e\u0090\u0092\u0094\u0096\u0098\u009a\2\2\u0347\2\u009c"+
+		"\3\2\2\2\4\u00a1\3\2\2\2\6\u00ae\3\2\2\2\b\u00ba\3\2\2\2\n\u00c0\3\2\2"+
+		"\2\f\u00cd\3\2\2\2\16\u00d6\3\2\2\2\20\u00e5\3\2\2\2\22\u00eb\3\2\2\2"+
+		"\24\u00ed\3\2\2\2\26\u0106\3\2\2\2\30\u0110\3\2\2\2\32\u0115\3\2\2\2\34"+
+		"\u0117\3\2\2\2\36\u011b\3\2\2\2 \u012e\3\2\2\2\"\u0130\3\2\2\2$\u0139"+
+		"\3\2\2\2&\u013b\3\2\2\2(\u0148\3\2\2\2*\u0155\3\2\2\2,\u0157\3\2\2\2."+
+		"\u0162\3\2\2\2\60\u0172\3\2\2\2\62\u0174\3\2\2\2\64\u0181\3\2\2\2\66\u018b"+
+		"\3\2\2\28\u0193\3\2\2\2:\u019b\3\2\2\2<\u01be\3\2\2\2>\u01c0\3\2\2\2@"+
+		"\u01c5\3\2\2\2B\u01cf\3\2\2\2D\u01d1\3\2\2\2F\u01de\3\2\2\2H\u01e8\3\2"+
+		"\2\2J\u01ea\3\2\2\2L\u01f7\3\2\2\2N\u0201\3\2\2\2P\u020e\3\2\2\2R\u0230"+
+		"\3\2\2\2T\u0247\3\2\2\2V\u0251\3\2\2\2X\u025b\3\2\2\2Z\u026b\3\2\2\2\\"+
+		"\u026d\3\2\2\2^\u0277\3\2\2\2`\u0280\3\2\2\2b\u0282\3\2\2\2d\u0288\3\2"+
+		"\2\2f\u0291\3\2\2\2h\u0293\3\2\2\2j\u02a6\3\2\2\2l\u02a8\3\2\2\2n\u02b5"+
+		"\3\2\2\2p\u02c1\3\2\2\2r\u02c3\3\2\2\2t\u02ce\3\2\2\2v\u02d6\3\2\2\2x"+
+		"\u02dd\3\2\2\2z\u02e2\3\2\2\2|\u02e9\3\2\2\2~\u02eb\3\2\2\2\u0080\u02f5"+
+		"\3\2\2\2\u0082\u02fd\3\2\2\2\u0084\u02ff\3\2\2\2\u0086\u0305\3\2\2\2\u0088"+
+		"\u030b\3\2\2\2\u008a\u0313\3\2\2\2\u008c\u031b\3\2\2\2\u008e\u0323\3\2"+
+		"\2\2\u0090\u032b\3\2\2\2\u0092\u0331\3\2\2\2\u0094\u0337\3\2\2\2\u0096"+
+		"\u033f\3\2\2\2\u0098\u0341\3\2\2\2\u009a\u0344\3\2\2\2\u009c\u009d\7\3"+
 		"\2\2\u009d\u009e\5\u009aN\2\u009e\u009f\5\4\3\2\u009f\u00a0\b\2\1\2\u00a0"+
 		"\3\3\2\2\2\u00a1\u00a2\7\4\2\2\u00a2\u00a3\7\5\2\2\u00a3\u00a4\b\3\1\2"+
 		"\u00a4\u00a5\5\6\4\2\u00a5\u00a6\7\6\2\2\u00a6\u00a7\b\3\1\2\u00a7\u00a8"+
@@ -7172,71 +7171,71 @@ public class LissParser extends Parser {
 		"\5^\60\2\u026e\u026f\7\34\2\2\u026f\u0270\5`\61\2\u0270\u0271\7\35\2\2"+
 		"\u0271\u0272\b/\1\2\u0272]\3\2\2\2\u0273\u0274\7-\2\2\u0274\u0278\b\60"+
 		"\1\2\u0275\u0276\7.\2\2\u0276\u0278\b\60\1\2\u0277\u0273\3\2\2\2\u0277"+
-		"\u0275\3\2\2\2\u0278_\3\2\2\2\u0279\u027f\3\2\2\2\u027a\u027b\5L\'\2\u027b"+
-		"\u027c\b\61\1\2\u027c\u027f\3\2\2\2\u027d\u027f\5\u0096L\2\u027e\u0279"+
-		"\3\2\2\2\u027e\u027a\3\2\2\2\u027e\u027d\3\2\2\2\u027fa\3\2\2\2\u0280"+
-		"\u0281\7/\2\2\u0281\u0282\7\34\2\2\u0282\u0283\5\u009aN\2\u0283\u0284"+
-		"\7\35\2\2\u0284\u0285\b\62\1\2\u0285c\3\2\2\2\u0286\u0287\5h\65\2\u0287"+
-		"\u0288\b\63\1\2\u0288e\3\2\2\2\u0289\u028a\5l\67\2\u028a\u028b\b\64\1"+
-		"\2\u028b\u0290\3\2\2\2\u028c\u028d\5~@\2\u028d\u028e\b\64\1\2\u028e\u0290"+
-		"\3\2\2\2\u028f\u0289\3\2\2\2\u028f\u028c\3\2\2\2\u0290g\3\2\2\2\u0291"+
-		"\u0292\7\60\2\2\u0292\u0293\7\34\2\2\u0293\u0294\5L\'\2\u0294\u0295\7"+
-		"\35\2\2\u0295\u0296\b\65\1\2\u0296\u0297\7\61\2\2\u0297\u0298\7\4\2\2"+
-		"\u0298\u0299\5:\36\2\u0299\u029a\7\7\2\2\u029a\u029b\5j\66\2\u029bi\3"+
-		"\2\2\2\u029c\u02a5\b\66\1\2\u029d\u029e\7\62\2\2\u029e\u029f\7\4\2\2\u029f"+
-		"\u02a0\b\66\1\2\u02a0\u02a1\5:\36\2\u02a1\u02a2\b\66\1\2\u02a2\u02a3\7"+
-		"\7\2\2\u02a3\u02a5\3\2\2\2\u02a4\u029c\3\2\2\2\u02a4\u029d\3\2\2\2\u02a5"+
-		"k\3\2\2\2\u02a6\u02a7\7\63\2\2\u02a7\u02a8\7\34\2\2\u02a8\u02a9\5n8\2"+
-		"\u02a9\u02aa\7\35\2\2\u02aa\u02ab\5x=\2\u02ab\u02ac\b\67\1\2\u02ac\u02ad"+
-		"\5|?\2\u02ad\u02ae\b\67\1\2\u02ae\u02af\7\4\2\2\u02af\u02b0\5:\36\2\u02b0"+
-		"\u02b1\7\7\2\2\u02b1\u02b2\b\67\1\2\u02b2m\3\2\2\2\u02b3\u02b4\5\u009a"+
-		"N\2\u02b4\u02b5\5p9\2\u02b5\u02b6\b8\1\2\u02b6o\3\2\2\2\u02b7\u02b8\7"+
-		",\2\2\u02b8\u02b9\5r:\2\u02b9\u02ba\b9\1\2\u02ba\u02c0\3\2\2\2\u02bb\u02bc"+
-		"\7\64\2\2\u02bc\u02bd\5\u009aN\2\u02bd\u02be\b9\1\2\u02be\u02c0\3\2\2"+
-		"\2\u02bf\u02b7\3\2\2\2\u02bf\u02bb\3\2\2\2\u02c0q\3\2\2\2\u02c1\u02c2"+
-		"\5t;\2\u02c2\u02c3\7\65\2\2\u02c3\u02c4\5v<\2\u02c4\u02c5\b:\1\2\u02c5"+
-		"s\3\2\2\2\u02c6\u02c7\5\u0098M\2\u02c7\u02c8\b;\1\2\u02c8\u02cd\3\2\2"+
-		"\2\u02c9\u02ca\5\u009aN\2\u02ca\u02cb\b;\1\2\u02cb\u02cd\3\2\2\2\u02cc"+
-		"\u02c6\3\2\2\2\u02cc\u02c9\3\2\2\2\u02cdu\3\2\2\2\u02ce\u02cf\5\u0098"+
-		"M\2\u02cf\u02d0\b<\1\2\u02d0\u02d5\3\2\2\2\u02d1\u02d2\5\u009aN\2\u02d2"+
-		"\u02d3\b<\1\2\u02d3\u02d5\3\2\2\2\u02d4\u02ce\3\2\2\2\u02d4\u02d1\3\2"+
-		"\2\2\u02d5w\3\2\2\2\u02d6\u02dc\b=\1\2\u02d7\u02d8\5z>\2\u02d8\u02d9\5"+
-		"\u0098M\2\u02d9\u02da\b=\1\2\u02da\u02dc\3\2\2\2\u02db\u02d6\3\2\2\2\u02db"+
-		"\u02d7\3\2\2\2\u02dcy\3\2\2\2\u02dd\u02de\7\66\2\2\u02de\u02e1\b>\1\2"+
-		"\u02df\u02e1\7\67\2\2\u02e0\u02dd\3\2\2\2\u02e0\u02df\3\2\2\2\u02e1{\3"+
-		"\2\2\2\u02e2\u02e8\b?\1\2\u02e3\u02e4\78\2\2\u02e4\u02e5\5L\'\2\u02e5"+
-		"\u02e6\b?\1\2\u02e6\u02e8\3\2\2\2\u02e7\u02e2\3\2\2\2\u02e7\u02e3\3\2"+
-		"\2\2\u02e8}\3\2\2\2\u02e9\u02ea\79\2\2\u02ea\u02eb\7\34\2\2\u02eb\u02ec"+
-		"\5L\'\2\u02ec\u02ed\7\35\2\2\u02ed\u02ee\b@\1\2\u02ee\u02ef\7\4\2\2\u02ef"+
-		"\u02f0\5:\36\2\u02f0\u02f1\7\7\2\2\u02f1\u02f2\b@\1\2\u02f2\177\3\2\2"+
-		"\2\u02f3\u02f4\5\u0082B\2\u02f4\u02f5\5\u009aN\2\u02f5\u02f6\bA\1\2\u02f6"+
-		"\u0081\3\2\2\2\u02f7\u02f8\7:\2\2\u02f8\u02fc\bB\1\2\u02f9\u02fa\7;\2"+
-		"\2\u02fa\u02fc\bB\1\2\u02fb\u02f7\3\2\2\2\u02fb\u02f9\3\2\2\2\u02fc\u0083"+
-		"\3\2\2\2\u02fd\u02fe\7<\2\2\u02fe\u02ff\7\34\2\2\u02ff\u0300\5L\'\2\u0300"+
-		"\u0301\7\35\2\2\u0301\u0302\bC\1\2\u0302\u0085\3\2\2\2\u0303\u0304\7="+
-		"\2\2\u0304\u0305\7\34\2\2\u0305\u0306\5L\'\2\u0306\u0307\7\35\2\2\u0307"+
-		"\u0308\bD\1\2\u0308\u0087\3\2\2\2\u0309\u030a\7>\2\2\u030a\u030b\7\34"+
-		"\2\2\u030b\u030c\5L\'\2\u030c\u030d\7\n\2\2\u030d\u030e\5L\'\2\u030e\u030f"+
-		"\7\35\2\2\u030f\u0310\bE\1\2\u0310\u0089\3\2\2\2\u0311\u0312\7?\2\2\u0312"+
-		"\u0313\7\34\2\2\u0313\u0314\5L\'\2\u0314\u0315\7\n\2\2\u0315\u0316\5L"+
-		"\'\2\u0316\u0317\7\35\2\2\u0317\u0318\bF\1\2\u0318\u008b\3\2\2\2\u0319"+
-		"\u031a\7@\2\2\u031a\u031b\7\34\2\2\u031b\u031c\5\u009aN\2\u031c\u031d"+
-		"\7\n\2\2\u031d\u031e\5\u009aN\2\u031e\u031f\7\35\2\2\u031f\u0320\bG\1"+
-		"\2\u0320\u008d\3\2\2\2\u0321\u0322\7A\2\2\u0322\u0323\7\34\2\2\u0323\u0324"+
-		"\5\u009aN\2\u0324\u0325\7\n\2\2\u0325\u0326\5\u009aN\2\u0326\u0327\7\35"+
-		"\2\2\u0327\u0328\bH\1\2\u0328\u008f\3\2\2\2\u0329\u032a\7B\2\2\u032a\u032b"+
-		"\7\34\2\2\u032b\u032c\5L\'\2\u032c\u032d\7\35\2\2\u032d\u032e\bI\1\2\u032e"+
-		"\u0091\3\2\2\2\u032f\u0330\7C\2\2\u0330\u0331\7\34\2\2\u0331\u0332\5L"+
-		"\'\2\u0332\u0333\7\35\2\2\u0333\u0334\bJ\1\2\u0334\u0093\3\2\2\2\u0335"+
-		"\u0336\7D\2\2\u0336\u0337\7\34\2\2\u0337\u0338\5L\'\2\u0338\u0339\7\n"+
-		"\2\2\u0339\u033a\5\u009aN\2\u033a\u033b\7\35\2\2\u033b\u033c\bK\1\2\u033c"+
-		"\u0095\3\2\2\2\u033d\u033e\7H\2\2\u033e\u0097\3\2\2\2\u033f\u0340\7E\2"+
-		"\2\u0340\u0341\bM\1\2\u0341\u0099\3\2\2\2\u0342\u0343\7F\2\2\u0343\u0344"+
-		"\bN\1\2\u0344\u009b\3\2\2\2.\u00ae\u00b5\u00c8\u00d6\u00e5\u00eb\u00f5"+
-		"\u0106\u0110\u0115\u0125\u012e\u0139\u0143\u0155\u0172\u017c\u018b\u0193"+
-		"\u019b\u01be\u01cf\u01d9\u01e8\u01f2\u01fd\u0209\u0216\u0230\u0247\u0251"+
-		"\u025b\u026b\u0277\u027e\u028f\u02a4\u02bf\u02cc\u02d4\u02db\u02e0\u02e7"+
-		"\u02fb";
+		"\u0275\3\2\2\2\u0278_\3\2\2\2\u0279\u0281\3\2\2\2\u027a\u027b\5L\'\2\u027b"+
+		"\u027c\b\61\1\2\u027c\u0281\3\2\2\2\u027d\u027e\5\u0096L\2\u027e\u027f"+
+		"\b\61\1\2\u027f\u0281\3\2\2\2\u0280\u0279\3\2\2\2\u0280\u027a\3\2\2\2"+
+		"\u0280\u027d\3\2\2\2\u0281a\3\2\2\2\u0282\u0283\7/\2\2\u0283\u0284\7\34"+
+		"\2\2\u0284\u0285\5\u009aN\2\u0285\u0286\7\35\2\2\u0286\u0287\b\62\1\2"+
+		"\u0287c\3\2\2\2\u0288\u0289\5h\65\2\u0289\u028a\b\63\1\2\u028ae\3\2\2"+
+		"\2\u028b\u028c\5l\67\2\u028c\u028d\b\64\1\2\u028d\u0292\3\2\2\2\u028e"+
+		"\u028f\5~@\2\u028f\u0290\b\64\1\2\u0290\u0292\3\2\2\2\u0291\u028b\3\2"+
+		"\2\2\u0291\u028e\3\2\2\2\u0292g\3\2\2\2\u0293\u0294\7\60\2\2\u0294\u0295"+
+		"\7\34\2\2\u0295\u0296\5L\'\2\u0296\u0297\7\35\2\2\u0297\u0298\b\65\1\2"+
+		"\u0298\u0299\7\61\2\2\u0299\u029a\7\4\2\2\u029a\u029b\5:\36\2\u029b\u029c"+
+		"\7\7\2\2\u029c\u029d\5j\66\2\u029di\3\2\2\2\u029e\u02a7\b\66\1\2\u029f"+
+		"\u02a0\7\62\2\2\u02a0\u02a1\7\4\2\2\u02a1\u02a2\b\66\1\2\u02a2\u02a3\5"+
+		":\36\2\u02a3\u02a4\b\66\1\2\u02a4\u02a5\7\7\2\2\u02a5\u02a7\3\2\2\2\u02a6"+
+		"\u029e\3\2\2\2\u02a6\u029f\3\2\2\2\u02a7k\3\2\2\2\u02a8\u02a9\7\63\2\2"+
+		"\u02a9\u02aa\7\34\2\2\u02aa\u02ab\5n8\2\u02ab\u02ac\7\35\2\2\u02ac\u02ad"+
+		"\5x=\2\u02ad\u02ae\b\67\1\2\u02ae\u02af\5|?\2\u02af\u02b0\b\67\1\2\u02b0"+
+		"\u02b1\7\4\2\2\u02b1\u02b2\5:\36\2\u02b2\u02b3\7\7\2\2\u02b3\u02b4\b\67"+
+		"\1\2\u02b4m\3\2\2\2\u02b5\u02b6\5\u009aN\2\u02b6\u02b7\5p9\2\u02b7\u02b8"+
+		"\b8\1\2\u02b8o\3\2\2\2\u02b9\u02ba\7,\2\2\u02ba\u02bb\5r:\2\u02bb\u02bc"+
+		"\b9\1\2\u02bc\u02c2\3\2\2\2\u02bd\u02be\7\64\2\2\u02be\u02bf\5\u009aN"+
+		"\2\u02bf\u02c0\b9\1\2\u02c0\u02c2\3\2\2\2\u02c1\u02b9\3\2\2\2\u02c1\u02bd"+
+		"\3\2\2\2\u02c2q\3\2\2\2\u02c3\u02c4\5t;\2\u02c4\u02c5\7\65\2\2\u02c5\u02c6"+
+		"\5v<\2\u02c6\u02c7\b:\1\2\u02c7s\3\2\2\2\u02c8\u02c9\5\u0098M\2\u02c9"+
+		"\u02ca\b;\1\2\u02ca\u02cf\3\2\2\2\u02cb\u02cc\5\u009aN\2\u02cc\u02cd\b"+
+		";\1\2\u02cd\u02cf\3\2\2\2\u02ce\u02c8\3\2\2\2\u02ce\u02cb\3\2\2\2\u02cf"+
+		"u\3\2\2\2\u02d0\u02d1\5\u0098M\2\u02d1\u02d2\b<\1\2\u02d2\u02d7\3\2\2"+
+		"\2\u02d3\u02d4\5\u009aN\2\u02d4\u02d5\b<\1\2\u02d5\u02d7\3\2\2\2\u02d6"+
+		"\u02d0\3\2\2\2\u02d6\u02d3\3\2\2\2\u02d7w\3\2\2\2\u02d8\u02de\b=\1\2\u02d9"+
+		"\u02da\5z>\2\u02da\u02db\5\u0098M\2\u02db\u02dc\b=\1\2\u02dc\u02de\3\2"+
+		"\2\2\u02dd\u02d8\3\2\2\2\u02dd\u02d9\3\2\2\2\u02dey\3\2\2\2\u02df\u02e0"+
+		"\7\66\2\2\u02e0\u02e3\b>\1\2\u02e1\u02e3\7\67\2\2\u02e2\u02df\3\2\2\2"+
+		"\u02e2\u02e1\3\2\2\2\u02e3{\3\2\2\2\u02e4\u02ea\b?\1\2\u02e5\u02e6\78"+
+		"\2\2\u02e6\u02e7\5L\'\2\u02e7\u02e8\b?\1\2\u02e8\u02ea\3\2\2\2\u02e9\u02e4"+
+		"\3\2\2\2\u02e9\u02e5\3\2\2\2\u02ea}\3\2\2\2\u02eb\u02ec\79\2\2\u02ec\u02ed"+
+		"\7\34\2\2\u02ed\u02ee\5L\'\2\u02ee\u02ef\7\35\2\2\u02ef\u02f0\b@\1\2\u02f0"+
+		"\u02f1\7\4\2\2\u02f1\u02f2\5:\36\2\u02f2\u02f3\7\7\2\2\u02f3\u02f4\b@"+
+		"\1\2\u02f4\177\3\2\2\2\u02f5\u02f6\5\u0082B\2\u02f6\u02f7\5\u009aN\2\u02f7"+
+		"\u02f8\bA\1\2\u02f8\u0081\3\2\2\2\u02f9\u02fa\7:\2\2\u02fa\u02fe\bB\1"+
+		"\2\u02fb\u02fc\7;\2\2\u02fc\u02fe\bB\1\2\u02fd\u02f9\3\2\2\2\u02fd\u02fb"+
+		"\3\2\2\2\u02fe\u0083\3\2\2\2\u02ff\u0300\7<\2\2\u0300\u0301\7\34\2\2\u0301"+
+		"\u0302\5L\'\2\u0302\u0303\7\35\2\2\u0303\u0304\bC\1\2\u0304\u0085\3\2"+
+		"\2\2\u0305\u0306\7=\2\2\u0306\u0307\7\34\2\2\u0307\u0308\5L\'\2\u0308"+
+		"\u0309\7\35\2\2\u0309\u030a\bD\1\2\u030a\u0087\3\2\2\2\u030b\u030c\7>"+
+		"\2\2\u030c\u030d\7\34\2\2\u030d\u030e\5L\'\2\u030e\u030f\7\n\2\2\u030f"+
+		"\u0310\5L\'\2\u0310\u0311\7\35\2\2\u0311\u0312\bE\1\2\u0312\u0089\3\2"+
+		"\2\2\u0313\u0314\7?\2\2\u0314\u0315\7\34\2\2\u0315\u0316\5L\'\2\u0316"+
+		"\u0317\7\n\2\2\u0317\u0318\5L\'\2\u0318\u0319\7\35\2\2\u0319\u031a\bF"+
+		"\1\2\u031a\u008b\3\2\2\2\u031b\u031c\7@\2\2\u031c\u031d\7\34\2\2\u031d"+
+		"\u031e\5\u009aN\2\u031e\u031f\7\n\2\2\u031f\u0320\5\u009aN\2\u0320\u0321"+
+		"\7\35\2\2\u0321\u0322\bG\1\2\u0322\u008d\3\2\2\2\u0323\u0324\7A\2\2\u0324"+
+		"\u0325\7\34\2\2\u0325\u0326\5\u009aN\2\u0326\u0327\7\n\2\2\u0327\u0328"+
+		"\5\u009aN\2\u0328\u0329\7\35\2\2\u0329\u032a\bH\1\2\u032a\u008f\3\2\2"+
+		"\2\u032b\u032c\7B\2\2\u032c\u032d\7\34\2\2\u032d\u032e\5L\'\2\u032e\u032f"+
+		"\7\35\2\2\u032f\u0330\bI\1\2\u0330\u0091\3\2\2\2\u0331\u0332\7C\2\2\u0332"+
+		"\u0333\7\34\2\2\u0333\u0334\5L\'\2\u0334\u0335\7\35\2\2\u0335\u0336\b"+
+		"J\1\2\u0336\u0093\3\2\2\2\u0337\u0338\7D\2\2\u0338\u0339\7\34\2\2\u0339"+
+		"\u033a\5L\'\2\u033a\u033b\7\n\2\2\u033b\u033c\5\u009aN\2\u033c\u033d\7"+
+		"\35\2\2\u033d\u033e\bK\1\2\u033e\u0095\3\2\2\2\u033f\u0340\7H\2\2\u0340"+
+		"\u0097\3\2\2\2\u0341\u0342\7E\2\2\u0342\u0343\bM\1\2\u0343\u0099\3\2\2"+
+		"\2\u0344\u0345\7F\2\2\u0345\u0346\bN\1\2\u0346\u009b\3\2\2\2.\u00ae\u00b5"+
+		"\u00c8\u00d6\u00e5\u00eb\u00f5\u0106\u0110\u0115\u0125\u012e\u0139\u0143"+
+		"\u0155\u0172\u017c\u018b\u0193\u019b\u01be\u01cf\u01d9\u01e8\u01f2\u01fd"+
+		"\u0209\u0216\u0230\u0247\u0251\u025b\u026b\u0277\u0280\u0291\u02a6\u02c1"+
+		"\u02ce\u02d6\u02dd\u02e2\u02e9\u02fd";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {
