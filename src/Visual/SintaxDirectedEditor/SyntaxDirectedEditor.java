@@ -1,8 +1,5 @@
 package Visual.SintaxDirectedEditor;
 
-import Application.SymbolTable.Int;
-import com.sun.org.apache.xpath.internal.operations.Number;
-import com.sun.tools.doclets.internal.toolkit.util.DocFinder;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -27,7 +24,6 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.*;
-import mars.MarsLaunch;
 import netscape.javascript.JSObject;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
@@ -800,6 +796,7 @@ public class SyntaxDirectedEditor {
     }
 }
 
+//Class for process of mars simulator
 class ObservableStream extends Observable {
     private final Queue<String> lines = new ConcurrentLinkedQueue<>();
 
