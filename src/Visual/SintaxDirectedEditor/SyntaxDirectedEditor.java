@@ -468,134 +468,8 @@ public class SyntaxDirectedEditor {
                                     String output="";
                                     try {
                                          Process p = Runtime.getRuntime().exec(new String[]{"java","-jar",marsSimulator.getAbsolutePath(),tempAssembly.getAbsolutePath()});
-//Testing an example of the outputstream with sending the number 3 to the file readInt.liss
-//                                        OutputStream os = p.getOutputStream();
 
-                                        //We need to make a window for the user to input those values !!!
-//                                        os.write("3\n4\n".getBytes()); //See if it does work on windows !!!! probably \n\r or \r\n
-//                                        os.flush();
-//
-//
-//                                        p.waitFor();
-                                        //p.getOutputStream();
-//                                        InputStream is = p.getInputStream();
-//
-//
-//
-//                                        byte b[] = new byte[is.available()];
-//                                        is.read(b, 0, b.length); // probably try b.length-1 or -2 to remove "new-line(s)"
-//
-//                                        output = new String(b);
-//
-//                                        is.close();
-//                                        os.close();
-
-                                        //Working under
-                                        //BufferedWriter out = new BufferedWriter(new OutputStreamWriter(p.getOutputStream()));
-                                        //BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
-
-//                                        out.write("3\n"); // we need to put \n for every input asked
-//                                        out.write("2\n");
-//                                        out.flush();
-
-//                                        String res;
-//                                        String s = JOptionPane.showInputDialog("Hello:");
-                                        /*while (( res = in.readLine())!=null) {
-                                            //out.write("3\n");
-                                            String s = JOptionPane.showInputDialog("Hello:");
-                                            out.write(s+"\n");
-                                            outputTextArea.appendText(res+"\n");
-                                            //output += res+"\n";
-                                            System.out.println(res);
-                                        }*/
-
-
-
-
-                                        //out.flush();
-
-//                                        p.waitFor();
-
-//                                     ##########################
-//                                        InputStream inStream = p.getInputStream();
-//                                        OutputStream ouStream = p.getOutputStream();
-
-//                                        new Thread(new StreamGobbler("in", outputTextArea, inStream)).start();
-
-//                                        ouStream.write("3\n".getBytes()); // we need to put \n for every input asked
-//                                        ouStream.write("2\n".getBytes());
-//                                        ouStream.flush();
-
-//                                        out = new PrintStream(new BufferedOutputStream(ouStream));
-
-
-//                                        p.waitFor();
-//                                     #####################################################
-                                        //TESTING MARS SIMULATOR
-
-//                                        String answer = JOptionPane.showInputDialog(new JFrame("showInputDialog() Test"),
-//                                                "What's you name?",
-//                                                "Input Dialog Box", JOptionPane.INFORMATION_MESSAGE);
-                                       // String test1= JOptionPane.showInputDialog("Please input mark for test 1: ");
-
-//                                        String assemblyFile = tempAssembly.getAbsolutePath();
-//                                        String[] argsMars = new String[]{assemblyFile};
-
-                                        //Working actually
-//                                        TextOutputStream out = new TextOutputStream(outputTextArea);
-//                                        PrintStream p = new PrintStream(out);
-//                                        System.setOut (p);
-                                        //Not working...
-                                        //TextInputStream in = new TextInputStream();
-                                        //System.setIn(in);
-
-
-
-                                        // 1. create the pipes
-//                                        PipedInputStream inPipe = new PipedInputStream();
-//                                        PipedInputStream outPipe = new PipedInputStream();
-
-                                        // 2. set the System.in and System.out streams
-//                                        System.setIn(inPipe);
-//                                        System.setOut(new PrintStream(new PipedOutputStream(outPipe), true));
-//
-//                                        PrintWriter inWriter = new PrintWriter(new PipedOutputStream(inPipe), true);
-//                                        console(outputTextArea,outPipe,inWriter);
-
-
-                                        //This thread is used for calling the mars simulator !!! Otherwise it will block the main program !
-//                                        Thread t = new Thread(new Runnable(){
-//                                            public void run(){
-//                                                MarsLaunch mars = new MarsLaunch(argsMars);
-//                                            }
-//                                        });
-//                                        t.start();
-//                                        if(!t.isAlive()){
-//                                            t.join();
-//                                            p.close();
-//                                        }
-
-
-
-
-                                        //Close System.in and System.out
-
-
-
-                                        //It is working but quit the program..... Probably it is due to the command line !!! SOLVED !!!!!! FUCK YOU !!!!
-
-//                                        MarsLaunch mars = new MarsLaunch(argsMars);
-
-                                        //This code works like a charm
-                                        //Thread t = new Thread(new Runnable(){
-                                        //    public void run(){
-                                        //        String test1 = JOptionPane.showInputDialog("Hello");
-                                        //    }
-                                        //});
-                                        //t.start();
-//                                        System.out.println(answer);
-                                        //#################################################################################
-                                        // The Observable object allowing to send the input lines to my external process
+                                        //This code does the interaction from the process with the GUI ! Implied, input interaction+output interaction from the process
                                         ObservableStream out = new ObservableStream();
 // Observer that simply sends to my external process line by line what we put in
 // the variable output
@@ -656,7 +530,7 @@ public class SyntaxDirectedEditor {
                                                                             System.out.println("entrei aqui na thread do showinputdialog");
                                                                             String test1 = JOptionPane.showInputDialog("Enter Integer value:");
                                                                             while(!test1.matches("^\\d+$")){
-                                                                                test1 = JOptionPane.showInputDialog("Enter a correct Integer value:");
+                                                                                test1 = JOptionPane.showInputDialog("Error: Not a valid Integer.\nEnter a correct Integer value:");
                                                                             }
                                                                             Integer i = Integer.valueOf(test1);
 
@@ -672,8 +546,6 @@ public class SyntaxDirectedEditor {
                                                                         }
                                                                     });
                                                                     t.start();
-
-//                                                                    System.out.println(t.getState());
 
                                                                 }
                                                                 if(!t.isAlive()){
@@ -729,7 +601,8 @@ public class SyntaxDirectedEditor {
 
                                     File marsSimulator = new File("resources/mars_simulator/Mars4_5.jar");
                                     if(marsSimulator.exists() && temp.exists()){
-                                        String res="";
+                                        //TODO usaro codigo do process acima aqui em baixo
+                                        /*String res="";
                                         try {
                                             Process p = Runtime.getRuntime().exec(new String[]{"java","-jar",marsSimulator.getAbsolutePath(),tempAssembly.getAbsolutePath()});
                                             p.waitFor();
@@ -745,7 +618,101 @@ public class SyntaxDirectedEditor {
                                             ex.printStackTrace();
                                         }
                                         //System.out.println(res);
-                                        outputTextArea.appendText(res+"\n");
+                                        outputTextArea.appendText(res+"\n");*/
+
+                                        Process p = Runtime.getRuntime().exec(new String[]{"java","-jar",marsSimulator.getAbsolutePath(),tempAssembly.getAbsolutePath()});
+
+                                        //This code does the interaction from the process with the GUI ! Implied, input interaction+output interaction from the process
+                                        ObservableStream out = new ObservableStream();
+// Observer that simply sends to my external process line by line what we put in
+// the variable output
+                                        PrintWriter writer = new PrintWriter(p.getOutputStream(), true);
+                                        out.addObserver(
+                                                (o, arg) -> {
+                                                    ObservableStream stream = (ObservableStream) o;
+                                                    String line;
+                                                    while ((line = stream.nextLine()) != null) {
+                                                        writer.println(line);
+                                                    }
+                                                }
+                                        );
+
+                                        ObservableStream input = new ObservableStream();
+
+                                        input.addObserver(
+                                                (o, arg) -> {
+                                                    ObservableStream stream = (ObservableStream) o;
+                                                    String line;
+                                                    while ((line = stream.nextLine()) != null) {
+                                                        outputTextArea.appendText(line+"\n");
+                                                    }
+                                                }
+                                        );
+
+                                        // The thread that reads the standard output stream of the external process
+// and put the lines into my variable input
+                                        new Thread(
+                                                () -> {
+                                                    try (BufferedReader reader = new BufferedReader(
+                                                            new InputStreamReader(p.getInputStream()))
+                                                    ) {
+                                                        String line;
+                                                        while ((line = reader.readLine()) != null) {
+                                                            input.addLine(line);
+                                                        }
+                                                    } catch (IOException e1) {
+                                                        e1.printStackTrace();
+                                                    }
+                                                }
+                                        ).start();
+
+
+                                        new Thread(
+                                                ()->{
+                                                    while(p.isAlive()){
+                                                        String res = input.getLine();
+                                                        if(res!=null && res.equals("Enter integer value:")) {
+//                                                            System.out.println("BLABLABLA> " + res);
+                                                            //out.addLine("1");
+                                                            boolean integerIsRequested=true;
+                                                            Thread t=null;
+                                                            while(integerIsRequested){
+                                                                if(t==null) {
+                                                                    t = new Thread(new Runnable() {
+                                                                        public void run() {
+                                                                            System.out.println("entrei aqui na thread do showinputdialog");
+                                                                            String test1 = JOptionPane.showInputDialog("Enter Integer value:");
+                                                                            while(!test1.matches("^\\d+$")){
+                                                                                test1 = JOptionPane.showInputDialog("Error: Not a valid Integer.\nEnter a correct Integer value:");
+                                                                            }
+                                                                            Integer i = Integer.valueOf(test1);
+
+                                                                            if (i != null) {
+                                                                                System.out.println(test1);
+                                                                                out.addLine(test1);
+                                                                                System.out.println("passei por aqui");
+                                                                                //return;
+                                                                            }else{
+
+                                                                            }
+                                                                            System.out.println("acabei isto");
+                                                                        }
+                                                                    });
+                                                                    t.start();
+
+                                                                }
+                                                                if(!t.isAlive()){
+                                                                    integerIsRequested=false;
+//                                                                    System.out.println("A thread morreu"+integerIsRequested);
+                                                                }
+//                                                                System.out.println("supostamente deveria ter um loop aqui...");
+                                                            }
+                                                        }
+                                                    }
+                                                    outputTextArea.appendText("Program executed\n");
+//                                                    System.out.println("sai da thred");
+                                                }
+                                        ).start();
 
 
                                     }else{
