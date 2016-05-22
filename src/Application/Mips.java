@@ -624,21 +624,31 @@ public class Mips {
 
     /*************************** WRITE *********************************/
 
-    public String textWrite(String mipsCodeS,boolean write, int line, int pos){
+    public String textWrite(String mipsCodeS,boolean write, boolean isAString, int line, int pos){
         StringBuilder s = new StringBuilder();
         if(mipsCodeS != null) {
+
             s.append(mipsCodeS);
 
-            String res[] = lastRegisterOccupied();
-            String r0 = res[0];
+            if(!isAString) {
+                String res[] = lastRegisterOccupied();
+                String r0 = res[0];
 
-            s.append("\tmove $a0, " + r0 + "\t\t# " + line + ":" + pos + "\n");
+                s.append("\tmove $a0, " + r0 + "\t\t# " + line + ":" + pos + "\n");
+
+                freeLastRegister();
+                s.append("\tli $v0, 1\n");
+                s.append("\tsyscall\n");
+            }else{
+                //It means that it is a string!
+                s.append("\tli $v0, 4\n");
+                s.append("\tsyscall\n");
+            }
             if(write == true) {
                 s.append("\tjal write\t\t# " + line + ":" + pos + "\n");
             }else if(write == false){
                 s.append("\tjal writeln\t\t# " + line + ":" + pos + "\n");
             }
-            freeLastRegister();
         }
         return s.toString();
     }
@@ -647,14 +657,28 @@ public class Mips {
         // if(value == true) => "write" ! Else "writeln" !
         StringBuilder s = new StringBuilder();
 
-        s.append("\tli $v0, 1\n");
-        s.append("\tsyscall\n");
         if(value == false){
             s.append("\tli $v0, 4\n");
             s.append("\tla $a0, newline\n");
             s.append("\tsyscall\n");
         }
         s.append("\tjr $ra\n");
+
+        return s.toString();
+    }
+
+    public String generateDataStringForWriting(int i,String message){
+        StringBuilder s = new StringBuilder();
+
+        s.append("\twritestring"+i+": .asciiz "+message+"\n");
+
+        return s.toString();
+    }
+
+    public String loadTextWrite(int i){
+        StringBuilder s = new StringBuilder();
+
+        s.append("\tla $a0, writestring"+i+"\n");
 
         return s.toString();
     }

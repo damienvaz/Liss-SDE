@@ -562,7 +562,6 @@ public class SyntaxDirectedEditor {
                                     } catch (Exception ex) {
                                         ex.printStackTrace();
                                     }
-                                    //System.out.println(res);
                                     outputTextArea.appendText(output+"\n");
 
                                 }else{

@@ -4548,7 +4548,7 @@ public class LissParser extends Parser {
 			                    if(((Write_statementContext)_localctx).p.mipsCodeS != null){
 			                        if(((Write_statementContext)_localctx).w.write == true){
 			                        //Means that it is only write !
-			                            String s1 = m.textWrite(((Write_statementContext)_localctx).p.mipsCodeS, ((Write_statementContext)_localctx).w.write, ((Write_statementContext)_localctx).w.line, ((Write_statementContext)_localctx).w.pos);
+			                            String s1 = m.textWrite(((Write_statementContext)_localctx).p.mipsCodeS, ((Write_statementContext)_localctx).w.write, ((Write_statementContext)_localctx).p.isAString, ((Write_statementContext)_localctx).w.line, ((Write_statementContext)_localctx).w.pos);
 			                            //System.out.println("WRITE_STATEMENT : \n"+s1);
 			                            if(functionState == false){
 			                                m.addTextInstruction(s1);
@@ -4557,7 +4557,7 @@ public class LissParser extends Parser {
 			                            }
 			                        }else if(((Write_statementContext)_localctx).w.write == false){
 			                        //Means that it is only writeln !
-			                            String s2 = m.textWrite(((Write_statementContext)_localctx).p.mipsCodeS, ((Write_statementContext)_localctx).w.write, ((Write_statementContext)_localctx).w.line, ((Write_statementContext)_localctx).w.pos);
+			                            String s2 = m.textWrite(((Write_statementContext)_localctx).p.mipsCodeS, ((Write_statementContext)_localctx).w.write, ((Write_statementContext)_localctx).p.isAString, ((Write_statementContext)_localctx).w.line, ((Write_statementContext)_localctx).w.pos);
 			                            //System.out.println("WRITE_STATEMENT : \n"+s2);
 			                            if(functionState == false){
 			                                m.addTextInstruction(s2);
@@ -4639,7 +4639,9 @@ public class LissParser extends Parser {
 	public static class Print_whatContext extends ParserRuleContext {
 		public IdentifiersTable idTH;
 		public String mipsCodeS;
+		public boolean isAString;
 		public ExpressionContext e;
+		public StringContext s;
 		public ExpressionContext expression() {
 			return getRuleContext(ExpressionContext.class,0);
 		}
@@ -4704,6 +4706,7 @@ public class LissParser extends Parser {
 				                }else{
 				                    ((Print_whatContext)_localctx).mipsCodeS =  ((Print_whatContext)_localctx).e.mipsCodeS;
 				                }
+				                ((Print_whatContext)_localctx).isAString = false;
 				            
 				}
 				break;
@@ -4711,9 +4714,12 @@ public class LissParser extends Parser {
 				enterOuterAlt(_localctx, 3);
 				{
 				setState(635);
-				string();
+				((Print_whatContext)_localctx).s = string();
 
-
+				                m.addDataInstruction(m.generateDataStringForWriting(i,(((Print_whatContext)_localctx).s!=null?_input.getText(((Print_whatContext)_localctx).s.start,((Print_whatContext)_localctx).s.stop):null)));
+				                ((Print_whatContext)_localctx).mipsCodeS =  m.loadTextWrite(i);
+				                i++;
+				                ((Print_whatContext)_localctx).isAString = true;
 				            
 				}
 				break;

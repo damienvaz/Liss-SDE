@@ -1504,7 +1504,7 @@ write_statement [IdentifiersTable idTH]
                     if($p.mipsCodeS != null){
                         if($w.write == true){
                         //Means that it is only write !
-                            String s1 = m.textWrite($p.mipsCodeS, $w.write, $w.line, $w.pos);
+                            String s1 = m.textWrite($p.mipsCodeS, $w.write, $p.isAString, $w.line, $w.pos);
                             //System.out.println("WRITE_STATEMENT : \n"+s1);
                             if(functionState == false){
                                 m.addTextInstruction(s1);
@@ -1513,7 +1513,7 @@ write_statement [IdentifiersTable idTH]
                             }
                         }else if($w.write == false){
                         //Means that it is only writeln !
-                            String s2 = m.textWrite($p.mipsCodeS, $w.write, $w.line, $w.pos);
+                            String s2 = m.textWrite($p.mipsCodeS, $w.write, $p.isAString, $w.line, $w.pos);
                             //System.out.println("WRITE_STATEMENT : \n"+s2);
                             if(functionState == false){
                                 m.addTextInstruction(s2);
@@ -1532,7 +1532,7 @@ write_expr
            ;
 
 print_what [IdentifiersTable idTH]
-           returns [String mipsCodeS]
+           returns [String mipsCodeS,boolean isAString]
            @init{
               Set tree = null;
            }
@@ -1544,10 +1544,14 @@ print_what [IdentifiersTable idTH]
                 }else{
                     $mipsCodeS = $e.mipsCodeS;
                 }
+                $isAString=false;
             } //conjuntos nao pode pertencer
-           | string
+           | s=string
             {
-
+                m.addDataInstruction(m.generateDataStringForWriting(i,$s.text));
+                $mipsCodeS = m.loadTextWrite(i);
+                i++;
+                $isAString=true;
             }
            ;
 
