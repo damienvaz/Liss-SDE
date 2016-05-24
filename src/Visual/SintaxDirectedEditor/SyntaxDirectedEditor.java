@@ -517,7 +517,7 @@ public class SyntaxDirectedEditor {
                                                                     t = new Thread(new Runnable() {
                                                                         public void run() {
                                                                             String test1 = JOptionPane.showInputDialog("Enter Integer value:");
-                                                                            while(!test1.matches("^[+-]?\\d+$")){
+                                                                            while(test1==null || !test1.matches("^[+-]?\\d+$")){
                                                                                 test1 = JOptionPane.showInputDialog("Error: Not a valid Integer.\nEnter a correct Integer value:");
                                                                             }
                                                                             Integer i = Integer.valueOf(test1);
@@ -645,7 +645,7 @@ public class SyntaxDirectedEditor {
                                                                     t = new Thread(new Runnable() {
                                                                         public void run() {
                                                                             String test1 = JOptionPane.showInputDialog("Enter Integer value:");
-                                                                            while(!test1.matches("^[+-]?\\d+$")){
+                                                                            while(test1==null || !test1.matches("^[+-]?\\d+$")){
                                                                                 test1 = JOptionPane.showInputDialog("Error: Not a valid Integer.\nEnter a correct Integer value:");
                                                                             }
                                                                             Integer i = Integer.valueOf(test1);
