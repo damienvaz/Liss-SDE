@@ -14,9 +14,7 @@ import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCombination;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
@@ -29,9 +27,6 @@ import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 
 import javax.swing.*;
-import javax.swing.text.Utilities;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyListener;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.nio.charset.Charset;
@@ -515,17 +510,14 @@ public class SyntaxDirectedEditor {
                                                     while(p.isAlive()){
                                                         String res = input.getLine();
                                                         if(res!=null && res.equals("Enter integer value:")) {
-//                                                            System.out.println("BLABLABLA> " + res);
-                                                            //out.addLine("1");
                                                             boolean integerIsRequested=true;
                                                             Thread t=null;
                                                             while(integerIsRequested){
                                                                 if(t==null) {
                                                                     t = new Thread(new Runnable() {
                                                                         public void run() {
-                                                                            System.out.println("entrei aqui na thread do showinputdialog");
                                                                             String test1 = JOptionPane.showInputDialog("Enter Integer value:");
-                                                                            while(!test1.matches("^\\d+$")){
+                                                                            while(!test1.matches("^[+-]?\\d+$")){
                                                                                 test1 = JOptionPane.showInputDialog("Error: Not a valid Integer.\nEnter a correct Integer value:");
                                                                             }
                                                                             Integer i = Integer.valueOf(test1);
@@ -546,14 +538,11 @@ public class SyntaxDirectedEditor {
                                                                 }
                                                                 if(!t.isAlive()){
                                                                     integerIsRequested=false;
-//                                                                    System.out.println("A thread morreu"+integerIsRequested);
                                                                 }
-//                                                                System.out.println("supostamente deveria ter um loop aqui...");
                                                             }
                                                         }
                                                     }
                                                     outputTextArea.appendText("Program executed\n");
-//                                                    System.out.println("sai da thred");
                                                 }
                                         ).start();
 
@@ -656,7 +645,7 @@ public class SyntaxDirectedEditor {
                                                                     t = new Thread(new Runnable() {
                                                                         public void run() {
                                                                             String test1 = JOptionPane.showInputDialog("Enter Integer value:");
-                                                                            while(!test1.matches("^\\d+$")){
+                                                                            while(!test1.matches("^[+-]?\\d+$")){
                                                                                 test1 = JOptionPane.showInputDialog("Error: Not a valid Integer.\nEnter a correct Integer value:");
                                                                             }
                                                                             Integer i = Integer.valueOf(test1);

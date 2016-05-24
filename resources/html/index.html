@@ -203,8 +203,8 @@
                 //liss.debugger("regra ID");
                 //Pr.C:When edition is actived, the text element is empty
                 if(object.obj.text!=="") {
-                    //Pr.C.: Check the regular expression of NBR
-                    if (patternId.test(object.obj.text)) {
+                    //Pr.C.: Check the regular expression of ID
+                    if (patternId.test(object.obj.text) && !isAreservedWord(object.obj.text)) {
                         if(/warning/.test(object.obj.a_attr.class)){
                             //Changing value for the jstree structure data because it isn't reflected to the DOM html document
                             var s = object.obj.a_attr.class.replace(" warning", "");
@@ -279,6 +279,123 @@
 
         }
     });
+
+    function isAreservedWord(word){
+        var res = false;
+
+        switch(word){
+            case "array":
+                res=true;
+                break;
+            case "program":
+                    res=true;
+                break;
+            case "declarations":
+                res=true;
+                break;
+            case "statements":
+                res=true;
+                break;
+            case "integer":
+                res=true;
+                break;
+            case "boolean":
+                res=true;
+                break;
+            case "set":
+                res=true;
+                break;
+            case "sequence":
+                res=true;
+                break;
+            case "size":
+                res=true;
+                break;
+            case "true":
+                res=true;
+                break;
+            case "false":
+                res=true;
+                break;
+            case "subprogram":
+                res=true;
+                break;
+            case "return":
+                res=true;
+                break;
+            case "in":
+                res=true;
+                break;
+            case "write":
+                res=true;
+                break;
+            case "writeln":
+                res=true;
+                break;
+            case "input":
+                res=true;
+                break;
+            case "if":
+                res=true;
+                break;
+            case "then":
+                res=true;
+                break;
+            case "else":
+                res=true;
+                break;
+            case "for":
+                res=true;
+                break;
+            case "inArray":
+                res=true;
+                break;
+            case "stepUp":
+                res=true;
+                break;
+            case "stepDown":
+                res=true;
+                break;
+            case "satisfying":
+                res=true;
+                break;
+            case "while":
+                res=true;
+                break;
+            case "succ":
+                res=true;
+                break;
+            case "pred":
+                res=true;
+                break;
+            case "tail":
+                res=true;
+                break;
+            case "head":
+                res=true;
+                break;
+            case "cons":
+                res=true;
+                break;
+            case "copy":
+                res=true;
+                break;
+            case "cat":
+                res=true;
+                break;
+            case "isEmpty":
+                res=true;
+                break;
+            case "length":
+                res=true;
+                break;
+            case "isMember":
+                res=true;
+                break;
+        }
+
+        return res;
+    }
 
     /**************************************************************************/
 
