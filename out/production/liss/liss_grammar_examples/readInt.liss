@@ -1,0 +1,7 @@
+program read1{
+    declarations
+        i -> integer;
+    statements
+        input(i);
+        writeln(i);
+}

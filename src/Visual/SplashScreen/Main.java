@@ -3,6 +3,7 @@ package Visual.SplashScreen;/**
  */
 
 import Visual.SintaxDirectedEditor.SyntaxDirectedEditor;
+import com.sun.xml.internal.ws.api.ResourceLoader;
 import javafx.animation.PauseTransition;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -15,9 +16,11 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
 
-import javax.swing.*;
+import javax.imageio.ImageIO;
 import java.awt.*;
 import java.io.File;
+import java.io.InputStream;
+import java.net.URL;
 
 public class Main extends Application {
 
@@ -32,10 +35,10 @@ public class Main extends Application {
         Parent root = fxmlLoader.load();
         //Parent root = FXMLLoader.load(getClass().getResource("splashscreen.fxml"));
         ImageView i = (ImageView) fxmlLoader.getNamespace().get("splash_logo");
-        File f = new File("resources/images/liss.png");
-        //System.out.println(f.toURI().toURL().toString());
-        Image t = new Image(f.toURI().toURL().toString());
+
+        Image t = new Image("/images/liss.png");
         i.setImage(t);
+
         Scene s = new Scene(root);
 
         //Get the resolution of the screen PC

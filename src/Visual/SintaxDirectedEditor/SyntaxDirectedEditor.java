@@ -1,5 +1,6 @@
 package Visual.SintaxDirectedEditor;
 
+import com.oracle.tools.packager.IOUtils;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -29,6 +30,8 @@ import org.fxmisc.richtext.LineNumberFactory;
 import javax.swing.*;
 import java.io.*;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -91,20 +94,21 @@ public class SyntaxDirectedEditor {
         //stage.setY(cY);
         //stage.setX(cX);
 
+        File f = new File("html/index.html");
+
 
         WebView wv = (WebView) fxmlLoader.getNamespace().get("tree");
         StackPane sp = (StackPane) fxmlLoader.getNamespace().get("code_editor");
 
         //Add Html file to WebEngine and set the context menu of the HTML file false
-        File f = new File("resources/html/index.html");
+        //File f = new File("html/index.html");
         WebEngine we = wv.getEngine();
         we.setJavaScriptEnabled(true);
 
         //Add the RichText plugin to JavaFx application
         CodeArea codeArea = new CodeArea();
         //Add our proper css style to the codeArea
-        File css = new File("resources/html/liss.css");
-        codeArea.getStylesheets().add(css.toURI().toURL().toExternalForm());
+        codeArea.getStylesheets().add("/html/liss.css");
 
         //Set Number to the CodeArea
         codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
@@ -122,7 +126,15 @@ public class SyntaxDirectedEditor {
             jsobj.setMember("liss", l);
         });
 
-        we.load(f.toURI().toURL().toString());
+//        we.load(f.toURI().toURL().toString());
+//        we.load("/html/index.html");
+//        String htmlFile = getClass().getResource("/html/index.html").toExternalForm();
+//        InputStream htmlFile = getClass().getResourceAsStream("/html/index.html");
+//        System.out.println(">>>"+htmlFile);
+//        String theString = IOUtils.toString(htmlFile,"UTF-8");
+        we.load(this.getClass().getResource("/html/index.html").toExternalForm());
+//        we.load(htmlFile);
+
         //we.executeScript("document.newTree");
         wv.setContextMenuEnabled(false);
 
@@ -454,107 +466,101 @@ public class SyntaxDirectedEditor {
                                 compilerMessage = "["+hour+"] "+executingMessage;
                                 outputTextArea.appendText(compilerMessage);
 
-                                File marsSimulator = new File("resources/mars_simulator/Mars4_5.jar");
-                                if(marsSimulator.exists() && temp.exists()){
-                                    String output="";
-                                    try {
-                                         Process p = Runtime.getRuntime().exec(new String[]{"java","-jar",marsSimulator.getAbsolutePath(),tempAssembly.getAbsolutePath()});
+                                File marsSimulator = new File("res/mars_simulator/mars_simulator.jar");
+                                if( marsSimulator.exists() && temp.exists()){
+                                    Process p = Runtime.getRuntime().exec(new String[]{"java","-jar",marsSimulator.getAbsolutePath(),tempAssembly.getAbsolutePath()});
 
-                                        //This code does the interaction from the process with the GUI ! Implied, input interaction+output interaction from the process
-                                        ObservableStream out = new ObservableStream();
+                                    //This code does the interaction from the process with the GUI ! Implied, input interaction+output interaction from the process
+                                    ObservableStream out = new ObservableStream();
 // Observer that simply sends to my external process line by line what we put in
 // the variable output
-                                        PrintWriter writer = new PrintWriter(p.getOutputStream(), true);
-                                        out.addObserver(
-                                                (o, arg) -> {
-                                                    ObservableStream stream = (ObservableStream) o;
-                                                    String line;
-                                                    while ((line = stream.nextLine()) != null) {
-                                                        writer.println(line);
-                                                    }
+                                    PrintWriter writer = new PrintWriter(p.getOutputStream(), true);
+                                    out.addObserver(
+                                            (o, arg) -> {
+                                                ObservableStream stream = (ObservableStream) o;
+                                                String line;
+                                                while ((line = stream.nextLine()) != null) {
+                                                    writer.println(line);
                                                 }
-                                        );
+                                            }
+                                    );
 
-                                        ObservableStream input = new ObservableStream();
+                                    ObservableStream input = new ObservableStream();
 
-                                        input.addObserver(
-                                                (o, arg) -> {
-                                                    ObservableStream stream = (ObservableStream) o;
-                                                    String line;
-                                                    while ((line = stream.nextLine()) != null) {
-                                                        outputTextArea.appendText(line+"\n");
-                                                    }
+                                    input.addObserver(
+                                            (o, arg) -> {
+                                                ObservableStream stream = (ObservableStream) o;
+                                                String line;
+                                                while ((line = stream.nextLine()) != null) {
+                                                    outputTextArea.appendText(line+"\n");
                                                 }
-                                        );
+                                            }
+                                    );
 
-                                        // The thread that reads the standard output stream of the external process
+                                    // The thread that reads the standard output stream of the external process
 // and put the lines into my variable input
-                                        new Thread(
-                                                () -> {
-                                                    try (BufferedReader reader = new BufferedReader(
-                                                            new InputStreamReader(p.getInputStream()))
-                                                    ) {
-                                                        String line;
-                                                        while ((line = reader.readLine()) != null) {
-                                                            input.addLine(line);
-                                                        }
-                                                    } catch (IOException e1) {
-                                                        e1.printStackTrace();
+                                    new Thread(
+                                            () -> {
+                                                try (BufferedReader reader = new BufferedReader(
+                                                        new InputStreamReader(p.getInputStream()))
+                                                ) {
+                                                    String line;
+                                                    while ((line = reader.readLine()) != null) {
+                                                        input.addLine(line);
                                                     }
+                                                } catch (IOException e1) {
+                                                    e1.printStackTrace();
                                                 }
-                                        ).start();
+                                            }
+                                    ).start();
 
 
-                                        new Thread(
-                                                ()->{
-                                                    while(p.isAlive()){
-                                                        String res = input.getLine();
-                                                        if(res!=null && res.equals("Enter integer value:")) {
-                                                            boolean integerIsRequested=true;
-                                                            Thread t=null;
-                                                            while(integerIsRequested){
-                                                                if(t==null) {
-                                                                    t = new Thread(new Runnable() {
-                                                                        public void run() {
-                                                                            String test1 = JOptionPane.showInputDialog("Enter Integer value:");
-                                                                            while(test1==null || !test1.matches("^[+-]?\\d+$")){
-                                                                                test1 = JOptionPane.showInputDialog("Error: Not a valid Integer.\nEnter a correct Integer value:");
-                                                                            }
-                                                                            Integer i = Integer.valueOf(test1);
-
-                                                                            if (i != null) {
-                                                                                System.out.println(test1);
-                                                                                out.addLine(test1);
-                                                                                System.out.println("passei por aqui");
-                                                                                //return;
-                                                                            }else{
-
-                                                                            }
-                                                                            System.out.println("acabei isto");
+                                    new Thread(
+                                            ()->{
+                                                while(p.isAlive()){
+                                                    String res = input.getLine();
+                                                    if(res!=null && res.equals("Enter integer value:")) {
+                                                        boolean integerIsRequested=true;
+                                                        Thread t=null;
+                                                        while(integerIsRequested){
+                                                            if(t==null) {
+                                                                t = new Thread(new Runnable() {
+                                                                    public void run() {
+                                                                        String test1 = JOptionPane.showInputDialog("Enter Integer value:");
+                                                                        while(test1==null || !test1.matches("^[+-]?\\d+$")){
+                                                                            test1 = JOptionPane.showInputDialog("Error: Not a valid Integer.\nEnter a correct Integer value:");
                                                                         }
-                                                                    });
-                                                                    t.start();
+                                                                        Integer i = Integer.valueOf(test1);
 
-                                                                }
-                                                                if(!t.isAlive()){
-                                                                    integerIsRequested=false;
-                                                                }
+                                                                        if (i != null) {
+                                                                            System.out.println(test1);
+                                                                            out.addLine(test1);
+
+                                                                        }else{
+
+                                                                        }
+                                                                    }
+                                                                });
+                                                                t.start();
+
+                                                            }
+                                                            if(!t.isAlive()){
+                                                                integerIsRequested=false;
                                                             }
                                                         }
                                                     }
-                                                    outputTextArea.appendText("Program executed\n");
                                                 }
-                                        ).start();
-
-
-
-                                    } catch (Exception ex) {
-                                        ex.printStackTrace();
-                                    }
-                                    outputTextArea.appendText(output+"\n");
-
+                                                outputTextArea.appendText("Program executed successfully\n");
+                                            }
+                                    ).start();
                                 }else{
                                     //File doesnt exist  throw message!!
+                                    if(!marsSimulator.exists()){
+                                        outputTextArea.appendText("Mars simulator file missing.\n");
+                                    }else{
+                                        //Temporary File of the assembly code (mips) missing
+                                        outputTextArea.appendText("ERROR_1: Please contact the developer.");
+                                    }
                                 }
                             }else{
                                 //PathDirectory is not set and FileChooserDialog must appear for saving purpose.
@@ -583,9 +589,8 @@ public class SyntaxDirectedEditor {
                                     compilerMessage = "["+hour+"] "+executingMessage;
                                     outputTextArea.appendText(compilerMessage);
 
-                                    File marsSimulator = new File("resources/mars_simulator/Mars4_5.jar");
+                                    File marsSimulator = new File("res/mars_simulator/mars_simulator.jar");
                                     if(marsSimulator.exists() && temp.exists()){
-
                                         Process p = Runtime.getRuntime().exec(new String[]{"java","-jar",marsSimulator.getAbsolutePath(),tempAssembly.getAbsolutePath()});
 
                                         //This code does the interaction from the process with the GUI ! Implied, input interaction+output interaction from the process
@@ -664,13 +669,17 @@ public class SyntaxDirectedEditor {
                                                             }
                                                         }
                                                     }
-                                                    outputTextArea.appendText("Program executed\n");
+                                                    outputTextArea.appendText("Program executed successfully\n");
                                               }
                                         ).start();
-
-
                                     }else{
-                                        //File doesnt exist !!
+                                        //File doesnt exist  throw message!!
+                                        if(!marsSimulator.exists()){
+                                            outputTextArea.appendText("Mars simulator file missing.\n");
+                                        }else{
+                                            //Temporary File of the assembly code (mips) missing
+                                            outputTextArea.appendText("ERROR_1: Please contact the developer.");
+                                        }
                                     }
                                 }
                             }
@@ -678,7 +687,6 @@ public class SyntaxDirectedEditor {
 
                     }catch(IOException exception){
                         exception.printStackTrace();
-
                     }
 
 
@@ -736,14 +744,15 @@ public class SyntaxDirectedEditor {
                }
                if(sceneAbout==null && stageAbout==null) {
                    ImageView i = (ImageView) fxmlLoaderAbout.getNamespace().get("liss_sde_logo");
-                   File f = new File("resources/images/about.png");
+                   //File f = new File("images/about.png");
                    //System.out.println(f.toURI().toURL().toString());
-                   Image t = null;
-                   try {
+                   Image t = new Image("/images/about.png");
+                   /*try {
                        t = new Image(f.toURI().toURL().toString());
+                       t = new Image("/images/about.png");
                    } catch (MalformedURLException e1) {
                        e1.printStackTrace();
-                   }
+                   }*/
                    i.setImage(t);
                    sceneAbout = new Scene(pagePane);
                    stageAbout = new Stage();
@@ -754,7 +763,7 @@ public class SyntaxDirectedEditor {
                    sceneAbout.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
                        @Override
                        public void handle(MouseEvent mouseEvent) {
-                           System.out.println("mouse click detected! " + mouseEvent.getSource());
+//                           System.out.println("mouse click detected! " + mouseEvent.getSource());
                            stageAbout.close();
                        }
                    });

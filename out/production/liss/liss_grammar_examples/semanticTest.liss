@@ -1,0 +1,6 @@
+program woot{
+    declarations
+        int=+3, int2=[3], int3={w | w>3} -> array size 2;
+        array1 -> array size 4;
+    statements
+}

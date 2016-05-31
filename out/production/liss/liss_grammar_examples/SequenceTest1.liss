@@ -1,0 +1,40 @@
+program Seq
+{
+declarations
+
+		a = -1, int1 = -2, int2 = -3 -> integer;
+		b = false, flag = true -> boolean;
+	 	seq1 = <<10,20,30,40,50>>, seq3 = <<1,2>>, seq2 -> sequence;
+
+
+statements
+
+		input(a);
+
+		for (a in 1..5)
+		{
+		  seq2 = cons(head(seq1) * a,seq2);
+			seq1 = tail(seq1);
+		} // seq1 << >>, seq2 <<250,160,90,40,10>>
+
+		seq1 = cons(head(tail(seq3)),seq2);     // <<2,250,160,90,40,10>>
+		seq3 = cons(head(seq1)*2,seq3);        // <<4,1,2>>
+
+/*
+    vamos para o segundo ciclo
+*/
+
+		writeln(seq2);
+
+		while(isMember(10,seq2))
+		{
+			seq2 = del(10,seq2);
+			writeln(seq2);
+		}
+
+		copy(seq1,seq2);
+		b = isMember(10,seq2); // b = true
+		writeln(b);
+
+
+}
