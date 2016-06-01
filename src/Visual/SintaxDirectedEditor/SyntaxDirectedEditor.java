@@ -687,7 +687,6 @@ public class SyntaxDirectedEditor {
                                                                             while(test1==null || !test1.matches("^[+-]?\\d+$")){
                                                                                 test1 = JOptionPane.showInputDialog(frame,"Error: Not a valid Integer.\nEnter a correct Integer value:");
                                                                             }
-                                                                            frame.setVisible(false);
                                                                             frame.dispose();
 
                                                                             Integer i = Integer.valueOf(test1);
