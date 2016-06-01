@@ -543,7 +543,7 @@ public class SyntaxDirectedEditor {
                                                                         int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2);
                                                                         int y = (int) ((dimension.getHeight() - frame.getHeight()) / 2);
                                                                         frame.setLocation(x, y);
-                                                                        frame.setVisible(true);
+                                                                        frame.setVisible(false);
                                                                         frame.setAlwaysOnTop(true);
 
                                                                         String test1 = JOptionPane.showInputDialog(frame,"Enter Integer value:");
@@ -553,7 +553,6 @@ public class SyntaxDirectedEditor {
 
 
                                                                         }
-                                                                        frame.setVisible(false);
                                                                         frame.dispose();
 
 
@@ -681,7 +680,7 @@ public class SyntaxDirectedEditor {
                                                                             int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2);
                                                                             int y = (int) ((dimension.getHeight() - frame.getHeight()) / 2);
                                                                             frame.setLocation(x, y);
-                                                                            frame.setVisible(true);
+                                                                            frame.setVisible(false);
                                                                             frame.setAlwaysOnTop(true);
 
                                                                             String test1 = JOptionPane.showInputDialog(frame,"Enter Integer value:");
