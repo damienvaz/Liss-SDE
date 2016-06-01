@@ -529,6 +529,7 @@ public class SyntaxDirectedEditor {
                                                             if(t==null) {
                                                                 t = new Thread(new Runnable() {
                                                                     public void run() {
+                                                                        //Frame created to focus the dialog in foreground otherwise it won't work in windows
                                                                         JFrame frame = new JFrame();
                                                                         Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
                                                                         int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2);
@@ -666,10 +667,22 @@ public class SyntaxDirectedEditor {
                                                                 if(t==null) {
                                                                     t = new Thread(new Runnable() {
                                                                         public void run() {
-                                                                            String test1 = JOptionPane.showInputDialog("Enter Integer value:");
+                                                                            //Frame created to focus the dialog in foreground otherwise it won't work in windows
+                                                                            JFrame frame = new JFrame();
+                                                                            Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
+                                                                            int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2);
+                                                                            int y = (int) ((dimension.getHeight() - frame.getHeight()) / 2);
+                                                                            frame.setLocation(x, y);
+                                                                            frame.setVisible(true);
+                                                                            frame.setAlwaysOnTop(true);
+
+                                                                            String test1 = JOptionPane.showInputDialog(frame,"Enter Integer value:");
                                                                             while(test1==null || !test1.matches("^[+-]?\\d+$")){
-                                                                                test1 = JOptionPane.showInputDialog("Error: Not a valid Integer.\nEnter a correct Integer value:");
+                                                                                test1 = JOptionPane.showInputDialog(frame,"Error: Not a valid Integer.\nEnter a correct Integer value:");
                                                                             }
+                                                                            frame.setVisible(false);
+                                                                            frame.dispose();
+
                                                                             Integer i = Integer.valueOf(test1);
 
                                                                             if (i != null) {
