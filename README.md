@@ -1,7 +1,7 @@
 # Liss-SDE
 
 In this work, this project aims to develop an editor with the concept of a SDE (Syntax
-Directed Editor).
+Directed Editor) for my master thesis in University of Minho.
 
 It is intended that the editor works with language designed by the members of the Language
 Processing group at University of Minho which is called LISS.
