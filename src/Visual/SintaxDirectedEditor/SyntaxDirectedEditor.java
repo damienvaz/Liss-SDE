@@ -1,6 +1,5 @@
 package Visual.SintaxDirectedEditor;
 
-import com.oracle.tools.packager.IOUtils;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -28,6 +27,7 @@ import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 
 import javax.swing.*;
+import java.awt.*;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
@@ -39,6 +39,7 @@ import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.stream.Collectors;
 
@@ -267,7 +268,9 @@ public class SyntaxDirectedEditor {
         quitMenuItem.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent e) {
-                Platform.exit();
+
+                //Platform.exit();
+                System.exit(0);
             }
         });
 
@@ -526,19 +529,33 @@ public class SyntaxDirectedEditor {
                                                             if(t==null) {
                                                                 t = new Thread(new Runnable() {
                                                                     public void run() {
-                                                                        String test1 = JOptionPane.showInputDialog("Enter Integer value:");
+                                                                        JFrame frame = new JFrame();
+                                                                        Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
+                                                                        int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2);
+                                                                        int y = (int) ((dimension.getHeight() - frame.getHeight()) / 2);
+                                                                        frame.setLocation(x, y);
+                                                                        frame.setVisible(true);
+                                                                        frame.setAlwaysOnTop(true);
+
+                                                                        String test1 = JOptionPane.showInputDialog(frame,"Enter Integer value:");
+
                                                                         while(test1==null || !test1.matches("^[+-]?\\d+$")){
-                                                                            test1 = JOptionPane.showInputDialog("Error: Not a valid Integer.\nEnter a correct Integer value:");
+                                                                            test1 = JOptionPane.showInputDialog(frame,"Error: Not a valid Integer.\nEnter a correct Integer value:");
+
+
                                                                         }
+                                                                        frame.setVisible(false);
+                                                                        frame.dispose();
+
+
                                                                         Integer i = Integer.valueOf(test1);
 
                                                                         if (i != null) {
                                                                             System.out.println(test1);
                                                                             out.addLine(test1);
 
-                                                                        }else{
-
                                                                         }
+
                                                                     }
                                                                 });
                                                                 t.start();
@@ -774,22 +791,6 @@ public class SyntaxDirectedEditor {
         });
 
         stage.show();
-    }
-
-    public static void console(TextArea t, final InputStream out, final PrintWriter in) {
-        final TextArea area = t;
-
-        // handle "System.out"
-        new SwingWorker<Void, String>() {
-            @Override protected Void doInBackground() throws Exception {
-                Scanner s = new Scanner(out);
-                while (s.hasNextLine()) publish(s.nextLine() + "\n");
-                return null;
-            }
-            @Override protected void process(List<String> chunks) {
-                for (String line : chunks) area.appendText(line);
-            }
-        }.execute();
     }
 }
 
