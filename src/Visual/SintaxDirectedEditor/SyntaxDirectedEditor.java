@@ -91,6 +91,14 @@ public class SyntaxDirectedEditor {
         stage.setWidth(bounds.getWidth());
         stage.setHeight(bounds.getHeight());
 
+        stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent t) {
+                Platform.exit();
+                System.exit(0);
+            }
+        });
+
         //Set coordinates of the window
         //stage.setY(cY);
         //stage.setX(cX);
@@ -269,7 +277,7 @@ public class SyntaxDirectedEditor {
             @Override
             public void handle(ActionEvent e) {
 
-                //Platform.exit();
+                Platform.exit();
                 System.exit(0);
             }
         });
