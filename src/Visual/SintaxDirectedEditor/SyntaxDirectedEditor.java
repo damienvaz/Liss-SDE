@@ -788,7 +788,7 @@ public class SyntaxDirectedEditor {
                                                         }
                                                     }
                                                     if(successExecution){
-                                                        outputTextArea.appendText("Program executed successfully\n");
+                                                        outputTextArea.appendText("Program executed successfully.\n");
                                                     }
                                               }
                                         ).start();
