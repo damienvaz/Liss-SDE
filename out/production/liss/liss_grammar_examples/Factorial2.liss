@@ -1,0 +1,18 @@
+program factorial{
+    declarations
+        factorial, res=1 -> integer;
+    statements
+        input(factorial);
+        if(!(factorial>0))
+        then{
+            writeln("Only positive numbers are allowed.");
+        }else{
+            for(i in 1..factorial){
+                res=res*i;
+            }
+            write("Factorial of ");
+            write(factorial);
+            write(" is: ");
+            writeln(res);
+        }
+}

@@ -179,6 +179,11 @@ public class LissParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof LissListener ) ((LissListener)listener).exitLiss(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LissVisitor ) return ((LissVisitor<? extends T>)visitor).visitLiss(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final LissContext liss(IdentifiersTable idTH,TableError tableError,Mips mips) throws RecognitionException {
@@ -233,6 +238,11 @@ public class LissParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof LissListener ) ((LissListener)listener).exitBody(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LissVisitor ) return ((LissVisitor<? extends T>)visitor).visitBody(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -299,6 +309,11 @@ public class LissParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof LissListener ) ((LissListener)listener).exitDeclarations(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LissVisitor ) return ((LissVisitor<? extends T>)visitor).visitDeclarations(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -409,6 +424,11 @@ public class LissParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof LissListener ) ((LissListener)listener).exitVariable_declaration(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LissVisitor ) return ((LissVisitor<? extends T>)visitor).visitVariable_declaration(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -586,6 +606,11 @@ public class LissParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof LissListener ) ((LissListener)listener).exitVars(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LissVisitor ) return ((LissVisitor<? extends T>)visitor).visitVars(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final VarsContext vars(IdentifiersTable idTH) throws RecognitionException {
@@ -674,6 +699,11 @@ public class LissParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof LissListener ) ((LissListener)listener).exitVar(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LissVisitor ) return ((LissVisitor<? extends T>)visitor).visitVar(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final VarContext var(IdentifiersTable idTH) throws RecognitionException {
@@ -748,6 +778,11 @@ public class LissParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof LissListener ) ((LissListener)listener).exitValue_var(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LissVisitor ) return ((LissVisitor<? extends T>)visitor).visitValue_var(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final Value_varContext value_var(IdentifiersTable idTH) throws RecognitionException {
@@ -819,6 +854,11 @@ public class LissParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof LissListener ) ((LissListener)listener).exitType(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LissVisitor ) return ((LissVisitor<? extends T>)visitor).visitType(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -901,6 +941,11 @@ public class LissParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof LissListener ) ((LissListener)listener).exitTypeReturnSubProgram(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LissVisitor ) return ((LissVisitor<? extends T>)visitor).visitTypeReturnSubProgram(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final TypeReturnSubProgramContext typeReturnSubProgram() throws RecognitionException {
@@ -960,6 +1005,11 @@ public class LissParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof LissListener ) ((LissListener)listener).exitDimension(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LissVisitor ) return ((LissVisitor<? extends T>)visitor).visitDimension(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -1050,6 +1100,11 @@ public class LissParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof LissListener ) ((LissListener)listener).exitInic_var(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LissVisitor ) return ((LissVisitor<? extends T>)visitor).visitInic_var(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -1149,6 +1204,11 @@ public class LissParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof LissListener ) ((LissListener)listener).exitConstant(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LissVisitor ) return ((LissVisitor<? extends T>)visitor).visitConstant(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final ConstantContext constant() throws RecognitionException {
@@ -1225,6 +1285,11 @@ public class LissParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof LissListener ) ((LissListener)listener).exitSign(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LissVisitor ) return ((LissVisitor<? extends T>)visitor).visitSign(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final SignContext sign() throws RecognitionException {
@@ -1288,6 +1353,11 @@ public class LissParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof LissListener ) ((LissListener)listener).exitArray_definition(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LissVisitor ) return ((LissVisitor<? extends T>)visitor).visitArray_definition(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final Array_definitionContext array_definition(ArrayList<Integer> a,ArrayList<ArrayList<Integer>> accessArray) throws RecognitionException {
@@ -1338,6 +1408,11 @@ public class LissParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof LissListener ) ((LissListener)listener).exitArray_initialization(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LissVisitor ) return ((LissVisitor<? extends T>)visitor).visitArray_initialization(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -1412,6 +1487,11 @@ public class LissParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof LissListener ) ((LissListener)listener).exitElem(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LissVisitor ) return ((LissVisitor<? extends T>)visitor).visitElem(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final ElemContext elem(ArrayList<Integer> a,ArrayList<ArrayList<Integer>> accessArray) throws RecognitionException {
@@ -1477,6 +1557,11 @@ public class LissParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof LissListener ) ((LissListener)listener).exitSequence_definition(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LissVisitor ) return ((LissVisitor<? extends T>)visitor).visitSequence_definition(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final Sequence_definitionContext sequence_definition() throws RecognitionException {
@@ -1522,6 +1607,11 @@ public class LissParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof LissListener ) ((LissListener)listener).exitSequence_initialization(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LissVisitor ) return ((LissVisitor<? extends T>)visitor).visitSequence_initialization(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -1581,6 +1671,11 @@ public class LissParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof LissListener ) ((LissListener)listener).exitValues(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LissVisitor ) return ((LissVisitor<? extends T>)visitor).visitValues(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -1661,6 +1756,11 @@ public class LissParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof LissListener ) ((LissListener)listener).exitSet_definition(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LissVisitor ) return ((LissVisitor<? extends T>)visitor).visitSet_definition(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final Set_definitionContext set_definition(IdentifiersTable idTH) throws RecognitionException {
@@ -1715,6 +1815,11 @@ public class LissParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof LissListener ) ((LissListener)listener).exitSet_initialization(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LissVisitor ) return ((LissVisitor<? extends T>)visitor).visitSet_initialization(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -1811,6 +1916,11 @@ public class LissParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof LissListener ) ((LissListener)listener).exitSubprogram_definition(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LissVisitor ) return ((LissVisitor<? extends T>)visitor).visitSubprogram_definition(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -1931,6 +2041,11 @@ public class LissParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof LissListener ) ((LissListener)listener).exitF_body(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LissVisitor ) return ((LissVisitor<? extends T>)visitor).visitF_body(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final F_bodyContext f_body(IdentifiersTable idTH,HashMap<String,Object> varInfo) throws RecognitionException {
@@ -1991,6 +2106,11 @@ public class LissParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof LissListener ) ((LissListener)listener).exitFormal_args(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LissVisitor ) return ((LissVisitor<? extends T>)visitor).visitFormal_args(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -2054,6 +2174,11 @@ public class LissParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof LissListener ) ((LissListener)listener).exitF_args(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LissVisitor ) return ((LissVisitor<? extends T>)visitor).visitF_args(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -2137,6 +2262,11 @@ public class LissParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof LissListener ) ((LissListener)listener).exitFormal_arg(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LissVisitor ) return ((LissVisitor<? extends T>)visitor).visitFormal_arg(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final Formal_argContext formal_arg() throws RecognitionException {
@@ -2197,6 +2327,11 @@ public class LissParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof LissListener ) ((LissListener)listener).exitReturn_type(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LissVisitor ) return ((LissVisitor<? extends T>)visitor).visitReturn_type(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -2261,6 +2396,11 @@ public class LissParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof LissListener ) ((LissListener)listener).exitReturnSubPrg(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LissVisitor ) return ((LissVisitor<? extends T>)visitor).visitReturnSubPrg(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -2332,6 +2472,11 @@ public class LissParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof LissListener ) ((LissListener)listener).exitStatements(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LissVisitor ) return ((LissVisitor<? extends T>)visitor).visitStatements(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -2422,6 +2567,11 @@ public class LissParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof LissListener ) ((LissListener)listener).exitStatement(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LissVisitor ) return ((LissVisitor<? extends T>)visitor).visitStatement(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -2559,6 +2709,11 @@ public class LissParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof LissListener ) ((LissListener)listener).exitAssignment(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LissVisitor ) return ((LissVisitor<? extends T>)visitor).visitAssignment(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final AssignmentContext assignment(IdentifiersTable idTH) throws RecognitionException {
@@ -2668,6 +2823,11 @@ public class LissParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof LissListener ) ((LissListener)listener).exitDesignator(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LissVisitor ) return ((LissVisitor<? extends T>)visitor).visitDesignator(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -2853,6 +3013,11 @@ public class LissParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof LissListener ) ((LissListener)listener).exitArray_access(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LissVisitor ) return ((LissVisitor<? extends T>)visitor).visitArray_access(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final Array_accessContext array_access(IdentifiersTable idTH,Set set,String id) throws RecognitionException {
@@ -2946,6 +3111,11 @@ public class LissParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof LissListener ) ((LissListener)listener).exitElem_array(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LissVisitor ) return ((LissVisitor<? extends T>)visitor).visitElem_array(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -3106,6 +3276,11 @@ public class LissParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof LissListener ) ((LissListener)listener).exitFunction_call(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LissVisitor ) return ((LissVisitor<? extends T>)visitor).visitFunction_call(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final Function_callContext function_call(IdentifiersTable idTH,Set set) throws RecognitionException {
@@ -3199,6 +3374,11 @@ public class LissParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof LissListener ) ((LissListener)listener).exitSub_prg_args(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LissVisitor ) return ((LissVisitor<? extends T>)visitor).visitSub_prg_args(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final Sub_prg_argsContext sub_prg_args(IdentifiersTable idTH,Set set,String nameOfTheFunction) throws RecognitionException {
@@ -3283,6 +3463,11 @@ public class LissParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof LissListener ) ((LissListener)listener).exitArgs(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LissVisitor ) return ((LissVisitor<? extends T>)visitor).visitArgs(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -3412,6 +3597,11 @@ public class LissParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof LissListener ) ((LissListener)listener).exitExpression(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LissVisitor ) return ((LissVisitor<? extends T>)visitor).visitExpression(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -3606,6 +3796,11 @@ public class LissParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof LissListener ) ((LissListener)listener).exitSingle_expression(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LissVisitor ) return ((LissVisitor<? extends T>)visitor).visitSingle_expression(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -3810,6 +4005,11 @@ public class LissParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof LissListener ) ((LissListener)listener).exitTerm(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LissVisitor ) return ((LissVisitor<? extends T>)visitor).visitTerm(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -4027,6 +4227,11 @@ public class LissParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof LissListener ) ((LissListener)listener).exitFactor(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LissVisitor ) return ((LissVisitor<? extends T>)visitor).visitFactor(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final FactorContext factor(IdentifiersTable idTH,Set set) throws RecognitionException {
@@ -4181,6 +4386,11 @@ public class LissParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof LissListener ) ((LissListener)listener).exitSpecialFunctions(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LissVisitor ) return ((LissVisitor<? extends T>)visitor).visitSpecialFunctions(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final SpecialFunctionsContext specialFunctions(IdentifiersTable idTH,Set set) throws RecognitionException {
@@ -4277,6 +4487,11 @@ public class LissParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof LissListener ) ((LissListener)listener).exitAdd_op(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LissVisitor ) return ((LissVisitor<? extends T>)visitor).visitAdd_op(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final Add_opContext add_op() throws RecognitionException {
@@ -4349,6 +4564,11 @@ public class LissParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof LissListener ) ((LissListener)listener).exitMul_op(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LissVisitor ) return ((LissVisitor<? extends T>)visitor).visitMul_op(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final Mul_opContext mul_op() throws RecognitionException {
@@ -4420,6 +4640,11 @@ public class LissParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof LissListener ) ((LissListener)listener).exitRel_op(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LissVisitor ) return ((LissVisitor<? extends T>)visitor).visitRel_op(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -4526,6 +4751,11 @@ public class LissParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof LissListener ) ((LissListener)listener).exitWrite_statement(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LissVisitor ) return ((LissVisitor<? extends T>)visitor).visitWrite_statement(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final Write_statementContext write_statement(IdentifiersTable idTH) throws RecognitionException {
@@ -4597,6 +4827,11 @@ public class LissParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof LissListener ) ((LissListener)listener).exitWrite_expr(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LissVisitor ) return ((LissVisitor<? extends T>)visitor).visitWrite_expr(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final Write_exprContext write_expr() throws RecognitionException {
@@ -4661,6 +4896,11 @@ public class LissParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof LissListener ) ((LissListener)listener).exitPrint_what(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LissVisitor ) return ((LissVisitor<? extends T>)visitor).visitPrint_what(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -4761,6 +5001,11 @@ public class LissParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof LissListener ) ((LissListener)listener).exitRead_statement(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LissVisitor ) return ((LissVisitor<? extends T>)visitor).visitRead_statement(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final Read_statementContext read_statement(IdentifiersTable idTH) throws RecognitionException {
@@ -4840,6 +5085,11 @@ public class LissParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof LissListener ) ((LissListener)listener).exitConditional_statement(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LissVisitor ) return ((LissVisitor<? extends T>)visitor).visitConditional_statement(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final Conditional_statementContext conditional_statement(IdentifiersTable idTH) throws RecognitionException {
@@ -4889,6 +5139,11 @@ public class LissParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof LissListener ) ((LissListener)listener).exitIterative_statement(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LissVisitor ) return ((LissVisitor<? extends T>)visitor).visitIterative_statement(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -4959,6 +5214,11 @@ public class LissParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof LissListener ) ((LissListener)listener).exitIf_then_else_stat(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LissVisitor ) return ((LissVisitor<? extends T>)visitor).visitIf_then_else_stat(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -5042,6 +5302,11 @@ public class LissParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof LissListener ) ((LissListener)listener).exitElse_expression(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LissVisitor ) return ((LissVisitor<? extends T>)visitor).visitElse_expression(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -5145,6 +5410,11 @@ public class LissParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof LissListener ) ((LissListener)listener).exitFor_stat(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LissVisitor ) return ((LissVisitor<? extends T>)visitor).visitFor_stat(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -5277,6 +5547,11 @@ public class LissParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof LissListener ) ((LissListener)listener).exitInterval(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LissVisitor ) return ((LissVisitor<? extends T>)visitor).visitInterval(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final IntervalContext interval(IdentifiersTable idTH) throws RecognitionException {
@@ -5349,6 +5624,11 @@ public class LissParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof LissListener ) ((LissListener)listener).exitType_interval(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LissVisitor ) return ((LissVisitor<? extends T>)visitor).visitType_interval(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -5456,6 +5736,11 @@ public class LissParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof LissListener ) ((LissListener)listener).exitRange(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LissVisitor ) return ((LissVisitor<? extends T>)visitor).visitRange(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final RangeContext range(IdentifiersTable idTH,String variable,boolean inArray) throws RecognitionException {
@@ -5513,6 +5798,11 @@ public class LissParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof LissListener ) ((LissListener)listener).exitMinimum(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LissVisitor ) return ((LissVisitor<? extends T>)visitor).visitMinimum(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final MinimumContext minimum(IdentifiersTable idTH,String variable,boolean inArray) throws RecognitionException {
@@ -5529,7 +5819,7 @@ public class LissParser extends Parser {
 
 				                            String s = m.loadImmediateWord((((MinimumContext)_localctx).n!=null?_input.getText(((MinimumContext)_localctx).n.start,((MinimumContext)_localctx).n.stop):null), ((MinimumContext)_localctx).n.line, ((MinimumContext)_localctx).n.pos);
 				                            Integer variableLevel = 0,  positionFromSP = 0;
-				                            if(_localctx.idTH.doesExist(_localctx.variable)==true && !_localctx.idTH.getInfoIdentifiersTable(_localctx.variable).getLevel().equals(0)){
+				                            if(_localctx.idTH.getInfoIdentifiersTable(_localctx.variable).getLevel()!=null && !_localctx.idTH.getInfoIdentifiersTable(_localctx.variable).getLevel().equals(0)){
 				                                variableLevel = _localctx.idTH.getInfoIdentifiersTable(_localctx.variable).getLevel();
 				                                positionFromSP = _localctx.idTH.getValueSP(level,_localctx.variable);
 				                            }
@@ -5603,6 +5893,11 @@ public class LissParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof LissListener ) ((LissListener)listener).exitMaximum(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LissVisitor ) return ((LissVisitor<? extends T>)visitor).visitMaximum(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final MaximumContext maximum(IdentifiersTable idTH) throws RecognitionException {
@@ -5616,11 +5911,7 @@ public class LissParser extends Parser {
 				{
 				setState(718);
 				((MaximumContext)_localctx).n = number();
-
-
-				                    ((MaximumContext)_localctx).mipsCodeS =  m.loadImmediateWord((((MaximumContext)_localctx).n!=null?_input.getText(((MaximumContext)_localctx).n.start,((MaximumContext)_localctx).n.stop):null), ((MaximumContext)_localctx).n.line, ((MaximumContext)_localctx).n.pos);
-
-				                
+				 ((MaximumContext)_localctx).mipsCodeS =  m.loadImmediateWord((((MaximumContext)_localctx).n!=null?_input.getText(((MaximumContext)_localctx).n.start,((MaximumContext)_localctx).n.stop):null), ((MaximumContext)_localctx).n.line, ((MaximumContext)_localctx).n.pos); 
 				}
 				break;
 			case ID:
@@ -5683,6 +5974,11 @@ public class LissParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof LissListener ) ((LissListener)listener).exitStep(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LissVisitor ) return ((LissVisitor<? extends T>)visitor).visitStep(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final StepContext step() throws RecognitionException {
@@ -5695,7 +5991,7 @@ public class LissParser extends Parser {
 			case T__53:
 				enterOuterAlt(_localctx, 1);
 				{
-				 ((StepContext)_localctx).numberS =  "1"; ((StepContext)_localctx).stepUp =  true; ((StepContext)_localctx).stepS =  false;
+				 ((StepContext)_localctx).stepUp =  true; ((StepContext)_localctx).stepS =  false;
 				}
 				break;
 			case T__51:
@@ -5739,6 +6035,11 @@ public class LissParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof LissListener ) ((LissListener)listener).exitUp_down(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LissVisitor ) return ((LissVisitor<? extends T>)visitor).visitUp_down(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -5804,6 +6105,11 @@ public class LissParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof LissListener ) ((LissListener)listener).exitSatisfy(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LissVisitor ) return ((LissVisitor<? extends T>)visitor).visitSatisfy(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -5882,6 +6188,11 @@ public class LissParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof LissListener ) ((LissListener)listener).exitWhile_stat(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LissVisitor ) return ((LissVisitor<? extends T>)visitor).visitWhile_stat(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -5976,6 +6287,11 @@ public class LissParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof LissListener ) ((LissListener)listener).exitSucc_or_pred(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LissVisitor ) return ((LissVisitor<? extends T>)visitor).visitSucc_or_pred(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final Succ_or_predContext succ_or_pred(IdentifiersTable idTH) throws RecognitionException {
@@ -6060,6 +6376,11 @@ public class LissParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof LissListener ) ((LissListener)listener).exitSucc_pred(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LissVisitor ) return ((LissVisitor<? extends T>)visitor).visitSucc_pred(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final Succ_predContext succ_pred() throws RecognitionException {
@@ -6125,6 +6446,11 @@ public class LissParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof LissListener ) ((LissListener)listener).exitTail(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LissVisitor ) return ((LissVisitor<? extends T>)visitor).visitTail(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -6203,6 +6529,11 @@ public class LissParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof LissListener ) ((LissListener)listener).exitHead(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LissVisitor ) return ((LissVisitor<? extends T>)visitor).visitHead(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -6285,6 +6616,11 @@ public class LissParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof LissListener ) ((LissListener)listener).exitCons(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LissVisitor ) return ((LissVisitor<? extends T>)visitor).visitCons(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -6375,6 +6711,11 @@ public class LissParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof LissListener ) ((LissListener)listener).exitDelete(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LissVisitor ) return ((LissVisitor<? extends T>)visitor).visitDelete(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final DeleteContext delete(IdentifiersTable idTH,Set set) throws RecognitionException {
@@ -6460,6 +6801,11 @@ public class LissParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof LissListener ) ((LissListener)listener).exitCopy_statement(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LissVisitor ) return ((LissVisitor<? extends T>)visitor).visitCopy_statement(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final Copy_statementContext copy_statement(IdentifiersTable idTH) throws RecognitionException {
@@ -6530,6 +6876,11 @@ public class LissParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof LissListener ) ((LissListener)listener).exitCat_statement(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LissVisitor ) return ((LissVisitor<? extends T>)visitor).visitCat_statement(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -6602,6 +6953,11 @@ public class LissParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof LissListener ) ((LissListener)listener).exitIs_empty(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LissVisitor ) return ((LissVisitor<? extends T>)visitor).visitIs_empty(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -6679,6 +7035,11 @@ public class LissParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof LissListener ) ((LissListener)listener).exitLength(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LissVisitor ) return ((LissVisitor<? extends T>)visitor).visitLength(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -6759,6 +7120,11 @@ public class LissParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof LissListener ) ((LissListener)listener).exitMember(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LissVisitor ) return ((LissVisitor<? extends T>)visitor).visitMember(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -6848,6 +7214,11 @@ public class LissParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof LissListener ) ((LissListener)listener).exitString(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LissVisitor ) return ((LissVisitor<? extends T>)visitor).visitString(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final StringContext string() throws RecognitionException {
@@ -6890,6 +7261,11 @@ public class LissParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof LissListener ) ((LissListener)listener).exitNumber(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LissVisitor ) return ((LissVisitor<? extends T>)visitor).visitNumber(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final NumberContext number() throws RecognitionException {
@@ -6930,6 +7306,11 @@ public class LissParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof LissListener ) ((LissListener)listener).exitIdentifier(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LissVisitor ) return ((LissVisitor<? extends T>)visitor).visitIdentifier(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 

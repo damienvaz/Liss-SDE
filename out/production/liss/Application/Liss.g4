@@ -1797,7 +1797,7 @@ minimum [IdentifiersTable idTH, String variable, boolean inArray]
         : n=number        {
                             String s = m.loadImmediateWord($n.text, $n.line, $n.pos);
                             Integer variableLevel = 0,  positionFromSP = 0;
-                            if(!$idTH.getInfoIdentifiersTable($variable).getLevel().equals(0)){
+                            if($idTH.doesExist($variable)==true && !$idTH.getInfoIdentifiersTable($variable).getLevel().equals(0)){
                                 variableLevel = $idTH.getInfoIdentifiersTable($variable).getLevel();
                                 positionFromSP = $idTH.getValueSP(level,$variable);
                             }
@@ -1827,7 +1827,11 @@ minimum [IdentifiersTable idTH, String variable, boolean inArray]
 
 maximum [IdentifiersTable idTH]
         returns [String mipsCodeS]
-        : n=number        { $mipsCodeS = m.loadImmediateWord($n.text, $n.line, $n.pos); }
+        : n=number {
+
+                    $mipsCodeS = m.loadImmediateWord($n.text, $n.line, $n.pos);
+
+                }
         | i=identifier
         {
             Var v = (Var) $idTH.getInfoIdentifiersTable($i.text);
@@ -1847,7 +1851,7 @@ maximum [IdentifiersTable idTH]
 
 step
      returns [boolean stepS, boolean stepUp, String numberS]
-     :                      { $stepUp = true; $stepS = false;}
+     :                      { $numberS = "1"; $stepUp = true; $stepS = false;} //this must be done
      | u=up_down n=number   {
                               $stepUp = $u.stepUp; $numberS = $n.text; $stepS = true;
                             }

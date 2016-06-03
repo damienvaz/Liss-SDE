@@ -528,9 +528,47 @@ public class SyntaxDirectedEditor {
 
                                     new Thread(
                                             ()->{
+                                                boolean successExecution=true;
                                                 while(p.isAlive()){
                                                     String res = input.getLine();
                                                     if(res!=null && res.equals("Enter integer value:")) {
+                                                        SwingUtilities.invokeLater(new Runnable() {
+                                                            public void run() {
+                                                                boolean integerIsRequested=true;
+
+                                                                while(integerIsRequested){
+
+                                                                    //Frame created to focus the dialog in foreground otherwise it won't work in windows
+                                                                    JFrame frame = new JFrame();
+                                                                    Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
+                                                                    int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2);
+                                                                    int y = (int) ((dimension.getHeight() - frame.getHeight()) / 2);
+                                                                    frame.setLocation(x, y);
+                                                                    frame.setVisible(false);
+                                                                    frame.setAlwaysOnTop(true);
+
+                                                                    String test1 = JOptionPane.showInputDialog(frame,"Enter Integer value:");
+
+                                                                    while(test1==null || !test1.matches("^[+-]?\\d+$")){
+                                                                        test1 = JOptionPane.showInputDialog(frame,"Error: Not a valid Integer.\nEnter a correct Integer value:");
+
+
+                                                                    }
+                                                                    frame.dispose();
+
+
+                                                                    Integer i = Integer.valueOf(test1);
+
+                                                                    if (i != null) {
+                                                                        System.out.println(test1);
+                                                                        out.addLine(test1);
+                                                                        integerIsRequested=false;
+                                                                    }
+                                                                }
+                                                            }
+                                                        });
+
+                                                        /*
                                                         boolean integerIsRequested=true;
                                                         Thread t=null;
                                                         while(integerIsRequested){
@@ -572,10 +610,15 @@ public class SyntaxDirectedEditor {
                                                             if(!t.isAlive()){
                                                                 integerIsRequested=false;
                                                             }
-                                                        }
+                                                        }*/
+                                                    }else if(res!=null && res.equals("Processing terminated due to errors.")){
+                                                        successExecution=false;
                                                     }
+
                                                 }
-                                                outputTextArea.appendText("Program executed successfully\n");
+                                                if(successExecution) {
+                                                    outputTextArea.appendText("Program executed successfully.\n");
+                                                }
                                             }
                                     ).start();
                                 }else{
@@ -665,10 +708,47 @@ public class SyntaxDirectedEditor {
 
                                         new Thread(
                                                 ()->{
+                                                    boolean successExecution=true;
                                                     while(p.isAlive()){
                                                         String res = input.getLine();
                                                         if(res!=null && res.equals("Enter integer value:")) {
-                                                            boolean integerIsRequested=true;
+                                                            SwingUtilities.invokeLater(new Runnable() {
+                                                                public void run() {
+                                                                    boolean integerIsRequested=true;
+
+                                                                    while(integerIsRequested){
+
+                                                                        //Frame created to focus the dialog in foreground otherwise it won't work in windows
+                                                                        JFrame frame = new JFrame();
+                                                                        Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
+                                                                        int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2);
+                                                                        int y = (int) ((dimension.getHeight() - frame.getHeight()) / 2);
+                                                                        frame.setLocation(x, y);
+                                                                        frame.setVisible(false);
+                                                                        frame.setAlwaysOnTop(true);
+
+                                                                        String test1 = JOptionPane.showInputDialog(frame,"Enter Integer value:");
+
+                                                                        while(test1==null || !test1.matches("^[+-]?\\d+$")){
+                                                                            test1 = JOptionPane.showInputDialog(frame,"Error: Not a valid Integer.\nEnter a correct Integer value:");
+
+
+                                                                        }
+                                                                        frame.dispose();
+
+
+                                                                        Integer i = Integer.valueOf(test1);
+
+                                                                        if (i != null) {
+                                                                            System.out.println(test1);
+                                                                            out.addLine(test1);
+                                                                            integerIsRequested=false;
+                                                                        }
+                                                                    }
+                                                                }
+                                                            });
+
+                                                            /*boolean integerIsRequested=true;
                                                             Thread t=null;
                                                             while(integerIsRequested){
                                                                 if(t==null) {
@@ -702,10 +782,14 @@ public class SyntaxDirectedEditor {
                                                                 if(!t.isAlive()){
                                                                     integerIsRequested=false;
                                                                 }
-                                                            }
+                                                            }*/
+                                                        }else if(res!=null && res.equals("Processing terminated due to errors.")){
+                                                            successExecution=false;
                                                         }
                                                     }
-                                                    outputTextArea.appendText("Program executed successfully\n");
+                                                    if(successExecution){
+                                                        outputTextArea.appendText("Program executed successfully\n");
+                                                    }
                                               }
                                         ).start();
                                     }else{
