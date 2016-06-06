@@ -197,7 +197,7 @@ public class LissParser extends Parser {
 			identifier();
 			setState(156);
 			body(idTH);
-			 m.addDataInstruction(m.dataTextOriginal()); m.textExitCode(); System.out.println(e.toString()); System.out.println("/***************************************/\n"+m.getAssemblyCode()+"/***************************************/\n");/*if(e.isNull()){ m.write();}*/
+			 m.addDataInstruction(m.dataTextOriginal()); m.textExitCode(); System.out.println(e.toString()); System.out.println("/***************************************/\n"+m.getAssemblyCode()+"/***************************************/\n"); /*System.out.println(m.areSomeRegistersUsed());if(e.isNull()){ m.write();}*/
 			}
 		}
 		catch (RecognitionException re) {
@@ -2602,7 +2602,9 @@ public class LissParser extends Parser {
 			                        }else if(((AssignmentContext)_localctx).designator.arrayS == true){
 			                            mipsCodeS = ((AssignmentContext)_localctx).designator.mipsCodeS;
 			                            mipsCodeS += ((AssignmentContext)_localctx).expression.mipsCodeS;
-			                            mipsCodeS += m.storeWordArrayText(((AssignmentContext)_localctx).designator.identifierS, ((AssignmentContext)_localctx).designator.line, ((AssignmentContext)_localctx).designator.pos);
+			                            System.out.println("Designator: "+(((AssignmentContext)_localctx).designator!=null?_input.getText(((AssignmentContext)_localctx).designator.start,((AssignmentContext)_localctx).designator.stop):null)+" = "+(((AssignmentContext)_localctx).expression!=null?_input.getText(((AssignmentContext)_localctx).expression.start,((AssignmentContext)_localctx).expression.stop):null));
+			                            System.out.println("MIPSCODE: \n"+mipsCodeS);
+			                            mipsCodeS += m.storeWordArrayText(((AssignmentContext)_localctx).designator.identifierS, ((AssignmentContext)_localctx).designator.line, ((AssignmentContext)_localctx).designator.pos); //<- problem here
 			                        }
 			                        if(functionState == false){
 			                            m.addTextInstruction(mipsCodeS);

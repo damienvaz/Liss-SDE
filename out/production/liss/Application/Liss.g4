@@ -33,7 +33,7 @@ liss [IdentifiersTable idTH, TableError tableError,Mips mips]
         e = tableError;
         m = mips;
       }
-     : 'program' identifier body[idTH] { m.addDataInstruction(m.dataTextOriginal()); m.textExitCode(); System.out.println(e.toString()); System.out.println("/***************************************/\n"+m.getAssemblyCode()+"/***************************************/\n");/*if(e.isNull()){ m.write();}*/}
+     : 'program' identifier body[idTH] { m.addDataInstruction(m.dataTextOriginal()); m.textExitCode(); System.out.println(e.toString()); System.out.println("/***************************************/\n"+m.getAssemblyCode()+"/***************************************/\n"); System.out.println(m.areSomeRegistersUsed());/*if(e.isNull()){ m.write();}*/}
      ;
 
 
@@ -665,7 +665,9 @@ assignment [IdentifiersTable idTH]
                         }else if($designator.arrayS == true){
                             mipsCodeS = $designator.mipsCodeS;
                             mipsCodeS += $expression.mipsCodeS;
-                            mipsCodeS += m.storeWordArrayText($designator.identifierS, $designator.line, $designator.pos);
+                            System.out.println("Designator: "+$designator.text+" = "+$expression.text);
+                            System.out.println("MIPSCODE: \n"+mipsCodeS);
+                            mipsCodeS += m.storeWordArrayText($designator.identifierS, $designator.line, $designator.pos); //<- problem here
                         }
                         if(functionState == false){
                             m.addTextInstruction(mipsCodeS);

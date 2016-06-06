@@ -98,6 +98,10 @@ public class Mips {
         return res;
     }
 
+    public boolean areSomeRegistersUsed(){
+        return this.register[0] == true ? true : false;
+    }
+
     public void freeLastRegister(){
         int i = 0;
         while(this.register[i] != false && i<(this.register.length-1)){
@@ -163,7 +167,7 @@ public class Mips {
     public String storeWordArrayText(String name, int line, int pos){
         StringBuilder s = new StringBuilder();
         String r[] = lastTwoRegisterOccupied();
-        resetRegister();
+        //resetRegister();
         s.append("\tsw "+r[1]+", "+name+"("+r[0]+")\t\t# "+line+":"+pos+"\n");
 
         freeLastRegister();
