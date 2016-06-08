@@ -29,9 +29,6 @@ import org.fxmisc.richtext.LineNumberFactory;
 import javax.swing.*;
 import java.awt.*;
 import java.io.*;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -443,7 +440,7 @@ public class SyntaxDirectedEditor {
                         args[0] = temp.getAbsolutePath();
                         m.compile(args);
                         File tempAssembly = null;
-                        if(!m.getTableError().toStringSDE().equals("")) {    //<----- checkar aqui
+                        if(!m.getTableError().toStringSDE().equals("")) {
                             errorsTextArea.clear();
                             tabpane.getSelectionModel().select(errorsTab);
                             errorsTextArea.appendText(m.getTableError().toStringSDE());

@@ -33,7 +33,7 @@ liss [IdentifiersTable idTH, TableError tableError,Mips mips]
         e = tableError;
         m = mips;
       }
-     : 'program' identifier body[idTH] { m.addDataInstruction(m.dataTextOriginal()); m.textExitCode(); System.out.println(e.toString()); System.out.println("/***************************************/\n"+m.getAssemblyCode()+"/***************************************/\n"); System.out.println(m.areSomeRegistersUsed());/*if(e.isNull()){ m.write();}*/}
+     : 'program' identifier body[idTH] { m.addDataInstruction(m.dataTextOriginal()); m.textExitCode(); System.out.println(e.toString()); System.out.println("/***************************************/\n"+m.getAssemblyCode()+"/***************************************/\n"); /*System.out.println(m.areSomeRegistersUsed());if(e.isNull()){ m.write();}*/}
      ;
 
 

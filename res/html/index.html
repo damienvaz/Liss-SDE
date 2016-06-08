@@ -72,6 +72,7 @@
         return res;
     }
 
+    //This function tests if a non-terminal is set or not and if Terminals are valid or not!
     function validatingProgramLiss(){
         var res = true;
         var jsonObj = $('#lissSyntax').jstree(true).get_json('#', {flat:true});
@@ -80,11 +81,20 @@
             var arrayClassName = jsonObj[i].a_attr.class.split(" ");
 
             if(node.children.length === 0 && arrayClassName[0] === "non-terminal"){
-//                liss.debugger("*********NODE: " + node.id + " LENGTH_CHILDREN: " + node.children.length + " TAB: " + node.a_attr.tab + "**********");
+                //liss.debugger("*********NODE: " + node.id + " LENGTH_CHILDREN: " + node.children.length + " TAB: " + node.a_attr.tab + "**********");
                 if(!nonTerminalHasMultiplicityZeroOrMore(node.id)) {
                     res = false;
                     break;
                 }
+            }else if(arrayClassName[0] === "terminal" && arrayClassName[1] === "edit"){
+                //Testing for terminal which are "editable". Now we need to check if they were set already or not! If they were set, do they have the "warning" class ?
+                // ["terminal","edit"] or ["terminal","edit","warning"]
+                if(arrayClassName.length === 2){
+                    res = false;
+                }else if(arrayClassName.length >= 2 && arrayClassName[2] === "warning"){
+                    res = false;
+                }
+
             }
         }
         return res;
