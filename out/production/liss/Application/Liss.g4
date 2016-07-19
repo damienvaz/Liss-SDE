@@ -180,6 +180,27 @@ variable_declaration [IdentifiersTable idTH]
                                         address += typeSpace.getSpace();
                                     }
                                 }
+                            }else if($type.typeS == "sequence"){
+                                for(String i : varsH.keySet()){
+                                    LinkedList<Integer> sequence = (LinkedList<Integer>) varsH.get(i).get("sequence");
+
+                                    if(functionState == false){
+
+
+                                    }else{
+
+                                    }
+
+
+                                    System.out.println("INIT SEQUENCE: "+i);
+                                    if(sequence != null){
+                                        for(Integer v : sequence){
+                                            System.out.print("["+v.toString()+"]->");
+                                        }
+                                    }
+                                    System.out.println("*");
+                                    System.out.println("END SEQUENCE");
+                                }
                             }
 
                             //Testing the type of the variables and the type of types ! if they ain't equals then we must throw an error
@@ -269,13 +290,17 @@ var [IdentifiersTable idTH]
             info.put("accessArray", $v.accessArrayS);
         }
 
+        if($v.typeS != null && $v.typeS.equals("sequence")){
+            info.put("sequence", $v.sequenceS);
+        }
+
         $idS = $identifier.text;
         $infoVarS = info;
     }
     ;
 
 value_var [IdentifiersTable idTH]
-          returns [Set setS, String typeS, String mipsCodeS, ArrayList<ArrayList<Integer>> accessArrayS]
+          returns [Set setS, String typeS, String mipsCodeS, ArrayList<ArrayList<Integer>> accessArrayS, LinkedList<Integer> sequenceS]
           @init{
             Set set = null;
             $mipsCodeS = null;
@@ -289,6 +314,8 @@ value_var [IdentifiersTable idTH]
                 $mipsCodeS = $i.mipsCodeS;
                 if($i.typeS != null && $i.typeS.equals("array")){
                     $accessArrayS = $i.accessArrayS;
+                }else if($i.typeS != null && $i.typeS.equals("sequence")){
+                    $sequenceS = $i.sequenceS;
                 }
           }
           ;
@@ -316,13 +343,14 @@ dimension returns [ArrayList<Integer> arrayDimension]
           ;
 
 inic_var [IdentifiersTable idTH, Set set]
-         returns [String typeS, int line, int pos,Set setS, Node treeS, String mipsCodeS, ArrayList<ArrayList<Integer>> accessArrayS]
+         returns [String typeS, int line, int pos,Set setS, Node treeS, String mipsCodeS, ArrayList<ArrayList<Integer>> accessArrayS, LinkedList<Integer> sequenceS]
          @init{
             $treeS = null;
 
             $mipsCodeS = null;
             ArrayList<Integer> a= new ArrayList<Integer>();
             ArrayList<ArrayList<Integer>> accessArray = new ArrayList<ArrayList<Integer>>();
+            LinkedList<Integer> sequence = new LinkedList<Integer>();
          }
          : c=constant               {$typeS = $constant.typeS; $line = $constant.line; $pos = $constant.pos; $mipsCodeS = $c.mipsCodeS; Node n = new Node(new String($c.text)); $treeS = n; /*if(isSet && $set!=null){ Node n = new Node(new String($c.text)); $treeS = n; }*/ }
          | a=array_definition[a, accessArray] {
@@ -332,7 +360,7 @@ inic_var [IdentifiersTable idTH, Set set]
                                                     $accessArrayS = accessArray;
                                               }
          | s1=set_definition[idTH]  {$typeS = "set"; $line = $s1.line; $pos = $s1.pos; $treeS = $s1.treeS; $setS = $s1.setS;/*if(isSet && $s1.treeS!=null){$treeS = $s1.treeS;} if(isSet && $s1.setS!=null){$setS = $s1.setS;}*/}
-         | s2=sequence_definition   {$typeS = "sequence"; $treeS = $s2.treeS; /*if(isSet && $set!=null){$treeS = $s2.treeS;}*/}
+         | s2=sequence_definition[sequence]   {$typeS = "sequence"; $line = $s2.line; $pos = $s2.pos; $treeS = $s2.treeS; $sequenceS = sequence;/*if(isSet && $set!=null){$treeS = $s2.treeS;}*/}
          ;
 
 constant returns [String typeS, int line, int pos, String mipsCodeS]
@@ -389,22 +417,25 @@ elem [ArrayList<Integer> a, ArrayList<ArrayList<Integer>> accessArray]
 
 /* ****** Sequence definition ****** */
 
-sequence_definition returns [Node treeS]
-                    : '<<' s=sequence_initialization { Node n = new Node(new String("sequence"),null,$s.treeS); $treeS = n; /*if(isSet){Node n = new Node(new String("sequence"),null,$s.treeS); $treeS = n;}*/}'>>'
+sequence_definition [LinkedList<Integer> sequence]
+                    returns [Node treeS, int line, int pos]
+                    : '<<' s=sequence_initialization[sequence] { Node n = new Node(new String("sequence"),null,$s.treeS); $treeS = n; /*if(isSet){Node n = new Node(new String("sequence"),null,$s.treeS); $treeS = n;}*/}'>>'
                     ;
 
-sequence_initialization returns [Node treeS]
+sequence_initialization [LinkedList<Integer> sequence]
+                        returns [Node treeS]
                         :             { $treeS = null; /*if(isSet){$treeS = null;}*/}
-                        | v=values    { $treeS = $v.treeS; /*if(isSet){$treeS = $v.treeS;}*/}
+                        | v=values[sequence]    { $treeS = $v.treeS; /*if(isSet){$treeS = $v.treeS;}*/}
                         ;
 
-values returns [Node treeS]
+values [LinkedList<Integer> sequence]
+       returns [Node treeS]
        @init{
             Node head = null;
             Node m = null;
        }
-       : n1=number    { head = new Node(new String("args"),new Node(new String($n1.text),null,null),null); m = head; /*if(isSet){head = new Node(new String("args"),new Node(new String($n1.text),null,null),null); m = head;}*/}
-       (',' n2=number { m.setRight(new Node(new String("args"),new Node(new String($n2.text),null,null),null)); m = m.getRight(); /*if(isSet){m.setRight(new Node(new String("args"),new Node(new String($n2.text),null,null),null)); m = m.getRight();}*/}
+       : n1=number    { sequence.add(Integer.valueOf($number.text)); head = new Node(new String("args"),new Node(new String($n1.text),null,null),null); m = head; /*if(isSet){head = new Node(new String("args"),new Node(new String($n1.text),null,null),null); m = head;}*/}
+       (',' n2=number { sequence.add(Integer.valueOf($number.text)); m.setRight(new Node(new String("args"),new Node(new String($n2.text),null,null),null)); m = m.getRight(); /*if(isSet){m.setRight(new Node(new String("args"),new Node(new String($n2.text),null,null),null)); m = m.getRight();}*/}
        )*
 
        {
@@ -486,7 +517,6 @@ subprogram_definition[IdentifiersTable idTH]
                         f2=f_body[idTH, varInfo]
 
                         {
-
                             //MIPS
                             String mipsCodeS = m.textEndFunction($idTH.getSizeSP(level),$f2.returnMipsCodeS);
                             m.addMipsCodeFunction(m.getNameFunction(),mipsCodeS);
@@ -627,7 +657,7 @@ statement [IdentifiersTable idTH]
           | i=iterative_statement[idTH]     {$line=$i.line; $pos=$i.pos;}           //done
           | f=function_call[idTH, set] ';'  {$line=$f.line; $pos=$f.pos;}
           | s=succ_or_pred[idTH] ';'        {$line=$s.line; $pos=$s.pos;}           //done
-          | copy_statement[idTH] ';'
+          | copy_statement[idTH] ';' //conjunto de sequencias
           | cat_statement[idTH] ';' // conjuntos de sequencias
           ;
 
@@ -2268,8 +2298,8 @@ STR :  '"' ( ESC_SEQ | ~('"') )* '"'
 
 fragment
 COMMENT
-    : '/*'.*?'*/' /* multiple comments*/
-    | '//'~('\r' | '\n')* /* single comment*/
+    : '/*'.*?'*/' /* multiple lines comments*/
+    | '//'~('\r' | '\n')* /* single line comment*/
     ;
 
 fragment

@@ -41,7 +41,12 @@ public class Function extends Info {
     public String toString(){
         StringBuilder s = new StringBuilder();
         s.append(super.toString());
-        s.append(String.format("%-20s%-20s%-20s%-20s%-20s%-20s","","","","",this.numberArguments,this.type.toString())); //Address | Dimension | Limits | Elements_Type | NumberArgument
+        if(this.numberArguments.equals(0)) {
+            s.append(String.format("%-20s%-20s%-20s%-20s%-20s%-20s", "", "", "", "", this.numberArguments,"null")); //Address | Dimension | Limits | Elements_Type | NumberArgument | Type List Arguments
+        }
+        else{
+            s.append(String.format("%-20s%-20s%-20s%-20s%-20s%-20s", "", "", "", "", this.numberArguments, this.type.toString())); //Address | Dimension | Limits | Elements_Type | NumberArgument | Type List Arguments
+        }
         s.append("\n");
 
         return s.toString();

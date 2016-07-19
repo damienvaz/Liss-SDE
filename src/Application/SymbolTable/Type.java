@@ -18,7 +18,7 @@ public class Type extends InfoIdentifiersTable {
                 this.space = new Integer(0);
                 break;
             case "sequence":
-                this.space = new Integer(1);
+                this.space = new Integer(4); //SEQUENCE address is equals to 4 bytes !
                 break;
             case "boolean":
                 this.space = new Integer(4); //BOOLEAN in mips is equals to 4 bytes

@@ -516,6 +516,27 @@ public class LissParser extends Parser {
 			                                        address += typeSpace.getSpace();
 			                                    }
 			                                }
+			                            }else if(((Variable_declarationContext)_localctx).type.typeS == "sequence"){
+			                                for(String i : varsH.keySet()){
+			                                    LinkedList<Integer> sequence = (LinkedList<Integer>) varsH.get(i).get("sequence");
+
+			                                    if(functionState == false){
+
+
+			                                    }else{
+
+			                                    }
+
+
+			                                    System.out.println("INIT SEQUENCE: "+i);
+			                                    if(sequence != null){
+			                                        for(Integer v : sequence){
+			                                            System.out.print("["+v.toString()+"]->");
+			                                        }
+			                                    }
+			                                    System.out.println("*");
+			                                    System.out.println("END SEQUENCE");
+			                                }
 			                            }
 
 			                            //Testing the type of the variables and the type of types ! if they ain't equals then we must throw an error
@@ -708,6 +729,10 @@ public class LissParser extends Parser {
 			            info.put("accessArray", ((VarContext)_localctx).v.accessArrayS);
 			        }
 
+			        if(((VarContext)_localctx).v.typeS != null && ((VarContext)_localctx).v.typeS.equals("sequence")){
+			            info.put("sequence", ((VarContext)_localctx).v.sequenceS);
+			        }
+
 			        ((VarContext)_localctx).idS =  (((VarContext)_localctx).identifier!=null?_input.getText(((VarContext)_localctx).identifier.start,((VarContext)_localctx).identifier.stop):null);
 			        ((VarContext)_localctx).infoVarS =  info;
 			    
@@ -730,6 +755,7 @@ public class LissParser extends Parser {
 		public String typeS;
 		public String mipsCodeS;
 		public ArrayList<ArrayList<Integer>> accessArrayS;
+		public LinkedList<Integer> sequenceS;
 		public Inic_varContext i;
 		public Inic_varContext inic_var() {
 			return getRuleContext(Inic_varContext.class,0);
@@ -782,6 +808,8 @@ public class LissParser extends Parser {
 				                ((Value_varContext)_localctx).mipsCodeS =  ((Value_varContext)_localctx).i.mipsCodeS;
 				                if(((Value_varContext)_localctx).i.typeS != null && ((Value_varContext)_localctx).i.typeS.equals("array")){
 				                    ((Value_varContext)_localctx).accessArrayS =  ((Value_varContext)_localctx).i.accessArrayS;
+				                }else if(((Value_varContext)_localctx).i.typeS != null && ((Value_varContext)_localctx).i.typeS.equals("sequence")){
+				                    ((Value_varContext)_localctx).sequenceS =  ((Value_varContext)_localctx).i.sequenceS;
 				                }
 				          
 				}
@@ -1019,6 +1047,7 @@ public class LissParser extends Parser {
 		public Node treeS;
 		public String mipsCodeS;
 		public ArrayList<ArrayList<Integer>> accessArrayS;
+		public LinkedList<Integer> sequenceS;
 		public ConstantContext c;
 		public ConstantContext constant;
 		public Array_definitionContext a;
@@ -1062,6 +1091,7 @@ public class LissParser extends Parser {
 		            ((Inic_varContext)_localctx).mipsCodeS =  null;
 		            ArrayList<Integer> a= new ArrayList<Integer>();
 		            ArrayList<ArrayList<Integer>> accessArray = new ArrayList<ArrayList<Integer>>();
+		            LinkedList<Integer> sequence = new LinkedList<Integer>();
 		         
 		try {
 			setState(260);
@@ -1103,8 +1133,8 @@ public class LissParser extends Parser {
 				enterOuterAlt(_localctx, 4);
 				{
 				setState(257);
-				((Inic_varContext)_localctx).s2 = sequence_definition();
-				((Inic_varContext)_localctx).typeS =  "sequence"; ((Inic_varContext)_localctx).treeS =  ((Inic_varContext)_localctx).s2.treeS; /*if(isSet && _localctx.set!=null){((Inic_varContext)_localctx).treeS =  ((Inic_varContext)_localctx).s2.treeS;}*/
+				((Inic_varContext)_localctx).s2 = sequence_definition(sequence);
+				((Inic_varContext)_localctx).typeS =  "sequence"; ((Inic_varContext)_localctx).line =  ((Inic_varContext)_localctx).s2.line; ((Inic_varContext)_localctx).pos =  ((Inic_varContext)_localctx).s2.pos; ((Inic_varContext)_localctx).treeS =  ((Inic_varContext)_localctx).s2.treeS; ((Inic_varContext)_localctx).sequenceS =  sequence;/*if(isSet && $set!=null){$treeS = $s2.treeS;}*/
 				}
 				break;
 			default:
@@ -1460,13 +1490,18 @@ public class LissParser extends Parser {
 	}
 
 	public static class Sequence_definitionContext extends ParserRuleContext {
+		public LinkedList<Integer> sequence;
 		public Node treeS;
+		public int line;
+		public int pos;
 		public Sequence_initializationContext s;
 		public Sequence_initializationContext sequence_initialization() {
 			return getRuleContext(Sequence_initializationContext.class,0);
 		}
-		public Sequence_definitionContext(ParserRuleContext parent, int invokingState) {
+		public Sequence_definitionContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
+		public Sequence_definitionContext(ParserRuleContext parent, int invokingState, LinkedList<Integer> sequence) {
 			super(parent, invokingState);
+			this.sequence = sequence;
 		}
 		@Override public int getRuleIndex() { return RULE_sequence_definition; }
 		@Override
@@ -1479,8 +1514,8 @@ public class LissParser extends Parser {
 		}
 	}
 
-	public final Sequence_definitionContext sequence_definition() throws RecognitionException {
-		Sequence_definitionContext _localctx = new Sequence_definitionContext(_ctx, getState());
+	public final Sequence_definitionContext sequence_definition(LinkedList<Integer> sequence) throws RecognitionException {
+		Sequence_definitionContext _localctx = new Sequence_definitionContext(_ctx, getState(), sequence);
 		enterRule(_localctx, 32, RULE_sequence_definition);
 		try {
 			enterOuterAlt(_localctx, 1);
@@ -1488,7 +1523,7 @@ public class LissParser extends Parser {
 			setState(302);
 			match(T__21);
 			setState(303);
-			((Sequence_definitionContext)_localctx).s = sequence_initialization();
+			((Sequence_definitionContext)_localctx).s = sequence_initialization(sequence);
 			 Node n = new Node(new String("sequence"),null,((Sequence_definitionContext)_localctx).s.treeS); ((Sequence_definitionContext)_localctx).treeS =  n; /*if(isSet){Node n = new Node(new String("sequence"),null,((Sequence_definitionContext)_localctx).s.treeS); ((Sequence_definitionContext)_localctx).treeS =  n;}*/
 			setState(305);
 			match(T__22);
@@ -1506,13 +1541,16 @@ public class LissParser extends Parser {
 	}
 
 	public static class Sequence_initializationContext extends ParserRuleContext {
+		public LinkedList<Integer> sequence;
 		public Node treeS;
 		public ValuesContext v;
 		public ValuesContext values() {
 			return getRuleContext(ValuesContext.class,0);
 		}
-		public Sequence_initializationContext(ParserRuleContext parent, int invokingState) {
+		public Sequence_initializationContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
+		public Sequence_initializationContext(ParserRuleContext parent, int invokingState, LinkedList<Integer> sequence) {
 			super(parent, invokingState);
+			this.sequence = sequence;
 		}
 		@Override public int getRuleIndex() { return RULE_sequence_initialization; }
 		@Override
@@ -1525,8 +1563,8 @@ public class LissParser extends Parser {
 		}
 	}
 
-	public final Sequence_initializationContext sequence_initialization() throws RecognitionException {
-		Sequence_initializationContext _localctx = new Sequence_initializationContext(_ctx, getState());
+	public final Sequence_initializationContext sequence_initialization(LinkedList<Integer> sequence) throws RecognitionException {
+		Sequence_initializationContext _localctx = new Sequence_initializationContext(_ctx, getState(), sequence);
 		enterRule(_localctx, 34, RULE_sequence_initialization);
 		try {
 			setState(311);
@@ -1541,7 +1579,7 @@ public class LissParser extends Parser {
 				enterOuterAlt(_localctx, 2);
 				{
 				setState(308);
-				((Sequence_initializationContext)_localctx).v = values();
+				((Sequence_initializationContext)_localctx).v = values(sequence);
 				 ((Sequence_initializationContext)_localctx).treeS =  ((Sequence_initializationContext)_localctx).v.treeS; /*if(isSet){((Sequence_initializationContext)_localctx).treeS =  ((Sequence_initializationContext)_localctx).v.treeS;}*/
 				}
 				break;
@@ -1561,8 +1599,10 @@ public class LissParser extends Parser {
 	}
 
 	public static class ValuesContext extends ParserRuleContext {
+		public LinkedList<Integer> sequence;
 		public Node treeS;
 		public NumberContext n1;
+		public NumberContext number;
 		public NumberContext n2;
 		public List<NumberContext> number() {
 			return getRuleContexts(NumberContext.class);
@@ -1570,8 +1610,10 @@ public class LissParser extends Parser {
 		public NumberContext number(int i) {
 			return getRuleContext(NumberContext.class,i);
 		}
-		public ValuesContext(ParserRuleContext parent, int invokingState) {
+		public ValuesContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
+		public ValuesContext(ParserRuleContext parent, int invokingState, LinkedList<Integer> sequence) {
 			super(parent, invokingState);
+			this.sequence = sequence;
 		}
 		@Override public int getRuleIndex() { return RULE_values; }
 		@Override
@@ -1584,8 +1626,8 @@ public class LissParser extends Parser {
 		}
 	}
 
-	public final ValuesContext values() throws RecognitionException {
-		ValuesContext _localctx = new ValuesContext(_ctx, getState());
+	public final ValuesContext values(LinkedList<Integer> sequence) throws RecognitionException {
+		ValuesContext _localctx = new ValuesContext(_ctx, getState(), sequence);
 		enterRule(_localctx, 36, RULE_values);
 
 		            Node head = null;
@@ -1596,8 +1638,8 @@ public class LissParser extends Parser {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(313);
-			((ValuesContext)_localctx).n1 = number();
-			 head = new Node(new String("args"),new Node(new String((((ValuesContext)_localctx).n1!=null?_input.getText(((ValuesContext)_localctx).n1.start,((ValuesContext)_localctx).n1.stop):null)),null,null),null); m = head; /*if(isSet){head = new Node(new String("args"),new Node(new String((((ValuesContext)_localctx).n1!=null?_input.getText(((ValuesContext)_localctx).n1.start,((ValuesContext)_localctx).n1.stop):null)),null,null),null); m = head;}*/
+			((ValuesContext)_localctx).n1 = ((ValuesContext)_localctx).number = number();
+			 sequence.add(Integer.valueOf((((ValuesContext)_localctx).number!=null?_input.getText(((ValuesContext)_localctx).number.start,((ValuesContext)_localctx).number.stop):null))); head = new Node(new String("args"),new Node(new String((((ValuesContext)_localctx).n1!=null?_input.getText(((ValuesContext)_localctx).n1.start,((ValuesContext)_localctx).n1.stop):null)),null,null),null); m = head; /*if(isSet){head = new Node(new String("args"),new Node(new String((((ValuesContext)_localctx).n1!=null?_input.getText(((ValuesContext)_localctx).n1.start,((ValuesContext)_localctx).n1.stop):null)),null,null),null); m = head;}*/
 			setState(321);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
@@ -1607,8 +1649,8 @@ public class LissParser extends Parser {
 				setState(315);
 				match(T__7);
 				setState(316);
-				((ValuesContext)_localctx).n2 = number();
-				 m.setRight(new Node(new String("args"),new Node(new String((((ValuesContext)_localctx).n2!=null?_input.getText(((ValuesContext)_localctx).n2.start,((ValuesContext)_localctx).n2.stop):null)),null,null),null)); m = m.getRight(); /*if(isSet){m.setRight(new Node(new String("args"),new Node(new String((((ValuesContext)_localctx).n2!=null?_input.getText(((ValuesContext)_localctx).n2.start,((ValuesContext)_localctx).n2.stop):null)),null,null),null)); m = m.getRight();}*/
+				((ValuesContext)_localctx).n2 = ((ValuesContext)_localctx).number = number();
+				 sequence.add(Integer.valueOf((((ValuesContext)_localctx).number!=null?_input.getText(((ValuesContext)_localctx).number.start,((ValuesContext)_localctx).number.stop):null))); m.setRight(new Node(new String("args"),new Node(new String((((ValuesContext)_localctx).n2!=null?_input.getText(((ValuesContext)_localctx).n2.start,((ValuesContext)_localctx).n2.stop):null)),null,null),null)); m = m.getRight(); /*if(isSet){m.setRight(new Node(new String("args"),new Node(new String((((ValuesContext)_localctx).n2!=null?_input.getText(((ValuesContext)_localctx).n2.start,((ValuesContext)_localctx).n2.stop):null)),null,null),null)); m = m.getRight();}*/
 				}
 				}
 				setState(323);
@@ -1852,7 +1894,6 @@ public class LissParser extends Parser {
 			                        
 			setState(349);
 			((Subprogram_definitionContext)_localctx).f2 = f_body(idTH, varInfo);
-
 
 			                            //MIPS
 			                            String mipsCodeS = m.textEndFunction(_localctx.idTH.getSizeSP(level),((Subprogram_definitionContext)_localctx).f2.returnMipsCodeS);

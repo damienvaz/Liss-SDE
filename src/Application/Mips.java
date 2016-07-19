@@ -442,7 +442,7 @@ public class Mips {
         s.append(textNot(line, pos));
         //s.append("\tbeqz " + free + ", line"+line+"indexoutofbound\t# " + line + ":" + pos + "\n");
         //s.append("\tla $a3, line"+(line+1)+"\t# "+ line + ":" + pos + "\n");
-        s.append("\tli $s0, "+line+"\t# "+ line + ":" + pos + "\n");
+        s.append("\tli $s0, "+line+"\t# "+ line + ":" + pos + "\n"); // line var as second argument ??? shouldn't be limit var ?
         s.append("\tbeqz " + free + ", indexoutofboundError\t# " + line + ":" + pos + "\n");
 
         freeLastRegister();
@@ -456,7 +456,7 @@ public class Mips {
         free = nextFreeRegister();
         s.append("\tslt "+free+", "+r0+", "+r1+"\t# " + line + ":" + pos + "\n");
         // We cannot apply not instruction for the maximum limit due to [0,...,n-1] = n elements and the nth elements is the prohibited position !
-        s.append("\tli $s0, "+line+"\t# "+ line + ":" + pos + "\n");
+        s.append("\tli $s0, "+line+"\t# "+ line + ":" + pos + "\n"); // line var as second argument ??? shouldn't be limit var ?
         s.append("\tbeqz "+free+", indexoutofboundError\t# " + line + ":" + pos + "\n");
 
         s.append("\t####End of the verification####\n");
@@ -1213,7 +1213,18 @@ public class Mips {
                     }
                 }
                 break;
-            default: //We don't need to implement sequences and sets normally because they are dinamics structure (not sure)
+            case "sequence":
+                //we need to implement the code here...
+                for(String var: vars.keySet()){
+                    HashMap<String, Object> info = vars.get(var);
+
+
+                    String s = dataWord("0",(int) info.get("line"), (int) info.get("pos"));
+                    addDataInstruction(var, s);
+                }
+
+                break;
+            default: //We don't need to implement sets normally because they are dinamics structure (not sure)
                 break;
         }
 

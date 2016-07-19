@@ -31,11 +31,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.*;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
@@ -121,8 +118,6 @@ public class SyntaxDirectedEditor {
         //File f = new File("html/index.html");
         WebEngine we = wv.getEngine();
         we.setJavaScriptEnabled(true);
-//        System.out.println("HTML FILE PATH:");
-//        System.out.println(getClass().getResource("/html/index.html").toExternalForm());
         we.getLoadWorker().stateProperty().addListener(
                 new ChangeListener<State>() {
                     @Override public void changed(ObservableValue ov, State oldState, State newState) {
@@ -146,72 +141,6 @@ public class SyntaxDirectedEditor {
                 });
         //we.load("http://damienvaz.github.io/html/index.html"); //working...
         we.load(getClass().getResource("/html/index.html").toExternalForm());
-        /*we.loadContent("<!DOCTYPE html>\n" +
-                "<html>\n" +
-                "<body>\n" +
-                "\n" +
-                "<h1>My First Heading</h1>\n" +
-                "\n" +
-                "<p>My first paragraph.</p>\n" +
-                "\n" +
-                "</body>\n" +
-                "</html>");
-        */
-
-        /*if(f==null){
-            System.out.println("Nao foi encontrado o ficheiro");
-        }else{
-            System.out.println("Ficheiro foi encontrado CARALHO");
-            try {
-                String text = new String(Files.readAllBytes(Paths.get(f.toURI())), StandardCharsets.UTF_8);
-                //System.out.println(text);
-                we.loadContent(text);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }*/
-
-        /*InputStream in = getClass().getResourceAsStream("/html/index.html");
-        BufferedReader input = new BufferedReader(new InputStreamReader(in));
-        String s = new String();
-        String line = null;
-        try {
-            while((line =  input.readLine()) != null){
-                s += line;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        System.out.println(Paths.get("", "html").toAbsolutePath());
-        we.loadContent("<!DOCTYPE html>\n" +
-                "<html>\n" +
-                "<head>\n" +
-                "    <meta charset=\"utf-8\">\n" +
-                "    <title>jsTree test</title>\n" +
-                "    <!-- 2 load the theme CSS file -->\n" +
-                "    <base href=\""+Paths.get("","html").toAbsolutePath()+"/\"/>\n"+
-                "    <link rel=\"stylesheet\" href=\"dist/themes/default/style.css\" />\n" +
-                "</head>"+s);
-        */
-
-        /*try {
-            //String s = new String(Files.readAllBytes(f.toPath()));
-            //System.out.println(s);
-            we.loadContent("<!DOCTYPE html>\n"+s);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
-
-        /*if(f!=null) {
-            try {
-                String s = new String(Files.readAllBytes(f.toPath()));
-                System.out.println(s);
-                we.loadContent(s);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }*/
 
         //Add the RichText plugin to JavaFx application
         CodeArea codeArea = new CodeArea();
@@ -234,16 +163,6 @@ public class SyntaxDirectedEditor {
             jsobj.setMember("liss", l);
         });
 
-//        we.load(f.toURI().toURL().toString());
-//        we.load("/html/index.html");
-//        String htmlFile = getClass().getResource("/html/index.html").toExternalForm();
-//        InputStream htmlFile = getClass().getResourceAsStream("/html/index.html");
-//        System.out.println(">>>"+htmlFile);
-//        String theString = IOUtils.toString(htmlFile,"UTF-8");
-//        System.out.println("HTML FILE PATH:");
-//        System.out.println(getClass().getResource("/html/index.html").toExternalForm());
-        //we.load(getClass().getResource("/html/index.html").toExternalForm());
-//        we.load(htmlFile);
 
         //we.executeScript("document.newTree");
         wv.setContextMenuEnabled(false);

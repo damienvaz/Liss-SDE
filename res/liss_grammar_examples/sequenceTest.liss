@@ -1,0 +1,10 @@
+program sequenceTest{
+    declarations
+        seq1, seq2=<<>>, seq3=<<1,2>> -> sequence;
+        subprogram calculate(seq3->sequence){
+            declarations
+                seq4=<<4>>, seq5=<<>> -> sequence;
+            statements
+        }
+    statements
+}
