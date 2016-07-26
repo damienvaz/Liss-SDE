@@ -1,10 +1,13 @@
 program sequenceTest{
     declarations
         seq1, seq2=<<>>, seq3=<<1,2>> -> sequence;
+        i = 4 -> integer;
         subprogram calculate(seq3->sequence){
             declarations
                 seq4=<<4>>, seq5=<<>> -> sequence;
             statements
+                seq4 = cons(5,seq4);
         }
     statements
+        seq3 = cons(3,seq3);
 }

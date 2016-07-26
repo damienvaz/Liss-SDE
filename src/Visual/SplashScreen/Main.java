@@ -50,7 +50,7 @@ public class Main extends Application {
             e.printStackTrace();
         }
         //Check link for vesion of java: http://www.oracle.com/technetwork/java/javase/jdk7-naming-418744.html
-        if(versionOfJava==null || versionOfJava<1.8065){
+        /*if(versionOfJava==null || versionOfJava<1.8065){
             System.out.println("Version: "+versionOfJava);
 
             Alert alert = new Alert(Alert.AlertType.WARNING);
@@ -61,7 +61,7 @@ public class Main extends Application {
             Platform.exit();
             System.exit(0);
 
-        }else {
+        }else {*/
             //Get the View of the splashscreen from JavaFX Scene Builder
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("splashscreen.fxml"));
             Parent root = fxmlLoader.load();
@@ -106,7 +106,7 @@ public class Main extends Application {
                 }
             });
             pause.play();
-        }
+        //}
     }
 
     private Double getVersionOfJava(){

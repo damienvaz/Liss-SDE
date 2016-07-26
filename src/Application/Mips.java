@@ -1154,12 +1154,12 @@ public class Mips {
 
     /*************************** SEQUENCE *********************************/
 
-    public String textAddElementSequence(String nameOfSequence,int value,boolean firstElement, boolean lastElement,boolean functionState, int addressInSP, int line, int pos){
+    public String textInitSequence(String nameOfSequence,int value,boolean firstElement, boolean lastElement,boolean functionState, int addressInSP, int line, int pos){
         StringBuilder s = new StringBuilder();
         //It puts the address of the sequence to NULL (-1)
-        if(functionState==true){
+        if(functionState==true && firstElement==true){
             String register = nextFreeRegister();
-            s.append("\tlw "+register+", -" + addressInSP + "($sp)\t\t# " + line + ":" + pos + "\n");
+            s.append("\tlw "+register+", " + addressInSP + "($sp)\t\t# " + line + ":" + pos + "\n");
             s.append(loadImmediateWord("-1",line,pos));
             s.append("\tsw "+lastRegisterOccupied()[0]+", ("+register+")\t\t# " + line + ":" + pos + "\n");
             freeLastRegister();
@@ -1171,7 +1171,7 @@ public class Mips {
             if(functionState==false){
                 s.append("\tlw $s0, " + nameOfSequence + "\t\t# " + line + ":" + pos + "\n");
             }else{
-                s.append("\tlw $s0, -" + addressInSP + "($sp)\t\t# " + line + ":" + pos + "\n");
+                s.append("\tlw $s0, " + addressInSP + "($sp)\t\t# " + line + ":" + pos + "\n");
             }
         }
         s.append("\tli $s1, "+value+"\t\t# "+line+":"+pos+"\n");
@@ -1182,12 +1182,37 @@ public class Mips {
             if(functionState==false) {
                 s.append("\tsw $v0, " + nameOfSequence + "\t\t# " + line + ":" + pos + "\n");
             }else{
-                s.append("\tsw $v0, -" + addressInSP + "($sp)\t\t# " + line + ":" + pos + "\n");
+                s.append("\tsw $v0, " + addressInSP + "($sp)\t\t# " + line + ":" + pos + "\n");
             }
         }
         return s.toString();
     }
 
+    public String textCons(String sequence1, String sequence2, int line, int pos){
+        StringBuilder s = new StringBuilder();
+
+        String[] res = lastTwoRegisterOccupied();
+        s.append(sequence2);
+        s.append(textMove(res[1],"$s0", line, pos));
+        s.append(sequence1);
+        s.append(textMove(res[0], "$s1", line, pos));
+        freeLastRegister();
+        freeLastRegister();
+        s.append("\tjal cons_sequence\n");
+
+        return s.toString();
+    }
+
+    public String textStoreSequence(String nameVariable, boolean functionState, int addressVariable, int line, int pos){
+        StringBuilder s = new StringBuilder();
+        if(!functionState){
+            s.append("\tsw $v0, " + nameVariable + "\t\t# " + line + ":" + pos + "\n");
+        }else{
+            s.append("\tsw $v0, " + addressVariable + "($sp)\t\t# " + line + ":" + pos + "\n");
+        }
+
+        return s.toString();
+    }
 
     /***********************************************************************/
     public void removeLastStack(){
