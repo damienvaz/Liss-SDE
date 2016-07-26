@@ -520,13 +520,25 @@ public class LissParser extends Parser {
 			                                for(String i : varsH.keySet()){
 			                                    LinkedList<Integer> sequence = (LinkedList<Integer>) varsH.get(i).get("sequence");
 
-			                                    if(functionState == false){
+			                                    String mipsCodeS=null;
 
+			                                    if(sequence.size()!=0){
+			                                        mipsCodeS = "\t##### Initialize Sequence :"+i+"#####\n";
+			                                        for(Integer element: sequence){
+			                                            boolean firstElement = sequence.getFirst().equals(element);
+			                                            boolean lastElement = sequence.getLast().equals(element);
 
-			                                    }else{
+			                                            if(functionState == false){
+			                                                mipsCodeS += m.textAddElementSequence(i,element.intValue(),firstElement,lastElement,functionState, 0, (int)varsH.get(i).get("line"), (int)varsH.get(i).get("pos"));
+			                                            }else if(functionState==true){
+			                                                //mipsCodeS += ""+_localctx.idTH.getAddress()+"|";
 
+			                                                mipsCodeS += m.textAddElementSequence(i,element.intValue(),firstElement,lastElement,functionState, _localctx.idTH.getAddress(), (int)varsH.get(i).get("line"), (int)varsH.get(i).get("pos"));
+			                                            }
+			                                        }
+			                                        mipsCodeS += "\t#######################################\n";
 			                                    }
-
+			                                    varsH.get(i).put("mips",mipsCodeS);
 
 			                                    System.out.println("INIT SEQUENCE: "+i);
 			                                    if(sequence != null){
@@ -536,6 +548,7 @@ public class LissParser extends Parser {
 			                                    }
 			                                    System.out.println("*");
 			                                    System.out.println("END SEQUENCE");
+			                                    System.out.println("MIPSCODE SEQUENCE:\n"+mipsCodeS);
 			                                }
 			                            }
 
@@ -3187,7 +3200,8 @@ public class LissParser extends Parser {
 			                            if(_localctx.typeS!=null){
 			                                returnBoolean = true;
 			                            }
-			                            ((Function_callContext)_localctx).mipsCodeS =  m.textFunctionCall((((Function_callContext)_localctx).i!=null?_input.getText(((Function_callContext)_localctx).i.start,((Function_callContext)_localctx).i.stop):null), ((Function_callContext)_localctx).i.line, ((Function_callContext)_localctx).i.pos, returnBoolean,((Function_callContext)_localctx).s.argumentsMipsCodeS);
+
+			                            ((Function_callContext)_localctx).mipsCodeS =  m.textFunctionCall(m.getNameFunction()+(((Function_callContext)_localctx).i!=null?_input.getText(((Function_callContext)_localctx).i.start,((Function_callContext)_localctx).i.stop):null), ((Function_callContext)_localctx).i.line, ((Function_callContext)_localctx).i.pos, returnBoolean,((Function_callContext)_localctx).s.argumentsMipsCodeS);
 			                            System.out.println("FUNCTION CALL HERE : ");
 			                            System.out.println(_localctx.mipsCodeS);
 			                            System.out.println("FUNCTION CALL END : ");

@@ -1152,6 +1152,44 @@ public class Mips {
 
     /***************************************************************************************************************************************/
 
+    /*************************** SEQUENCE *********************************/
+
+    public String textAddElementSequence(String nameOfSequence,int value,boolean firstElement, boolean lastElement,boolean functionState, int addressInSP, int line, int pos){
+        StringBuilder s = new StringBuilder();
+        //It puts the address of the sequence to NULL (-1)
+        if(functionState==true){
+            String register = nextFreeRegister();
+            s.append("\tlw "+register+", -" + addressInSP + "($sp)\t\t# " + line + ":" + pos + "\n");
+            s.append(loadImmediateWord("-1",line,pos));
+            s.append("\tsw "+lastRegisterOccupied()[0]+", ("+register+")\t\t# " + line + ":" + pos + "\n");
+            freeLastRegister();
+            freeLastRegister();
+        }
+
+        //Create the sequence under and their elements also
+        if(firstElement==true){
+            if(functionState==false){
+                s.append("\tlw $s0, " + nameOfSequence + "\t\t# " + line + ":" + pos + "\n");
+            }else{
+                s.append("\tlw $s0, -" + addressInSP + "($sp)\t\t# " + line + ":" + pos + "\n");
+            }
+        }
+        s.append("\tli $s1, "+value+"\t\t# "+line+":"+pos+"\n");
+        s.append("\tjal cons_sequence\t\t# "+line+":"+pos+"\n");
+        if(lastElement==false){
+            s.append("\tmove $s0, $v0\t\t# "+line+":"+pos+"\n");
+        }else{
+            if(functionState==false) {
+                s.append("\tsw $v0, " + nameOfSequence + "\t\t# " + line + ":" + pos + "\n");
+            }else{
+                s.append("\tsw $v0, -" + addressInSP + "($sp)\t\t# " + line + ":" + pos + "\n");
+            }
+        }
+        return s.toString();
+    }
+
+
+    /***********************************************************************/
     public void removeLastStack(){
         if(this.counterJumpStack.size()>0) {
             this.counterJumpStack.pop();
@@ -1219,8 +1257,13 @@ public class Mips {
                     HashMap<String, Object> info = vars.get(var);
 
 
-                    String s = dataWord("0",(int) info.get("line"), (int) info.get("pos"));
+                    String s = dataWord("-1",(int) info.get("line"), (int) info.get("pos"));
                     addDataInstruction(var, s);
+
+                    String s1 = (String) info.get("mips");
+                    if (s1 != null) { //Testing accessArray means if the variable is an array or not! Why? Because arrays are considered Integer for arithmetic operations ! And instead of being an array, the type is integer ! Not sure if we need to fix this!
+                        addTextInstruction(s1);
+                    }
                 }
 
                 break;
@@ -1264,6 +1307,17 @@ public class Mips {
 
                 }
                  break;
+            case "sequence":
+                for(String var : vars.keySet()){
+                    HashMap<String,Object> info = vars.get(var);
+
+                    String s = (String) info.get("mips");
+                    if(s != null) {
+                        //addTextInstruction(s1);
+                        addMipsCodeFunction(getNameFunction(),s);
+                    }
+
+                }
             default:
                 break;
         }

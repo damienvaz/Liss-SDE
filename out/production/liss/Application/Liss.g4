@@ -184,13 +184,25 @@ variable_declaration [IdentifiersTable idTH]
                                 for(String i : varsH.keySet()){
                                     LinkedList<Integer> sequence = (LinkedList<Integer>) varsH.get(i).get("sequence");
 
-                                    if(functionState == false){
+                                    String mipsCodeS=null;
 
+                                    if(sequence.size()!=0){
+                                        mipsCodeS = "\t##### Initialize Sequence :"+i+"#####\n";
+                                        for(Integer element: sequence){
+                                            boolean firstElement = sequence.getFirst().equals(element);
+                                            boolean lastElement = sequence.getLast().equals(element);
 
-                                    }else{
+                                            if(functionState == false){
+                                                mipsCodeS += m.textAddElementSequence(i,element.intValue(),firstElement,lastElement,functionState, 0, (int)varsH.get(i).get("line"), (int)varsH.get(i).get("pos"));
+                                            }else if(functionState==true){
+                                                //mipsCodeS += ""+$idTH.getAddress()+"|";
 
+                                                mipsCodeS += m.textAddElementSequence(i,element.intValue(),firstElement,lastElement,functionState, $idTH.getAddress(), (int)varsH.get(i).get("line"), (int)varsH.get(i).get("pos"));
+                                            }
+                                        }
+                                        mipsCodeS += "\t#######################################\n";
                                     }
-
+                                    varsH.get(i).put("mips",mipsCodeS);
 
                                     System.out.println("INIT SEQUENCE: "+i);
                                     if(sequence != null){
@@ -200,6 +212,7 @@ variable_declaration [IdentifiersTable idTH]
                                     }
                                     System.out.println("*");
                                     System.out.println("END SEQUENCE");
+                                    System.out.println("MIPSCODE SEQUENCE:\n"+mipsCodeS);
                                 }
                             }
 
@@ -980,7 +993,8 @@ function_call [IdentifiersTable idTH, Set set]
                             if($typeS!=null){
                                 returnBoolean = true;
                             }
-                            $mipsCodeS = m.textFunctionCall($i.text, $i.line, $i.pos, returnBoolean,$s.argumentsMipsCodeS);
+
+                            $mipsCodeS = m.textFunctionCall(m.getNameFunction()+$i.text, $i.line, $i.pos, returnBoolean,$s.argumentsMipsCodeS);
                             System.out.println("FUNCTION CALL HERE : ");
                             System.out.println($mipsCodeS);
                             System.out.println("FUNCTION CALL END : ");

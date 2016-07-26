@@ -5,6 +5,7 @@ declarations
 
 	a = 4, b= 5, c= 5 -> integer;
 	d = [10,20,30,40], ev -> array size 4;
+	seq = <<1,2,3>> -> sequence;
 
 
 	subprogram calculate() -> integer
@@ -12,8 +13,10 @@ declarations
 	  declarations
 			fac = 6 -> integer;
 			res = -16 -> integer;
+			seq = <<4,5>> -> sequence;
+			d = [10,20,30,40,50] -> array size 5;
 
-		subprogram factorial(n -> integer; m -> array size 4) -> integer
+		subprogram factorial(n -> integer, m -> array size 4) -> integer
 			{
 			  declarations
 					res = 1 -> integer;
