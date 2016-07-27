@@ -1188,17 +1188,113 @@ public class Mips {
         return s.toString();
     }
 
-    public String textCons(String sequence1, String sequence2, int line, int pos){
+    public String textCons(String valueToInsert, String sequence2, int line, int pos){
         StringBuilder s = new StringBuilder();
 
         String[] res = lastTwoRegisterOccupied();
         s.append(sequence2);
         s.append(textMove(res[1],"$s0", line, pos));
-        s.append(sequence1);
+        s.append(valueToInsert);
         s.append(textMove(res[0], "$s1", line, pos));
         freeLastRegister();
         freeLastRegister();
         s.append("\tjal cons_sequence\n");
+
+        return s.toString();
+    }
+
+    public String textTail(String sequence, int line, int pos){
+        StringBuilder s = new StringBuilder();
+
+        String[] res =lastRegisterOccupied();
+        s.append(sequence);
+        s.append(textMove(res[0], "$s0", line, pos));
+        freeLastRegister();
+        s.append("\tjal tail_sequence\n");
+
+        return s.toString();
+    }
+
+    public String textHead(String sequence, int line, int pos){
+        StringBuilder s = new StringBuilder();
+
+        String[] res =lastRegisterOccupied();
+        s.append(sequence);
+        s.append(textMove(res[0], "$s0", line, pos));
+        freeLastRegister();
+        s.append("\tjal head_sequence\n");
+        String register = nextFreeRegister();
+        s.append(textMove("$v0", register, line, pos));
+
+        return s.toString();
+    }
+
+    public String textDelete(String valueToDelete,String sequence, int line, int pos){
+        StringBuilder s = new StringBuilder();
+
+        String[] res = lastTwoRegisterOccupied();
+        s.append(sequence);
+        s.append(textMove(res[1],"$s0", line, pos));
+        s.append(valueToDelete);
+        s.append(textMove(res[0], "$s1", line, pos));
+        freeLastRegister();
+        freeLastRegister();
+        s.append("\tjal delete_sequence\n");
+
+        return s.toString();
+    }
+
+    public String textIsEmpty(String sequence, int line, int pos){
+        StringBuilder s = new StringBuilder();
+
+        String[] res = lastRegisterOccupied();
+        s.append(sequence);
+        s.append(textMove(res[0],"$s0", line, pos));
+        freeLastRegister();
+        s.append("\tjal is_empty_sequence\n");
+        String register = nextFreeRegister();
+        s.append(textMove("$v0", register, line, pos));
+
+        return s.toString();
+    }
+
+    public String textLength(String sequence, int line, int pos){
+        StringBuilder s = new StringBuilder();
+
+        String[] res = lastRegisterOccupied();
+        s.append(sequence);
+        s.append(textMove(res[0],"$s0", line, pos));
+        freeLastRegister();
+        s.append("\tjal length_sequence\n");
+        String register = nextFreeRegister();
+        s.append(textMove("$v0", register, line, pos));
+
+        return s.toString();
+    }
+
+    public String textMember(String integerToSearchMipsCodeS, String nameOfSequence, Integer levelOfSequenceInIdentifierTable, int positionOfSequenceInSF, int line, int pos){
+        StringBuilder s = new StringBuilder();
+
+        s.append(integerToSearchMipsCodeS);
+        String[] register = lastRegisterOccupied();
+        s.append(textMove(register[0],"$s1",line,pos));
+
+        if(levelOfSequenceInIdentifierTable.equals(0)){
+            s.append(loadWord(nameOfSequence,line,pos));
+            register = lastRegisterOccupied();
+            s.append(textMove(register[0],"$s0",line,pos));
+        }else{
+            s.append(loadWordSP(positionOfSequenceInSF));
+            register = lastRegisterOccupied();
+            s.append(textMove(register[0],"$s0",line,pos));
+        }
+        freeLastRegister();
+        freeLastRegister();
+
+        s.append("\tjal member_sequence\n");
+        String res = nextFreeRegister();
+        s.append(textMove("$v0",res,line,pos));
+
 
         return s.toString();
     }

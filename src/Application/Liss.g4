@@ -164,9 +164,11 @@ variable_declaration [IdentifiersTable idTH]
                                     Type typeSpace = (Type) $idTH.getInfoIdentifiersTable("boolean");
 
                                     for(String i : varsH.keySet()){
-                                        String mipsCodeS = varsH.get(i).get("mips") + m.storeArgumentsSP(address);
-                                        varsH.get(i).put("mips",mipsCodeS);
-                                        address += typeSpace.getSpace();
+                                        if(varsH.get(i).get("mips")!=null){
+                                            String mipsCodeS = varsH.get(i).get("mips") + m.storeArgumentsSP(address);
+                                            varsH.get(i).put("mips",mipsCodeS);
+                                            address += typeSpace.getSpace();
+                                        }
                                     }
                                 }
                             }else if($type.typeS == "integer"){
@@ -175,9 +177,11 @@ variable_declaration [IdentifiersTable idTH]
                                     Type typeSpace = (Type) $idTH.getInfoIdentifiersTable("integer");
 
                                     for(String i : varsH.keySet()){
-                                        String mipsCodeS = varsH.get(i).get("mips") + m.storeArgumentsSP(address);
-                                        varsH.get(i).put("mips",mipsCodeS);
-                                        address += typeSpace.getSpace();
+                                        if(varsH.get(i).get("mips")!=null){
+                                            String mipsCodeS = varsH.get(i).get("mips") + m.storeArgumentsSP(address);
+                                            varsH.get(i).put("mips",mipsCodeS);
+                                            address += typeSpace.getSpace();
+                                        }
                                     }
                                 }
                             }else if($type.typeS == "sequence"){
@@ -1525,13 +1529,13 @@ factor [IdentifiersTable idTH,Set set] //vai ser preciso ver as pre-condiçoes d
 
 specialFunctions [IdentifiersTable idTH, Set set]
                  returns [String typeS, int line, int pos, Node treeS, String mipsCodeS]
-                 : t=tail[idTH, set]     {$typeS = $tail.typeS; $line = $tail.line; $pos = $tail.pos; $treeS = $t.treeS; /*if(isSet && $t.treeS!=null && $set!=null){$treeS = $t.treeS;}*/}
-                 | h=head[idTH, set]     {$typeS = $head.typeS; $line = $head.line; $pos = $head.pos; $treeS = $h.treeS; /*if(isSet && $h.treeS!=null && $set!=null){$treeS = $h.treeS;}*/}
+                 : t=tail[idTH, set]     {$typeS = $tail.typeS; $line = $tail.line; $pos = $tail.pos; $treeS = $t.treeS; $mipsCodeS = $t.mipsCodeS;/*if(isSet && $t.treeS!=null && $set!=null){$treeS = $t.treeS;}*/}
+                 | h=head[idTH, set]     {$typeS = $head.typeS; $line = $head.line; $pos = $head.pos; $treeS = $h.treeS; $mipsCodeS = $h.mipsCodeS;/*if(isSet && $h.treeS!=null && $set!=null){$treeS = $h.treeS;}*/}
                  | c=cons[idTH, set]     {$typeS = $cons.typeS; $line = $cons.line; $pos = $cons.pos; $treeS = $c.treeS; $mipsCodeS = $c.mipsCodeS;/*if(isSet && $c.treeS!=null && $set!=null){$treeS = $c.treeS;}*/}
-                 | m=member[idTH, set]   {$typeS = $member.typeS; $line = $member.line; $pos = $member.pos; $treeS = $m.treeS; /*if(isSet && $m.treeS!=null && $set!=null){$treeS = $m.treeS;}*/}
-                 | i=is_empty[idTH, set] {$typeS = $is_empty.typeS; $line = $is_empty.line; $pos = $is_empty.pos; $treeS = $i.treeS; /*if(isSet && $i.treeS!=null && $set!=null){$treeS = $i.treeS;}*/}
-                 | l=length[idTH, set]   {$typeS = $length.typeS; $line = $length.line; $pos = $length.pos; $treeS = $l.treeS; /*if(isSet && $l.treeS!=null && $set!=null){$treeS = $l.treeS;}*/}
-                 | d=delete[idTH, set]   {$typeS = $delete.typeS; $line = $delete.line; $pos = $delete.pos; $treeS = $d.treeS; /*if(isSet && $d.treeS!=null && $set!=null){$treeS = $d.treeS;}*/}
+                 | m=member[idTH, set]   {$typeS = $member.typeS; $line = $member.line; $pos = $member.pos; $treeS = $m.treeS; $mipsCodeS = $m.mipsCodeS;/*if(isSet && $m.treeS!=null && $set!=null){$treeS = $m.treeS;}*/}
+                 | i=is_empty[idTH, set] {$typeS = $is_empty.typeS; $line = $is_empty.line; $pos = $is_empty.pos; $treeS = $i.treeS; $mipsCodeS = $i.mipsCodeS; /*if(isSet && $i.treeS!=null && $set!=null){$treeS = $i.treeS;}*/}
+                 | l=length[idTH, set]   {$typeS = $length.typeS; $line = $length.line; $pos = $length.pos; $treeS = $l.treeS; $mipsCodeS = $l.mipsCodeS;/*if(isSet && $l.treeS!=null && $set!=null){$treeS = $l.treeS;}*/}
+                 | d=delete[idTH, set]   {$typeS = $delete.typeS; $line = $delete.line; $pos = $delete.pos; $treeS = $d.treeS; $mipsCodeS = $d.mipsCodeS;/*if(isSet && $d.treeS!=null && $set!=null){$treeS = $d.treeS;}*/}
                  ;
 
 /* ****** add_op, mul_op, rel_op ****** */
@@ -2049,7 +2053,7 @@ succ_pred
 /* ****** SequenceOper ****** */
 
 tail [IdentifiersTable idTH, Set set]
-     returns [String typeS, int line, int pos, Node treeS]
+     returns [String typeS, int line, int pos, Node treeS, String mipsCodeS]
      @init{
 
      }
@@ -2060,6 +2064,10 @@ tail [IdentifiersTable idTH, Set set]
         $pos = $t.pos;
         if(($e.typeS != null) && $e.typeS.equals("sequence")){
             $typeS = $e.typeS;
+
+            if($e.mipsCodeS!=null){
+                $mipsCodeS = m.textTail($e.mipsCodeS, $t.line, $t.pos);
+            }
         }else{
             e.addMessage($e.line,$e.pos,ErrorMessage.semantic($e.text,ErrorMessage.type($e.typeS,"sequence")));
         }
@@ -2077,7 +2085,7 @@ tail [IdentifiersTable idTH, Set set]
      ;
 
 head [IdentifiersTable idTH, Set set]
-     returns [String typeS, int line, int pos, Node treeS]
+     returns [String typeS, int line, int pos, Node treeS, String mipsCodeS]
      @init{
 
      }
@@ -2087,7 +2095,10 @@ head [IdentifiersTable idTH, Set set]
         $line = $h.line;
         $pos = $h.pos;
         if(($e.typeS != null) && $e.typeS.equals("sequence")){
-            $typeS = "integer"; 
+            $typeS = "integer";
+            if($e.mipsCodeS!=null){
+                $mipsCodeS = m.textHead($e.mipsCodeS, $h.line, $h.pos);
+            }
         }else{ 
             e.addMessage($e.line,$e.pos,ErrorMessage.semantic($e.text,ErrorMessage.type($e.typeS,"sequence")));
         }
@@ -2114,7 +2125,6 @@ cons [IdentifiersTable idTH, Set set]
         {
             $line = $c.line;
             $pos = $c.pos;
-            $typeS = "sequence";
             if(($e1.typeS != null) && $e1.typeS.equals("integer") ){
                 if(($e2.typeS != null) && $e2.typeS.equals("sequence")){
                     $typeS = "sequence";
@@ -2142,7 +2152,7 @@ cons [IdentifiersTable idTH, Set set]
      ;
 
 delete [IdentifiersTable idTH, Set set]
-       returns [String typeS, int line, int pos, Node treeS]
+       returns [String typeS, int line, int pos, Node treeS, String mipsCodeS]
        @init{
 
        }
@@ -2154,6 +2164,10 @@ delete [IdentifiersTable idTH, Set set]
             if(($e1.typeS != null) && $e1.typeS.equals("integer") ){
                 if(($e2.typeS != null) && $e2.typeS.equals("sequence")){
                     $typeS = "sequence";
+
+                    if($e1.mipsCodeS!=null && $e2.mipsCodeS!=null){
+                        $mipsCodeS = m.textDelete($e1.mipsCodeS, $e2.mipsCodeS, $d.line, $d.pos);
+                    }
                 }else{
                     e.addMessage($e2.line,$e2.pos,ErrorMessage.semantic($e2.text,ErrorMessage.type($e2.typeS,"sequence")));
                 }
@@ -2208,7 +2222,7 @@ cat_statement [IdentifiersTable idTH]
               ;
 
 is_empty [IdentifiersTable idTH, Set set]
-         returns [String typeS, int line, int pos, Node treeS]
+         returns [String typeS, int line, int pos, Node treeS, String mipsCodeS]
          @init{
 
          }
@@ -2219,6 +2233,9 @@ is_empty [IdentifiersTable idTH, Set set]
             $pos = $i.pos;
             if(($e1.typeS != null) && $e1.typeS.equals("sequence")){
                 $typeS = "boolean";
+                if($e1.mipsCodeS!=null){
+                    $mipsCodeS = m.textIsEmpty($e1.mipsCodeS, $i.line, $i.pos);
+                }
             }else{
                 e.addMessage($e1.line,$e1.pos,ErrorMessage.semantic($e1.text,ErrorMessage.type($e1.typeS,"sequence")));
             }
@@ -2235,7 +2252,7 @@ is_empty [IdentifiersTable idTH, Set set]
          ;
 
 length [IdentifiersTable idTH, Set set]
-       returns [String typeS, int line, int pos, Node treeS]
+       returns [String typeS, int line, int pos, Node treeS, String mipsCodeS]
        @init{
 
        }
@@ -2246,6 +2263,10 @@ length [IdentifiersTable idTH, Set set]
           $pos = $l.pos;
           if(($e1.typeS != null) && $e1.typeS.equals("sequence")){
               $typeS = "integer";
+              if($e1.mipsCodeS!=null){
+                $mipsCodeS = m.textLength($e1.mipsCodeS, $l.line, $l.pos);
+              }
+
           }else{
               e.addMessage($e1.line,$e1.pos,ErrorMessage.semantic($e1.text,ErrorMessage.type($e1.typeS,"sequence")));
           }
@@ -2263,7 +2284,7 @@ length [IdentifiersTable idTH, Set set]
 /* ****** set_oper ****** */
 
 member [IdentifiersTable idTH, Set set]
-       returns [String typeS, int line, int pos, Node treeS]
+       returns [String typeS, int line, int pos, Node treeS, String mipsCodeS]
        @init{
 
        }
@@ -2283,6 +2304,14 @@ member [IdentifiersTable idTH, Set set]
                 if((type != null) && type.equals("sequence")){
                     if(($e.typeS != null) && $e.typeS.equals("integer")){
                         $typeS = "boolean";
+                        if($e.mipsCodeS!=null){
+                            Integer levelIdentifier = $idTH.getInfoIdentifiersTable($i.text).getLevel();
+                            if(levelIdentifier.equals(0)){
+                                $mipsCodeS = m.textMember($e.mipsCodeS, $i.text, levelIdentifier, $idTH.getValueSP(level,$i.text), $im.line, $im.pos);
+                            }else{
+                                $mipsCodeS = m.textMember($e.mipsCodeS, $i.text, levelIdentifier, $idTH.getValueSP(level,$i.text), $im.line, $im.pos);
+                            }
+                        }
                     }else{
                         e.addMessage($e.line,$e.pos,ErrorMessage.semantic($e.text,ErrorMessage.type($e.typeS,"integer")));
                     }
