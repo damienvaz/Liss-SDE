@@ -16,6 +16,8 @@ program sequenceTest{
                 t = isEmpty(seq5);
                 i = length(seq4);
                 t = isMember(2+3,seq4);
+                copy(seq2,seq5);
+                cat(seq1,seq4);
         }
     statements
         seq3 = cons(3,seq3);
@@ -25,4 +27,6 @@ program sequenceTest{
         t = isEmpty(seq3);
         i = length(seq3);
         t = isMember(1+2,seq3);
+        copy(seq3,seq1);
+        cat(seq2,seq3);
 }

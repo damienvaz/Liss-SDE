@@ -241,7 +241,8 @@ public class Mips {
         s.append("\tline: .asciiz \"line: \" \n");
         s.append("\tnewline: .asciiz \"\\n\" \n");
         s.append("\tmessagereadvalue: .asciiz \"Enter integer value:\\n\" \n");
-
+        s.append("\talert_tail: .asciiz \"Tail function - Sequence length is inferior of 1.\"\n");
+        s.append("\talert_head: .asciiz \"Head function - Sequence length is inferior of 1.\"\n");
         return s.toString();
     }
 
@@ -1299,6 +1300,54 @@ public class Mips {
         return s.toString();
     }
 
+    public String textCopy(String nameOfSequence1, Integer levelOfSequence1InIdTH, int positionInSFOfSequence1,String nameOfSequence2, Integer levelOfSequence2InIdTH, int positionInSFOfSequence2, int line, int pos){
+        StringBuilder s = new StringBuilder();
+
+        if(levelOfSequence1InIdTH.equals(0)){
+            s.append("\tlw $s0, "+nameOfSequence1+"\t\t# " + line + ":" + pos + "\n");
+        }else{
+            s.append("\tlw $s0, "+positionInSFOfSequence1+"($sp)\t\t# " + line + ":" + pos + "\n");
+        }
+        s.append("\tli $s1, -1\t\t# " + line + ":" + pos +"\n");
+        s.append("\tjal copy_sequence\n");
+
+        if(levelOfSequence2InIdTH.equals(0)){
+            s.append("\tsw $v0, "+nameOfSequence2+"\t\t# " + line + ":" + pos + "\n");
+        }else{
+            s.append("\tsw $v0, "+positionInSFOfSequence2+"($sp)\t\t# " + line + ":" + pos + "\n");
+        }
+        s.append("\tli $v0, 0\n");
+
+        return s.toString();
+    }
+
+    public String textCat(String nameOfSequence1, Integer levelOfSequence1InIdTH, int positionInSFOfSequence1,String nameOfSequence2, Integer levelOfSequence2InIdTH, int positionInSFOfSequence2, int line, int pos){
+        StringBuilder s = new StringBuilder();
+
+        if(levelOfSequence1InIdTH.equals(0)){
+            s.append("\tlw $s0, "+nameOfSequence1+"\t\t# " + line + ":" + pos + "\n");
+        }else{
+            s.append("\tlw $s0, "+positionInSFOfSequence1+"($sp)\t\t# " + line + ":" + pos + "\n");
+        }
+
+        if(levelOfSequence2InIdTH.equals(0)){
+            s.append("\tlw $s1, "+nameOfSequence2+"\t\t# " + line + ":" + pos + "\n");
+        }else{
+            s.append("\tlw $s1, "+positionInSFOfSequence2+"($sp)\t\t# " + line + ":" + pos + "\n");
+        }
+
+        s.append("\tjal cat_sequence\n");
+
+        if(levelOfSequence1InIdTH.equals(0)){
+            s.append("\tsw $v0, "+nameOfSequence1+"\t\t# " + line + ":" + pos + "\n");
+        }else{
+            s.append("\tsw $v0, "+positionInSFOfSequence1+"($sp)\t\t# " + line + ":" + pos + "\n");
+        }
+        s.append("\tli $v0, 0\n");
+
+        return s.toString();
+    }
+
     public String textStoreSequence(String nameVariable, boolean functionState, int addressVariable, int line, int pos){
         StringBuilder s = new StringBuilder();
         if(!functionState){
@@ -1306,6 +1355,49 @@ public class Mips {
         }else{
             s.append("\tsw $v0, " + addressVariable + "($sp)\t\t# " + line + ":" + pos + "\n");
         }
+
+        return s.toString();
+    }
+
+    public String textConsFunction(){
+        StringBuilder s = new StringBuilder();
+
+        s.append("\taddi $sp, $sp, -12\n"); //#allocate space to the stack
+        s.append("\tsw $s0, 0($sp)\n");    //#store the address of the sequence to the stack
+        s.append("\tsw $s1, 4($sp)\n");    //#store the value to insert in the sequence
+        s.append("\tsw $ra, 8($sp)\n");    //#store the return address to the stack
+        s.append("\tj cons_algorithm\n");
+        s.append("  cons_algorithm:\n");
+        s.append("\tlw $t0, 0($sp)\n");   //# load the address of the element pointed in the sequence
+        s.append("\tbeq $t0, -1, add_element\n"); //#test if it is NULL (-1)
+        s.append("\tlw $s0, 0($t0)\n"); //# load the address of the next element
+        s.append("\tlw $s1, 4($sp)\n"); //# load the value to insert
+        s.append("\tjal cons_sequence\n");
+        s.append("\tlw $t0, 0($sp)\n"); //#load the address of the element pointed
+        s.append("\tsw $v0, 0($t0)\n"); //# store the address of the res function (cons_sequence) to the next pointer of the element pointed
+        s.append("\tlw $v0, 0($sp)\n"); //# load the address of the actual element pointed
+        s.append("\tlw $ra, 8($sp)\n");   //#load the return address from the stack position
+        s.append("\taddi $sp, $sp, 12\n"); //#remove the space from the stack
+        s.append("\tjr $ra\n");
+        s.append("  add_element:\n");
+        s.append("\tli $v0, 9\n"); //#service to allocate into the heap
+        s.append("\tli $a0, 8\n");  //#number of bytes to allocate in the heap
+        s.append("\tsyscall\n");
+        s.append("\tli $t0, -1\n");       //#put the next pointer of the element to -1
+        s.append("\tsw $t0, 0($v0)\n");   //#store the pointer to the heap
+        s.append("\tlw $t0, 4($sp)\n");   //# load the value to insert in the newest element created
+        s.append("\tsw $t0, 4($v0)\n");   //#store the value of the element to the heap!
+        s.append("\tlw $ra, 8($sp)\n");   //#load the return address from the stack position
+        s.append("\taddi $sp, $sp, 12\n"); //#remove the space from the stack
+        s.append("\tjr $ra\n");
+
+        return s.toString();
+    }
+
+    public String textTailFunction(){
+        StringBuilder s = new StringBuilder();
+
+
 
         return s.toString();
     }
@@ -1326,6 +1418,8 @@ public class Mips {
         addLineInstruction("write",textWriteMessage(true));
         addLineInstruction("writeln",textWriteMessage(false));
         addLineInstruction("read",textReadFunction());
+        addLineInstruction("cons_sequence",textConsFunction());
+        addLineInstruction("tail_sequence",textTailFunction());
     }
 
     public void addDataInstructions(HashMap<String, HashMap<String,Object>> vars, String type){

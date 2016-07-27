@@ -2189,35 +2189,63 @@ delete [IdentifiersTable idTH, Set set]
 copy_statement [IdentifiersTable idTH]
                returns [String typeS, int line, int pos]
                // copy_statement : seq x seq -> void
-               : 'copy' '(' i1=identifier ',' i2=identifier ')'
+               : c='copy' '(' i1=identifier ',' i2=identifier ')'
                {
                   Var v1 = (Var) $idTH.getInfoIdentifiersTable($i1.text);
                   Var v2 = (Var) $idTH.getInfoIdentifiersTable($i2.text);
 
-                  if( !( v1 != null && v1.getInfoType().equals("sequence") && v1.getCategory().equals("VAR") ) ){
+                  if(v1 != null && v1.getInfoType().equals("sequence") && v1.getCategory().equals("VAR")){
+                      if(v2 != null && v2.getInfoType().equals("sequence") && v2.getCategory().equals("VAR")){
+                          Integer levelIdentifier1 = $idTH.getInfoIdentifiersTable($i1.text).getLevel();
+                          Integer levelIdentifier2 = $idTH.getInfoIdentifiersTable($i2.text).getLevel();
+
+                          String mipsCodeS = "";
+
+                          mipsCodeS = m.textCopy($i1.text, levelIdentifier1, $idTH.getValueSP(level,$i1.text), $i2.text, levelIdentifier2, $idTH.getValueSP(level,$i2.text), $c.line, $c.pos );
+
+                          if(functionState == false){
+                              m.addTextInstruction(mipsCodeS);
+                          }else if(functionState == true){
+                              m.addMipsCodeFunction(m.getNameFunction(),mipsCodeS);
+                          }
+                      }else{
+                        e.addMessage($i2.line,$i2.pos,ErrorMessage.semantic($i2.text,ErrorMessage.type("boolean | sequence | integer","sequence")));
+                      }
+                  }else{
                     e.addMessage($i1.line,$i2.pos,ErrorMessage.semantic($i1.text,ErrorMessage.type("boolean | sequence | integer","sequence")));
                   }
-                  if( !( v2 != null && v2.getInfoType().equals("sequence") && v2.getCategory().equals("VAR") ) ){
-                    e.addMessage($i2.line,$i2.pos,ErrorMessage.semantic($i2.text,ErrorMessage.type("boolean | sequence | integer","sequence")));
-                  }
+
                }//ambos identificadores tem que existir, categoria VAR e Sequence
                ;
 
 cat_statement [IdentifiersTable idTH]
               returns [String typeS, int line, int pos]
               //cat_statement : seq x seq -> void
-              : 'cat' '(' i1=identifier ',' i2=identifier ')'
+              : c='cat' '(' i1=identifier ',' i2=identifier ')'
               {
                 Var v1 = (Var) $idTH.getInfoIdentifiersTable($i1.text);
                 Var v2 = (Var) $idTH.getInfoIdentifiersTable($i2.text);
 
-                if( !( v1 != null && v1.getInfoType().equals("sequence") && v1.getCategory().equals("VAR") ) ){
+                if(v1 != null && v1.getInfoType().equals("sequence") && v1.getCategory().equals("VAR")){
+                    if(v2 != null && v2.getInfoType().equals("sequence") && v2.getCategory().equals("VAR")){
+                        Integer levelIdentifier1 = $idTH.getInfoIdentifiersTable($i1.text).getLevel();
+                        Integer levelIdentifier2 = $idTH.getInfoIdentifiersTable($i2.text).getLevel();
+
+                        String mipsCodeS = "";
+
+                        mipsCodeS = m.textCat($i1.text, levelIdentifier1, $idTH.getValueSP(level,$i1.text), $i2.text, levelIdentifier2, $idTH.getValueSP(level,$i2.text), $c.line, $c.pos );
+
+                        if(functionState == false){
+                            m.addTextInstruction(mipsCodeS);
+                        }else if(functionState == true){
+                            m.addMipsCodeFunction(m.getNameFunction(),mipsCodeS);
+                        }
+                    }else{
+                        e.addMessage($i2.line,$i2.pos,ErrorMessage.semantic($i2.text,ErrorMessage.type("boolean | sequence | integer","sequence")));
+                    }
+                }else{
                     e.addMessage($i1.line,$i2.pos,ErrorMessage.semantic($i1.text,ErrorMessage.type("boolean | sequence | integer","sequence")));
                 }
-                if( !( v2 != null && v2.getInfoType().equals("sequence") && v2.getCategory().equals("VAR") ) ){
-                    e.addMessage($i2.line,$i2.pos,ErrorMessage.semantic($i2.text,ErrorMessage.type("boolean | sequence | integer","sequence")));
-                }
-
               }//ambos identificadores tem que existir, categoria VAR e Sequence
               ;
 
@@ -2306,11 +2334,7 @@ member [IdentifiersTable idTH, Set set]
                         $typeS = "boolean";
                         if($e.mipsCodeS!=null){
                             Integer levelIdentifier = $idTH.getInfoIdentifiersTable($i.text).getLevel();
-                            if(levelIdentifier.equals(0)){
-                                $mipsCodeS = m.textMember($e.mipsCodeS, $i.text, levelIdentifier, $idTH.getValueSP(level,$i.text), $im.line, $im.pos);
-                            }else{
-                                $mipsCodeS = m.textMember($e.mipsCodeS, $i.text, levelIdentifier, $idTH.getValueSP(level,$i.text), $im.line, $im.pos);
-                            }
+                            $mipsCodeS = m.textMember($e.mipsCodeS, $i.text, levelIdentifier, $idTH.getValueSP(level,$i.text), $im.line, $im.pos);
                         }
                     }else{
                         e.addMessage($e.line,$e.pos,ErrorMessage.semantic($e.text,ErrorMessage.type($e.typeS,"integer")));

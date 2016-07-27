@@ -6543,6 +6543,7 @@ public class LissParser extends Parser {
 		public String typeS;
 		public int line;
 		public int pos;
+		public Token c;
 		public IdentifierContext i1;
 		public IdentifierContext i2;
 		public List<IdentifierContext> identifier() {
@@ -6574,7 +6575,7 @@ public class LissParser extends Parser {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(793);
-			match(T__61);
+			((Copy_statementContext)_localctx).c = match(T__61);
 			setState(794);
 			match(T__25);
 			setState(795);
@@ -6589,12 +6590,27 @@ public class LissParser extends Parser {
 			                  Var v1 = (Var) _localctx.idTH.getInfoIdentifiersTable((((Copy_statementContext)_localctx).i1!=null?_input.getText(((Copy_statementContext)_localctx).i1.start,((Copy_statementContext)_localctx).i1.stop):null));
 			                  Var v2 = (Var) _localctx.idTH.getInfoIdentifiersTable((((Copy_statementContext)_localctx).i2!=null?_input.getText(((Copy_statementContext)_localctx).i2.start,((Copy_statementContext)_localctx).i2.stop):null));
 
-			                  if( !( v1 != null && v1.getInfoType().equals("sequence") && v1.getCategory().equals("VAR") ) ){
+			                  if(v1 != null && v1.getInfoType().equals("sequence") && v1.getCategory().equals("VAR")){
+			                      if(v2 != null && v2.getInfoType().equals("sequence") && v2.getCategory().equals("VAR")){
+			                          Integer levelIdentifier1 = _localctx.idTH.getInfoIdentifiersTable((((Copy_statementContext)_localctx).i1!=null?_input.getText(((Copy_statementContext)_localctx).i1.start,((Copy_statementContext)_localctx).i1.stop):null)).getLevel();
+			                          Integer levelIdentifier2 = _localctx.idTH.getInfoIdentifiersTable((((Copy_statementContext)_localctx).i2!=null?_input.getText(((Copy_statementContext)_localctx).i2.start,((Copy_statementContext)_localctx).i2.stop):null)).getLevel();
+
+			                          String mipsCodeS = "";
+
+			                          mipsCodeS = m.textCopy((((Copy_statementContext)_localctx).i1!=null?_input.getText(((Copy_statementContext)_localctx).i1.start,((Copy_statementContext)_localctx).i1.stop):null), levelIdentifier1, _localctx.idTH.getValueSP(level,(((Copy_statementContext)_localctx).i1!=null?_input.getText(((Copy_statementContext)_localctx).i1.start,((Copy_statementContext)_localctx).i1.stop):null)), (((Copy_statementContext)_localctx).i2!=null?_input.getText(((Copy_statementContext)_localctx).i2.start,((Copy_statementContext)_localctx).i2.stop):null), levelIdentifier2, _localctx.idTH.getValueSP(level,(((Copy_statementContext)_localctx).i2!=null?_input.getText(((Copy_statementContext)_localctx).i2.start,((Copy_statementContext)_localctx).i2.stop):null)), (((Copy_statementContext)_localctx).c!=null?((Copy_statementContext)_localctx).c.getLine():0), (((Copy_statementContext)_localctx).c!=null?((Copy_statementContext)_localctx).c.getCharPositionInLine():0) );
+
+			                          if(functionState == false){
+			                              m.addTextInstruction(mipsCodeS);
+			                          }else if(functionState == true){
+			                              m.addMipsCodeFunction(m.getNameFunction(),mipsCodeS);
+			                          }
+			                      }else{
+			                        e.addMessage(((Copy_statementContext)_localctx).i2.line,((Copy_statementContext)_localctx).i2.pos,ErrorMessage.semantic((((Copy_statementContext)_localctx).i2!=null?_input.getText(((Copy_statementContext)_localctx).i2.start,((Copy_statementContext)_localctx).i2.stop):null),ErrorMessage.type("boolean | sequence | integer","sequence")));
+			                      }
+			                  }else{
 			                    e.addMessage(((Copy_statementContext)_localctx).i1.line,((Copy_statementContext)_localctx).i2.pos,ErrorMessage.semantic((((Copy_statementContext)_localctx).i1!=null?_input.getText(((Copy_statementContext)_localctx).i1.start,((Copy_statementContext)_localctx).i1.stop):null),ErrorMessage.type("boolean | sequence | integer","sequence")));
 			                  }
-			                  if( !( v2 != null && v2.getInfoType().equals("sequence") && v2.getCategory().equals("VAR") ) ){
-			                    e.addMessage(((Copy_statementContext)_localctx).i2.line,((Copy_statementContext)_localctx).i2.pos,ErrorMessage.semantic((((Copy_statementContext)_localctx).i2!=null?_input.getText(((Copy_statementContext)_localctx).i2.start,((Copy_statementContext)_localctx).i2.stop):null),ErrorMessage.type("boolean | sequence | integer","sequence")));
-			                  }
+
 			               
 			}
 		}
@@ -6614,6 +6630,7 @@ public class LissParser extends Parser {
 		public String typeS;
 		public int line;
 		public int pos;
+		public Token c;
 		public IdentifierContext i1;
 		public IdentifierContext i2;
 		public List<IdentifierContext> identifier() {
@@ -6645,7 +6662,7 @@ public class LissParser extends Parser {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(801);
-			match(T__62);
+			((Cat_statementContext)_localctx).c = match(T__62);
 			setState(802);
 			match(T__25);
 			setState(803);
@@ -6660,13 +6677,26 @@ public class LissParser extends Parser {
 			                Var v1 = (Var) _localctx.idTH.getInfoIdentifiersTable((((Cat_statementContext)_localctx).i1!=null?_input.getText(((Cat_statementContext)_localctx).i1.start,((Cat_statementContext)_localctx).i1.stop):null));
 			                Var v2 = (Var) _localctx.idTH.getInfoIdentifiersTable((((Cat_statementContext)_localctx).i2!=null?_input.getText(((Cat_statementContext)_localctx).i2.start,((Cat_statementContext)_localctx).i2.stop):null));
 
-			                if( !( v1 != null && v1.getInfoType().equals("sequence") && v1.getCategory().equals("VAR") ) ){
+			                if(v1 != null && v1.getInfoType().equals("sequence") && v1.getCategory().equals("VAR")){
+			                    if(v2 != null && v2.getInfoType().equals("sequence") && v2.getCategory().equals("VAR")){
+			                        Integer levelIdentifier1 = _localctx.idTH.getInfoIdentifiersTable((((Cat_statementContext)_localctx).i1!=null?_input.getText(((Cat_statementContext)_localctx).i1.start,((Cat_statementContext)_localctx).i1.stop):null)).getLevel();
+			                        Integer levelIdentifier2 = _localctx.idTH.getInfoIdentifiersTable((((Cat_statementContext)_localctx).i2!=null?_input.getText(((Cat_statementContext)_localctx).i2.start,((Cat_statementContext)_localctx).i2.stop):null)).getLevel();
+
+			                        String mipsCodeS = "";
+
+			                        mipsCodeS = m.textCat((((Cat_statementContext)_localctx).i1!=null?_input.getText(((Cat_statementContext)_localctx).i1.start,((Cat_statementContext)_localctx).i1.stop):null), levelIdentifier1, _localctx.idTH.getValueSP(level,(((Cat_statementContext)_localctx).i1!=null?_input.getText(((Cat_statementContext)_localctx).i1.start,((Cat_statementContext)_localctx).i1.stop):null)), (((Cat_statementContext)_localctx).i2!=null?_input.getText(((Cat_statementContext)_localctx).i2.start,((Cat_statementContext)_localctx).i2.stop):null), levelIdentifier2, _localctx.idTH.getValueSP(level,(((Cat_statementContext)_localctx).i2!=null?_input.getText(((Cat_statementContext)_localctx).i2.start,((Cat_statementContext)_localctx).i2.stop):null)), (((Cat_statementContext)_localctx).c!=null?((Cat_statementContext)_localctx).c.getLine():0), (((Cat_statementContext)_localctx).c!=null?((Cat_statementContext)_localctx).c.getCharPositionInLine():0) );
+
+			                        if(functionState == false){
+			                            m.addTextInstruction(mipsCodeS);
+			                        }else if(functionState == true){
+			                            m.addMipsCodeFunction(m.getNameFunction(),mipsCodeS);
+			                        }
+			                    }else{
+			                        e.addMessage(((Cat_statementContext)_localctx).i2.line,((Cat_statementContext)_localctx).i2.pos,ErrorMessage.semantic((((Cat_statementContext)_localctx).i2!=null?_input.getText(((Cat_statementContext)_localctx).i2.start,((Cat_statementContext)_localctx).i2.stop):null),ErrorMessage.type("boolean | sequence | integer","sequence")));
+			                    }
+			                }else{
 			                    e.addMessage(((Cat_statementContext)_localctx).i1.line,((Cat_statementContext)_localctx).i2.pos,ErrorMessage.semantic((((Cat_statementContext)_localctx).i1!=null?_input.getText(((Cat_statementContext)_localctx).i1.start,((Cat_statementContext)_localctx).i1.stop):null),ErrorMessage.type("boolean | sequence | integer","sequence")));
 			                }
-			                if( !( v2 != null && v2.getInfoType().equals("sequence") && v2.getCategory().equals("VAR") ) ){
-			                    e.addMessage(((Cat_statementContext)_localctx).i2.line,((Cat_statementContext)_localctx).i2.pos,ErrorMessage.semantic((((Cat_statementContext)_localctx).i2!=null?_input.getText(((Cat_statementContext)_localctx).i2.start,((Cat_statementContext)_localctx).i2.stop):null),ErrorMessage.type("boolean | sequence | integer","sequence")));
-			                }
-
 			              
 			}
 		}
@@ -6914,11 +6944,7 @@ public class LissParser extends Parser {
 			                        ((MemberContext)_localctx).typeS =  "boolean";
 			                        if(((MemberContext)_localctx).e.mipsCodeS!=null){
 			                            Integer levelIdentifier = _localctx.idTH.getInfoIdentifiersTable((((MemberContext)_localctx).i!=null?_input.getText(((MemberContext)_localctx).i.start,((MemberContext)_localctx).i.stop):null)).getLevel();
-			                            if(levelIdentifier.equals(0)){
-			                                ((MemberContext)_localctx).mipsCodeS =  m.textMember(((MemberContext)_localctx).e.mipsCodeS, (((MemberContext)_localctx).i!=null?_input.getText(((MemberContext)_localctx).i.start,((MemberContext)_localctx).i.stop):null), levelIdentifier, _localctx.idTH.getValueSP(level,(((MemberContext)_localctx).i!=null?_input.getText(((MemberContext)_localctx).i.start,((MemberContext)_localctx).i.stop):null)), (((MemberContext)_localctx).im!=null?((MemberContext)_localctx).im.getLine():0), (((MemberContext)_localctx).im!=null?((MemberContext)_localctx).im.getCharPositionInLine():0));
-			                            }else{
-			                                ((MemberContext)_localctx).mipsCodeS =  m.textMember(((MemberContext)_localctx).e.mipsCodeS, (((MemberContext)_localctx).i!=null?_input.getText(((MemberContext)_localctx).i.start,((MemberContext)_localctx).i.stop):null), levelIdentifier, _localctx.idTH.getValueSP(level,(((MemberContext)_localctx).i!=null?_input.getText(((MemberContext)_localctx).i.start,((MemberContext)_localctx).i.stop):null)), (((MemberContext)_localctx).im!=null?((MemberContext)_localctx).im.getLine():0), (((MemberContext)_localctx).im!=null?((MemberContext)_localctx).im.getCharPositionInLine():0));
-			                            }
+			                            ((MemberContext)_localctx).mipsCodeS =  m.textMember(((MemberContext)_localctx).e.mipsCodeS, (((MemberContext)_localctx).i!=null?_input.getText(((MemberContext)_localctx).i.start,((MemberContext)_localctx).i.stop):null), levelIdentifier, _localctx.idTH.getValueSP(level,(((MemberContext)_localctx).i!=null?_input.getText(((MemberContext)_localctx).i.start,((MemberContext)_localctx).i.stop):null)), (((MemberContext)_localctx).im!=null?((MemberContext)_localctx).im.getLine():0), (((MemberContext)_localctx).im!=null?((MemberContext)_localctx).im.getCharPositionInLine():0));
 			                        }
 			                    }else{
 			                        e.addMessage(((MemberContext)_localctx).e.line,((MemberContext)_localctx).e.pos,ErrorMessage.semantic((((MemberContext)_localctx).e!=null?_input.getText(((MemberContext)_localctx).e.start,((MemberContext)_localctx).e.stop):null),ErrorMessage.type(((MemberContext)_localctx).e.typeS,"integer")));
