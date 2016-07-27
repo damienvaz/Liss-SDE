@@ -1397,7 +1397,255 @@ public class Mips {
     public String textTailFunction(){
         StringBuilder s = new StringBuilder();
 
+        s.append("\taddi $sp, $sp, -8\n"); // #allocate space to the stack
+        s.append("\tsw $s0, 0($sp)\n");    //#store the address of the sequence to the stack
+        s.append("\tsw $ra, 4($sp)\n");    //#store the return address to the stack
+        s.append("\tj tail_algorithm\n");
+        s.append("  tail_algorithm:\n");
+        s.append("\tlw $t0, 0($sp)\n"); //# load the address of the element pointed to the sequence
+        s.append("\tbeq $t0, -1, alert_no_tail\n"); //# compare the address to the NULL (-1)
+        s.append("\tlw $t0, 0($sp)\n"); //# otherwise load the address of the element pointed in the sequence
+        s.append("\tlw $v0, 0($t0)\n"); //# get the address of the next element of the sequence
 
+        s.append("\tlw $ra, 4($sp)\n");   //#load the return address from the stack position
+        s.append("\taddi $sp, $sp, 8\n"); //#remove the space from the stack
+
+        s.append("\tjr $ra\n");
+        s.append("  alert_no_tail:\n");
+        s.append("\tli $v0, 4\n");
+        s.append("\tla $a0,  alert_tail\n");
+        s.append("\tsyscall\n");
+        s.append("\tla $a0, newline\n");
+        s.append("\tsyscall\n");
+        s.append("\tli $v0, 10\n");
+        s.append("\tsyscall\n");
+
+
+        return s.toString();
+    }
+
+    public String textHeadFunction(){
+        StringBuilder s = new StringBuilder();
+
+        s.append("\taddi $sp, $sp, -8\n"); //#allocate space to the stack
+        s.append("\tsw $s0, 0($sp)\n");    //#store the address of the sequence to the stack
+        s.append("\tsw $ra, 4($sp)\n");    //#store the return address to the stack
+        s.append("\tj head_algorithm\n");
+        s.append("  head_algorithm:\n");
+        s.append("\tlw $t0, 0($sp)\n"); //# load the address of the element pointed to the sequence
+        s.append("\tbeq $t0, -1, alert_no_head\n"); //# compare the address to the NULL (-1)
+        s.append("\tlw $t0, 0($sp)\n"); //# otherwise load the address of the element pointed in the sequence
+        s.append("\tlw $v0, 4($t0)\n"); //# get the value of the element of the sequence
+        s.append("\tlw $ra, 4($sp)\n");   //#load the return address from the stack position
+        s.append("\taddi $sp, $sp, 8\n"); //#remove the space from the stack
+        s.append("\tjr $ra\n");
+        s.append("  alert_no_head:\n");
+        s.append("\tli $v0, 4\n");
+        s.append("\tla $a0,  alert_head\n");
+        s.append("\tsyscall\n");
+        s.append("\tla $a0, newline\n");
+        s.append("\tsyscall\n");
+        s.append("\tli $v0, 10\n");
+        s.append("\tsyscall\n");
+
+        return s.toString();
+    }
+
+    public String textDeleteFunction(){
+        StringBuilder s = new StringBuilder();
+
+        s.append("\taddi $sp, $sp, -12\n"); //#allocate space to the stack
+        s.append("\tsw $s0, 0($sp)\n");    //#store the address of the sequence to the stack
+        s.append("\tsw $s1, 4($sp)\n");    //#store the value to delete
+        s.append("\tsw $ra, 8($sp)\n");    //#store the return address to the stack
+        s.append("\tj delete_algorithm\n");
+        s.append("  delete_algorithm:\n");
+        s.append("\tlw $t0, 0($sp)\n");   //# load the address of the element pointed in the sequence
+        s.append("\tbne $t0, -1, delete_recursivity\n"); //#test if it is NULL (-1)
+        s.append("\tlw $v0, 0($sp)\n");
+
+        s.append("\tlw $ra, 8($sp)\n");   //#load the return address from the stack position
+        s.append("\taddi $sp, $sp, 12\n"); //#remove the space from the stack
+        s.append("\tjr $ra\n");
+        s.append("  delete_recursivity:\n");
+        s.append("\tlw $t0, 0($sp)\n"); //# load the address of the element
+        s.append("\tlw $s0, 0($t0)\n"); //# load the address of the next element
+        s.append("\tlw $s1, 4($sp)\n"); //# load the value to delete
+        s.append("\tjal delete_sequence\n"); //# jump to the function
+        s.append("\tlw $t0, 0($sp)\n"); //# load the address element pointed right now
+        s.append("\tsw $v0, 0($t0)\n"); //# save the address of the next element to the element pointed right now
+        s.append("\tlw $t0, 4($t0)\n"); //# load the value of the element pointed right now
+        s.append("\tlw $t1, 4($sp)\n"); //# load the value to delete
+        s.append("\tbeq $t0, $t1, element_found\n"); //# compare both values, if they are equals then jump for deleting them
+
+        s.append("\tlw $v0, 0($sp)\n");  //# load the value to return
+        s.append("\tlw $ra, 8($sp)\n");   //#load the return address from the stack position
+        s.append("\taddi $sp, $sp, 12\n"); //#remove the space from the stack
+        s.append("\tjr $ra\n");
+        s.append("  element_found:\n");
+        s.append("\tlw $t0, 0($sp)\n"); //# get the address of the element pointed
+        s.append("\tlw $v0, 0($t0)\n"); //# get the address of the next element and return it to the res function
+
+        s.append("\tlw $ra, 8($sp)\n");   //#load the return address from the stack position
+        s.append("\taddi $sp, $sp, 12\n"); //#remove the space from the stack
+        s.append("\tjr $ra\n");
+
+
+        return s.toString();
+    }
+
+    public String textIsEmptyFunction(){
+        StringBuilder s = new StringBuilder();
+
+        s.append("\taddi $sp, $sp, -8\n"); //#allocate space to the stack
+        s.append("\tsw $s0, 0($sp)\n");    //#store the address of the sequence to the stack
+        s.append("\tsw $ra, 4($sp)\n");    //#store the return address to the stack
+        s.append("\tj is_empty_algorithm\n");
+
+        s.append("  is_empty_algorithm:\n");
+        s.append("\tlw $t0, 0($sp)\n"); //# load the address of the first element of the sequence
+        s.append("\tbeq $t0, -1, is_empty\n"); //# test if it is NULL (-1)
+        s.append("\tli $v0, 0\n"); //# load the value 0 to res function (because the sequence isn't empty)
+
+        s.append("\tlw $ra, 4($sp)\n");   //#load the return address from the stack position
+        s.append("\taddi $sp, $sp, 8\n"); //#remove the space from the stack
+        s.append("\tjr $ra\n");
+        s.append("  is_empty:\n");
+        s.append("\tli $v0, 1\n"); //# load the value 1 to res function (because the sequence is empty)
+        s.append("\tlw $ra, 4($sp)\n");   //#load the return address from the stack position
+        s.append("\taddi $sp, $sp, 8\n"); //#remove the space from the stack
+        s.append("\tjr $ra\n");
+
+        return s.toString();
+    }
+
+    public String textLengthFunction(){
+        StringBuilder s = new StringBuilder();
+
+        s.append("\taddi $sp, $sp, -8\n"); //#allocate space to the stack
+        s.append("\tsw $s0, 0($sp)\n");    //#store the address of the sequence to the stack
+        s.append("\tsw $ra, 4($sp)\n");    //#store the return address to the stack
+        s.append("\tj length_algorithm\n");
+        s.append("  length_algorithm:\n");
+        s.append("\tlw $t0, 0($sp)\n"); //# load the address of the element pointed
+        s.append("\tbeq $t0, -1, count_begins\n"); //# test if it is NULL (-1)
+        s.append("\tlw $s0, 0($t0)\n"); //# load the address of the next element in the element pointed right now
+        s.append("\tjal length_sequence\n"); //# recursivity of length sequence
+        s.append("\taddi $v0, $v0, 1\n"); //# add 1 to the counting variable of lenght sequence
+        s.append("\tlw $ra, 4($sp)\n");   //#load the return address from the stack position
+        s.append("\taddi $sp, $sp, 8\n"); //#remove the space from the stack
+        s.append("\tjr $ra\n");
+        s.append("  count_begins:\n");
+        s.append("\tli $v0, 0\n"); //# add the result of 0 to the counting variable
+        s.append("\tlw $ra, 4($sp)\n");   //#load the return address from the stack position
+        s.append("\taddi $sp, $sp, 8\n"); //#remove the space from the stack
+        s.append("\tjr $ra\n");
+
+        return s.toString();
+    }
+
+    public String textMemberFunction(){
+        StringBuilder s = new StringBuilder();
+
+        s.append("\taddi $sp, $sp, -12\n"); //#allocate space to the stack
+        s.append("\tsw $s0, 0($sp)\n");    //#store the address of the sequence to the stack
+        s.append("\tsw $s1, 4($sp)\n");    //#store the value to search
+        s.append("\tsw $ra, 8($sp)\n");    //#store the return address to the stack
+        s.append("\tj member_algorithm\n");
+
+        s.append("  member_algorithm:\n");
+        s.append("\tlw $t0, 0($sp)\n");
+        s.append("\tbeq $t0, -1, check_member_begins\n");
+        s.append("\tlw $s0, 0($t0)\n"); //# load the address of the next element in the element pointed right now
+        s.append("\tlw $s1, 4($sp)\n");
+        s.append("\tjal member_sequence\n"); //# recursivity of length sequence
+        s.append("\tbeq $v0, 1, exit_member_algorithm\n");
+        s.append("\tlw $t0, 0($sp)\n");
+        s.append("\tlw $t0, 4($t0)\n");
+        s.append("\tlw $t1, 4($sp)\n");
+        s.append("\tbeq $t0, $t1, member_found\n");
+        s.append("\tj exit_member_algorithm\n");
+        s.append("  member_found:\n");
+        s.append("\tli $v0, 1\n");
+        s.append("\tlw $ra, 8($sp)\n");   //#load the return address from the stack position
+        s.append("\taddi $sp, $sp, 12\n"); //#remove the space from the stack
+        s.append("\tjr $ra\n");
+
+        s.append("  check_member_begins:\n");
+        s.append("\tli $v0, 0\n"); //# add the result of 0
+        s.append("\tlw $ra, 8($sp)\n");   //#load the return address from the stack position
+        s.append("\taddi $sp, $sp, 12\n"); //#remove the space from the stack
+        s.append("\tjr $ra\n");
+
+        s.append("  exit_member_algorithm:\n");
+        s.append("\tlw $ra, 8($sp)\n");   //#load the return address from the stack position
+        s.append("\taddi $sp, $sp, 12\n"); //#remove the space from the stack
+        s.append("\tjr $ra\n");
+
+        return s.toString();
+    }
+
+    public String textCatFunction(){
+        StringBuilder s = new StringBuilder();
+
+        s.append("\taddi $sp, $sp, -12\n"); //#allocate space to the stack
+        s.append("\tsw $s0, 0($sp)\n");    //#store the address of the first sequence to the stack
+        s.append("\tsw $s1, 4($sp)\n");    //#store the address of the second sequence to the stack
+        s.append("\tsw $ra, 8($sp)\n");    //#store the return address to the stack
+        s.append("\tj cat_algorithm\n");
+
+        s.append("  cat_algorithm:\n");
+        s.append("\tlw $t0, 4($sp)\n"); //# load the address of the second quence
+        s.append("\tbeq $t0, -1, exit_cat\n"); //# test the address of the second sequence ( if it is NULL (-1))
+
+        s.append("\tlw $s0, 0($sp)\n"); //# load the address of the first sequence
+        s.append("\tlw $s1, 4($t0)\n"); //# load the address of the second sequence
+        s.append("\tjal cons_sequence\n"); //# call the cons function
+        s.append("\tsw $v0, 0($sp)\n"); //# get the result of that function and refresh the stack
+
+        s.append("\tlw $s0, 0($sp)\n"); //# load the address of the first sequence
+        s.append("\tlw $t0, 4($sp)\n"); //# load the address of the second sequence
+        s.append("\tlw $s1, 0($t0)\n"); //# load the address of the next element of the second sequence
+        s.append("\tjal cat_sequence\n"); //# recursivity of the function cat
+        s.append("\tj exit_cat\n");
+        s.append("  exit_cat:\n");
+        s.append("\tlw $v0, 0($sp)\n"); //# load the address of the first sequence
+        s.append("\tlw $ra, 8($sp)\n");   //#load the return address from the stack position
+        s.append("\taddi $sp, $sp, 12\n"); //#remove the space from the stack
+        s.append("\tjr $ra\n");
+
+        return s.toString();
+    }
+
+    public String textCopyFunction(){
+        StringBuilder s = new StringBuilder();
+
+        s.append("\taddi $sp, $sp, -12\n"); //#allocate space to the stack
+        s.append("\tsw $s0, 0($sp)\n");    //#store the address of the first sequence to the stack
+        s.append("\tsw $s1, 4($sp)\n");    //#store the address of the second sequence to the stack
+        s.append("\tsw $ra, 8($sp)\n");    //#store the return address to the stack
+        s.append("\tj copy_algorithm\n");
+        s.append("  copy_algorithm:\n");
+        s.append("\tlw $t0, 0($sp)\n");
+        s.append("\tbeq $t0, -1, exit_copy\n");
+
+        s.append("\tlw $s0, 4($sp)\n");
+        s.append("\tlw $t0, 0($sp)\n");
+        s.append("\tlw $s1, 4($t0)\n");
+        s.append("\tjal cons_sequence\n");
+        s.append("\tsw $v0, 4($sp)\n");
+
+        s.append("\tlw $t0, 0($sp)\n");
+        s.append("\tlw $s0, 0($t0)\n");
+        s.append("\tmove $s1, $v0\n");
+        s.append("\tjal copy_sequence\n");
+        s.append("\tj exit_copy\n");
+
+        s.append("  exit_copy:\n");
+        s.append("\tlw $v0, 4($sp)\n"); //# load the address of the first sequence
+        s.append("\tlw $ra, 8($sp)\n");   //#load the return address from the stack position
+        s.append("\taddi $sp, $sp, 12\n"); //#remove the space from the stack
+        s.append("\tjr $ra\n");
 
         return s.toString();
     }
@@ -1420,6 +1668,13 @@ public class Mips {
         addLineInstruction("read",textReadFunction());
         addLineInstruction("cons_sequence",textConsFunction());
         addLineInstruction("tail_sequence",textTailFunction());
+        addLineInstruction("head_sequence",textHeadFunction());
+        addLineInstruction("delete_sequence",textDeleteFunction());
+        addLineInstruction("is_empty_sequence",textIsEmptyFunction());
+        addLineInstruction("length_sequence",textLengthFunction());
+        addLineInstruction("member_sequence",textMemberFunction());
+        addLineInstruction("cat_sequence",textCatFunction());
+        addLineInstruction("copy_sequence",textCopyFunction());
     }
 
     public void addDataInstructions(HashMap<String, HashMap<String,Object>> vars, String type){
