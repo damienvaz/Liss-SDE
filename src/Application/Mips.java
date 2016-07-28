@@ -24,7 +24,7 @@ public class Mips {
     private LinkedList<String> functionName;        //It concatenates all the function name, this is due to generate the correct name for the MIPS code.
     private HashMap<String,String> mipsCodeFunctionCache;    //It is a stack which will help the program in producing the mipscode of functions.
     private String functionMipsCode;                //All the code of mipscode Function available here !!!
-    private HashMap<String, Integer> mipsCodeSpecialFunctionState; // Structure which explains if a certain function was called by the assembly code. (1) means yes, (0) means no.
+    private HashMap<String, Integer> mipsCodeSpecialFunctionState; // Structure which explains if a certain function was called by the assembly code. (1) means yes, (0) means no. if it was called at least once time, then it will add to the mips assembly code.
 
 
     public Mips(){
@@ -125,6 +125,15 @@ public class Mips {
         if(i<this.register.length){
             this.register[i-1] = false;
         }
+    }
+
+    public int numbersOfRegisteresUsedRightNow(){
+        int res = 0;
+
+        for(int i=0; i<this.register.length && this.register[i]==true;i++){
+            res++;
+        }
+        return res;
     }
 
     public String[] lastTwoRegisterOccupied(){
@@ -1218,6 +1227,40 @@ public class Mips {
         return s.toString();
     }
 
+    public String textSaveStateBeforeCallingSpecialFunction(int numberOfRegistersUsed){
+        StringBuilder s = new StringBuilder();
+        //Need to count how many registers are stored
+        //int numberOfRegisters = numbersOfRegisteresUsedRightNow();
+
+        if(numberOfRegistersUsed!=0) {
+            //need to add sp with the number of registeres *4
+            s.append("\taddi $sp, $sp, -" + numberOfRegistersUsed * this.eachAddressOccupies + "\n");
+
+            //need to store the values of those states to the stack
+            for (int i = 0; i < numberOfRegistersUsed; i++) {
+                s.append("\tsw $t" + i + ", " + i * this.eachAddressOccupies + "($sp)\n");
+                freeLastRegister();
+            }
+        }
+
+        return s.toString();
+    }
+
+    public String textRestoreStateAfterEndedCallingSpecialFunction(int numberOfRegistersUsed){
+        StringBuilder s = new StringBuilder();
+
+        if(numberOfRegistersUsed!=0) {
+            //need to restore those values into the registers
+            for (int i = 0; i < numberOfRegistersUsed; i++) {
+                s.append("\tlw " + nextFreeRegister() + ", " + i * this.eachAddressOccupies + "($sp)\n");
+            }
+
+            //need to substract the sp
+            s.append("\taddi $sp, $sp, " + numberOfRegistersUsed * eachAddressOccupies + "\n");
+        }
+        return s.toString();
+    }
+
     public String textCons(String valueToInsert, String sequence2, int line, int pos){
         StringBuilder s = new StringBuilder();
         this.mipsCodeSpecialFunctionState.put("cons_sequence",1);
@@ -1230,6 +1273,9 @@ public class Mips {
         freeLastRegister();
         freeLastRegister();
         s.append("\tjal cons_sequence\n");
+
+        String register = nextFreeRegister();
+        s.append(textMove("$v0", register, line, pos));
 
         return s.toString();
     }
@@ -1244,6 +1290,9 @@ public class Mips {
         freeLastRegister();
         s.append("\tjal tail_sequence\n");
 
+        String register = nextFreeRegister();
+        s.append(textMove("$v0", register, line, pos));
+
         return s.toString();
     }
 
@@ -1256,6 +1305,7 @@ public class Mips {
         s.append(textMove(res[0], "$s0", line, pos));
         freeLastRegister();
         s.append("\tjal head_sequence\n");
+
         String register = nextFreeRegister();
         s.append(textMove("$v0", register, line, pos));
 
@@ -1275,6 +1325,9 @@ public class Mips {
         freeLastRegister();
         s.append("\tjal delete_sequence\n");
 
+        String register = nextFreeRegister();
+        s.append(textMove("$v0", register, line, pos));
+
         return s.toString();
     }
 
@@ -1287,6 +1340,7 @@ public class Mips {
         s.append(textMove(res[0],"$s0", line, pos));
         freeLastRegister();
         s.append("\tjal is_empty_sequence\n");
+
         String register = nextFreeRegister();
         s.append(textMove("$v0", register, line, pos));
 
@@ -1302,6 +1356,7 @@ public class Mips {
         s.append(textMove(res[0],"$s0", line, pos));
         freeLastRegister();
         s.append("\tjal length_sequence\n");
+
         String register = nextFreeRegister();
         s.append(textMove("$v0", register, line, pos));
 
@@ -1329,6 +1384,7 @@ public class Mips {
         freeLastRegister();
 
         s.append("\tjal member_sequence\n");
+
         String res = nextFreeRegister();
         s.append(textMove("$v0",res,line,pos));
 

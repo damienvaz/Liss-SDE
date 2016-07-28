@@ -2,31 +2,35 @@ program sequenceTest{
     declarations
         seq1, seq2=<<>>, seq3=<<1,2>> -> sequence;
         i -> integer;
-        t -> boolean;
-        subprogram calculate(seq3->sequence){
+        //t -> boolean;
+        /*subprogram calculate(seq3->sequence)->integer{
             declarations
-                seq4=<<4>>, seq5=<<>> -> sequence;
+                //seq4=<<4>>, seq5=<<>> -> sequence;
                 i = 4 -> integer;
-                t -> boolean;
+                //t -> boolean;
             statements
-                seq4 = cons(5,seq4);
-                seq4 = del(4,seq4);
-                seq5 = tail(seq4);
-                i = head(seq4);
-                t = isEmpty(seq5);
-                i = length(seq4);
-                t = isMember(2+3,seq4);
-                copy(seq2,seq5);
-                cat(seq1,seq4);
-        }
+                //seq4 = cons(5,seq4);
+                //seq4 = del(4,seq4);
+                //seq5 = tail(seq4);
+                //i = head(seq4);
+                //t = isEmpty(seq5);
+                //i = length(seq4);
+                //t = isMember(2+3,seq4);
+                //copy(seq2,seq5);
+                //cat(seq1,seq4);
+            return i;
+        }*/
     statements
-        seq3 = cons(3,seq3);
-        seq3 = del(2,seq3);
-        seq2 = tail(seq3);
-        i = head(seq3);
-        t = isEmpty(seq3);
-        i = length(seq3);
-        t = isMember(1+2,seq3);
-        copy(seq3,seq1);
-        cat(seq2,seq3);
+        //i = 4;
+        i = 3+4+head(seq3)+head(del(1,cons(3,seq3)));
+        //seq3 = cons(5,cons(3,seq3));
+        //seq3 = del(2,seq3);
+        //seq2 = tail(seq3);
+        //i = head(seq3);
+        //t = isEmpty(seq3);
+        //i = length(seq3);
+        //t = isMember(1+2,seq3);
+        //copy(seq3,seq1);
+        //cat(seq2,seq3);
+        //i = 2 + 4 + calculate(seq3);
 }
