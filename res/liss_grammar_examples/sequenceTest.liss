@@ -7,13 +7,13 @@ program sequenceTest{
             declarations
                 seq4=<<4>>, seq5=<<>> -> sequence;
                 i = 4 -> integer;
-                //t -> boolean;
+                t -> boolean;
             statements
                 //seq4 = cons(5,seq4);
                 //seq4 = del(4,seq4);
                 //seq5 = tail(seq4);
-                i = head(seq4);
-                //t = isEmpty(seq5);
+                i = i + 3 + head(seq4);
+                t = isEmpty(seq5);
                 //i = length(seq4);
                 //t = isMember(2+3,seq4);
                 //copy(seq2,seq5);

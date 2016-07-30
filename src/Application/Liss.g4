@@ -81,11 +81,11 @@ declarations[IdentifiersTable idTH, HashMap<String,Object> varInfo]
               }
               subprogram_definition[idTH]*
               {
-                //System.out.println("-------");
-                //$idTH.printSP();
+                System.out.println("-------");
+                $idTH.printSP();
                 //$idTH.popSP();
                 //$idTH.printSP();
-                //System.out.println("-------");
+                System.out.println("-------");
               }
             ;
 
@@ -537,6 +537,7 @@ subprogram_definition[IdentifiersTable idTH]
 
                         {
                             //MIPS
+                            System.out.println(level+" WOOOTTTTT");
                             String mipsCodeS = m.textEndFunction($idTH.getSizeSP(level),$f2.returnMipsCodeS);
                             m.addMipsCodeFunction(m.getNameFunction(),mipsCodeS);
                             m.removeMipsCodeFunction();
@@ -2107,6 +2108,7 @@ head [IdentifiersTable idTH, Set set]
       {
         m.addSpecialFunctionsToStackForCheckingRecursivity($h.text);
         if(firstTimeSpecialFunction==true){
+         $idTH.pushSPSpecialFunction(numberOfRegistersUsed);
          $mipsCodeS = m.textSaveStateBeforeCallingSpecialFunction(numberOfRegistersUsed);
         }
       }
@@ -2121,6 +2123,7 @@ head [IdentifiersTable idTH, Set set]
                     $mipsCodeS = m.textHead($e.mipsCodeS, $h.line, $h.pos)+m.textReturnResultOfSpecialFunctions($h.line, $h.pos);
                 }else{
                     $mipsCodeS += m.textHead($e.mipsCodeS, $h.line, $h.pos)+m.textRestoreStateAfterEndedCallingSpecialFunction(numberOfRegistersUsed)+m.textReturnResultOfSpecialFunctions($h.line, $h.pos);
+                    $idTH.popSP();
                 }
             }
         }else{ 
@@ -2152,9 +2155,9 @@ cons [IdentifiersTable idTH, Set set]
         }
         e1=expression[idTH, set] ',' e2=expression[idTH, set] ')'
         {
-            System.out.println("######################### CONS_FUNCTIOn #########################\n");
-            System.out.println($e1.mipsCodeS+"\n"+$e2.mipsCodeS+"\n");
-            System.out.println("#################################################################\n");
+            //System.out.println("######################### CONS_FUNCTIOn #########################\n");
+            //System.out.println($e1.mipsCodeS+"\n"+$e2.mipsCodeS+"\n");
+            //System.out.println("#################################################################\n");
 
             $line = $c.line;
             $pos = $c.pos;
@@ -2198,9 +2201,9 @@ delete [IdentifiersTable idTH, Set set]
         e1=expression[idTH, set] ',' e2=expression[idTH, set] ')'
         {
 
-            System.out.println("######################### DELETE_FUNCTIOn #########################\n");
-            System.out.println($e1.mipsCodeS+"\n"+$e2.mipsCodeS);
-            System.out.println("#################################################################\n");
+            //System.out.println("######################### DELETE_FUNCTIOn #########################\n");
+            //System.out.println($e1.mipsCodeS+"\n"+$e2.mipsCodeS);
+            //System.out.println("#################################################################\n");
 
             $line = $d.line;
             $pos = $d.pos;
@@ -2303,6 +2306,7 @@ is_empty [IdentifiersTable idTH, Set set]
          {
             m.addSpecialFunctionsToStackForCheckingRecursivity($i.text);
             if(firstTimeSpecialFunction==true){
+                $idTH.pushSPSpecialFunction(numberOfRegistersUsed);
                 $mipsCodeS = m.textSaveStateBeforeCallingSpecialFunction(numberOfRegistersUsed);
             }
          }
@@ -2317,6 +2321,7 @@ is_empty [IdentifiersTable idTH, Set set]
                         $mipsCodeS = m.textIsEmpty($e1.mipsCodeS, $i.line, $i.pos)+m.textReturnResultOfSpecialFunctions($i.line, $i.pos);
                     }else{
                         $mipsCodeS += m.textIsEmpty($e1.mipsCodeS, $i.line, $i.pos)+m.textRestoreStateAfterEndedCallingSpecialFunction(numberOfRegistersUsed)+m.textReturnResultOfSpecialFunctions($i.line, $i.pos);
+                        $idTH.popSP();
                     }
 
                 }
@@ -2346,6 +2351,7 @@ length [IdentifiersTable idTH, Set set]
          {
             m.addSpecialFunctionsToStackForCheckingRecursivity($l.text);
             if(firstTimeSpecialFunction==true){
+                $idTH.pushSPSpecialFunction(numberOfRegistersUsed);
                 $mipsCodeS = m.textSaveStateBeforeCallingSpecialFunction(numberOfRegistersUsed);
             }
          }
@@ -2360,6 +2366,7 @@ length [IdentifiersTable idTH, Set set]
                     $mipsCodeS = m.textLength($e1.mipsCodeS, $l.line, $l.pos)+m.textReturnResultOfSpecialFunctions($l.line, $l.pos);
                 }else{
                     $mipsCodeS += m.textLength($e1.mipsCodeS, $l.line, $l.pos)+m.textRestoreStateAfterEndedCallingSpecialFunction(numberOfRegistersUsed)+m.textReturnResultOfSpecialFunctions($l.line, $l.pos);
+                    $idTH.popSP();
                 }
               }
 
@@ -2390,6 +2397,7 @@ member [IdentifiersTable idTH, Set set]
        {
           m.addSpecialFunctionsToStackForCheckingRecursivity($im.text);
           if(firstTimeSpecialFunction==true){
+              $idTH.pushSPSpecialFunction(numberOfRegistersUsed);
               $mipsCodeS = m.textSaveStateBeforeCallingSpecialFunction(numberOfRegistersUsed);
           }
        }
@@ -2415,6 +2423,7 @@ member [IdentifiersTable idTH, Set set]
                             }else{
                                 Integer levelIdentifier = $idTH.getInfoIdentifiersTable($i.text).getLevel();
                                 $mipsCodeS += m.textMember($e.mipsCodeS, $i.text, levelIdentifier, $idTH.getValueSP(level,$i.text), $im.line, $im.pos)+m.textRestoreStateAfterEndedCallingSpecialFunction(numberOfRegistersUsed)+m.textReturnResultOfSpecialFunctions($im.line, $im.pos);
+                                $idTH.popSP();
                             }
                         }
                     }else{

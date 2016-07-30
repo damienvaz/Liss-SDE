@@ -86,11 +86,20 @@ public class IdentifiersTable {
             Integer sp = actualLevel;
             if(this.stackSP.size()>=sp && sp>=0){
                 //System.out.println("Variable: "+variable+" Actual Level: "+sp.toString()+" Address of Actual Level SP : "+this.stackSP.get(sp)+" Variable level: "+v.getLevel()+" Address of Variable Level SP :"+this.stackSP.get(v.getLevel())+" Address Level Variable: "+v.getAddress());
-                i = (this.stackSP.get(sp) - this.stackSP.get(v.getLevel())) + v.getAddress();
+                //i = (this.stackSP.get(sp) - this.stackSP.get(v.getLevel())) + v.getAddress();
+                i = (this.stackSP.get(this.stackSP.size()-1) - this.stackSP.get(v.getLevel())) + v.getAddress();
             }
         }else{
             //It means that actualLevel == levelOfVariable
-            i = v.getAddress();
+            //i = v.getAddress();
+
+            //This is the case when specialFunctions are called and they have a state to save but the actuaLevel == levelOfVariable!
+            if(this.stackSP.size()-1>actualLevel){
+                i = (this.stackSP.get(this.stackSP.size()-1) - this.stackSP.get(v.getLevel())) + v.getAddress();
+            }else{
+                i = v.getAddress();
+            }
+
         }
         return i;
     }
@@ -104,13 +113,29 @@ public class IdentifiersTable {
             this.stackSP.add(savedRegisters);
         }
     }
+
+    public void pushSPSpecialFunction(Integer SavedRegisters){
+        if(this.stackSP.size()>0 ){
+            this.stackSP.add(this.stackSP.get(this.stackSP.size()-1)+(SavedRegisters*4));
+        }else if(this.stackSP.size() == 0){
+            this.stackSP.add(SavedRegisters*4);
+        }
+        System.out.println("############## STACK SP SPECIAL FUNCTION ##############");
+        for (Integer integer : this.stackSP) {
+            System.out.println(integer);
+        }
+        System.out.println("#######################################################");
+    }
+
     public void popSP(){ if(this.stackSP.size()>0){this.stackSP.remove(this.stackSP.size()-1);}}
 
     public void printSP(){
         System.out.print("[");
-        for(Integer i : this.stackSP){
-            System.out.print(i.toString());
-            System.out.print(" | ");
+        if(this.stackSP.size()>0) {
+            for (Integer i : this.stackSP) {
+                System.out.print(i.toString());
+                System.out.print(" | ");
+            }
         }
         System.out.println("]");
 

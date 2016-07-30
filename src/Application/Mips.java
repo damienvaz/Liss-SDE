@@ -1418,11 +1418,11 @@ public class Mips {
     public String textReturnResultOfSpecialFunctions(int line, int pos){
         StringBuilder s = new StringBuilder();
 
-        System.out.println("################## STACK OF RECURSIVITY ##################");
+        /*System.out.println("################## STACK OF RECURSIVITY ##################");
         for (String s1 : this.stackOfSpecialFunctionsCalledRecursively) {
             System.out.println(s1+" line:"+line+" pos:"+pos);
         }
-        System.out.println("##########################################################");
+        System.out.println("##########################################################");*/
 
         if(this.stackOfSpecialFunctionsCalledRecursively.size()>0) {
             this.stackOfSpecialFunctionsCalledRecursively.removeLast();
