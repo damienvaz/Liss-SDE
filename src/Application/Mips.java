@@ -25,6 +25,8 @@ public class Mips {
     private HashMap<String,String> mipsCodeFunctionCache;    //It is a stack which will help the program in producing the mipscode of functions.
     private String functionMipsCode;                //All the code of mipscode Function available here !!!
     private HashMap<String, Integer> mipsCodeSpecialFunctionState; // Structure which explains if a certain function was called by the assembly code. (1) means yes, (0) means no. if it was called at least once time, then it will add to the mips assembly code.
+    private HashMap<String, Integer> howManyArgumentsDoesHavespecialFunctions;
+    private LinkedList<String> stackOfSpecialFunctionsCalledRecursively;
 
 
     public Mips(){
@@ -72,6 +74,17 @@ public class Mips {
         this.mipsCodeSpecialFunctionState.put("member_sequence",0);
         this.mipsCodeSpecialFunctionState.put("copy_sequence",0);
         this.mipsCodeSpecialFunctionState.put("cat_sequence",0);
+
+        this.howManyArgumentsDoesHavespecialFunctions = new HashMap<String,Integer>();
+        this.howManyArgumentsDoesHavespecialFunctions.put("tail_sequence",1);
+        this.howManyArgumentsDoesHavespecialFunctions.put("head_sequence",1);
+        this.howManyArgumentsDoesHavespecialFunctions.put("cons_sequence",2);
+        this.howManyArgumentsDoesHavespecialFunctions.put("delete_sequence",2);
+        this.howManyArgumentsDoesHavespecialFunctions.put("is_empty_sequence",1);
+        this.howManyArgumentsDoesHavespecialFunctions.put("length_sequence",1);
+        this.howManyArgumentsDoesHavespecialFunctions.put("member_sequence",2);
+
+        this.stackOfSpecialFunctionsCalledRecursively = new LinkedList<String>();
     }
 
     public boolean cycleRecursivityFinder(String name){
@@ -85,6 +98,34 @@ public class Mips {
             }
         }
         return res;
+    }
+
+    public void addSpecialFunctionsToStackForCheckingRecursivity(String nameOfSpecialFunctions){
+        switch (nameOfSpecialFunctions) {
+            case "tail":
+                this.stackOfSpecialFunctionsCalledRecursively.add("tail_sequence");
+                break;
+            case "head":
+                this.stackOfSpecialFunctionsCalledRecursively.add("head_sequence");
+                break;
+            case "cons":
+                this.stackOfSpecialFunctionsCalledRecursively.add("cons_sequence");
+                break;
+            case "del":
+                this.stackOfSpecialFunctionsCalledRecursively.add("delete_sequence");
+                break;
+            case "isEmpty":
+                this.stackOfSpecialFunctionsCalledRecursively.add("is_empty_sequence");
+                break;
+            case "length":
+                this.stackOfSpecialFunctionsCalledRecursively.add("length_sequence");
+                break;
+            case "isMember":
+                this.stackOfSpecialFunctionsCalledRecursively.add("member_sequence");
+                break;
+            default:
+                break;
+        }
     }
 
     public Integer numberOfRegistersInBytes(){ return this.register.length* eachAddressOccupies;    }
@@ -1274,8 +1315,6 @@ public class Mips {
         freeLastRegister();
         s.append("\tjal cons_sequence\n");
 
-        String register = nextFreeRegister();
-        s.append(textMove("$v0", register, line, pos));
 
         return s.toString();
     }
@@ -1290,8 +1329,6 @@ public class Mips {
         freeLastRegister();
         s.append("\tjal tail_sequence\n");
 
-        String register = nextFreeRegister();
-        s.append(textMove("$v0", register, line, pos));
 
         return s.toString();
     }
@@ -1305,9 +1342,6 @@ public class Mips {
         s.append(textMove(res[0], "$s0", line, pos));
         freeLastRegister();
         s.append("\tjal head_sequence\n");
-
-        String register = nextFreeRegister();
-        s.append(textMove("$v0", register, line, pos));
 
         return s.toString();
     }
@@ -1325,8 +1359,6 @@ public class Mips {
         freeLastRegister();
         s.append("\tjal delete_sequence\n");
 
-        String register = nextFreeRegister();
-        s.append(textMove("$v0", register, line, pos));
 
         return s.toString();
     }
@@ -1341,8 +1373,6 @@ public class Mips {
         freeLastRegister();
         s.append("\tjal is_empty_sequence\n");
 
-        String register = nextFreeRegister();
-        s.append(textMove("$v0", register, line, pos));
 
         return s.toString();
     }
@@ -1356,9 +1386,6 @@ public class Mips {
         s.append(textMove(res[0],"$s0", line, pos));
         freeLastRegister();
         s.append("\tjal length_sequence\n");
-
-        String register = nextFreeRegister();
-        s.append(textMove("$v0", register, line, pos));
 
         return s.toString();
     }
@@ -1385,9 +1412,27 @@ public class Mips {
 
         s.append("\tjal member_sequence\n");
 
+        return s.toString();
+    }
+
+    public String textReturnResultOfSpecialFunctions(int line, int pos){
+        StringBuilder s = new StringBuilder();
+
+        System.out.println("################## STACK OF RECURSIVITY ##################");
+        for (String s1 : this.stackOfSpecialFunctionsCalledRecursively) {
+            System.out.println(s1+" line:"+line+" pos:"+pos);
+        }
+        System.out.println("##########################################################");
+
+        if(this.stackOfSpecialFunctionsCalledRecursively.size()>0) {
+            this.stackOfSpecialFunctionsCalledRecursively.removeLast();
+        }
+        if(this.stackOfSpecialFunctionsCalledRecursively.size()>0 && this.howManyArgumentsDoesHavespecialFunctions.get(this.stackOfSpecialFunctionsCalledRecursively.getLast()).equals(2)){
+            nextFreeRegister();
+        }
+
         String res = nextFreeRegister();
         s.append(textMove("$v0",res,line,pos));
-
 
         return s.toString();
     }

@@ -21,6 +21,7 @@ grammar Liss;
     boolean isDeclarations;
 
     boolean functionState = false;
+
     boolean firstTimeSpecialFunction = false;
 
      //Mips m = new Mips();
@@ -1142,7 +1143,7 @@ expression [IdentifiersTable idTH, Set set]
                             }else{
                                 correctType = false;
                             }
-                        }else if(($s1.typeS != null) && $s1.typeS.equals($rel_op.typeS)){ //Tratar as relacoes em que os tipos sao inteiros
+                        }else if(($s1.typeS != null) && $s1.typeS.equals($rel_op.typeS)){ //Tratar as relacoes em que os tipos sao inteiros e nao booleanos
                             if(($s2.typeS !=null) && $rel_op.typeS.equals($s2.typeS)){
                                 $typeS = "boolean";
                                 //MIPS
@@ -1535,13 +1536,13 @@ specialFunctions [IdentifiersTable idTH, Set set]
                         firstTimeSpecialFunction = true;
                     }
                  }
-                 : t=tail[idTH, set]     {$typeS = $tail.typeS; $line = $tail.line; $pos = $tail.pos; $treeS = $t.treeS; $mipsCodeS = $t.mipsCodeS;/*if(isSet && $t.treeS!=null && $set!=null){$treeS = $t.treeS;}*/}
-                 | h=head[idTH, set]     {$typeS = $head.typeS; $line = $head.line; $pos = $head.pos; $treeS = $h.treeS; $mipsCodeS = $h.mipsCodeS;/*if(isSet && $h.treeS!=null && $set!=null){$treeS = $h.treeS;}*/}
-                 | c=cons[idTH, set]     {$typeS = $cons.typeS; $line = $cons.line; $pos = $cons.pos; $treeS = $c.treeS; $mipsCodeS = $c.mipsCodeS;/*if(isSet && $c.treeS!=null && $set!=null){$treeS = $c.treeS;}*/}
-                 | m=member[idTH, set]   {$typeS = $member.typeS; $line = $member.line; $pos = $member.pos; $treeS = $m.treeS; $mipsCodeS = $m.mipsCodeS;/*if(isSet && $m.treeS!=null && $set!=null){$treeS = $m.treeS;}*/}
+                 : t=tail[idTH, set]     {$typeS = $tail.typeS; $line = $tail.line; $pos = $tail.pos; $treeS = $t.treeS; $mipsCodeS = $t.mipsCodeS; /*if(isSet && $t.treeS!=null && $set!=null){$treeS = $t.treeS;}*/}
+                 | h=head[idTH, set]     {$typeS = $head.typeS; $line = $head.line; $pos = $head.pos; $treeS = $h.treeS; $mipsCodeS = $h.mipsCodeS; /*if(isSet && $h.treeS!=null && $set!=null){$treeS = $h.treeS;}*/}
+                 | c=cons[idTH, set]     {$typeS = $cons.typeS; $line = $cons.line; $pos = $cons.pos; $treeS = $c.treeS; $mipsCodeS = $c.mipsCodeS; /*if(isSet && $c.treeS!=null && $set!=null){$treeS = $c.treeS;}*/}
+                 | m=member[idTH, set]   {$typeS = $member.typeS; $line = $member.line; $pos = $member.pos; $treeS = $m.treeS; $mipsCodeS = $m.mipsCodeS; /*if(isSet && $m.treeS!=null && $set!=null){$treeS = $m.treeS;}*/}
                  | i=is_empty[idTH, set] {$typeS = $is_empty.typeS; $line = $is_empty.line; $pos = $is_empty.pos; $treeS = $i.treeS; $mipsCodeS = $i.mipsCodeS; /*if(isSet && $i.treeS!=null && $set!=null){$treeS = $i.treeS;}*/}
-                 | l=length[idTH, set]   {$typeS = $length.typeS; $line = $length.line; $pos = $length.pos; $treeS = $l.treeS; $mipsCodeS = $l.mipsCodeS;/*if(isSet && $l.treeS!=null && $set!=null){$treeS = $l.treeS;}*/}
-                 | d=delete[idTH, set]   {$typeS = $delete.typeS; $line = $delete.line; $pos = $delete.pos; $treeS = $d.treeS; $mipsCodeS = $d.mipsCodeS;/*if(isSet && $d.treeS!=null && $set!=null){$treeS = $d.treeS;}*/}
+                 | l=length[idTH, set]   {$typeS = $length.typeS; $line = $length.line; $pos = $length.pos; $treeS = $l.treeS; $mipsCodeS = $l.mipsCodeS; /*if(isSet && $l.treeS!=null && $set!=null){$treeS = $l.treeS;}*/}
+                 | d=delete[idTH, set]   {$typeS = $delete.typeS; $line = $delete.line; $pos = $delete.pos; $treeS = $d.treeS; $mipsCodeS = $d.mipsCodeS; /*if(isSet && $d.treeS!=null && $set!=null){$treeS = $d.treeS;}*/}
                  ;
 
 /* ****** add_op, mul_op, rel_op ****** */
@@ -2064,7 +2065,12 @@ tail [IdentifiersTable idTH, Set set]
 
      }
      // tail : sequence -> sequence
-     : t='tail' '(' e=expression[idTH, set] ')'
+     : t='tail' '('
+     {
+        m.resetRegister();
+        m.addSpecialFunctionsToStackForCheckingRecursivity($t.text);
+     }
+       e=expression[idTH, set] ')'
      {
         $line = $t.line;
         $pos = $t.pos;
@@ -2072,7 +2078,7 @@ tail [IdentifiersTable idTH, Set set]
             $typeS = $e.typeS;
 
             if($e.mipsCodeS!=null){
-                $mipsCodeS = m.textTail($e.mipsCodeS, $t.line, $t.pos);
+                $mipsCodeS = m.textTail($e.mipsCodeS, $t.line, $t.pos)+m.textReturnResultOfSpecialFunctions($t.line, $t.pos);
             }
         }else{
             e.addMessage($e.line,$e.pos,ErrorMessage.semantic($e.text,ErrorMessage.type($e.typeS,"sequence")));
@@ -2094,25 +2100,27 @@ head [IdentifiersTable idTH, Set set]
      returns [String typeS, int line, int pos, Node treeS, String mipsCodeS]
      @init{
         int numberOfRegistersUsed = m.numbersOfRegisteresUsedRightNow();
+        $mipsCodeS = null;
      }
      // head : sequence -> integer
      : h='head'
       {
+        m.addSpecialFunctionsToStackForCheckingRecursivity($h.text);
         if(firstTimeSpecialFunction==true){
          $mipsCodeS = m.textSaveStateBeforeCallingSpecialFunction(numberOfRegistersUsed);
         }
       }
-      '(' e=expression[idTH, set] ')'
+      '('{m.resetRegister();} e=expression[idTH, set] ')'
      {
         $line = $h.line;
         $pos = $h.pos;
         if(($e.typeS != null) && $e.typeS.equals("sequence")){
             $typeS = "integer";
             if($e.mipsCodeS!=null){
-                if(firstTimeSpecialFunction==false){
-                    $mipsCodeS = m.textHead($e.mipsCodeS, $h.line, $h.pos);
+                if(firstTimeSpecialFunction==false && $mipsCodeS == null){
+                    $mipsCodeS = m.textHead($e.mipsCodeS, $h.line, $h.pos)+m.textReturnResultOfSpecialFunctions($h.line, $h.pos);
                 }else{
-                    $mipsCodeS += m.textHead($e.mipsCodeS, $h.line, $h.pos)+m.textRestoreStateAfterEndedCallingSpecialFunction(numberOfRegistersUsed);
+                    $mipsCodeS += m.textHead($e.mipsCodeS, $h.line, $h.pos)+m.textRestoreStateAfterEndedCallingSpecialFunction(numberOfRegistersUsed)+m.textReturnResultOfSpecialFunctions($h.line, $h.pos);
                 }
             }
         }else{ 
@@ -2137,8 +2145,17 @@ cons [IdentifiersTable idTH, Set set]
 
      }
      // integer x sequence -> sequence
-     : c='cons' '(' e1=expression[idTH, set] ',' e2=expression[idTH, set] ')'
+     :  c='cons' '('
         {
+        m.resetRegister();
+        m.addSpecialFunctionsToStackForCheckingRecursivity($c.text);
+        }
+        e1=expression[idTH, set] ',' e2=expression[idTH, set] ')'
+        {
+            System.out.println("######################### CONS_FUNCTIOn #########################\n");
+            System.out.println($e1.mipsCodeS+"\n"+$e2.mipsCodeS+"\n");
+            System.out.println("#################################################################\n");
+
             $line = $c.line;
             $pos = $c.pos;
             if(($e1.typeS != null) && $e1.typeS.equals("integer") ){
@@ -2146,7 +2163,7 @@ cons [IdentifiersTable idTH, Set set]
                     $typeS = "sequence";
 
                     if($e1.mipsCodeS!=null && $e2.mipsCodeS!=null){
-                        $mipsCodeS = m.textCons($e1.mipsCodeS,$e2.mipsCodeS,$c.line,$c.pos);
+                        $mipsCodeS = m.textCons($e1.mipsCodeS, $e2.mipsCodeS, $c.line,$c.pos)+m.textReturnResultOfSpecialFunctions($c.line, $c.pos);
                     }
 
                 }else{
@@ -2173,8 +2190,18 @@ delete [IdentifiersTable idTH, Set set]
 
        }
        // del : integer x sequence -> sequence
-       : d='del' '(' e1=expression[idTH, set] ',' e2=expression[idTH, set] ')'
+       : d='del' '('
         {
+            m.resetRegister();
+            m.addSpecialFunctionsToStackForCheckingRecursivity($d.text);
+        }
+        e1=expression[idTH, set] ',' e2=expression[idTH, set] ')'
+        {
+
+            System.out.println("######################### DELETE_FUNCTIOn #########################\n");
+            System.out.println($e1.mipsCodeS+"\n"+$e2.mipsCodeS);
+            System.out.println("#################################################################\n");
+
             $line = $d.line;
             $pos = $d.pos;
             if(($e1.typeS != null) && $e1.typeS.equals("integer") ){
@@ -2182,7 +2209,7 @@ delete [IdentifiersTable idTH, Set set]
                     $typeS = "sequence";
 
                     if($e1.mipsCodeS!=null && $e2.mipsCodeS!=null){
-                        $mipsCodeS = m.textDelete($e1.mipsCodeS, $e2.mipsCodeS, $d.line, $d.pos);
+                        $mipsCodeS = m.textDelete($e1.mipsCodeS, $e2.mipsCodeS, $d.line, $d.pos)+m.textReturnResultOfSpecialFunctions($d.line, $d.pos);
                     }
                 }else{
                     e.addMessage($e2.line,$e2.pos,ErrorMessage.semantic($e2.text,ErrorMessage.type($e2.typeS,"sequence")));
@@ -2269,25 +2296,27 @@ is_empty [IdentifiersTable idTH, Set set]
          returns [String typeS, int line, int pos, Node treeS, String mipsCodeS]
          @init{
             int numberOfRegistersUsed = m.numbersOfRegisteresUsedRightNow();
+            $mipsCodeS = null;
          }
          // is_empty : sequence -> boolean
          : i='isEmpty'
          {
+            m.addSpecialFunctionsToStackForCheckingRecursivity($i.text);
             if(firstTimeSpecialFunction==true){
                 $mipsCodeS = m.textSaveStateBeforeCallingSpecialFunction(numberOfRegistersUsed);
             }
          }
-          '(' e1=expression[idTH, set] ')'
+          '('{m.resetRegister();} e1=expression[idTH, set] ')'
          {
             $line = $i.line;
             $pos = $i.pos;
             if(($e1.typeS != null) && $e1.typeS.equals("sequence")){
                 $typeS = "boolean";
                 if($e1.mipsCodeS!=null){
-                    if(firstTimeSpecialFunction==false){
-                        $mipsCodeS = m.textIsEmpty($e1.mipsCodeS, $i.line, $i.pos);
+                    if(firstTimeSpecialFunction==false && $mipsCodeS == null){
+                        $mipsCodeS = m.textIsEmpty($e1.mipsCodeS, $i.line, $i.pos)+m.textReturnResultOfSpecialFunctions($i.line, $i.pos);
                     }else{
-                        $mipsCodeS += m.textIsEmpty($e1.mipsCodeS, $i.line, $i.pos)+m.textRestoreStateAfterEndedCallingSpecialFunction(numberOfRegistersUsed);
+                        $mipsCodeS += m.textIsEmpty($e1.mipsCodeS, $i.line, $i.pos)+m.textRestoreStateAfterEndedCallingSpecialFunction(numberOfRegistersUsed)+m.textReturnResultOfSpecialFunctions($i.line, $i.pos);
                     }
 
                 }
@@ -2310,25 +2339,27 @@ length [IdentifiersTable idTH, Set set]
        returns [String typeS, int line, int pos, Node treeS, String mipsCodeS]
        @init{
           int numberOfRegistersUsed = m.numbersOfRegisteresUsedRightNow();
+          $mipsCodeS = null;
        }
        // length : sequence -> integer
        : l='length'
          {
+            m.addSpecialFunctionsToStackForCheckingRecursivity($l.text);
             if(firstTimeSpecialFunction==true){
                 $mipsCodeS = m.textSaveStateBeforeCallingSpecialFunction(numberOfRegistersUsed);
             }
          }
-        '(' e1=expression[idTH, set] ')'
+        '('{m.resetRegister();} e1=expression[idTH, set] ')'
        {
           $line = $l.line;
           $pos = $l.pos;
           if(($e1.typeS != null) && $e1.typeS.equals("sequence")){
               $typeS = "integer";
               if($e1.mipsCodeS!=null){
-                if(firstTimeSpecialFunction==false){
-                    $mipsCodeS = m.textLength($e1.mipsCodeS, $l.line, $l.pos);
+                if(firstTimeSpecialFunction==false && $mipsCodeS == null){
+                    $mipsCodeS = m.textLength($e1.mipsCodeS, $l.line, $l.pos)+m.textReturnResultOfSpecialFunctions($l.line, $l.pos);
                 }else{
-                    $mipsCodeS += m.textLength($e1.mipsCodeS, $l.line, $l.pos)+m.textRestoreStateAfterEndedCallingSpecialFunction(numberOfRegistersUsed);
+                    $mipsCodeS += m.textLength($e1.mipsCodeS, $l.line, $l.pos)+m.textRestoreStateAfterEndedCallingSpecialFunction(numberOfRegistersUsed)+m.textReturnResultOfSpecialFunctions($l.line, $l.pos);
                 }
               }
 
@@ -2352,15 +2383,17 @@ member [IdentifiersTable idTH, Set set]
        returns [String typeS, int line, int pos, Node treeS, String mipsCodeS]
        @init{
             int numberOfRegistersUsed = m.numbersOfRegisteresUsedRightNow();
+            $mipsCodeS = null;
        }
        // isMember : integer x sequence -> boolean
        : im='isMember'
        {
+          m.addSpecialFunctionsToStackForCheckingRecursivity($im.text);
           if(firstTimeSpecialFunction==true){
               $mipsCodeS = m.textSaveStateBeforeCallingSpecialFunction(numberOfRegistersUsed);
           }
        }
-       '(' e=expression[idTH, set] ',' i=identifier ')'
+       '('{m.resetRegister();} e=expression[idTH, set] ',' i=identifier ')'
        {
           $line = $im.line;
           $pos = $im.pos;
@@ -2376,12 +2409,12 @@ member [IdentifiersTable idTH, Set set]
                     if(($e.typeS != null) && $e.typeS.equals("integer")){
                         $typeS = "boolean";
                         if($e.mipsCodeS!=null){
-                            if(firstTimeSpecialFunction==false){
+                            if(firstTimeSpecialFunction==false && $mipsCodeS == null){
                                 Integer levelIdentifier = $idTH.getInfoIdentifiersTable($i.text).getLevel();
-                                $mipsCodeS = m.textMember($e.mipsCodeS, $i.text, levelIdentifier, $idTH.getValueSP(level,$i.text), $im.line, $im.pos);
+                                $mipsCodeS = m.textMember($e.mipsCodeS, $i.text, levelIdentifier, $idTH.getValueSP(level,$i.text), $im.line, $im.pos)+m.textReturnResultOfSpecialFunctions($im.line, $im.pos);
                             }else{
                                 Integer levelIdentifier = $idTH.getInfoIdentifiersTable($i.text).getLevel();
-                                $mipsCodeS += m.textMember($e.mipsCodeS, $i.text, levelIdentifier, $idTH.getValueSP(level,$i.text), $im.line, $im.pos)+m.textRestoreStateAfterEndedCallingSpecialFunction(numberOfRegistersUsed);
+                                $mipsCodeS += m.textMember($e.mipsCodeS, $i.text, levelIdentifier, $idTH.getValueSP(level,$i.text), $im.line, $im.pos)+m.textRestoreStateAfterEndedCallingSpecialFunction(numberOfRegistersUsed)+m.textReturnResultOfSpecialFunctions($im.line, $im.pos);
                             }
                         }
                     }else{

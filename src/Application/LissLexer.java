@@ -111,6 +111,7 @@ public class LissLexer extends Lexer {
 	    boolean isDeclarations;
 
 	    boolean functionState = false;
+
 	    boolean firstTimeSpecialFunction = false;
 
 	     //Mips m = new Mips();
