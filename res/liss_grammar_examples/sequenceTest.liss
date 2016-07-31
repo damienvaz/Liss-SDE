@@ -31,6 +31,9 @@ program sequenceTest{
         //t = isEmpty(seq3) == false;
         i = 6 + 7 + length(cons(8+7,seq3));
         t = true == isMember(3+4,seq3);
+        //i = 3 + 4 + length(cons(calculate(seq3),seq3)); //This doesn't work by using the functions there. make it simple or use functions in previous line.
+        i = 3 + 4 + length(cons(1,seq3));
+
         //copy(seq3,seq1);
         //cat(seq2,seq3);
         //i = 2 + 4 + calculate(seq3);

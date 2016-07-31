@@ -6327,6 +6327,7 @@ public class LissParser extends Parser {
 
 			        m.addSpecialFunctionsToStackForCheckingRecursivity((((HeadContext)_localctx).h!=null?((HeadContext)_localctx).h.getText():null));
 			        if(firstTimeSpecialFunction==true){
+
 			         _localctx.idTH.pushSPSpecialFunction(numberOfRegistersUsed);
 			         ((HeadContext)_localctx).mipsCodeS =  m.textSaveStateBeforeCallingSpecialFunction(numberOfRegistersUsed);
 			        }

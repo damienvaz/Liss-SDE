@@ -23,7 +23,7 @@ public class IdentifiersTable {
     private HashMap<String, LinkedList<InfoIdentifiersTable>> idTable;
     private int address;
     private ArrayList<Integer> stackSP;             // It is a stack for saving all the stack pointer (=SP) !!!!
-
+    private ArrayList<Integer> levelstackSP; //This is a structure which tells where do you find the level in the stackSP! for example levelstackSP=[0|2|3]
 
     /* *** Constructor *** */
 
@@ -54,6 +54,7 @@ public class IdentifiersTable {
 
         //The stack pointer initially is 0
         this.stackSP = new ArrayList<Integer>();
+        this.levelstackSP = new ArrayList<Integer>();
         this.pushSP(0);
     }
 
@@ -84,38 +85,125 @@ public class IdentifiersTable {
         if(!actualLevel.equals(v.getLevel())){
             //Apply algorithms for searching the position on the stack pointer stack
             Integer sp = actualLevel;
-            if(this.stackSP.size()>=sp && sp>=0){
+            //if(this.stackSP.size()>=sp && sp>=0){
                 //System.out.println("Variable: "+variable+" Actual Level: "+sp.toString()+" Address of Actual Level SP : "+this.stackSP.get(sp)+" Variable level: "+v.getLevel()+" Address of Variable Level SP :"+this.stackSP.get(v.getLevel())+" Address Level Variable: "+v.getAddress());
+                /************************************************** PREVIOUS **************************************************/
                 //i = (this.stackSP.get(sp) - this.stackSP.get(v.getLevel())) + v.getAddress();
-                i = (this.stackSP.get(this.stackSP.size()-1) - this.stackSP.get(v.getLevel())) + v.getAddress();
+                /**************************************************************************************************************/
+
+                //i = (this.stackSP.get(this.stackSP.size()-1) - this.stackSP.get(v.getLevel())) + v.getAddress();
+            //}
+
+            if(this.stackSP.size()-1>=this.levelstackSP.get(sp) && sp>=0) {
+                Integer getLevelOfStackSP = this.levelstackSP.get(v.getLevel());
+                i = (this.stackSP.get(this.stackSP.size() - 1) - this.stackSP.get(getLevelOfStackSP)) + v.getAddress();
             }
-        }else{
+        }else {
+            /************************************************** PREVIOUS **************************************************/
             //It means that actualLevel == levelOfVariable
             //i = v.getAddress();
+            /**************************************************************************************************************/
 
             //This is the case when specialFunctions are called and they have a state to save but the actuaLevel == levelOfVariable!
-            if(this.stackSP.size()-1>actualLevel){
+            /*if(this.stackSP.size()-1>actualLevel){
                 i = (this.stackSP.get(this.stackSP.size()-1) - this.stackSP.get(v.getLevel())) + v.getAddress();
             }else{
                 i = v.getAddress();
+            }*/
+
+            if (this.levelstackSP.get(actualLevel) == this.stackSP.size()-1) {
+                i = v.getAddress();
+            } else {
+                //i = (this.stackSP.get(this.stackSP.size()-1) - this.stackSP.get(v.getLevel())) + v.getAddress();
+                i = (this.stackSP.get(this.stackSP.size() - 1) - this.stackSP.get(this.levelstackSP.get(actualLevel))) + v.getAddress();
             }
 
         }
+
+        System.out.println("############## STACK SP PRINT getValueSP() ##############");
+        System.out.print("levelStackSP: [");
+        for (Integer integer : this.levelstackSP) {
+            System.out.print(integer+"|");
+        }
+        System.out.println("]");
+
+        System.out.print("tackSP: [");
+        for (Integer integer : this.stackSP) {
+            System.out.print(integer+"|");
+        }
+        System.out.println("]");
+        System.out.println("Res: "+i);
+        System.out.println("#######################################################");
+
         return i;
     }
 
-    public Integer getSizeSP(Integer level){ return this.stackSP.get(level)-this.stackSP.get(level-1);}
+    public Integer getSizeSP(Integer level){
+        Integer res = 0;
+
+        if(this.levelstackSP.get(level)-this.levelstackSP.get(level-1)==1){
+            res = this.stackSP.get(this.levelstackSP.get(level)) - this.stackSP.get(this.levelstackSP.get(level-1));
+        }else{
+            Integer levelSP = this.levelstackSP.get(level);
+            Integer levelDownSP = this.levelstackSP.get(level-1);
+
+            res = this.stackSP.get(levelSP);
+            for(int i = levelSP-1; i>levelDownSP; i--){
+                res = this.stackSP.get(i);
+            }
+            res = res - this.stackSP.get(levelDownSP+1);
+
+        }
+
+        System.out.println("############## STACK SP PRINT getSizeSP() ##############");
+        System.out.print("levelStackSP: [");
+        for (Integer integer : this.levelstackSP) {
+            System.out.print(integer+"|");
+        }
+        System.out.println("]");
+
+        System.out.print("tackSP: [");
+        for (Integer integer : this.stackSP) {
+            System.out.print(integer+"|");
+        }
+        System.out.println("]");
+        System.out.println("Res: "+res);
+        System.out.println("#######################################################");
+
+        return res;
+        //return this.stackSP.get(level)-this.stackSP.get(level-1);
+
+    }
+
+
 
     public void pushSP(Integer savedRegisters){
         if(this.stackSP.size()>0 ){
             this.stackSP.add(this.stackSP.get(this.stackSP.size()-1)+this.address+savedRegisters+4);
+            //It adds the position where the level begins in the levelstackSP
+            this.levelstackSP.add(this.stackSP.size()-1);
         }else if(this.stackSP.size() == 0){
             this.stackSP.add(savedRegisters);
+            //It adds the position where the level begins in the levelstackSP
+            this.levelstackSP.add(savedRegisters);
         }
+        System.out.println("############## STACK SP PRINT pushSP() ##############");
+        System.out.print("levelStackSP: [");
+        for (Integer integer : this.levelstackSP) {
+            System.out.print(integer+"|");
+        }
+        System.out.println("]");
+
+        System.out.print("tackSP: [");
+        for (Integer integer : this.stackSP) {
+            System.out.print(integer+"|");
+        }
+        System.out.println("]");
+        System.out.println("#######################################################");
     }
 
     public void pushSPSpecialFunction(Integer SavedRegisters){
-        if(this.stackSP.size()>0 ){
+        if(this.stackSP.size()>0){
             this.stackSP.add(this.stackSP.get(this.stackSP.size()-1)+(SavedRegisters*4));
         }else if(this.stackSP.size() == 0){
             this.stackSP.add(SavedRegisters*4);
@@ -127,7 +215,28 @@ public class IdentifiersTable {
         System.out.println("#######################################################");
     }
 
-    public void popSP(){ if(this.stackSP.size()>0){this.stackSP.remove(this.stackSP.size()-1);}}
+    public void popSP(){
+        if(this.stackSP.size()>0){
+            this.stackSP.remove(this.stackSP.size()-1);
+
+            if(this.levelstackSP.get(this.levelstackSP.size()-1)>this.stackSP.size()-1){
+                this.levelstackSP.remove(this.levelstackSP.size()-1);
+            }
+        }
+        System.out.println("############## STACK SP PRINT popSP() ##############");
+        System.out.print("levelStackSP: [");
+        for (Integer integer : this.levelstackSP) {
+            System.out.print(integer+"|");
+        }
+        System.out.println("]");
+
+        System.out.print("tackSP: [");
+        for (Integer integer : this.stackSP) {
+            System.out.print(integer+"|");
+        }
+        System.out.println("]");
+        System.out.println("#######################################################");
+    }
 
     public void printSP(){
         System.out.print("[");

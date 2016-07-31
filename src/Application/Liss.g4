@@ -2108,6 +2108,7 @@ head [IdentifiersTable idTH, Set set]
       {
         m.addSpecialFunctionsToStackForCheckingRecursivity($h.text);
         if(firstTimeSpecialFunction==true){
+
          $idTH.pushSPSpecialFunction(numberOfRegistersUsed);
          $mipsCodeS = m.textSaveStateBeforeCallingSpecialFunction(numberOfRegistersUsed);
         }
