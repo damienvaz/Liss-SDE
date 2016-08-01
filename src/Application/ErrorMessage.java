@@ -64,5 +64,8 @@ public class ErrorMessage {
         return " does not exist.";
     }
 
+    public static String limitsAndDimensionsNotEqualForBothArrays(){
+        return " doesn't have the same limits or dimensions.";
+    }
 
 }

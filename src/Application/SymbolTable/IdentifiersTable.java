@@ -138,6 +138,41 @@ public class IdentifiersTable {
         return i;
     }
 
+    public boolean dimensionOfArraysEquals(Array a1, Array a2){
+        boolean res = true;
+
+        if(!a1.getDimension().equals(a2.getDimension())){res = false;}
+
+        return res;
+    }
+
+    public boolean limitsOfArraysEquals(Array a1, Array a2){
+        boolean res = true;
+
+        ArrayList<Integer> limitsA1 = a1.getLimits();
+        ArrayList<Integer> limitsA2 = a2.getLimits();
+
+        if(limitsA1.size()!=limitsA2.size()){
+            res = false;
+        }else {
+            for (int i = 0; i < limitsA1.size() && res; i++) {
+                if (!limitsA1.get(i).equals(limitsA2.get(i))) {
+                    res = false;
+                }
+            }
+        }
+
+        return res;
+    }
+
+    public boolean limitsAndDimensionOfArraysEquals(Array a1, Array a2){
+        boolean res = true;
+
+        if(!dimensionOfArraysEquals(a1,a2) || !limitsOfArraysEquals(a1,a2)){res = false;}
+
+        return res;
+    }
+
     public Integer getSizeSP(Integer level){
         Integer res = 0;
 

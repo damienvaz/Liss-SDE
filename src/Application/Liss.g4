@@ -690,7 +690,7 @@ assignment [IdentifiersTable idTH]
                 Set set = null;
                 String side = "left";
            }
-           : designator[idTH, set, side] r='=' expression[idTH,set]
+           : d=designator[idTH, set, side] r='=' e=expression[idTH,set]
            {
               $line = $r.line;
               $pos = $r.pos;
@@ -712,12 +712,64 @@ assignment [IdentifiersTable idTH]
                             if($idTH.getInfoIdentifiersTable($designator.text).getLevel().equals(0)){
                                 if($designator.typeS.equals("sequence")){
                                     mipsCodeS += m.textStoreSequence($designator.text, functionState, $idTH.getValueSP(level,$designator.text), $designator.line, $designator.pos);
+                                }else if($designator.typeS.equals("array")){
+                                    Array designator = (Array) $idTH.getInfoIdentifiersTable($designator.text);
+                                    Array expression = (Array) $idTH.getInfoIdentifiersTable($expression.text);
+
+                                    System.out.println("BEGIN ASSIGNMENT MOTHERFUCKAR1");
+                                    System.out.println(designator.toString());
+                                    System.out.println(expression.toString());
+                                    System.out.println("END ASSIGNMENT MOTHERFUCKAR1");
+
+                                    //designator variable is level 0, we need to check the level of variable expression. It might be level 0 or any others level
+                                    if(designator!=null && expression!=null){
+                                        System.out.println("WOOT1");
+                                        if($idTH.limitsAndDimensionOfArraysEquals(designator, expression)){
+                                            System.out.println("WOOT2");
+                                            if(expression.getLevel().equals(0)){
+                                                System.out.println("WOOT3");
+                                                Integer numberOfPositionToCopy = 1;
+                                                for(Integer limit : expression.getLimits()){
+                                                    numberOfPositionToCopy*=limit;
+                                                }
+                                                System.out.println("Number Of Position to copy for the array: "+numberOfPositionToCopy);
+
+                                                for(int i=0; i<numberOfPositionToCopy;i++){
+                                                    System.out.println("BLABLABLA"+numberOfPositionToCopy);
+                                                    mipsCodeS += m.loadImmediateWord(Integer.toString(i*4),$e.line,$e.pos); //this load the position of the array to the register
+                                                    mipsCodeS += m.loadWordValueArray($e.text, $e.line, $e.pos);//need to load the value of the position of the array
+                                                    mipsCodeS += m.copyWordArray($d.text, $d.line, $d.pos);
+                                                }
+
+                                            }else{
+
+                                            }
+                                        }else{
+                                            //Throw error of dimension and limits
+                                            e.addMessage($designator.line,-1,ErrorMessage.semantic($d.text+" "+$r.text+" "+$e.text,ErrorMessage.limitsAndDimensionsNotEqualForBothArrays()));
+                                        }
+                                    }
+
+
                                 }else{
                                     mipsCodeS += m.storeWord($designator.text, $designator.line, $designator.pos);
                                 }
                             }else{ //if(!$idTH.getInfoIdentifiersTable($designator.text).getLevel().equals(0)){
                                 if($designator.typeS.equals("sequence")){
                                     mipsCodeS += m.textStoreSequence($designator.text, functionState, $idTH.getValueSP(level,$designator.text), $designator.line, $designator.pos);
+                                }else if($designator.typeS.equals("array")){
+                                    Array designator = (Array) $idTH.getInfoIdentifiersTable($designator.text);
+                                    Array expression = (Array) $idTH.getInfoIdentifiersTable($expression.text);
+
+                                    System.out.println("BEGIN ASSIGNMENT MOTHERFUCKAR2");
+                                    System.out.println(designator.toString());
+                                    System.out.println(expression.toString());
+                                    System.out.println("END ASSIGNMENT MOTHERFUCKAR2");
+
+
+
+
+
                                 }else{
                                     mipsCodeS += m.storeWordSP($idTH.getValueSP(level,$designator.text));
                                 }
@@ -731,6 +783,7 @@ assignment [IdentifiersTable idTH]
                             mipsCodeS += m.storeWordArrayText($designator.identifierS, $designator.line, $designator.pos); //<- problem here
                         }
                         if(functionState == false){
+                            System.out.println("ENTREI AQUI: "+$d.text+"\nMIPSCODE: "+mipsCodeS);
                             m.addTextInstruction(mipsCodeS);
                         }else if(functionState == true){
                             m.addMipsCodeFunction(m.getNameFunction(),mipsCodeS);
@@ -796,11 +849,11 @@ designator [IdentifiersTable idTH, Set set, String side]
                                                             if(v.getLevel().equals(0)){
                                                                 if($mipsCodeS==null){
                                                                     System.out.println("Identifier: "+$identifier.text+" Type: "+$typeS+" Level: "+v.getLevel());
-                                                                    $mipsCodeS = null;
+                                                                    $mipsCodeS = "";
                                                                 }
                                                             }else if(!v.getLevel().equals(0)){
                                                                 System.out.println($typeS+" Level: "+v.getLevel());
-                                                                $mipsCodeS = null;
+                                                                $mipsCodeS = "";
                                                             }
                                                         }else if($typeS.equals("sequence")){
                                                             if(v.getLevel().equals(0)){

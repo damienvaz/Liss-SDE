@@ -229,6 +229,17 @@ public class Mips {
         return s.toString();
     }
 
+    public String copyWordArray(String name, int line, int pos){
+        StringBuilder s = new StringBuilder();
+        String r[] = lastTwoRegisterOccupied();
+
+        s.append("\tsw "+r[1]+", "+name+"("+r[0]+")\t\t# "+line+":"+pos+"\n");
+
+        resetRegister();
+
+        return s.toString();
+    }
+
     public String storeWordArrayText(String name, int line, int pos){
         StringBuilder s = new StringBuilder();
         String r[] = lastTwoRegisterOccupied();
@@ -245,6 +256,14 @@ public class Mips {
         StringBuilder s = new StringBuilder();
         String r[] = lastRegisterOccupied();
         s.append("\tlw "+r[0]+", "+name+"("+r[0]+")\t\t# "+line+":"+pos+"\n");
+        return s.toString();
+    }
+
+    public String loadWordValueArray(String name, int line, int pos){
+        StringBuilder s = new StringBuilder();
+        String r[] = lastRegisterOccupied();
+        String register = nextFreeRegister();
+        s.append("\tlw "+register+", "+name+"("+r[0]+")\t\t# "+line+":"+pos+"\n");
         return s.toString();
     }
 
