@@ -1050,6 +1050,17 @@ public class Mips {
         return s.toString();
     }
 
+    public String copyWordValueArraySP(Integer positionFromSP){
+        StringBuilder s = new StringBuilder();
+
+        String register = lastRegisterOccupied()[0];
+        s.append("\tsw " + register + ", " + positionFromSP.toString() + "($sp)\t\t \n");// + line + ":" + pos +"\n");
+        freeLastRegister();
+        freeLastRegister();
+
+        return s.toString();
+    }
+
     public String loadWordValueSP(String register, Integer positionFromSP){
         StringBuilder s = new StringBuilder();
 

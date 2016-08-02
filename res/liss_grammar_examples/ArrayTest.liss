@@ -31,10 +31,11 @@ declarations
 
     subprogram arrayTest()->integer{
                 declarations
-                    vector4 = [[7,8],[9,10],[11,12]] -> array size 3,2;
+                    vector5, vector6 = [[7,8],[9,10],[11,12]] -> array size 3,2;
                     i = 3 -> integer;
                 statements
-                    vector3 = vector4;
+                    //vector3 = vector6;
+                    vector5 = vector4;
                 return i;
             }
 

@@ -324,7 +324,8 @@ public class IdentifiersTable {
                             l.add(i.clone());
                             this.idTable.put(id, l);
 
-                            this.address = this.address + typeSpace.getSpace();
+                            //this.address = this.address + typeSpace.getSpace();
+                            setAddress(this.address + typeSpace.getSpace());
                             i.setAddress(this.address);
                         }else {
                             //Pre-Condition : Verificar e comparar o nivel da variavel na tabela de identificador e o nivel do identificador
@@ -333,7 +334,8 @@ public class IdentifiersTable {
                                 l.add(i.clone());
                                 //this.idTable.put(id,l);
 
-                                this.address = this.address + typeSpace.getSpace();
+                                //this.address = this.address + typeSpace.getSpace();
+                                setAddress(this.address + typeSpace.getSpace());
                                 i.setAddress(this.address);
                             } else {
                                 e.addMessage((int) hashmapVar.get(id).get("line"), (int) hashmapVar.get(id).get("pos"), ErrorMessage.semantic(id, ErrorMessage.Declarations));
@@ -361,7 +363,8 @@ public class IdentifiersTable {
                             LinkedList<InfoIdentifiersTable> l = this.idTable.get(id);
                             l.add(b.clone());
 
-                            this.address = this.address + typeSpace.getSpace();
+                            //this.address = this.address + typeSpace.getSpace();
+                            setAddress(this.address + typeSpace.getSpace());
                             b.setAddress(this.address);
                         } else {
                             e.addMessage((int) hashmapVar.get(id).get("line"),(int) hashmapVar.get(id).get("pos"),ErrorMessage.semantic(id,ErrorMessage.Declarations));
@@ -383,7 +386,9 @@ public class IdentifiersTable {
                         l.add(a.clone());
                         this.idTable.put(id,l);
 
-                        this.address = this.address + (a.getMemorySize() * typeSpace.getSpace());
+                        //this.address = this.address + (a.getMemorySize() * typeSpace.getSpace());
+                        setAddress(this.address + (a.getMemorySize() * typeSpace.getSpace()));
+                        System.out.println("ID: "+id+" NEXT ADDRESS: "+getAddress()+" <- NEXT ADDRESS OF ARRAY");
                         a.setAddress(this.address);
                     }else{
                         ArrayList<Integer> arrayDimension = (ArrayList<Integer>) hashmapVar.get(id).get("dimension");
@@ -393,7 +398,9 @@ public class IdentifiersTable {
                             LinkedList<InfoIdentifiersTable> l = this.idTable.get(id);
                             l.add(a.clone());
 
-                            this.address = this.address + (a.getMemorySize() * typeSpace.getSpace());
+                            //this.address = this.address + (a.getMemorySize() * typeSpace.getSpace());
+                            setAddress(this.address + (a.getMemorySize() * typeSpace.getSpace()));
+                            System.out.println("ID: "+id+" NEXT ADDRESS: "+getAddress()+" <- NEXT ADDRESS OF ARRAY");
                             a.setAddress(this.address);
                         } else {
                             //e.addMessage((int) hashmapVar.get(id).get("line"),(int) hashmapVar.get(id).get("pos"),ErrorMessage.semantic(id,ErrorMessage.Declarations));
@@ -414,7 +421,8 @@ public class IdentifiersTable {
                         l.add(s.clone());
                         this.idTable.put(id,l);
 
-                        this.address = this.address + typeSpace.getSpace();
+                        //this.address = this.address + typeSpace.getSpace();
+                        setAddress(this.address + typeSpace.getSpace());
                         s.setAddress(this.address);
                     }else{
                         //Pre-Condition : Verificar e comparar o nivel da variavel na tabela de identificador e o nivel do identificador
@@ -422,7 +430,8 @@ public class IdentifiersTable {
                             LinkedList<InfoIdentifiersTable> l = this.idTable.get(id);
                             l.add(s.clone());
 
-                            this.address = this.address + typeSpace.getSpace();
+                            //this.address = this.address + typeSpace.getSpace();
+                            setAddress(this.address + typeSpace.getSpace());
                             s.setAddress(this.address);
                         } else {
                             //e.addMessage((int) hashmapVar.get(id).get("line"),(int) hashmapVar.get(id).get("pos"),ErrorMessage.semantic(id,ErrorMessage.Declarations));
@@ -446,7 +455,8 @@ public class IdentifiersTable {
                         l.add(set.clone());
                         this.idTable.put(id,l);
 
-                        this.address = this.address + typeSpace.getSpace();
+                        //this.address = this.address + typeSpace.getSpace();
+                        setAddress(this.address + typeSpace.getSpace());
                         set.setAddress(this.address);
                     }else{
                         Application.Set s1 = (Application.Set) hashmapVar.get(id).get("set");
@@ -457,7 +467,8 @@ public class IdentifiersTable {
                             LinkedList<InfoIdentifiersTable> l = this.idTable.get(id);
                             l.add(set.clone());
 
-                            this.address = this.address + typeSpace.getSpace();
+                            //this.address = this.address + typeSpace.getSpace();
+                            setAddress(this.address + typeSpace.getSpace());
                             set.setAddress(this.address);
                         } else {
                             e.addMessage((int) hashmapVar.get(id).get("line"),(int) hashmapVar.get(id).get("pos"),ErrorMessage.semantic(id,ErrorMessage.Declarations));

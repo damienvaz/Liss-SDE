@@ -95,8 +95,11 @@ variable_declaration [IdentifiersTable idTH]
                      : vars[idTH] '->' type ';' {
                         HashMap<String, HashMap<String,Object>> varsH = $vars.varsS;
                             if($type.typeS == "array" ){
+                                //we need to count which position will you store in the sp. And for that we need to count it for each array declared.
+                                int addressSP = $idTH.getAddress();
                                 for(String i : varsH.keySet()){
                                     varsH.get(i).put("dimension",$type.arrayDimension);
+
                                     if(varsH.get(i).get("accessArray") != null){
                                         ArrayList<ArrayList<Integer>> accessArray = (ArrayList<ArrayList<Integer>>) varsH.get(i).get("accessArray");
 
@@ -133,8 +136,12 @@ variable_declaration [IdentifiersTable idTH]
                                                 //Add the instruction to the assembly
                                                 //m.addTextInstruction(mipsCodeS);
                                             }else if(functionState == true){
-                                                //What it does is,
-                                                mipsCodeS += m.loadImmediateWord(""+$idTH.getAddress(), (int)varsH.get(i).get("line"), (int)varsH.get(i).get("pos"))+m.textAdd((int)varsH.get(i).get("line"), (int)varsH.get(i).get("pos"));
+
+                                                //System.out.println($idTH.toString());
+                                                mipsCodeS += "##SERÁ##\n";
+                                                //Integer address = $idTH.getAddress(); Nao pode ser !!!!
+                                                System.out.println(i+" ADDRESS OF VARIABLE DECLARATION: "+addressSP);
+                                                mipsCodeS += m.loadImmediateWord(""+addressSP, (int)varsH.get(i).get("line"), (int)varsH.get(i).get("pos"))+m.textAdd((int)varsH.get(i).get("line"), (int)varsH.get(i).get("pos"));
                                                 //è necessario adicionar o endereço da stack frame a posicao calculado do endereço array (para acceder bem)
                                                 mipsCodeS += m.storeValueWordArraySP((int)varsH.get(i).get("line"), (int)varsH.get(i).get("pos"));
                                                 //m.addMipsCodeFunction(m.getNameFunction(),mipsCodeS);
@@ -145,6 +152,15 @@ variable_declaration [IdentifiersTable idTH]
                                         mipsCodeS += "\t#######################################\n";
                                         varsH.get(i).put("mips",mipsCodeS);
                                     }
+
+                                    ArrayList<Integer> limits = $type.arrayDimension;
+
+                                    int res=1;
+                                    for(Integer l : limits){
+                                        res*=l;
+                                    }
+                                    addressSP+=res*4;
+
                                 }
                             }else if($type.typeS == "set"){
                                 for(String i : varsH.keySet()){
@@ -244,10 +260,14 @@ variable_declaration [IdentifiersTable idTH]
 
                             $idTH.add(e,varsH,$type.typeS,level);
 
+
+
+
                             //MIPS
                             if(functionState == false){
                                 m.addDataInstructions(varsH,$type.typeS);
                             }else if(functionState == true){
+                                System.out.println($idTH.toString());
                                 m.addDataFunctionInstructions(varsH, $type.typeS);
                             }
                      }
@@ -576,7 +596,8 @@ f_body[IdentifiersTable idTH, HashMap<String,Object> varInfo]
       returns [String typeS, String returnS, String returnMipsCodeS]
        : '{'
          'declarations' {isDeclarations = true;}    declarations[idTH, varInfo]
-         'statements'   {isDeclarations = false; String mipsCodeS = "\t#########BEGIN STATEMENTS#########\n"; m.addMipsCodeFunction(m.getNameFunction(),mipsCodeS);}   statements[idTH] {mipsCodeS = "\t##########END STATEMENTS##########\n"; m.addMipsCodeFunction(m.getNameFunction(),mipsCodeS);}
+         'statements'   {isDeclarations = false; String mipsCodeS = "\t#########BEGIN STATEMENTS#########\n"; m.addMipsCodeFunction(m.getNameFunction(),mipsCodeS);}
+         statements[idTH] {mipsCodeS = "\t##########END STATEMENTS##########\n"; m.addMipsCodeFunction(m.getNameFunction(),mipsCodeS);}
          r=returnSubPrg[idTH] {$typeS = $r.typeS; $returnS = $r.text; $returnMipsCodeS = $r.mipsCodeS;}
          '}'
        ;
@@ -783,11 +804,14 @@ assignment [IdentifiersTable idTH]
                                                 }
                                                 System.out.println("Number Of Position to copy for the array: "+numberOfPositionToCopy);
 
-                                                for(int i=0; i<numberOfPositionToCopy;i++){
+                                                for(int i=0; i<numberOfPositionToCopy*4;i+=4){
                                                     System.out.println("BLABLABLA"+numberOfPositionToCopy);
-                                                    mipsCodeS += m.loadImmediateWord(Integer.toString(i*4),$e.line,$e.pos); //this load the position of the array to the register
-                                                    mipsCodeS += m.loadWordValueArrayWithName($e.text, $e.line, $e.pos);//need to load the value of the position of the array
-                                                    mipsCodeS += m.copyWordArray($d.text, $d.line, $d.pos);
+                                                    //mipsCodeS += m.loadImmediateWord(Integer.toString(i*4),$e.line,$e.pos); //this load the position of the array to the register
+                                                    //mipsCodeS += m.loadWordValueArrayWithName($e.text, $e.line, $e.pos);//need to load the value of the position of the array
+                                                    //mipsCodeS += m.copyWordArray($d.text, $d.line, $d.pos);
+                                                    mipsCodeS += m.loadImmediateWord(""+i, $e.line, $e.pos);
+                                                    mipsCodeS += m.loadWordValueArrayWithName($e.text, $e.line, $e.pos);
+                                                    mipsCodeS += m.copyWordValueArraySP($idTH.getValueSP(level, $d.text)+i);
                                                 }
 
                                             }else{

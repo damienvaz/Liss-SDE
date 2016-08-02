@@ -431,8 +431,11 @@ public class LissParser extends Parser {
 
 			                        HashMap<String, HashMap<String,Object>> varsH = ((Variable_declarationContext)_localctx).vars.varsS;
 			                            if(((Variable_declarationContext)_localctx).type.typeS == "array" ){
+			                                //we need to count which position will you store in the sp. And for that we need to count it for each array declared.
+			                                int addressSP = _localctx.idTH.getAddress();
 			                                for(String i : varsH.keySet()){
 			                                    varsH.get(i).put("dimension",((Variable_declarationContext)_localctx).type.arrayDimension);
+
 			                                    if(varsH.get(i).get("accessArray") != null){
 			                                        ArrayList<ArrayList<Integer>> accessArray = (ArrayList<ArrayList<Integer>>) varsH.get(i).get("accessArray");
 
@@ -469,8 +472,12 @@ public class LissParser extends Parser {
 			                                                //Add the instruction to the assembly
 			                                                //m.addTextInstruction(mipsCodeS);
 			                                            }else if(functionState == true){
-			                                                //What it does is,
-			                                                mipsCodeS += m.loadImmediateWord(""+_localctx.idTH.getAddress(), (int)varsH.get(i).get("line"), (int)varsH.get(i).get("pos"))+m.textAdd((int)varsH.get(i).get("line"), (int)varsH.get(i).get("pos"));
+
+			                                                //System.out.println(_localctx.idTH.toString());
+			                                                mipsCodeS += "##SERÁ##\n";
+			                                                //Integer address = _localctx.idTH.getAddress(); Nao pode ser !!!!
+			                                                System.out.println(i+" ADDRESS OF VARIABLE DECLARATION: "+addressSP);
+			                                                mipsCodeS += m.loadImmediateWord(""+addressSP, (int)varsH.get(i).get("line"), (int)varsH.get(i).get("pos"))+m.textAdd((int)varsH.get(i).get("line"), (int)varsH.get(i).get("pos"));
 			                                                //è necessario adicionar o endereço da stack frame a posicao calculado do endereço array (para acceder bem)
 			                                                mipsCodeS += m.storeValueWordArraySP((int)varsH.get(i).get("line"), (int)varsH.get(i).get("pos"));
 			                                                //m.addMipsCodeFunction(m.getNameFunction(),mipsCodeS);
@@ -481,6 +488,15 @@ public class LissParser extends Parser {
 			                                        mipsCodeS += "\t#######################################\n";
 			                                        varsH.get(i).put("mips",mipsCodeS);
 			                                    }
+
+			                                    //This algorithm counts the next address in the sp for the array(basically, it simulates the number)!!!
+			                                    ArrayList<Integer> limits = ((Variable_declarationContext)_localctx).type.arrayDimension;
+			                                    int res=1;
+			                                    for(Integer l : limits){
+			                                        res*=l;
+			                                    }
+			                                    addressSP+=res*4;
+
 			                                }
 			                            }else if(((Variable_declarationContext)_localctx).type.typeS == "set"){
 			                                for(String i : varsH.keySet()){
@@ -580,10 +596,14 @@ public class LissParser extends Parser {
 
 			                            _localctx.idTH.add(e,varsH,((Variable_declarationContext)_localctx).type.typeS,level);
 
+
+
+
 			                            //MIPS
 			                            if(functionState == false){
 			                                m.addDataInstructions(varsH,((Variable_declarationContext)_localctx).type.typeS);
 			                            }else if(functionState == true){
+			                                System.out.println(_localctx.idTH.toString());
 			                                m.addDataFunctionInstructions(varsH, ((Variable_declarationContext)_localctx).type.typeS);
 			                            }
 			                     
@@ -2733,11 +2753,14 @@ public class LissParser extends Parser {
 			                                                }
 			                                                System.out.println("Number Of Position to copy for the array: "+numberOfPositionToCopy);
 
-			                                                for(int i=0; i<numberOfPositionToCopy;i++){
+			                                                for(int i=0; i<numberOfPositionToCopy*4;i+=4){
 			                                                    System.out.println("BLABLABLA"+numberOfPositionToCopy);
-			                                                    mipsCodeS += m.loadImmediateWord(Integer.toString(i*4),((AssignmentContext)_localctx).e.line,((AssignmentContext)_localctx).e.pos); //this load the position of the array to the register
-			                                                    mipsCodeS += m.loadWordValueArrayWithName((((AssignmentContext)_localctx).e!=null?_input.getText(((AssignmentContext)_localctx).e.start,((AssignmentContext)_localctx).e.stop):null), ((AssignmentContext)_localctx).e.line, ((AssignmentContext)_localctx).e.pos);//need to load the value of the position of the array
-			                                                    mipsCodeS += m.copyWordArray((((AssignmentContext)_localctx).d!=null?_input.getText(((AssignmentContext)_localctx).d.start,((AssignmentContext)_localctx).d.stop):null), ((AssignmentContext)_localctx).d.line, ((AssignmentContext)_localctx).d.pos);
+			                                                    //mipsCodeS += m.loadImmediateWord(Integer.toString(i*4),((AssignmentContext)_localctx).e.line,((AssignmentContext)_localctx).e.pos); //this load the position of the array to the register
+			                                                    //mipsCodeS += m.loadWordValueArrayWithName((((AssignmentContext)_localctx).e!=null?_input.getText(((AssignmentContext)_localctx).e.start,((AssignmentContext)_localctx).e.stop):null), ((AssignmentContext)_localctx).e.line, ((AssignmentContext)_localctx).e.pos);//need to load the value of the position of the array
+			                                                    //mipsCodeS += m.copyWordArray((((AssignmentContext)_localctx).d!=null?_input.getText(((AssignmentContext)_localctx).d.start,((AssignmentContext)_localctx).d.stop):null), ((AssignmentContext)_localctx).d.line, ((AssignmentContext)_localctx).d.pos);
+			                                                    mipsCodeS += m.loadImmediateWord(""+i, ((AssignmentContext)_localctx).e.line, ((AssignmentContext)_localctx).e.pos);
+			                                                    mipsCodeS += m.loadWordValueArrayWithName((((AssignmentContext)_localctx).e!=null?_input.getText(((AssignmentContext)_localctx).e.start,((AssignmentContext)_localctx).e.stop):null), ((AssignmentContext)_localctx).e.line, ((AssignmentContext)_localctx).e.pos);
+			                                                    mipsCodeS += m.copyWordValueArraySP(_localctx.idTH.getValueSP(level, (((AssignmentContext)_localctx).d!=null?_input.getText(((AssignmentContext)_localctx).d.start,((AssignmentContext)_localctx).d.stop):null))+i);
 			                                                }
 
 			                                            }else{
