@@ -235,7 +235,9 @@ public class Mips {
 
         s.append("\tsw "+r[1]+", "+name+"("+r[0]+")\t\t# "+line+":"+pos+"\n");
 
-        resetRegister();
+        //resetRegister();
+        freeLastRegister();
+        freeLastRegister();
 
         return s.toString();
     }
@@ -259,11 +261,19 @@ public class Mips {
         return s.toString();
     }
 
-    public String loadWordValueArray(String name, int line, int pos){
+    public String loadWordValueArrayWithName(String name, int line, int pos){
         StringBuilder s = new StringBuilder();
         String r[] = lastRegisterOccupied();
         String register = nextFreeRegister();
         s.append("\tlw "+register+", "+name+"("+r[0]+")\t\t# "+line+":"+pos+"\n");
+        return s.toString();
+    }
+
+    public String loadWordValueArrayIntoEffectiveMemory(String value, int line, int pos){
+        StringBuilder s = new StringBuilder();
+        String r[] = lastRegisterOccupied();
+        String register = nextFreeRegister();
+        s.append("\tlw "+register+", "+value+"("+r[0]+")\t\t# "+line+":"+pos+"\n");
         return s.toString();
     }
 

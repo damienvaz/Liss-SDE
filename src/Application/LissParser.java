@@ -2673,11 +2673,8 @@ public class LissParser extends Parser {
 
 			                                    //designator variable is level 0, we need to check the level of variable expression. It might be level 0 or any others level
 			                                    if(designator!=null && expression!=null){
-			                                        System.out.println("WOOT1");
 			                                        if(_localctx.idTH.limitsAndDimensionOfArraysEquals(designator, expression)){
-			                                            System.out.println("WOOT2");
 			                                            if(expression.getLevel().equals(0)){
-			                                                System.out.println("WOOT3");
 			                                                Integer numberOfPositionToCopy = 1;
 			                                                for(Integer limit : expression.getLimits()){
 			                                                    numberOfPositionToCopy*=limit;
@@ -2685,14 +2682,23 @@ public class LissParser extends Parser {
 			                                                System.out.println("Number Of Position to copy for the array: "+numberOfPositionToCopy);
 
 			                                                for(int i=0; i<numberOfPositionToCopy;i++){
-			                                                    System.out.println("BLABLABLA"+numberOfPositionToCopy);
 			                                                    mipsCodeS += m.loadImmediateWord(Integer.toString(i*4),((AssignmentContext)_localctx).e.line,((AssignmentContext)_localctx).e.pos); //this load the position of the array to the register
-			                                                    mipsCodeS += m.loadWordValueArray((((AssignmentContext)_localctx).e!=null?_input.getText(((AssignmentContext)_localctx).e.start,((AssignmentContext)_localctx).e.stop):null), ((AssignmentContext)_localctx).e.line, ((AssignmentContext)_localctx).e.pos);//need to load the value of the position of the array
+			                                                    mipsCodeS += m.loadWordValueArrayWithName((((AssignmentContext)_localctx).e!=null?_input.getText(((AssignmentContext)_localctx).e.start,((AssignmentContext)_localctx).e.stop):null), ((AssignmentContext)_localctx).e.line, ((AssignmentContext)_localctx).e.pos);//need to load the value of the position of the array
 			                                                    mipsCodeS += m.copyWordArray((((AssignmentContext)_localctx).d!=null?_input.getText(((AssignmentContext)_localctx).d.start,((AssignmentContext)_localctx).d.stop):null), ((AssignmentContext)_localctx).d.line, ((AssignmentContext)_localctx).d.pos);
 			                                                }
 
 			                                            }else{
+			                                                Integer numberOfPositionToCopy = 1;
+			                                                for(Integer limit : expression.getLimits()){
+			                                                    numberOfPositionToCopy*=limit;
+			                                                }
+			                                                System.out.println("Number Of Position to copy for the array: "+numberOfPositionToCopy);
 
+			                                                for(int i=0; i<numberOfPositionToCopy*4;i+=4){
+			                                                    mipsCodeS += m.loadImmediateWord(""+i,((AssignmentContext)_localctx).e.line,((AssignmentContext)_localctx).e.pos); //this load the position of the array to the register
+			                                                    mipsCodeS += m.loadWordSP(_localctx.idTH.getValueSP(level, (((AssignmentContext)_localctx).e!=null?_input.getText(((AssignmentContext)_localctx).e.start,((AssignmentContext)_localctx).e.stop):null))+i);
+			                                                    mipsCodeS += m.copyWordArray((((AssignmentContext)_localctx).d!=null?_input.getText(((AssignmentContext)_localctx).d.start,((AssignmentContext)_localctx).d.stop):null), ((AssignmentContext)_localctx).d.line, ((AssignmentContext)_localctx).d.pos);
+			                                                }
 			                                            }
 			                                        }else{
 			                                            //Throw error of dimension and limits
@@ -2715,7 +2721,45 @@ public class LissParser extends Parser {
 			                                    System.out.println(designator.toString());
 			                                    System.out.println(expression.toString());
 			                                    System.out.println("END ASSIGNMENT MOTHERFUCKAR2");
+			                                    if(designator!=null && expression!=null){
+			                                        System.out.println("WOOT1");
+			                                        if(_localctx.idTH.limitsAndDimensionOfArraysEquals(designator, expression)){
+			                                            System.out.println("WOOT2");
+			                                            if(expression.getLevel().equals(0)){
+			                                                System.out.println("WOOT3");
+			                                                Integer numberOfPositionToCopy = 1;
+			                                                for(Integer limit : expression.getLimits()){
+			                                                    numberOfPositionToCopy*=limit;
+			                                                }
+			                                                System.out.println("Number Of Position to copy for the array: "+numberOfPositionToCopy);
 
+			                                                for(int i=0; i<numberOfPositionToCopy;i++){
+			                                                    System.out.println("BLABLABLA"+numberOfPositionToCopy);
+			                                                    mipsCodeS += m.loadImmediateWord(Integer.toString(i*4),((AssignmentContext)_localctx).e.line,((AssignmentContext)_localctx).e.pos); //this load the position of the array to the register
+			                                                    mipsCodeS += m.loadWordValueArrayWithName((((AssignmentContext)_localctx).e!=null?_input.getText(((AssignmentContext)_localctx).e.start,((AssignmentContext)_localctx).e.stop):null), ((AssignmentContext)_localctx).e.line, ((AssignmentContext)_localctx).e.pos);//need to load the value of the position of the array
+			                                                    mipsCodeS += m.copyWordArray((((AssignmentContext)_localctx).d!=null?_input.getText(((AssignmentContext)_localctx).d.start,((AssignmentContext)_localctx).d.stop):null), ((AssignmentContext)_localctx).d.line, ((AssignmentContext)_localctx).d.pos);
+			                                                }
+
+			                                            }else{
+			                                                System.out.println("WOOT4");
+			                                                Integer numberOfPositionToCopy = 1;
+			                                                for(Integer limit : expression.getLimits()){
+			                                                    numberOfPositionToCopy*=limit;
+			                                                }
+			                                                System.out.println("Number Of Position to copy for the array: "+numberOfPositionToCopy);
+
+			                                                for(int i=0; i<numberOfPositionToCopy*4;i+=4){
+			                                                    System.out.println("BLABLABLA"+numberOfPositionToCopy);
+			                                                    mipsCodeS += m.loadImmediateWord(""+i,((AssignmentContext)_localctx).e.line,((AssignmentContext)_localctx).e.pos); //this load the position of the array to the register
+			                                                    mipsCodeS += m.loadWordSP(_localctx.idTH.getValueSP(level, (((AssignmentContext)_localctx).e!=null?_input.getText(((AssignmentContext)_localctx).e.start,((AssignmentContext)_localctx).e.stop):null))+i);
+			                                                    mipsCodeS += m.copyWordArray((((AssignmentContext)_localctx).d!=null?_input.getText(((AssignmentContext)_localctx).d.start,((AssignmentContext)_localctx).d.stop):null), ((AssignmentContext)_localctx).d.line, ((AssignmentContext)_localctx).d.pos);
+			                                                }
+			                                            }
+			                                        }else{
+			                                            //Throw error of dimension and limits
+			                                            e.addMessage(((AssignmentContext)_localctx).designator.line,-1,ErrorMessage.semantic((((AssignmentContext)_localctx).d!=null?_input.getText(((AssignmentContext)_localctx).d.start,((AssignmentContext)_localctx).d.stop):null)+" "+(((AssignmentContext)_localctx).r!=null?((AssignmentContext)_localctx).r.getText():null)+" "+(((AssignmentContext)_localctx).e!=null?_input.getText(((AssignmentContext)_localctx).e.start,((AssignmentContext)_localctx).e.stop):null),ErrorMessage.limitsAndDimensionsNotEqualForBothArrays()));
+			                                        }
+			                                    }
 
 
 

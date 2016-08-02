@@ -5,6 +5,8 @@ declarations
 	//a = 4, b -> integer;
 	//vector1 = [1,2,3], vector2 -> array size 5;
 	vector3, vector4 = [[1,2],[3,4],[5,6]] -> array size 3,2;
+	//vector3 -> array size 3,2;
+	i -> integer;
 	//array1 = [[1,2],[4]] -> array size 4,2;
 	/*array2 = [
              [[1],[5]],
@@ -27,7 +29,14 @@ declarations
 	      	  ]
 	    	 ] -> array size 2,2,2,2,4;*/
 
-
+    subprogram arrayTest()->integer{
+                declarations
+                    vector4 = [[7,8],[9,10],[11,12]] -> array size 3,2;
+                    i = 3 -> integer;
+                statements
+                    vector3 = vector4;
+                return i;
+            }
 
 statements
 
@@ -45,4 +54,6 @@ statements
 
 	//a = length(array4);
 	//writeln(a);
+
+	i = arrayTest();
 }

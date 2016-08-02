@@ -723,11 +723,8 @@ assignment [IdentifiersTable idTH]
 
                                     //designator variable is level 0, we need to check the level of variable expression. It might be level 0 or any others level
                                     if(designator!=null && expression!=null){
-                                        System.out.println("WOOT1");
                                         if($idTH.limitsAndDimensionOfArraysEquals(designator, expression)){
-                                            System.out.println("WOOT2");
                                             if(expression.getLevel().equals(0)){
-                                                System.out.println("WOOT3");
                                                 Integer numberOfPositionToCopy = 1;
                                                 for(Integer limit : expression.getLimits()){
                                                     numberOfPositionToCopy*=limit;
@@ -735,15 +732,23 @@ assignment [IdentifiersTable idTH]
                                                 System.out.println("Number Of Position to copy for the array: "+numberOfPositionToCopy);
 
                                                 for(int i=0; i<numberOfPositionToCopy;i++){
-                                                    System.out.println("BLABLABLA"+numberOfPositionToCopy);
                                                     mipsCodeS += m.loadImmediateWord(Integer.toString(i*4),$e.line,$e.pos); //this load the position of the array to the register
-                                                    mipsCodeS += m.loadWordValueArray($e.text, $e.line, $e.pos);//need to load the value of the position of the array
-
+                                                    mipsCodeS += m.loadWordValueArrayWithName($e.text, $e.line, $e.pos);//need to load the value of the position of the array
                                                     mipsCodeS += m.copyWordArray($d.text, $d.line, $d.pos);
                                                 }
 
                                             }else{
+                                                Integer numberOfPositionToCopy = 1;
+                                                for(Integer limit : expression.getLimits()){
+                                                    numberOfPositionToCopy*=limit;
+                                                }
+                                                System.out.println("Number Of Position to copy for the array: "+numberOfPositionToCopy);
 
+                                                for(int i=0; i<numberOfPositionToCopy*4;i+=4){
+                                                    mipsCodeS += m.loadImmediateWord(""+i,$e.line,$e.pos); //this load the position of the array to the register
+                                                    mipsCodeS += m.loadWordSP($idTH.getValueSP(level, $e.text)+i);
+                                                    mipsCodeS += m.copyWordArray($d.text, $d.line, $d.pos);
+                                                }
                                             }
                                         }else{
                                             //Throw error of dimension and limits
@@ -766,7 +771,45 @@ assignment [IdentifiersTable idTH]
                                     System.out.println(designator.toString());
                                     System.out.println(expression.toString());
                                     System.out.println("END ASSIGNMENT MOTHERFUCKAR2");
+                                    if(designator!=null && expression!=null){
+                                        System.out.println("WOOT1");
+                                        if($idTH.limitsAndDimensionOfArraysEquals(designator, expression)){
+                                            System.out.println("WOOT2");
+                                            if(expression.getLevel().equals(0)){
+                                                System.out.println("WOOT3");
+                                                Integer numberOfPositionToCopy = 1;
+                                                for(Integer limit : expression.getLimits()){
+                                                    numberOfPositionToCopy*=limit;
+                                                }
+                                                System.out.println("Number Of Position to copy for the array: "+numberOfPositionToCopy);
 
+                                                for(int i=0; i<numberOfPositionToCopy;i++){
+                                                    System.out.println("BLABLABLA"+numberOfPositionToCopy);
+                                                    mipsCodeS += m.loadImmediateWord(Integer.toString(i*4),$e.line,$e.pos); //this load the position of the array to the register
+                                                    mipsCodeS += m.loadWordValueArrayWithName($e.text, $e.line, $e.pos);//need to load the value of the position of the array
+                                                    mipsCodeS += m.copyWordArray($d.text, $d.line, $d.pos);
+                                                }
+
+                                            }else{
+                                                System.out.println("WOOT4");
+                                                Integer numberOfPositionToCopy = 1;
+                                                for(Integer limit : expression.getLimits()){
+                                                    numberOfPositionToCopy*=limit;
+                                                }
+                                                System.out.println("Number Of Position to copy for the array: "+numberOfPositionToCopy);
+
+                                                for(int i=0; i<numberOfPositionToCopy*4;i+=4){
+                                                    System.out.println("BLABLABLA"+numberOfPositionToCopy);
+                                                    mipsCodeS += m.loadImmediateWord(""+i,$e.line,$e.pos); //this load the position of the array to the register
+                                                    mipsCodeS += m.loadWordSP($idTH.getValueSP(level, $e.text)+i);
+                                                    mipsCodeS += m.copyWordArray($d.text, $d.line, $d.pos);
+                                                }
+                                            }
+                                        }else{
+                                            //Throw error of dimension and limits
+                                            e.addMessage($designator.line,-1,ErrorMessage.semantic($d.text+" "+$r.text+" "+$e.text,ErrorMessage.limitsAndDimensionsNotEqualForBothArrays()));
+                                        }
+                                    }
 
 
 
