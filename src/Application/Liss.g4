@@ -736,11 +736,6 @@ assignment [IdentifiersTable idTH]
                                     Array designator = (Array) $idTH.getInfoIdentifiersTable($designator.text);
                                     Array expression = (Array) $idTH.getInfoIdentifiersTable($expression.text);
 
-                                    System.out.println("BEGIN ASSIGNMENT MOTHERFUCKAR1");
-                                    System.out.println(designator.toString());
-                                    System.out.println(expression.toString());
-                                    System.out.println("END ASSIGNMENT MOTHERFUCKAR1");
-
                                     //designator variable is level 0, we need to check the level of variable expression. It might be level 0 or any others level
                                     if(designator!=null && expression!=null){
                                         if($idTH.limitsAndDimensionOfArraysEquals(designator, expression)){
@@ -749,7 +744,7 @@ assignment [IdentifiersTable idTH]
                                                 for(Integer limit : expression.getLimits()){
                                                     numberOfPositionToCopy*=limit;
                                                 }
-                                                System.out.println("Number Of Position to copy for the array: "+numberOfPositionToCopy);
+                                                //System.out.println("Number Of Position to copy for the array: "+numberOfPositionToCopy);
 
                                                 for(int i=0; i<numberOfPositionToCopy;i++){
                                                     mipsCodeS += m.loadImmediateWord(Integer.toString(i*4),$e.line,$e.pos); //this load the position of the array to the register
@@ -762,7 +757,7 @@ assignment [IdentifiersTable idTH]
                                                 for(Integer limit : expression.getLimits()){
                                                     numberOfPositionToCopy*=limit;
                                                 }
-                                                System.out.println("Number Of Position to copy for the array: "+numberOfPositionToCopy);
+                                                //System.out.println("Number Of Position to copy for the array: "+numberOfPositionToCopy);
 
                                                 for(int i=0; i<numberOfPositionToCopy*4;i+=4){
                                                     mipsCodeS += m.loadImmediateWord(""+i,$e.line,$e.pos); //this load the position of the array to the register
@@ -787,46 +782,30 @@ assignment [IdentifiersTable idTH]
                                     Array designator = (Array) $idTH.getInfoIdentifiersTable($designator.text);
                                     Array expression = (Array) $idTH.getInfoIdentifiersTable($expression.text);
 
-                                    System.out.println("BEGIN ASSIGNMENT MOTHERFUCKAR2");
-                                    System.out.println(designator.toString());
-                                    System.out.println(expression.toString());
-                                    System.out.println("END ASSIGNMENT MOTHERFUCKAR2");
                                     if(designator!=null && expression!=null){
-                                        System.out.println("WOOT1");
                                         if($idTH.limitsAndDimensionOfArraysEquals(designator, expression)){
-                                            System.out.println("WOOT2");
                                             if(expression.getLevel().equals(0)){
                                                 System.out.println("WOOT3");
                                                 Integer numberOfPositionToCopy = 1;
                                                 for(Integer limit : expression.getLimits()){
                                                     numberOfPositionToCopy*=limit;
                                                 }
-                                                System.out.println("Number Of Position to copy for the array: "+numberOfPositionToCopy);
+                                                //System.out.println("Number Of Position to copy for the array: "+numberOfPositionToCopy);
 
                                                 for(int i=0; i<numberOfPositionToCopy*4;i+=4){
-                                                    System.out.println("BLABLABLA"+numberOfPositionToCopy);
-                                                    //mipsCodeS += m.loadImmediateWord(Integer.toString(i*4),$e.line,$e.pos); //this load the position of the array to the register
-                                                    //mipsCodeS += m.loadWordValueArrayWithName($e.text, $e.line, $e.pos);//need to load the value of the position of the array
-                                                    //mipsCodeS += m.copyWordArray($d.text, $d.line, $d.pos);
                                                     mipsCodeS += m.loadImmediateWord(""+i, $e.line, $e.pos);
                                                     mipsCodeS += m.loadWordValueArrayWithName($e.text, $e.line, $e.pos);
                                                     mipsCodeS += m.copyWordValueArraySP($idTH.getValueSP(level, $d.text)+i);
                                                 }
 
                                             }else{
-                                                System.out.println("WOOT4");
                                                 Integer numberOfPositionToCopy = 1;
                                                 for(Integer limit : expression.getLimits()){
                                                     numberOfPositionToCopy*=limit;
                                                 }
-                                                System.out.println("Number Of Position to copy for the array: "+numberOfPositionToCopy);
+                                                //System.out.println("Number Of Position to copy for the array: "+numberOfPositionToCopy);
 
                                                 for(int i=0; i<numberOfPositionToCopy*4;i+=4){
-                                                    System.out.println("BLABLABLA"+numberOfPositionToCopy);
-                                                    //mipsCodeS += m.loadImmediateWord(""+i,$e.line,$e.pos); //this load the position of the array to the register
-                                                    //mipsCodeS += m.loadWordSP($idTH.getValueSP(level, $e.text)+i);
-                                                    //mipsCodeS += m.copyWordArray($d.text, $d.line, $d.pos);
-
                                                     mipsCodeS += m.loadWordSP(i+$idTH.getValueSP(level, $e.text));
                                                     mipsCodeS += m.storeWordSP(i+$idTH.getValueSP(level, $d.text));
 
@@ -837,9 +816,6 @@ assignment [IdentifiersTable idTH]
                                             e.addMessage($designator.line,-1,ErrorMessage.semantic($d.text+" "+$r.text+" "+$e.text,ErrorMessage.limitsAndDimensionsNotEqualForBothArrays()));
                                         }
                                     }
-
-
-
 
                                 }else{
                                     mipsCodeS += m.storeWordSP($idTH.getValueSP(level,$designator.text));
@@ -1147,6 +1123,9 @@ function_call [IdentifiersTable idTH, Set set]
                             if($typeS!=null){
                                 returnBoolean = true;
                             }
+
+                            //int numberOfRegistersUsed = m.numbersOfRegisteresUsedRightNow();
+                            //$idTH.pushStateRegistersToSP(numberOfRegistersUsed);
 
                             $mipsCodeS = m.textFunctionCall(m.getNameFunction()+$i.text, $i.line, $i.pos, returnBoolean,$s.argumentsMipsCodeS);
                             System.out.println("FUNCTION CALL HERE : ");
@@ -2232,9 +2211,8 @@ head [IdentifiersTable idTH, Set set]
       {
         m.addSpecialFunctionsToStackForCheckingRecursivity($h.text);
         if(firstTimeSpecialFunction==true){
-
-         $idTH.pushSPSpecialFunction(numberOfRegistersUsed);
-         $mipsCodeS = m.textSaveStateBeforeCallingSpecialFunction(numberOfRegistersUsed);
+            $idTH.pushStateRegistersToSP(numberOfRegistersUsed);
+            $mipsCodeS = m.textSaveStateBeforeCallingSpecialFunction(numberOfRegistersUsed);
         }
       }
       '('{m.resetRegister();} e=expression[idTH, set] ')'
@@ -2431,7 +2409,7 @@ is_empty [IdentifiersTable idTH, Set set]
          {
             m.addSpecialFunctionsToStackForCheckingRecursivity($i.text);
             if(firstTimeSpecialFunction==true){
-                $idTH.pushSPSpecialFunction(numberOfRegistersUsed);
+                $idTH.pushStateRegistersToSP(numberOfRegistersUsed);
                 $mipsCodeS = m.textSaveStateBeforeCallingSpecialFunction(numberOfRegistersUsed);
             }
          }
@@ -2476,7 +2454,7 @@ length [IdentifiersTable idTH, Set set]
          {
             m.addSpecialFunctionsToStackForCheckingRecursivity($l.text);
             if(firstTimeSpecialFunction==true){
-                $idTH.pushSPSpecialFunction(numberOfRegistersUsed);
+                $idTH.pushStateRegistersToSP(numberOfRegistersUsed);
                 $mipsCodeS = m.textSaveStateBeforeCallingSpecialFunction(numberOfRegistersUsed);
             }
          }
@@ -2522,7 +2500,7 @@ member [IdentifiersTable idTH, Set set]
        {
           m.addSpecialFunctionsToStackForCheckingRecursivity($im.text);
           if(firstTimeSpecialFunction==true){
-              $idTH.pushSPSpecialFunction(numberOfRegistersUsed);
+              $idTH.pushStateRegistersToSP(numberOfRegistersUsed);
               $mipsCodeS = m.textSaveStateBeforeCallingSpecialFunction(numberOfRegistersUsed);
           }
        }

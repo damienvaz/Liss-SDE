@@ -2685,11 +2685,6 @@ public class LissParser extends Parser {
 			                                    Array designator = (Array) _localctx.idTH.getInfoIdentifiersTable((((AssignmentContext)_localctx).designator!=null?_input.getText(((AssignmentContext)_localctx).designator.start,((AssignmentContext)_localctx).designator.stop):null));
 			                                    Array expression = (Array) _localctx.idTH.getInfoIdentifiersTable((((AssignmentContext)_localctx).expression!=null?_input.getText(((AssignmentContext)_localctx).expression.start,((AssignmentContext)_localctx).expression.stop):null));
 
-			                                    System.out.println("BEGIN ASSIGNMENT MOTHERFUCKAR1");
-			                                    System.out.println(designator.toString());
-			                                    System.out.println(expression.toString());
-			                                    System.out.println("END ASSIGNMENT MOTHERFUCKAR1");
-
 			                                    //designator variable is level 0, we need to check the level of variable expression. It might be level 0 or any others level
 			                                    if(designator!=null && expression!=null){
 			                                        if(_localctx.idTH.limitsAndDimensionOfArraysEquals(designator, expression)){
@@ -2698,7 +2693,7 @@ public class LissParser extends Parser {
 			                                                for(Integer limit : expression.getLimits()){
 			                                                    numberOfPositionToCopy*=limit;
 			                                                }
-			                                                System.out.println("Number Of Position to copy for the array: "+numberOfPositionToCopy);
+			                                                //System.out.println("Number Of Position to copy for the array: "+numberOfPositionToCopy);
 
 			                                                for(int i=0; i<numberOfPositionToCopy;i++){
 			                                                    mipsCodeS += m.loadImmediateWord(Integer.toString(i*4),((AssignmentContext)_localctx).e.line,((AssignmentContext)_localctx).e.pos); //this load the position of the array to the register
@@ -2711,7 +2706,7 @@ public class LissParser extends Parser {
 			                                                for(Integer limit : expression.getLimits()){
 			                                                    numberOfPositionToCopy*=limit;
 			                                                }
-			                                                System.out.println("Number Of Position to copy for the array: "+numberOfPositionToCopy);
+			                                                //System.out.println("Number Of Position to copy for the array: "+numberOfPositionToCopy);
 
 			                                                for(int i=0; i<numberOfPositionToCopy*4;i+=4){
 			                                                    mipsCodeS += m.loadImmediateWord(""+i,((AssignmentContext)_localctx).e.line,((AssignmentContext)_localctx).e.pos); //this load the position of the array to the register
@@ -2736,46 +2731,30 @@ public class LissParser extends Parser {
 			                                    Array designator = (Array) _localctx.idTH.getInfoIdentifiersTable((((AssignmentContext)_localctx).designator!=null?_input.getText(((AssignmentContext)_localctx).designator.start,((AssignmentContext)_localctx).designator.stop):null));
 			                                    Array expression = (Array) _localctx.idTH.getInfoIdentifiersTable((((AssignmentContext)_localctx).expression!=null?_input.getText(((AssignmentContext)_localctx).expression.start,((AssignmentContext)_localctx).expression.stop):null));
 
-			                                    System.out.println("BEGIN ASSIGNMENT MOTHERFUCKAR2");
-			                                    System.out.println(designator.toString());
-			                                    System.out.println(expression.toString());
-			                                    System.out.println("END ASSIGNMENT MOTHERFUCKAR2");
 			                                    if(designator!=null && expression!=null){
-			                                        System.out.println("WOOT1");
 			                                        if(_localctx.idTH.limitsAndDimensionOfArraysEquals(designator, expression)){
-			                                            System.out.println("WOOT2");
 			                                            if(expression.getLevel().equals(0)){
 			                                                System.out.println("WOOT3");
 			                                                Integer numberOfPositionToCopy = 1;
 			                                                for(Integer limit : expression.getLimits()){
 			                                                    numberOfPositionToCopy*=limit;
 			                                                }
-			                                                System.out.println("Number Of Position to copy for the array: "+numberOfPositionToCopy);
+			                                                //System.out.println("Number Of Position to copy for the array: "+numberOfPositionToCopy);
 
 			                                                for(int i=0; i<numberOfPositionToCopy*4;i+=4){
-			                                                    System.out.println("BLABLABLA"+numberOfPositionToCopy);
-			                                                    //mipsCodeS += m.loadImmediateWord(Integer.toString(i*4),((AssignmentContext)_localctx).e.line,((AssignmentContext)_localctx).e.pos); //this load the position of the array to the register
-			                                                    //mipsCodeS += m.loadWordValueArrayWithName((((AssignmentContext)_localctx).e!=null?_input.getText(((AssignmentContext)_localctx).e.start,((AssignmentContext)_localctx).e.stop):null), ((AssignmentContext)_localctx).e.line, ((AssignmentContext)_localctx).e.pos);//need to load the value of the position of the array
-			                                                    //mipsCodeS += m.copyWordArray((((AssignmentContext)_localctx).d!=null?_input.getText(((AssignmentContext)_localctx).d.start,((AssignmentContext)_localctx).d.stop):null), ((AssignmentContext)_localctx).d.line, ((AssignmentContext)_localctx).d.pos);
 			                                                    mipsCodeS += m.loadImmediateWord(""+i, ((AssignmentContext)_localctx).e.line, ((AssignmentContext)_localctx).e.pos);
 			                                                    mipsCodeS += m.loadWordValueArrayWithName((((AssignmentContext)_localctx).e!=null?_input.getText(((AssignmentContext)_localctx).e.start,((AssignmentContext)_localctx).e.stop):null), ((AssignmentContext)_localctx).e.line, ((AssignmentContext)_localctx).e.pos);
 			                                                    mipsCodeS += m.copyWordValueArraySP(_localctx.idTH.getValueSP(level, (((AssignmentContext)_localctx).d!=null?_input.getText(((AssignmentContext)_localctx).d.start,((AssignmentContext)_localctx).d.stop):null))+i);
 			                                                }
 
 			                                            }else{
-			                                                System.out.println("WOOT4");
 			                                                Integer numberOfPositionToCopy = 1;
 			                                                for(Integer limit : expression.getLimits()){
 			                                                    numberOfPositionToCopy*=limit;
 			                                                }
-			                                                System.out.println("Number Of Position to copy for the array: "+numberOfPositionToCopy);
+			                                                //System.out.println("Number Of Position to copy for the array: "+numberOfPositionToCopy);
 
 			                                                for(int i=0; i<numberOfPositionToCopy*4;i+=4){
-			                                                    System.out.println("BLABLABLA"+numberOfPositionToCopy);
-			                                                    //mipsCodeS += m.loadImmediateWord(""+i,((AssignmentContext)_localctx).e.line,((AssignmentContext)_localctx).e.pos); //this load the position of the array to the register
-			                                                    //mipsCodeS += m.loadWordSP(_localctx.idTH.getValueSP(level, (((AssignmentContext)_localctx).e!=null?_input.getText(((AssignmentContext)_localctx).e.start,((AssignmentContext)_localctx).e.stop):null))+i);
-			                                                    //mipsCodeS += m.copyWordArray((((AssignmentContext)_localctx).d!=null?_input.getText(((AssignmentContext)_localctx).d.start,((AssignmentContext)_localctx).d.stop):null), ((AssignmentContext)_localctx).d.line, ((AssignmentContext)_localctx).d.pos);
-
 			                                                    mipsCodeS += m.loadWordSP(i+_localctx.idTH.getValueSP(level, (((AssignmentContext)_localctx).e!=null?_input.getText(((AssignmentContext)_localctx).e.start,((AssignmentContext)_localctx).e.stop):null)));
 			                                                    mipsCodeS += m.storeWordSP(i+_localctx.idTH.getValueSP(level, (((AssignmentContext)_localctx).d!=null?_input.getText(((AssignmentContext)_localctx).d.start,((AssignmentContext)_localctx).d.stop):null)));
 
@@ -2786,9 +2765,6 @@ public class LissParser extends Parser {
 			                                            e.addMessage(((AssignmentContext)_localctx).designator.line,-1,ErrorMessage.semantic((((AssignmentContext)_localctx).d!=null?_input.getText(((AssignmentContext)_localctx).d.start,((AssignmentContext)_localctx).d.stop):null)+" "+(((AssignmentContext)_localctx).r!=null?((AssignmentContext)_localctx).r.getText():null)+" "+(((AssignmentContext)_localctx).e!=null?_input.getText(((AssignmentContext)_localctx).e.start,((AssignmentContext)_localctx).e.stop):null),ErrorMessage.limitsAndDimensionsNotEqualForBothArrays()));
 			                                        }
 			                                    }
-
-
-
 
 			                                }else{
 			                                    mipsCodeS += m.storeWordSP(_localctx.idTH.getValueSP(level,(((AssignmentContext)_localctx).designator!=null?_input.getText(((AssignmentContext)_localctx).designator.start,((AssignmentContext)_localctx).designator.stop):null)));
@@ -3355,6 +3331,9 @@ public class LissParser extends Parser {
 			                            if(_localctx.typeS!=null){
 			                                returnBoolean = true;
 			                            }
+
+			                            //int numberOfRegistersUsed = m.numbersOfRegisteresUsedRightNow();
+			                            //_localctx.idTH.pushStateRegistersToSP(numberOfRegistersUsed);
 
 			                            ((Function_callContext)_localctx).mipsCodeS =  m.textFunctionCall(m.getNameFunction()+(((Function_callContext)_localctx).i!=null?_input.getText(((Function_callContext)_localctx).i.start,((Function_callContext)_localctx).i.stop):null), ((Function_callContext)_localctx).i.line, ((Function_callContext)_localctx).i.pos, returnBoolean,((Function_callContext)_localctx).s.argumentsMipsCodeS);
 			                            System.out.println("FUNCTION CALL HERE : ");
@@ -6452,9 +6431,8 @@ public class LissParser extends Parser {
 
 			        m.addSpecialFunctionsToStackForCheckingRecursivity((((HeadContext)_localctx).h!=null?((HeadContext)_localctx).h.getText():null));
 			        if(firstTimeSpecialFunction==true){
-
-			         _localctx.idTH.pushSPSpecialFunction(numberOfRegistersUsed);
-			         ((HeadContext)_localctx).mipsCodeS =  m.textSaveStateBeforeCallingSpecialFunction(numberOfRegistersUsed);
+			            _localctx.idTH.pushStateRegistersToSP(numberOfRegistersUsed);
+			            ((HeadContext)_localctx).mipsCodeS =  m.textSaveStateBeforeCallingSpecialFunction(numberOfRegistersUsed);
 			        }
 			      
 			setState(777);
@@ -6928,7 +6906,7 @@ public class LissParser extends Parser {
 
 			            m.addSpecialFunctionsToStackForCheckingRecursivity((((Is_emptyContext)_localctx).i!=null?((Is_emptyContext)_localctx).i.getText():null));
 			            if(firstTimeSpecialFunction==true){
-			                _localctx.idTH.pushSPSpecialFunction(numberOfRegistersUsed);
+			                _localctx.idTH.pushStateRegistersToSP(numberOfRegistersUsed);
 			                ((Is_emptyContext)_localctx).mipsCodeS =  m.textSaveStateBeforeCallingSpecialFunction(numberOfRegistersUsed);
 			            }
 			         
@@ -7024,7 +7002,7 @@ public class LissParser extends Parser {
 
 			            m.addSpecialFunctionsToStackForCheckingRecursivity((((LengthContext)_localctx).l!=null?((LengthContext)_localctx).l.getText():null));
 			            if(firstTimeSpecialFunction==true){
-			                _localctx.idTH.pushSPSpecialFunction(numberOfRegistersUsed);
+			                _localctx.idTH.pushStateRegistersToSP(numberOfRegistersUsed);
 			                ((LengthContext)_localctx).mipsCodeS =  m.textSaveStateBeforeCallingSpecialFunction(numberOfRegistersUsed);
 			            }
 			         
@@ -7123,7 +7101,7 @@ public class LissParser extends Parser {
 
 			          m.addSpecialFunctionsToStackForCheckingRecursivity((((MemberContext)_localctx).im!=null?((MemberContext)_localctx).im.getText():null));
 			          if(firstTimeSpecialFunction==true){
-			              _localctx.idTH.pushSPSpecialFunction(numberOfRegistersUsed);
+			              _localctx.idTH.pushStateRegistersToSP(numberOfRegistersUsed);
 			              ((MemberContext)_localctx).mipsCodeS =  m.textSaveStateBeforeCallingSpecialFunction(numberOfRegistersUsed);
 			          }
 			       

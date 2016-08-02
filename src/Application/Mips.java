@@ -1122,12 +1122,12 @@ public class Mips {
         return s.toString();
     }
 
-    public String textBeginFunction(int line,int pos,int sizeFrameStack){
+    /*public String textBeginFunction(int line,int pos,int sizeFrameStack){
         StringBuilder s = new StringBuilder();
 
 
         return s.toString();
-    }
+    }*/
 
     public String textEndFunction(int sizeFrameStack, String returnMipsCode){
         StringBuilder s = new StringBuilder();
@@ -1146,9 +1146,11 @@ public class Mips {
             s.append(returnMipsCode);
             String[] r = lastRegisterOccupied();
             s.append(textMove(r[0],"$v0",0,0));
+            //String r = nextFreeRegister();
+            //s.append(textMove(r,"$v0",0,0));
             freeLastRegister();
         }
-        s.append(this.decreaseStackFrameSP(sizeFrameStack));
+        s.append(this.decreaseStackFrameSP(sizeFrameStack)); // decrease the stack by adding the instruction "add"
         s.append(this.jumpReturnAddress());
 
         return s.toString();

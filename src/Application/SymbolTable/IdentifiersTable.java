@@ -237,12 +237,14 @@ public class IdentifiersTable {
         System.out.println("#######################################################");
     }
 
-    public void pushSPSpecialFunction(Integer SavedRegisters){
-        if(this.stackSP.size()>0){
-            this.stackSP.add(this.stackSP.get(this.stackSP.size()-1)+(SavedRegisters*4));
-        }else if(this.stackSP.size() == 0){
-            this.stackSP.add(SavedRegisters*4);
-        }
+    public void pushStateRegistersToSP(Integer SavedRegisters){
+        //if(!SavedRegisters.equals(0)) {
+            if (this.stackSP.size() > 0) {
+                this.stackSP.add(this.stackSP.get(this.stackSP.size() - 1) + (SavedRegisters * 4));
+            } else if (this.stackSP.size() == 0) {
+                this.stackSP.add(SavedRegisters * 4);
+            }
+        //}
         System.out.println("############## STACK SP SPECIAL FUNCTION ##############");
         for (Integer integer : this.stackSP) {
             System.out.println(integer);
