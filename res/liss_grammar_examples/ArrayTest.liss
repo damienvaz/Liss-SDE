@@ -35,7 +35,8 @@ declarations
                     i = 3 -> integer;
                 statements
                     //vector3 = vector6;
-                    vector5 = vector4;
+                    //vector5 = vector4;
+                    vector5 = vector6;
                 return i;
             }
 

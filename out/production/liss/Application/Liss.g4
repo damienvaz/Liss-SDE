@@ -138,7 +138,6 @@ variable_declaration [IdentifiersTable idTH]
                                             }else if(functionState == true){
 
                                                 //System.out.println($idTH.toString());
-                                                mipsCodeS += "##SERÁ##\n";
                                                 //Integer address = $idTH.getAddress(); Nao pode ser !!!!
                                                 System.out.println(i+" ADDRESS OF VARIABLE DECLARATION: "+addressSP);
                                                 mipsCodeS += m.loadImmediateWord(""+addressSP, (int)varsH.get(i).get("line"), (int)varsH.get(i).get("pos"))+m.textAdd((int)varsH.get(i).get("line"), (int)varsH.get(i).get("pos"));
@@ -153,8 +152,8 @@ variable_declaration [IdentifiersTable idTH]
                                         varsH.get(i).put("mips",mipsCodeS);
                                     }
 
+                                    //This algorithm counts the next address in the sp for the array(basically, it simulates the number)!!!
                                     ArrayList<Integer> limits = $type.arrayDimension;
-
                                     int res=1;
                                     for(Integer l : limits){
                                         res*=l;
@@ -824,9 +823,13 @@ assignment [IdentifiersTable idTH]
 
                                                 for(int i=0; i<numberOfPositionToCopy*4;i+=4){
                                                     System.out.println("BLABLABLA"+numberOfPositionToCopy);
-                                                    mipsCodeS += m.loadImmediateWord(""+i,$e.line,$e.pos); //this load the position of the array to the register
-                                                    mipsCodeS += m.loadWordSP($idTH.getValueSP(level, $e.text)+i);
-                                                    mipsCodeS += m.copyWordArray($d.text, $d.line, $d.pos);
+                                                    //mipsCodeS += m.loadImmediateWord(""+i,$e.line,$e.pos); //this load the position of the array to the register
+                                                    //mipsCodeS += m.loadWordSP($idTH.getValueSP(level, $e.text)+i);
+                                                    //mipsCodeS += m.copyWordArray($d.text, $d.line, $d.pos);
+
+                                                    mipsCodeS += m.loadWordSP(i+$idTH.getValueSP(level, $e.text));
+                                                    mipsCodeS += m.storeWordSP(i+$idTH.getValueSP(level, $d.text));
+
                                                 }
                                             }
                                         }else{

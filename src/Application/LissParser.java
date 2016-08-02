@@ -474,7 +474,6 @@ public class LissParser extends Parser {
 			                                            }else if(functionState == true){
 
 			                                                //System.out.println(_localctx.idTH.toString());
-			                                                mipsCodeS += "##SERÁ##\n";
 			                                                //Integer address = _localctx.idTH.getAddress(); Nao pode ser !!!!
 			                                                System.out.println(i+" ADDRESS OF VARIABLE DECLARATION: "+addressSP);
 			                                                mipsCodeS += m.loadImmediateWord(""+addressSP, (int)varsH.get(i).get("line"), (int)varsH.get(i).get("pos"))+m.textAdd((int)varsH.get(i).get("line"), (int)varsH.get(i).get("pos"));
@@ -2773,9 +2772,13 @@ public class LissParser extends Parser {
 
 			                                                for(int i=0; i<numberOfPositionToCopy*4;i+=4){
 			                                                    System.out.println("BLABLABLA"+numberOfPositionToCopy);
-			                                                    mipsCodeS += m.loadImmediateWord(""+i,((AssignmentContext)_localctx).e.line,((AssignmentContext)_localctx).e.pos); //this load the position of the array to the register
-			                                                    mipsCodeS += m.loadWordSP(_localctx.idTH.getValueSP(level, (((AssignmentContext)_localctx).e!=null?_input.getText(((AssignmentContext)_localctx).e.start,((AssignmentContext)_localctx).e.stop):null))+i);
-			                                                    mipsCodeS += m.copyWordArray((((AssignmentContext)_localctx).d!=null?_input.getText(((AssignmentContext)_localctx).d.start,((AssignmentContext)_localctx).d.stop):null), ((AssignmentContext)_localctx).d.line, ((AssignmentContext)_localctx).d.pos);
+			                                                    //mipsCodeS += m.loadImmediateWord(""+i,((AssignmentContext)_localctx).e.line,((AssignmentContext)_localctx).e.pos); //this load the position of the array to the register
+			                                                    //mipsCodeS += m.loadWordSP(_localctx.idTH.getValueSP(level, (((AssignmentContext)_localctx).e!=null?_input.getText(((AssignmentContext)_localctx).e.start,((AssignmentContext)_localctx).e.stop):null))+i);
+			                                                    //mipsCodeS += m.copyWordArray((((AssignmentContext)_localctx).d!=null?_input.getText(((AssignmentContext)_localctx).d.start,((AssignmentContext)_localctx).d.stop):null), ((AssignmentContext)_localctx).d.line, ((AssignmentContext)_localctx).d.pos);
+
+			                                                    mipsCodeS += m.loadWordSP(i+_localctx.idTH.getValueSP(level, (((AssignmentContext)_localctx).e!=null?_input.getText(((AssignmentContext)_localctx).e.start,((AssignmentContext)_localctx).e.stop):null)));
+			                                                    mipsCodeS += m.storeWordSP(i+_localctx.idTH.getValueSP(level, (((AssignmentContext)_localctx).d!=null?_input.getText(((AssignmentContext)_localctx).d.start,((AssignmentContext)_localctx).d.stop):null)));
+
 			                                                }
 			                                            }
 			                                        }else{
