@@ -1281,9 +1281,11 @@ public class Mips {
         //It puts the address of the sequence to NULL (-1)
         if(functionState==true && firstElement==true){
             String register = nextFreeRegister();
-            s.append("\tlw "+register+", " + addressInSP + "($sp)\t\t# " + line + ":" + pos + "\n");
+            //s.append("\tlw "+register+", " + addressInSP + "($sp)\t\t# " + line + ":" + pos + "\n");
             s.append(loadImmediateWord("-1",line,pos));
-            s.append("\tsw "+lastRegisterOccupied()[0]+", ("+register+")\t\t# " + line + ":" + pos + "\n");
+            //s.append("\tsw "+lastRegisterOccupied()[0]+", ("+register+")\t\t# " + line + ":" + pos + "\n");
+            s.append("\tsw "+lastRegisterOccupied()[0]+", "+addressInSP+"($sp)\t\t# " + line + ":" + pos + "\n");
+
             freeLastRegister();
             freeLastRegister();
         }
@@ -1329,6 +1331,25 @@ public class Mips {
         return s.toString();
     }
 
+    public String textSaveArgumentOfFunctionInSP(){
+        StringBuilder s = new StringBuilder();
+
+        s.append("\taddi $sp, $sp, -" +this.eachAddressOccupies + "\n");
+        s.append("\tsw "+lastRegisterOccupied()[0]+", 0($sp)\n");
+
+        return s.toString();
+    }
+
+    public String textLoadArgumentOfFunctionInSP(){
+        StringBuilder s = new StringBuilder();
+
+        s.append("\tlw "+lastRegisterOccupied()[0]+", 0($sp)\n");
+        s.append("\taddi $sp, $sp, " +this.eachAddressOccupies + "\n");
+
+
+        return s.toString();
+    }
+
     public String textRestoreStateAfterEndedCallingSpecialFunction(int numberOfRegistersUsed){
         StringBuilder s = new StringBuilder();
 
@@ -1349,10 +1370,27 @@ public class Mips {
         this.mipsCodeSpecialFunctionState.put("cons_sequence",1);
 
         String[] res = lastTwoRegisterOccupied();
+        //s.append(valueToInsert);
+        //s.append(sequence2);
+        //s.append(textMove(res[1],"$s0", line, pos));
+        //s.append(textMove(res[0], "$s1", line, pos));
+
         s.append(sequence2);
-        s.append(textMove(res[1],"$s0", line, pos));
         s.append(valueToInsert);
         s.append(textMove(res[0], "$s1", line, pos));
+        s.append(textLoadArgumentOfFunctionInSP());
+        s.append(textMove(res[1],"$s0", line, pos));
+
+        /*if(){
+            s.append(sequence);
+            //s.append(textSaveArgumentOfFunctionInSP()); //Remover este caso nao funcionar
+            //s.append(textMove(res[1],"$s0", line, pos));
+            s.append(valueToDelete);
+            s.append(textMove(res[0], "$s1", line, pos));
+            s.append(textLoadArgumentOfFunctionInSP());
+            s.append(textMove(res[1],"$s0", line, pos));
+        }*/
+
         freeLastRegister();
         freeLastRegister();
         s.append("\tjal cons_sequence\n");
@@ -1393,10 +1431,14 @@ public class Mips {
         this.mipsCodeSpecialFunctionState.put("delete_sequence",1);
 
         String[] res = lastTwoRegisterOccupied();
+
         s.append(sequence);
-        s.append(textMove(res[1],"$s0", line, pos));
+        //s.append(textSaveArgumentOfFunctionInSP()); //Remover este caso nao funcionar
+        //s.append(textMove(res[1],"$s0", line, pos));
         s.append(valueToDelete);
         s.append(textMove(res[0], "$s1", line, pos));
+        s.append(textLoadArgumentOfFunctionInSP());
+        s.append(textMove(res[1],"$s0", line, pos));
         freeLastRegister();
         freeLastRegister();
         s.append("\tjal delete_sequence\n");

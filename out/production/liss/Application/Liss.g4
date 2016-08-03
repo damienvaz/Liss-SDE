@@ -67,12 +67,13 @@ declarations[IdentifiersTable idTH, HashMap<String,Object> varInfo]
                     $idTH.add(e,hashmapVar,"function",level-1); //Name of the function is always one level below (for this part of the code) !
                     //Code below generate the mipscode for functions
                     String mipsCodeS = m.increaseStackFrameSP($idTH.getSizeSP(level));
+                    mipsCodeS += m.saveRegistersAndReturnAddressBeginFunctions($idTH.getSizeSP(level));
                     mipsCodeS += "\t#########BEGIN DECLARATIONS#########\n";
                     m.addIncreaseSFMipsCodeFunction(m.getNameFunction(),mipsCodeS);
 
 
                     mipsCodeS = "\t#########END DECLARATIONS#########\n";
-                    mipsCodeS += m.saveRegistersAndReturnAddressBeginFunctions($idTH.getSizeSP(level));
+                    //mipsCodeS += m.saveRegistersAndReturnAddressBeginFunctions($idTH.getSizeSP(level));
 
                     m.addMipsCodeFunction(m.getNameFunction(),mipsCodeS);
                     //add the rest of the mipsCode of variable_Declaration NT
@@ -2269,7 +2270,11 @@ cons [IdentifiersTable idTH, Set set]
                     $typeS = "sequence";
 
                     if($e1.mipsCodeS!=null && $e2.mipsCodeS!=null){
+                        $e2.mipsCodeS += m.textSaveArgumentOfFunctionInSP();
+                        $idTH.pushStateRegistersToSP(1);
+
                         $mipsCodeS = m.textCons($e1.mipsCodeS, $e2.mipsCodeS, $c.line,$c.pos)+m.textReturnResultOfSpecialFunctions($c.line, $c.pos);
+                        $idTH.popSP();
                     }
 
                 }else{
@@ -2315,7 +2320,10 @@ delete [IdentifiersTable idTH, Set set]
                     $typeS = "sequence";
 
                     if($e1.mipsCodeS!=null && $e2.mipsCodeS!=null){
+                        $e2.mipsCodeS += m.textSaveArgumentOfFunctionInSP();
+                        $idTH.pushStateRegistersToSP(1);
                         $mipsCodeS = m.textDelete($e1.mipsCodeS, $e2.mipsCodeS, $d.line, $d.pos)+m.textReturnResultOfSpecialFunctions($d.line, $d.pos);
+                        $idTH.popSP();
                     }
                 }else{
                     e.addMessage($e2.line,$e2.pos,ErrorMessage.semantic($e2.text,ErrorMessage.type($e2.typeS,"sequence")));

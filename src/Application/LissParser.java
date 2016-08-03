@@ -342,12 +342,13 @@ public class LissParser extends Parser {
 			                    _localctx.idTH.add(e,hashmapVar,"function",level-1); //Name of the function is always one level below (for this part of the code) !
 			                    //Code below generate the mipscode for functions
 			                    String mipsCodeS = m.increaseStackFrameSP(_localctx.idTH.getSizeSP(level));
+			                    mipsCodeS += m.saveRegistersAndReturnAddressBeginFunctions(_localctx.idTH.getSizeSP(level));
 			                    mipsCodeS += "\t#########BEGIN DECLARATIONS#########\n";
 			                    m.addIncreaseSFMipsCodeFunction(m.getNameFunction(),mipsCodeS);
 
 
 			                    mipsCodeS = "\t#########END DECLARATIONS#########\n";
-			                    mipsCodeS += m.saveRegistersAndReturnAddressBeginFunctions(_localctx.idTH.getSizeSP(level));
+			                    //mipsCodeS += m.saveRegistersAndReturnAddressBeginFunctions(_localctx.idTH.getSizeSP(level));
 
 			                    m.addMipsCodeFunction(m.getNameFunction(),mipsCodeS);
 			                    //add the rest of the mipsCode of variable_Declaration NT
@@ -6553,7 +6554,11 @@ public class LissParser extends Parser {
 			                    ((ConsContext)_localctx).typeS =  "sequence";
 
 			                    if(((ConsContext)_localctx).e1.mipsCodeS!=null && ((ConsContext)_localctx).e2.mipsCodeS!=null){
+			                        ((ConsContext)_localctx).e2.mipsCodeS += m.textSaveArgumentOfFunctionInSP();
+			                        _localctx.idTH.pushStateRegistersToSP(1);
+
 			                        ((ConsContext)_localctx).mipsCodeS =  m.textCons(((ConsContext)_localctx).e1.mipsCodeS, ((ConsContext)_localctx).e2.mipsCodeS, (((ConsContext)_localctx).c!=null?((ConsContext)_localctx).c.getLine():0),(((ConsContext)_localctx).c!=null?((ConsContext)_localctx).c.getCharPositionInLine():0))+m.textReturnResultOfSpecialFunctions((((ConsContext)_localctx).c!=null?((ConsContext)_localctx).c.getLine():0), (((ConsContext)_localctx).c!=null?((ConsContext)_localctx).c.getCharPositionInLine():0));
+			                        _localctx.idTH.popSP();
 			                    }
 
 			                }else{
@@ -6657,7 +6662,10 @@ public class LissParser extends Parser {
 			                    ((DeleteContext)_localctx).typeS =  "sequence";
 
 			                    if(((DeleteContext)_localctx).e1.mipsCodeS!=null && ((DeleteContext)_localctx).e2.mipsCodeS!=null){
+			                        ((DeleteContext)_localctx).e2.mipsCodeS += m.textSaveArgumentOfFunctionInSP();
+			                        _localctx.idTH.pushStateRegistersToSP(1);
 			                        ((DeleteContext)_localctx).mipsCodeS =  m.textDelete(((DeleteContext)_localctx).e1.mipsCodeS, ((DeleteContext)_localctx).e2.mipsCodeS, (((DeleteContext)_localctx).d!=null?((DeleteContext)_localctx).d.getLine():0), (((DeleteContext)_localctx).d!=null?((DeleteContext)_localctx).d.getCharPositionInLine():0))+m.textReturnResultOfSpecialFunctions((((DeleteContext)_localctx).d!=null?((DeleteContext)_localctx).d.getLine():0), (((DeleteContext)_localctx).d!=null?((DeleteContext)_localctx).d.getCharPositionInLine():0));
+			                        _localctx.idTH.popSP();
 			                    }
 			                }else{
 			                    e.addMessage(((DeleteContext)_localctx).e2.line,((DeleteContext)_localctx).e2.pos,ErrorMessage.semantic((((DeleteContext)_localctx).e2!=null?_input.getText(((DeleteContext)_localctx).e2.start,((DeleteContext)_localctx).e2.stop):null),ErrorMessage.type(((DeleteContext)_localctx).e2.typeS,"sequence")));
