@@ -22,7 +22,7 @@ grammar Liss;
 
     boolean functionState = false;
 
-    boolean firstTimeSpecialFunction = false;
+    boolean isThereAStateToBeSavedPreviously = false;
 
      //Mips m = new Mips();
      Mips m;
@@ -203,27 +203,27 @@ variable_declaration [IdentifiersTable idTH]
                                     }
                                 }
                             }else if($type.typeS == "sequence"){
+                                int address = $idTH.getAddress();
                                 for(String i : varsH.keySet()){
                                     LinkedList<Integer> sequence = (LinkedList<Integer>) varsH.get(i).get("sequence");
 
                                     String mipsCodeS=null;
 
-                                    if(sequence!=null && sequence.size()!=0){
+                                    if(sequence!=null && sequence.size()>0){
                                         mipsCodeS = "\t##### Initialize Sequence :"+i+"#####\n";
-                                        for(Integer element: sequence){
-                                            boolean firstElement = sequence.getFirst().equals(element);
-                                            boolean lastElement = sequence.getLast().equals(element);
-
-                                            if(functionState == false){
-                                                mipsCodeS += m.textInitSequence(i,element.intValue(),firstElement,lastElement,functionState, 0, (int)varsH.get(i).get("line"), (int)varsH.get(i).get("pos"));
-                                            }else if(functionState==true){
-                                                //mipsCodeS += ""+$idTH.getAddress()+"|";
-
-                                                mipsCodeS += m.textInitSequence(i,element.intValue(),firstElement,lastElement,functionState, $idTH.getAddress(), (int)varsH.get(i).get("line"), (int)varsH.get(i).get("pos"));
-                                            }
-                                        }
+                                        mipsCodeS += m.textInitSequence(i, sequence, functionState, address, (int)varsH.get(i).get("line"), (int)varsH.get(i).get("pos"));
                                         mipsCodeS += "\t#######################################\n";
+                                    }else{
+                                        //this means that we need to create the sequence if it is empty when the functionState is set to 'true'
+                                        if(functionState==true){
+                                            mipsCodeS = "\t##### Initialize Sequence :"+i+"#####\n";
+                                            mipsCodeS += m.textInitSequence(i, null, functionState, address, (int)varsH.get(i).get("line"), (int)varsH.get(i).get("pos"));
+                                            mipsCodeS += "\t#######################################\n";
+                                        }else{
+                                            mipsCodeS = m.textInitSequence(i, null, functionState, address, (int)varsH.get(i).get("line"), (int)varsH.get(i).get("pos"));
+                                        }
                                     }
+                                    address += m.numberOfBytesForEachAddress();
                                     varsH.get(i).put("mips",mipsCodeS);
 
                                     System.out.println("INIT SEQUENCE: "+i);
@@ -399,7 +399,7 @@ inic_var [IdentifiersTable idTH, Set set]
                                                     $accessArrayS = accessArray;
                                               }
          | s1=set_definition[idTH]  {$typeS = "set"; $line = $s1.line; $pos = $s1.pos; $treeS = $s1.treeS; $setS = $s1.setS;/*if(isSet && $s1.treeS!=null){$treeS = $s1.treeS;} if(isSet && $s1.setS!=null){$setS = $s1.setS;}*/}
-         | s2=sequence_definition[sequence]   {$typeS = "sequence"; $line = $s2.line; $pos = $s2.pos; $treeS = $s2.treeS; $sequenceS = sequence;/*if(isSet && $set!=null){$treeS = $s2.treeS;}*/}
+         | s2=sequence_definition[sequence]   {$typeS = "sequence"; $line = $s2.line; $pos = $s2.pos; $treeS = $s2.treeS; $sequenceS = sequence; /*if(isSet && $set!=null){$treeS = $s2.treeS;}*/}
          ;
 
 constant returns [String typeS, int line, int pos, String mipsCodeS]
@@ -1128,7 +1128,18 @@ function_call [IdentifiersTable idTH, Set set]
                             //int numberOfRegistersUsed = m.numbersOfRegisteresUsedRightNow();
                             //$idTH.pushStateRegistersToSP(numberOfRegistersUsed);
 
-                            $mipsCodeS = m.textFunctionCall(m.getNameFunction()+$i.text, $i.line, $i.pos, returnBoolean,$s.argumentsMipsCodeS);
+                            if(isThereAStateToBeSavedPreviously==true){
+                                $idTH.pushStateRegistersToSP(1);
+                            }
+
+                            System.out.println("FUNCTION: "+ $i.text+" Line: "+$i.line+" Pos: "+$i.pos);
+                            $mipsCodeS = m.textFunctionCall(m.getNameFunction()+$i.text, $i.line, $i.pos, returnBoolean,$s.argumentsMipsCodeS, isThereAStateToBeSavedPreviously);
+
+                            if(isThereAStateToBeSavedPreviously==true){
+                                $idTH.popSP();
+                                isThereAStateToBeSavedPreviously=false;
+                            }
+
                             System.out.println("FUNCTION CALL HERE : ");
                             System.out.println($mipsCodeS);
                             System.out.println("FUNCTION CALL END : ");
@@ -1222,7 +1233,7 @@ expression [IdentifiersTable idTH, Set set]
                 $mipsCodeS = null;
             }
            : s1=single_expression[idTH, set]{ $line = $s1.line; $pos = $s1.pos; n = $s1.treeS; $setS = $s1.setS; $mipsCodeS = $s1.mipsCodeS;/*if($rel_op.text == null){$mipsCodeS = $s1.mipsCodeS;}*/}
-            (rel_op{firstTimeSpecialFunction=false;} s2=single_expression[idTH,set]
+            (rel_op{isThereAStateToBeSavedPreviously=true;} s2=single_expression[idTH,set]
                 {   relationExp = true;
                     if(!$rel_op.text.equals("in")){
                         if(($s1.typeS != null) && ($rel_op.text.equals("==") || $rel_op.text.equals("!=")) && $s1.typeS.equals("boolean")){
@@ -1352,7 +1363,7 @@ single_expression [IdentifiersTable idTH, Set set]
                     LinkedList<ErrorInfo> errorManagement = new LinkedList<ErrorInfo>();
                   }
                   : t1=term[idTH, set] {$line = $term.line; $pos = $term.pos; errorManagement.add(new ErrorInfo($t1.text,$t1.typeS,$t1.line,$t1.pos)); n = $t1.treeS; $setS = $t1.setS; $mipsCodeS = $t1.mipsCodeS;}
-                  (a=add_op{firstTimeSpecialFunction=false;} t2=term[idTH, set] {
+                  (a=add_op{isThereAStateToBeSavedPreviously=true;} t2=term[idTH, set] {
                                         errorManagement.add(new ErrorInfo($add_op.text,$add_op.typeS,$add_op.line,$add_op.pos));
                                         errorManagement.add(new ErrorInfo($t2.text,$t2.typeS,$t2.line,$t2.pos));
 
@@ -1482,7 +1493,7 @@ term [IdentifiersTable idTH, Set set]
         LinkedList<ErrorInfo> errorManagement = new LinkedList<ErrorInfo>();
      }
      : f1=factor[idTH, set] { $line = $f1.line; $pos = $f1.pos;  errorManagement.add(new ErrorInfo($f1.text, $f1.typeS, $f1.line,$f1.pos)); n = $f1.treeS; if($f1.setS == null && !isDeclarations){ if($idTH.doesExist($f1.text)){if($idTH.getInfoIdentifiersTable($f1.text) instanceof Application.SymbolTable.Set){Application.SymbolTable.Set s = (Application.SymbolTable.Set) $idTH.getInfoIdentifiersTable($f1.text); $setS = s.getSet();}}}else{$setS = $f1.setS;} $mipsCodeS = $f1.mipsCodeS; }
-     (m=mul_op{firstTimeSpecialFunction=false;} f2=factor[idTH, set] {
+     (m=mul_op{isThereAStateToBeSavedPreviously=true;} f2=factor[idTH, set] {
 
                                 errorManagement.add(new ErrorInfo($mul_op.text,$mul_op.typeS,$mul_op.line,$mul_op.pos));
                                 errorManagement.add(new ErrorInfo($f2.text,$f2.typeS,$f2.line,$f2.pos));
@@ -1637,9 +1648,9 @@ factor [IdentifiersTable idTH,Set set] //vai ser preciso ver as pre-condiçoes d
 specialFunctions [IdentifiersTable idTH, Set set]
                  returns [String typeS, int line, int pos, Node treeS, String mipsCodeS]
                  @init{
-                    if(firstTimeSpecialFunction==false){
-                        firstTimeSpecialFunction = true;
-                    }
+                    /*if(isThereAStateToBeSavedPreviously==false){
+                        isThereAStateToBeSavedPreviously = true;
+                    }*/
                  }
                  : t=tail[idTH, set]     {$typeS = $tail.typeS; $line = $tail.line; $pos = $tail.pos; $treeS = $t.treeS; $mipsCodeS = $t.mipsCodeS; /*if(isSet && $t.treeS!=null && $set!=null){$treeS = $t.treeS;}*/}
                  | h=head[idTH, set]     {$typeS = $head.typeS; $line = $head.line; $pos = $head.pos; $treeS = $h.treeS; $mipsCodeS = $h.mipsCodeS; /*if(isSet && $h.treeS!=null && $set!=null){$treeS = $h.treeS;}*/}
@@ -2211,7 +2222,7 @@ head [IdentifiersTable idTH, Set set]
      : h='head'
       {
         m.addSpecialFunctionsToStackForCheckingRecursivity($h.text);
-        if(firstTimeSpecialFunction==true){
+        if(isThereAStateToBeSavedPreviously==true){
             $idTH.pushStateRegistersToSP(numberOfRegistersUsed);
             $mipsCodeS = m.textSaveStateBeforeCallingSpecialFunction(numberOfRegistersUsed);
         }
@@ -2223,12 +2234,13 @@ head [IdentifiersTable idTH, Set set]
         if(($e.typeS != null) && $e.typeS.equals("sequence")){
             $typeS = "integer";
             if($e.mipsCodeS!=null){
-                if(firstTimeSpecialFunction==false && $mipsCodeS == null){
+                if(isThereAStateToBeSavedPreviously==false && $mipsCodeS == null){
                     $mipsCodeS = m.textHead($e.mipsCodeS, $h.line, $h.pos)+m.textReturnResultOfSpecialFunctions($h.line, $h.pos);
                 }else{
                     $mipsCodeS += m.textHead($e.mipsCodeS, $h.line, $h.pos)+m.textRestoreStateAfterEndedCallingSpecialFunction(numberOfRegistersUsed)+m.textReturnResultOfSpecialFunctions($h.line, $h.pos);
                     $idTH.popSP();
                 }
+                isThereAStateToBeSavedPreviously=false;
             }
         }else{ 
             e.addMessage($e.line,$e.pos,ErrorMessage.semantic($e.text,ErrorMessage.type($e.typeS,"sequence")));
@@ -2416,7 +2428,7 @@ is_empty [IdentifiersTable idTH, Set set]
          : i='isEmpty'
          {
             m.addSpecialFunctionsToStackForCheckingRecursivity($i.text);
-            if(firstTimeSpecialFunction==true){
+            if(isThereAStateToBeSavedPreviously==true){
                 $idTH.pushStateRegistersToSP(numberOfRegistersUsed);
                 $mipsCodeS = m.textSaveStateBeforeCallingSpecialFunction(numberOfRegistersUsed);
             }
@@ -2428,13 +2440,13 @@ is_empty [IdentifiersTable idTH, Set set]
             if(($e1.typeS != null) && $e1.typeS.equals("sequence")){
                 $typeS = "boolean";
                 if($e1.mipsCodeS!=null){
-                    if(firstTimeSpecialFunction==false && $mipsCodeS == null){
+                    if(isThereAStateToBeSavedPreviously==false && $mipsCodeS == null){
                         $mipsCodeS = m.textIsEmpty($e1.mipsCodeS, $i.line, $i.pos)+m.textReturnResultOfSpecialFunctions($i.line, $i.pos);
                     }else{
                         $mipsCodeS += m.textIsEmpty($e1.mipsCodeS, $i.line, $i.pos)+m.textRestoreStateAfterEndedCallingSpecialFunction(numberOfRegistersUsed)+m.textReturnResultOfSpecialFunctions($i.line, $i.pos);
                         $idTH.popSP();
                     }
-
+                    isThereAStateToBeSavedPreviously=false;
                 }
             }else{
                 e.addMessage($e1.line,$e1.pos,ErrorMessage.semantic($e1.text,ErrorMessage.type($e1.typeS,"sequence")));
@@ -2461,7 +2473,7 @@ length [IdentifiersTable idTH, Set set]
        : l='length'
          {
             m.addSpecialFunctionsToStackForCheckingRecursivity($l.text);
-            if(firstTimeSpecialFunction==true){
+            if(isThereAStateToBeSavedPreviously==true){
                 $idTH.pushStateRegistersToSP(numberOfRegistersUsed);
                 $mipsCodeS = m.textSaveStateBeforeCallingSpecialFunction(numberOfRegistersUsed);
             }
@@ -2473,12 +2485,13 @@ length [IdentifiersTable idTH, Set set]
           if(($e1.typeS != null) && $e1.typeS.equals("sequence")){
               $typeS = "integer";
               if($e1.mipsCodeS!=null){
-                if(firstTimeSpecialFunction==false && $mipsCodeS == null){
+                if(isThereAStateToBeSavedPreviously==false && $mipsCodeS == null){
                     $mipsCodeS = m.textLength($e1.mipsCodeS, $l.line, $l.pos)+m.textReturnResultOfSpecialFunctions($l.line, $l.pos);
                 }else{
                     $mipsCodeS += m.textLength($e1.mipsCodeS, $l.line, $l.pos)+m.textRestoreStateAfterEndedCallingSpecialFunction(numberOfRegistersUsed)+m.textReturnResultOfSpecialFunctions($l.line, $l.pos);
                     $idTH.popSP();
                 }
+                isThereAStateToBeSavedPreviously=false;
               }
 
           }else{
@@ -2507,7 +2520,7 @@ member [IdentifiersTable idTH, Set set]
        : im='isMember'
        {
           m.addSpecialFunctionsToStackForCheckingRecursivity($im.text);
-          if(firstTimeSpecialFunction==true){
+          if(isThereAStateToBeSavedPreviously==true){
               $idTH.pushStateRegistersToSP(numberOfRegistersUsed);
               $mipsCodeS = m.textSaveStateBeforeCallingSpecialFunction(numberOfRegistersUsed);
           }
@@ -2528,7 +2541,7 @@ member [IdentifiersTable idTH, Set set]
                     if(($e.typeS != null) && $e.typeS.equals("integer")){
                         $typeS = "boolean";
                         if($e.mipsCodeS!=null){
-                            if(firstTimeSpecialFunction==false && $mipsCodeS == null){
+                            if(isThereAStateToBeSavedPreviously==false && $mipsCodeS == null){
                                 Integer levelIdentifier = $idTH.getInfoIdentifiersTable($i.text).getLevel();
                                 $mipsCodeS = m.textMember($e.mipsCodeS, $i.text, levelIdentifier, $idTH.getValueSP(level,$i.text), $im.line, $im.pos)+m.textReturnResultOfSpecialFunctions($im.line, $im.pos);
                             }else{
@@ -2536,6 +2549,7 @@ member [IdentifiersTable idTH, Set set]
                                 $mipsCodeS += m.textMember($e.mipsCodeS, $i.text, levelIdentifier, $idTH.getValueSP(level,$i.text), $im.line, $im.pos)+m.textRestoreStateAfterEndedCallingSpecialFunction(numberOfRegistersUsed)+m.textReturnResultOfSpecialFunctions($im.line, $im.pos);
                                 $idTH.popSP();
                             }
+                            isThereAStateToBeSavedPreviously=false;
                         }
                     }else{
                         e.addMessage($e.line,$e.pos,ErrorMessage.semantic($e.text,ErrorMessage.type($e.typeS,"integer")));

@@ -112,7 +112,7 @@ public class LissLexer extends Lexer {
 
 	    boolean functionState = false;
 
-	    boolean firstTimeSpecialFunction = false;
+	    boolean isThereAStateToBeSavedPreviously = false;
 
 	     //Mips m = new Mips();
 	     Mips m;

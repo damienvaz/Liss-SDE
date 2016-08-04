@@ -996,9 +996,13 @@ public class Mips {
 
     /*************************** FUNCTIONS *********************************/
 
-    public String textFunctionCall(String name, int line, int pos, boolean returnBoolean, String argumentsMipsCodeS){
+    public String textFunctionCall(String name, int line, int pos, boolean returnBoolean, String argumentsMipsCodeS, boolean isThereAStateToBeSavedPreviously){
         //This works only for level 0
         StringBuilder s = new StringBuilder();
+
+        if(isThereAStateToBeSavedPreviously){
+            s.append(textSaveArgumentOfFunctionInSP());
+        }
 
         if(argumentsMipsCodeS!=null) {
             s.append(argumentsMipsCodeS); //See if this is here where it belongs
@@ -1009,6 +1013,10 @@ public class Mips {
         }
 
         s.append("\tjal "+name+"\t\t# " + line + ":" + pos + "\n");
+        if(isThereAStateToBeSavedPreviously){
+            s.append(textLoadArgumentOfFunctionInSP());
+        }
+
         if(returnBoolean==true){
             String r0 = nextFreeRegister();
             s.append(textMove("$v0",r0,line,pos));
@@ -1275,11 +1283,10 @@ public class Mips {
 
     /*************************** SEQUENCE *********************************/
 
-    public String textInitSequence(String nameOfSequence,int value,boolean firstElement, boolean lastElement,boolean functionState, int addressInSP, int line, int pos){
+    public String textInitSequence(String nameOfSequence, LinkedList<Integer> sequenceElements,boolean functionState, int addressInSP, int line, int pos){
         StringBuilder s = new StringBuilder();
 
-        //It puts the address of the sequence to NULL (-1)
-        if(functionState==true && firstElement==true){
+        if(functionState==true){
             String register = nextFreeRegister();
             //s.append("\tlw "+register+", " + addressInSP + "($sp)\t\t# " + line + ":" + pos + "\n");
             s.append(loadImmediateWord("-1",line,pos));
@@ -1290,28 +1297,30 @@ public class Mips {
             freeLastRegister();
         }
 
-        //Create the sequence under and their elements also
-        if(firstElement==true){
+        if(sequenceElements!=null && sequenceElements.size()>0){
             if(functionState==false){
                 s.append("\tlw $s0, " + nameOfSequence + "\t\t# " + line + ":" + pos + "\n");
             }else{
                 s.append("\tlw $s0, " + addressInSP + "($sp)\t\t# " + line + ":" + pos + "\n");
             }
-        }
-        s.append("\tli $s1, "+value+"\t\t# "+line+":"+pos+"\n");
-        s.append("\tjal cons_sequence\t\t# "+line+":"+pos+"\n");
-        if(lastElement==false){
-            s.append("\tmove $s0, $v0\t\t# "+line+":"+pos+"\n");
-        }else{
-            if(functionState==false) {
-                s.append("\tsw $v0, " + nameOfSequence + "\t\t# " + line + ":" + pos + "\n");
-            }else{
-                s.append("\tsw $v0, " + addressInSP + "($sp)\t\t# " + line + ":" + pos + "\n");
+            for(int i = 0; i < sequenceElements.size(); i++) {
+                s.append("\tli $s1, "+sequenceElements.get(i)+"\t\t# "+line+":"+pos+"\n");
+                s.append("\tjal cons_sequence\t\t# "+line+":"+pos+"\n");
+                if(i!=sequenceElements.size()-1){
+                    s.append("\tmove $s0, $v0\t\t# "+line+":"+pos+"\n");
+                }else{
+                    if(functionState==false) {
+                        s.append("\tsw $v0, " + nameOfSequence + "\t\t# " + line + ":" + pos + "\n");
+                    }else{
+                        s.append("\tsw $v0, " + addressInSP + "($sp)\t\t# " + line + ":" + pos + "\n");
+                    }
+                }
             }
         }
+
+
         return s.toString();
     }
-
     public String textSaveStateBeforeCallingSpecialFunction(int numberOfRegistersUsed){
         StringBuilder s = new StringBuilder();
         //Need to count how many registers are stored

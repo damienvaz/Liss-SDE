@@ -146,7 +146,7 @@ public class LissParser extends Parser {
 
 	    boolean functionState = false;
 
-	    boolean firstTimeSpecialFunction = false;
+	    boolean isThereAStateToBeSavedPreviously = false;
 
 	     //Mips m = new Mips();
 	     Mips m;
@@ -539,27 +539,27 @@ public class LissParser extends Parser {
 			                                    }
 			                                }
 			                            }else if(((Variable_declarationContext)_localctx).type.typeS == "sequence"){
+			                                int address = _localctx.idTH.getAddress();
 			                                for(String i : varsH.keySet()){
 			                                    LinkedList<Integer> sequence = (LinkedList<Integer>) varsH.get(i).get("sequence");
 
 			                                    String mipsCodeS=null;
 
-			                                    if(sequence!=null && sequence.size()!=0){
+			                                    if(sequence!=null && sequence.size()>0){
 			                                        mipsCodeS = "\t##### Initialize Sequence :"+i+"#####\n";
-			                                        for(Integer element: sequence){
-			                                            boolean firstElement = sequence.getFirst().equals(element);
-			                                            boolean lastElement = sequence.getLast().equals(element);
-
-			                                            if(functionState == false){
-			                                                mipsCodeS += m.textInitSequence(i,element.intValue(),firstElement,lastElement,functionState, 0, (int)varsH.get(i).get("line"), (int)varsH.get(i).get("pos"));
-			                                            }else if(functionState==true){
-			                                                //mipsCodeS += ""+_localctx.idTH.getAddress()+"|";
-
-			                                                mipsCodeS += m.textInitSequence(i,element.intValue(),firstElement,lastElement,functionState, _localctx.idTH.getAddress(), (int)varsH.get(i).get("line"), (int)varsH.get(i).get("pos"));
-			                                            }
-			                                        }
+			                                        mipsCodeS += m.textInitSequence(i, sequence, functionState, address, (int)varsH.get(i).get("line"), (int)varsH.get(i).get("pos"));
 			                                        mipsCodeS += "\t#######################################\n";
+			                                    }else{
+			                                        //this means that we need to create the sequence if it is empty when the functionState is set to 'true'
+			                                        if(functionState==true){
+			                                            mipsCodeS = "\t##### Initialize Sequence :"+i+"#####\n";
+			                                            mipsCodeS += m.textInitSequence(i, null, functionState, address, (int)varsH.get(i).get("line"), (int)varsH.get(i).get("pos"));
+			                                            mipsCodeS += "\t#######################################\n";
+			                                        }else{
+			                                            mipsCodeS = m.textInitSequence(i, null, functionState, address, (int)varsH.get(i).get("line"), (int)varsH.get(i).get("pos"));
+			                                        }
 			                                    }
+			                                    address += m.numberOfBytesForEachAddress();
 			                                    varsH.get(i).put("mips",mipsCodeS);
 
 			                                    System.out.println("INIT SEQUENCE: "+i);
@@ -1173,7 +1173,7 @@ public class LissParser extends Parser {
 				{
 				setState(257);
 				((Inic_varContext)_localctx).s2 = sequence_definition(sequence);
-				((Inic_varContext)_localctx).typeS =  "sequence"; ((Inic_varContext)_localctx).line =  ((Inic_varContext)_localctx).s2.line; ((Inic_varContext)_localctx).pos =  ((Inic_varContext)_localctx).s2.pos; ((Inic_varContext)_localctx).treeS =  ((Inic_varContext)_localctx).s2.treeS; ((Inic_varContext)_localctx).sequenceS =  sequence;/*if(isSet && $set!=null){$treeS = $s2.treeS;}*/
+				((Inic_varContext)_localctx).typeS =  "sequence"; ((Inic_varContext)_localctx).line =  ((Inic_varContext)_localctx).s2.line; ((Inic_varContext)_localctx).pos =  ((Inic_varContext)_localctx).s2.pos; ((Inic_varContext)_localctx).treeS =  ((Inic_varContext)_localctx).s2.treeS; ((Inic_varContext)_localctx).sequenceS =  sequence; /*if(isSet && _localctx.set!=null){((Inic_varContext)_localctx).treeS =  ((Inic_varContext)_localctx).s2.treeS;}*/
 				}
 				break;
 			default:
@@ -3336,7 +3336,18 @@ public class LissParser extends Parser {
 			                            //int numberOfRegistersUsed = m.numbersOfRegisteresUsedRightNow();
 			                            //_localctx.idTH.pushStateRegistersToSP(numberOfRegistersUsed);
 
-			                            ((Function_callContext)_localctx).mipsCodeS =  m.textFunctionCall(m.getNameFunction()+(((Function_callContext)_localctx).i!=null?_input.getText(((Function_callContext)_localctx).i.start,((Function_callContext)_localctx).i.stop):null), ((Function_callContext)_localctx).i.line, ((Function_callContext)_localctx).i.pos, returnBoolean,((Function_callContext)_localctx).s.argumentsMipsCodeS);
+			                            if(isThereAStateToBeSavedPreviously==true){
+			                                _localctx.idTH.pushStateRegistersToSP(1);
+			                            }
+
+			                            System.out.println("FUNCTION: "+ (((Function_callContext)_localctx).i!=null?_input.getText(((Function_callContext)_localctx).i.start,((Function_callContext)_localctx).i.stop):null)+" Line: "+((Function_callContext)_localctx).i.line+" Pos: "+((Function_callContext)_localctx).i.pos);
+			                            ((Function_callContext)_localctx).mipsCodeS =  m.textFunctionCall(m.getNameFunction()+(((Function_callContext)_localctx).i!=null?_input.getText(((Function_callContext)_localctx).i.start,((Function_callContext)_localctx).i.stop):null), ((Function_callContext)_localctx).i.line, ((Function_callContext)_localctx).i.pos, returnBoolean,((Function_callContext)_localctx).s.argumentsMipsCodeS, isThereAStateToBeSavedPreviously);
+
+			                            if(isThereAStateToBeSavedPreviously==true){
+			                                _localctx.idTH.popSP();
+			                                isThereAStateToBeSavedPreviously=false;
+			                            }
+
 			                            System.out.println("FUNCTION CALL HERE : ");
 			                            System.out.println(_localctx.mipsCodeS);
 			                            System.out.println("FUNCTION CALL END : ");
@@ -3630,7 +3641,7 @@ public class LissParser extends Parser {
 				{
 				setState(503);
 				((ExpressionContext)_localctx).rel_op = rel_op();
-				firstTimeSpecialFunction=false;
+				isThereAStateToBeSavedPreviously=true;
 				setState(505);
 				((ExpressionContext)_localctx).s2 = single_expression(idTH,set);
 				   relationExp = true;
@@ -3831,7 +3842,7 @@ public class LissParser extends Parser {
 				{
 				setState(514);
 				((Single_expressionContext)_localctx).a = ((Single_expressionContext)_localctx).add_op = add_op();
-				firstTimeSpecialFunction=false;
+				isThereAStateToBeSavedPreviously=true;
 				setState(516);
 				((Single_expressionContext)_localctx).t2 = ((Single_expressionContext)_localctx).term = term(idTH, set);
 
@@ -4037,7 +4048,7 @@ public class LissParser extends Parser {
 				{
 				setState(528);
 				((TermContext)_localctx).m = ((TermContext)_localctx).mul_op = mul_op();
-				firstTimeSpecialFunction=false;
+				isThereAStateToBeSavedPreviously=true;
 				setState(530);
 				((TermContext)_localctx).f2 = factor(idTH, set);
 
@@ -4383,9 +4394,9 @@ public class LissParser extends Parser {
 		SpecialFunctionsContext _localctx = new SpecialFunctionsContext(_ctx, getState(), idTH, set);
 		enterRule(_localctx, 82, RULE_specialFunctions);
 
-		                    if(firstTimeSpecialFunction==false){
-		                        firstTimeSpecialFunction = true;
-		                    }
+		                    /*if(isThereAStateToBeSavedPreviously==false){
+		                        isThereAStateToBeSavedPreviously = true;
+		                    }*/
 		                 
 		try {
 			setState(584);
@@ -6431,7 +6442,7 @@ public class LissParser extends Parser {
 			((HeadContext)_localctx).h = match(T__58);
 
 			        m.addSpecialFunctionsToStackForCheckingRecursivity((((HeadContext)_localctx).h!=null?((HeadContext)_localctx).h.getText():null));
-			        if(firstTimeSpecialFunction==true){
+			        if(isThereAStateToBeSavedPreviously==true){
 			            _localctx.idTH.pushStateRegistersToSP(numberOfRegistersUsed);
 			            ((HeadContext)_localctx).mipsCodeS =  m.textSaveStateBeforeCallingSpecialFunction(numberOfRegistersUsed);
 			        }
@@ -6449,12 +6460,13 @@ public class LissParser extends Parser {
 			        if((((HeadContext)_localctx).e.typeS != null) && ((HeadContext)_localctx).e.typeS.equals("sequence")){
 			            ((HeadContext)_localctx).typeS =  "integer";
 			            if(((HeadContext)_localctx).e.mipsCodeS!=null){
-			                if(firstTimeSpecialFunction==false && _localctx.mipsCodeS == null){
+			                if(isThereAStateToBeSavedPreviously==false && _localctx.mipsCodeS == null){
 			                    ((HeadContext)_localctx).mipsCodeS =  m.textHead(((HeadContext)_localctx).e.mipsCodeS, (((HeadContext)_localctx).h!=null?((HeadContext)_localctx).h.getLine():0), (((HeadContext)_localctx).h!=null?((HeadContext)_localctx).h.getCharPositionInLine():0))+m.textReturnResultOfSpecialFunctions((((HeadContext)_localctx).h!=null?((HeadContext)_localctx).h.getLine():0), (((HeadContext)_localctx).h!=null?((HeadContext)_localctx).h.getCharPositionInLine():0));
 			                }else{
 			                    _localctx.mipsCodeS += m.textHead(((HeadContext)_localctx).e.mipsCodeS, (((HeadContext)_localctx).h!=null?((HeadContext)_localctx).h.getLine():0), (((HeadContext)_localctx).h!=null?((HeadContext)_localctx).h.getCharPositionInLine():0))+m.textRestoreStateAfterEndedCallingSpecialFunction(numberOfRegistersUsed)+m.textReturnResultOfSpecialFunctions((((HeadContext)_localctx).h!=null?((HeadContext)_localctx).h.getLine():0), (((HeadContext)_localctx).h!=null?((HeadContext)_localctx).h.getCharPositionInLine():0));
 			                    _localctx.idTH.popSP();
 			                }
+			                isThereAStateToBeSavedPreviously=false;
 			            }
 			        }else{ 
 			            e.addMessage(((HeadContext)_localctx).e.line,((HeadContext)_localctx).e.pos,ErrorMessage.semantic((((HeadContext)_localctx).e!=null?_input.getText(((HeadContext)_localctx).e.start,((HeadContext)_localctx).e.stop):null),ErrorMessage.type(((HeadContext)_localctx).e.typeS,"sequence")));
@@ -6913,7 +6925,7 @@ public class LissParser extends Parser {
 			((Is_emptyContext)_localctx).i = match(T__63);
 
 			            m.addSpecialFunctionsToStackForCheckingRecursivity((((Is_emptyContext)_localctx).i!=null?((Is_emptyContext)_localctx).i.getText():null));
-			            if(firstTimeSpecialFunction==true){
+			            if(isThereAStateToBeSavedPreviously==true){
 			                _localctx.idTH.pushStateRegistersToSP(numberOfRegistersUsed);
 			                ((Is_emptyContext)_localctx).mipsCodeS =  m.textSaveStateBeforeCallingSpecialFunction(numberOfRegistersUsed);
 			            }
@@ -6931,13 +6943,13 @@ public class LissParser extends Parser {
 			            if((((Is_emptyContext)_localctx).e1.typeS != null) && ((Is_emptyContext)_localctx).e1.typeS.equals("sequence")){
 			                ((Is_emptyContext)_localctx).typeS =  "boolean";
 			                if(((Is_emptyContext)_localctx).e1.mipsCodeS!=null){
-			                    if(firstTimeSpecialFunction==false && _localctx.mipsCodeS == null){
+			                    if(isThereAStateToBeSavedPreviously==false && _localctx.mipsCodeS == null){
 			                        ((Is_emptyContext)_localctx).mipsCodeS =  m.textIsEmpty(((Is_emptyContext)_localctx).e1.mipsCodeS, (((Is_emptyContext)_localctx).i!=null?((Is_emptyContext)_localctx).i.getLine():0), (((Is_emptyContext)_localctx).i!=null?((Is_emptyContext)_localctx).i.getCharPositionInLine():0))+m.textReturnResultOfSpecialFunctions((((Is_emptyContext)_localctx).i!=null?((Is_emptyContext)_localctx).i.getLine():0), (((Is_emptyContext)_localctx).i!=null?((Is_emptyContext)_localctx).i.getCharPositionInLine():0));
 			                    }else{
 			                        _localctx.mipsCodeS += m.textIsEmpty(((Is_emptyContext)_localctx).e1.mipsCodeS, (((Is_emptyContext)_localctx).i!=null?((Is_emptyContext)_localctx).i.getLine():0), (((Is_emptyContext)_localctx).i!=null?((Is_emptyContext)_localctx).i.getCharPositionInLine():0))+m.textRestoreStateAfterEndedCallingSpecialFunction(numberOfRegistersUsed)+m.textReturnResultOfSpecialFunctions((((Is_emptyContext)_localctx).i!=null?((Is_emptyContext)_localctx).i.getLine():0), (((Is_emptyContext)_localctx).i!=null?((Is_emptyContext)_localctx).i.getCharPositionInLine():0));
 			                        _localctx.idTH.popSP();
 			                    }
-
+			                    isThereAStateToBeSavedPreviously=false;
 			                }
 			            }else{
 			                e.addMessage(((Is_emptyContext)_localctx).e1.line,((Is_emptyContext)_localctx).e1.pos,ErrorMessage.semantic((((Is_emptyContext)_localctx).e1!=null?_input.getText(((Is_emptyContext)_localctx).e1.start,((Is_emptyContext)_localctx).e1.stop):null),ErrorMessage.type(((Is_emptyContext)_localctx).e1.typeS,"sequence")));
@@ -7009,7 +7021,7 @@ public class LissParser extends Parser {
 			((LengthContext)_localctx).l = match(T__64);
 
 			            m.addSpecialFunctionsToStackForCheckingRecursivity((((LengthContext)_localctx).l!=null?((LengthContext)_localctx).l.getText():null));
-			            if(firstTimeSpecialFunction==true){
+			            if(isThereAStateToBeSavedPreviously==true){
 			                _localctx.idTH.pushStateRegistersToSP(numberOfRegistersUsed);
 			                ((LengthContext)_localctx).mipsCodeS =  m.textSaveStateBeforeCallingSpecialFunction(numberOfRegistersUsed);
 			            }
@@ -7027,12 +7039,13 @@ public class LissParser extends Parser {
 			          if((((LengthContext)_localctx).e1.typeS != null) && ((LengthContext)_localctx).e1.typeS.equals("sequence")){
 			              ((LengthContext)_localctx).typeS =  "integer";
 			              if(((LengthContext)_localctx).e1.mipsCodeS!=null){
-			                if(firstTimeSpecialFunction==false && _localctx.mipsCodeS == null){
+			                if(isThereAStateToBeSavedPreviously==false && _localctx.mipsCodeS == null){
 			                    ((LengthContext)_localctx).mipsCodeS =  m.textLength(((LengthContext)_localctx).e1.mipsCodeS, (((LengthContext)_localctx).l!=null?((LengthContext)_localctx).l.getLine():0), (((LengthContext)_localctx).l!=null?((LengthContext)_localctx).l.getCharPositionInLine():0))+m.textReturnResultOfSpecialFunctions((((LengthContext)_localctx).l!=null?((LengthContext)_localctx).l.getLine():0), (((LengthContext)_localctx).l!=null?((LengthContext)_localctx).l.getCharPositionInLine():0));
 			                }else{
 			                    _localctx.mipsCodeS += m.textLength(((LengthContext)_localctx).e1.mipsCodeS, (((LengthContext)_localctx).l!=null?((LengthContext)_localctx).l.getLine():0), (((LengthContext)_localctx).l!=null?((LengthContext)_localctx).l.getCharPositionInLine():0))+m.textRestoreStateAfterEndedCallingSpecialFunction(numberOfRegistersUsed)+m.textReturnResultOfSpecialFunctions((((LengthContext)_localctx).l!=null?((LengthContext)_localctx).l.getLine():0), (((LengthContext)_localctx).l!=null?((LengthContext)_localctx).l.getCharPositionInLine():0));
 			                    _localctx.idTH.popSP();
 			                }
+			                isThereAStateToBeSavedPreviously=false;
 			              }
 
 			          }else{
@@ -7108,7 +7121,7 @@ public class LissParser extends Parser {
 			((MemberContext)_localctx).im = match(T__65);
 
 			          m.addSpecialFunctionsToStackForCheckingRecursivity((((MemberContext)_localctx).im!=null?((MemberContext)_localctx).im.getText():null));
-			          if(firstTimeSpecialFunction==true){
+			          if(isThereAStateToBeSavedPreviously==true){
 			              _localctx.idTH.pushStateRegistersToSP(numberOfRegistersUsed);
 			              ((MemberContext)_localctx).mipsCodeS =  m.textSaveStateBeforeCallingSpecialFunction(numberOfRegistersUsed);
 			          }
@@ -7139,7 +7152,7 @@ public class LissParser extends Parser {
 			                    if((((MemberContext)_localctx).e.typeS != null) && ((MemberContext)_localctx).e.typeS.equals("integer")){
 			                        ((MemberContext)_localctx).typeS =  "boolean";
 			                        if(((MemberContext)_localctx).e.mipsCodeS!=null){
-			                            if(firstTimeSpecialFunction==false && _localctx.mipsCodeS == null){
+			                            if(isThereAStateToBeSavedPreviously==false && _localctx.mipsCodeS == null){
 			                                Integer levelIdentifier = _localctx.idTH.getInfoIdentifiersTable((((MemberContext)_localctx).i!=null?_input.getText(((MemberContext)_localctx).i.start,((MemberContext)_localctx).i.stop):null)).getLevel();
 			                                ((MemberContext)_localctx).mipsCodeS =  m.textMember(((MemberContext)_localctx).e.mipsCodeS, (((MemberContext)_localctx).i!=null?_input.getText(((MemberContext)_localctx).i.start,((MemberContext)_localctx).i.stop):null), levelIdentifier, _localctx.idTH.getValueSP(level,(((MemberContext)_localctx).i!=null?_input.getText(((MemberContext)_localctx).i.start,((MemberContext)_localctx).i.stop):null)), (((MemberContext)_localctx).im!=null?((MemberContext)_localctx).im.getLine():0), (((MemberContext)_localctx).im!=null?((MemberContext)_localctx).im.getCharPositionInLine():0))+m.textReturnResultOfSpecialFunctions((((MemberContext)_localctx).im!=null?((MemberContext)_localctx).im.getLine():0), (((MemberContext)_localctx).im!=null?((MemberContext)_localctx).im.getCharPositionInLine():0));
 			                            }else{
@@ -7147,6 +7160,7 @@ public class LissParser extends Parser {
 			                                _localctx.mipsCodeS += m.textMember(((MemberContext)_localctx).e.mipsCodeS, (((MemberContext)_localctx).i!=null?_input.getText(((MemberContext)_localctx).i.start,((MemberContext)_localctx).i.stop):null), levelIdentifier, _localctx.idTH.getValueSP(level,(((MemberContext)_localctx).i!=null?_input.getText(((MemberContext)_localctx).i.start,((MemberContext)_localctx).i.stop):null)), (((MemberContext)_localctx).im!=null?((MemberContext)_localctx).im.getLine():0), (((MemberContext)_localctx).im!=null?((MemberContext)_localctx).im.getCharPositionInLine():0))+m.textRestoreStateAfterEndedCallingSpecialFunction(numberOfRegistersUsed)+m.textReturnResultOfSpecialFunctions((((MemberContext)_localctx).im!=null?((MemberContext)_localctx).im.getLine():0), (((MemberContext)_localctx).im!=null?((MemberContext)_localctx).im.getCharPositionInLine():0));
 			                                _localctx.idTH.popSP();
 			                            }
+			                            isThereAStateToBeSavedPreviously=false;
 			                        }
 			                    }else{
 			                        e.addMessage(((MemberContext)_localctx).e.line,((MemberContext)_localctx).e.pos,ErrorMessage.semantic((((MemberContext)_localctx).e!=null?_input.getText(((MemberContext)_localctx).e.start,((MemberContext)_localctx).e.stop):null),ErrorMessage.type(((MemberContext)_localctx).e.typeS,"integer")));
