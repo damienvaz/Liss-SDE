@@ -1333,6 +1333,7 @@ expression [IdentifiersTable idTH, Set set]
                 }
             )?
             {
+                isThereAStateToBeSavedPreviously=false;
                 if(correctType){
                     if(!relationExp){
                         $typeS = $s1.typeS;

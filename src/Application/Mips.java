@@ -1287,14 +1287,14 @@ public class Mips {
         StringBuilder s = new StringBuilder();
 
         if(functionState==true){
-            String register = nextFreeRegister();
+            //String register = nextFreeRegister();
             //s.append("\tlw "+register+", " + addressInSP + "($sp)\t\t# " + line + ":" + pos + "\n");
             s.append(loadImmediateWord("-1",line,pos));
             //s.append("\tsw "+lastRegisterOccupied()[0]+", ("+register+")\t\t# " + line + ":" + pos + "\n");
             s.append("\tsw "+lastRegisterOccupied()[0]+", "+addressInSP+"($sp)\t\t# " + line + ":" + pos + "\n");
 
             freeLastRegister();
-            freeLastRegister();
+            //freeLastRegister();
         }
 
         if(sequenceElements!=null && sequenceElements.size()>0){

@@ -3745,6 +3745,7 @@ public class LissParser extends Parser {
 			}
 
 
+			                isThereAStateToBeSavedPreviously=false;
 			                if(correctType){
 			                    if(!relationExp){
 			                        ((ExpressionContext)_localctx).typeS =  ((ExpressionContext)_localctx).s1.typeS;
