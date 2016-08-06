@@ -1000,9 +1000,10 @@ public class Mips {
         //This works only for level 0
         StringBuilder s = new StringBuilder();
 
-        if(isThereAStateToBeSavedPreviously){
+        /*if(isThereAStateToBeSavedPreviously){
+            //nextFreeRegister();
             s.append(textSaveArgumentOfFunctionInSP());
-        }
+        }*/
 
         if(argumentsMipsCodeS!=null) {
             s.append(argumentsMipsCodeS); //See if this is here where it belongs
@@ -1285,6 +1286,7 @@ public class Mips {
 
     public String textInitSequence(String nameOfSequence, LinkedList<Integer> sequenceElements,boolean functionState, int addressInSP, int line, int pos){
         StringBuilder s = new StringBuilder();
+        this.mipsCodeSpecialFunctionState.put("cons_sequence",1);
 
         if(functionState==true){
             //String register = nextFreeRegister();
@@ -1321,13 +1323,14 @@ public class Mips {
 
         return s.toString();
     }
-    public String textSaveStateBeforeCallingSpecialFunction(int numberOfRegistersUsed){
+    public String textSaveStateBeforeCallingFunction(int numberOfRegistersUsed){
         StringBuilder s = new StringBuilder();
         //Need to count how many registers are stored
-        //int numberOfRegisters = numbersOfRegisteresUsedRightNow();
+        //int numberOfRegistersUsed = numbersOfRegisteresUsedRightNow();
 
-        if(numberOfRegistersUsed!=0) {
-            //need to add sp with the number of registeres *4
+        if(numberOfRegistersUsed>0) {
+            //need to add sp with the number of registers *4
+            //s.append("\taddi $sp, $sp, -" + numberOfRegistersUsed * this.eachAddressOccupies + "\n");
             s.append("\taddi $sp, $sp, -" + numberOfRegistersUsed * this.eachAddressOccupies + "\n");
 
             //need to store the values of those states to the stack
@@ -1359,10 +1362,10 @@ public class Mips {
         return s.toString();
     }
 
-    public String textRestoreStateAfterEndedCallingSpecialFunction(int numberOfRegistersUsed){
+    public String textRestoreStateAfterCallingFunction(int numberOfRegistersUsed){
         StringBuilder s = new StringBuilder();
 
-        if(numberOfRegistersUsed!=0) {
+        if(numberOfRegistersUsed>0) {
             //need to restore those values into the registers
             for (int i = 0; i < numberOfRegistersUsed; i++) {
                 s.append("\tlw " + nextFreeRegister() + ", " + i * this.eachAddressOccupies + "($sp)\n");
@@ -1490,6 +1493,7 @@ public class Mips {
         s.append(integerToSearchMipsCodeS);
         String[] register = lastRegisterOccupied();
         s.append(textMove(register[0],"$s1",line,pos));
+        freeLastRegister();
 
         if(levelOfSequenceInIdentifierTable.equals(0)){
             s.append(loadWord(nameOfSequence,line,pos));
@@ -1500,7 +1504,7 @@ public class Mips {
             register = lastRegisterOccupied();
             s.append(textMove(register[0],"$s0",line,pos));
         }
-        freeLastRegister();
+        //freeLastRegister();
         freeLastRegister();
 
         s.append("\tjal member_sequence\n");
@@ -1520,9 +1524,9 @@ public class Mips {
         if(this.stackOfSpecialFunctionsCalledRecursively.size()>0) {
             this.stackOfSpecialFunctionsCalledRecursively.removeLast();
         }
-        if(this.stackOfSpecialFunctionsCalledRecursively.size()>0 && this.howManyArgumentsDoesHavespecialFunctions.get(this.stackOfSpecialFunctionsCalledRecursively.getLast()).equals(2)){
+        /*if(this.stackOfSpecialFunctionsCalledRecursively.size()>0 && this.howManyArgumentsDoesHavespecialFunctions.get(this.stackOfSpecialFunctionsCalledRecursively.getLast()).equals(2)){
             nextFreeRegister();
-        }
+        }*/
 
         String res = nextFreeRegister();
         s.append(textMove("$v0",res,line,pos));
@@ -1583,10 +1587,13 @@ public class Mips {
     public String textStoreSequence(String nameVariable, boolean functionState, int addressVariable, int line, int pos){
         StringBuilder s = new StringBuilder();
         if(!functionState){
-            s.append("\tsw $v0, " + nameVariable + "\t\t# " + line + ":" + pos + "\n");
+            //s.append("\tsw $v0, " + nameVariable + "\t\t# " + line + ":" + pos + "\n");
+            s.append("\tsw "+lastRegisterOccupied()[0]+", " + nameVariable + "\t\t# " + line + ":" + pos + "\n");
         }else{
-            s.append("\tsw $v0, " + addressVariable + "($sp)\t\t# " + line + ":" + pos + "\n");
+            //s.append("\tsw $v0, " + addressVariable + "($sp)\t\t# " + line + ":" + pos + "\n");
+            s.append("\tsw "+lastRegisterOccupied()[0]+", " + addressVariable + "($sp)\t\t# " + line + ":" + pos + "\n");
         }
+        freeLastRegister();
 
         return s.toString();
     }

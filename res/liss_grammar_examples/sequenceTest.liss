@@ -3,7 +3,7 @@ program sequenceTest{
         seq1, seq2=<<>>, seq3=<<1,2>> -> sequence;
         i -> integer;
         t -> boolean;
-        subprogram calculate(seq3->sequence)->integer{
+        /*subprogram calculate(seq3->sequence)->integer{
             declarations
                 seq4=<<4>>, seq5=<<>> -> sequence;
                 i = 4 -> integer;
@@ -19,11 +19,53 @@ program sequenceTest{
                 //copy(seq2,seq5);
                 //cat(seq1,seq4);
             return i;
+        }*/
+        subprogram calculate()->integer{
+            declarations
+                i = 4 -> integer;
+            statements
+
+            return i;
         }
     statements
         //i = 4;
 
-        i = 3+4+head(seq3)+head(del(1+4,cons(3,seq3))); // i = 7 + 1 + 1 <=> i = 9 working correctly
+        i = head(seq3);
+        i = 1+head(seq3);
+        i = 1+2+head(seq3);
+
+        seq2 = tail(seq3);
+
+        t = isEmpty(seq3);
+        t = false == isEmpty(seq3);
+
+        i = length(seq3);
+        i = 1 + length(seq3);
+
+        t = isMember(2,seq3);
+        t = isMember(2+3+4,seq3);
+        t = isMember(2+3+length(seq3),seq3);
+        t = isMember(2+3+5+length(tail(seq3))+head(seq3)+calculate(),seq3);
+
+        //seq2 = tail(seq3);
+        //seq3 = cons(3,seq3);
+        //seq3 = del(2,seq3);
+        //t = isEmpty(seq1);
+        //i = length(seq3);
+        //t = isMember(3,seq3);
+
+        //i = 2+head(seq3);
+        //i = 1+length(tail(seq3));
+        //t = false == isEmpty(cons(3,seq3));
+        //seq3 = cons(2,del(2,seq3));
+        //t = true == isMember(3,seq3);
+
+        //i = 3 + 6 + head(cons(2+3,seq3));
+
+
+
+
+        /*i = 3+4+head(seq3)+head(del(1+4,cons(3,seq3))); // i = 7 + 1 + 1 <=> i = 9 working correctly
         //seq3 = cons(5,cons(3,seq3));
 
         seq3 = del(2,seq3); //working correctly
@@ -36,14 +78,11 @@ program sequenceTest{
         i = 6 + 7 + length(cons(8+7,seq3)); // i =13 + 3 <=> i = 16 working correctly
         //t = true == isMember(3+4,seq3); // t = 1 == 0 <=> t = 0 working correctly but need to check isMember with a value in the sequence
 
-
-
-
         t = true == isMember(3+4+calculate(seq3),seq3);
         i = 3 + 4 + length(cons(calculate(seq3),cons(7,seq3))); //i = 7 +
         //i = 3 + 4 + length(cons(1,seq3)); //
 
         //copy(seq3,seq1);
         //cat(seq2,seq3);
-        //i = 2 + 4 + calculate(seq3);
+        //i = 2 + 4 + calculate(seq3);*/
 }
