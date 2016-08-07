@@ -1104,6 +1104,38 @@ function_call [IdentifiersTable idTH, Set set]
               returns [Node treeS, int line, int pos, String typeS, String mipsCodeS]
               @init{
                 //boolean checkRegistersUsedOrNot = isThereAStateToBeSavedPreviously;
+                boolean areRegistersBeingUsed = m.areSomeRegistersUsed();
+                int numberOfUsedRegisters = 0;
+                boolean returnBoolean = false;
+
+                System.out.println("STATE OF AREREGISTERSBEINGUSED FUNCTION: "+areRegistersBeingUsed);
+
+                if(areRegistersBeingUsed){
+                    //Info: This means that we need to save the information of the registers in the stack ! Because some Jump call will be called and we need to save the state of those registers for having a consistancy.
+
+                    //We need to calculate how many registers are being used
+                    numberOfUsedRegisters = m.numbersOfRegisteresUsedRightNow();
+                    //we need to calculate
+                    $idTH.pushStateRegistersToSP(numberOfUsedRegisters);
+                    $mipsCodeS = m.textSaveStateBeforeCallingFunction(numberOfUsedRegisters);
+
+                    //we need to reset the registers (but i dont know if this worth due to the fact that the function 'textSaveStateBeforeCallingFunction' uses 'freeLastRegister'
+                    //m.resetRegister();
+                }
+              }
+              @after{
+                    if(areRegistersBeingUsed){
+                        //This means that we need to save the information of the registers in the stack ! Because some Jump call will be called and we need to save the state of those registers for having a consistancy.
+
+                        $mipsCodeS += m.textRestoreStateAfterCallingFunction(numberOfUsedRegisters);
+                        //m.textRestoreStateAfterEndedCallingFunction(numberOfRegistersUsed)+m.textReturnResultOfSpecialFunctions(line, pos);
+                        $idTH.popSP();
+                    }
+                    if(returnBoolean){
+                        $mipsCodeS += m.textReturnResultOfSpecialFunctions($line, $pos);
+                    }
+
+                    System.out.println("MIPSCODES SPECIALFUNCTION AFTER: "+$mipsCodeS);
               }
               :
                 /*{
@@ -1144,7 +1176,7 @@ function_call [IdentifiersTable idTH, Set set]
                             $typeS = f.getInfoType();
 
                             //MIPS
-                            boolean returnBoolean = false;
+                            //boolean returnBoolean = false;
                             //if(!$typeS.equals(null)){
                             if($typeS!=null){
                                 returnBoolean = true;
@@ -1160,6 +1192,7 @@ function_call [IdentifiersTable idTH, Set set]
                             System.out.println("FUNCTION: "+ $i.text+" Line: "+$i.line+" Pos: "+$i.pos);
                             //if(!checkRegistersUsedOrNot){$mipsCodeS="";System.out.println("Entrei aqui ??? "+checkRegistersUsedOrNot);}
 
+                            if(!areRegistersBeingUsed){$mipsCodeS = "";}
                             $mipsCodeS += m.textFunctionCall(m.getNameFunction()+$i.text, $i.line, $i.pos, returnBoolean,$s.argumentsMipsCodeS, true); // TODO: we need to change the 'true' value to a variable for checking if the register was called or not!
 
                             /*if(checkRegistersUsedOrNot==true){
@@ -1700,7 +1733,7 @@ specialFunctions [IdentifiersTable idTH, Set set]
                         //m.resetRegister();
                     }
 
-                    //m.resetRegister();
+                    m.resetRegister();
                     System.out.println("MIPSCODES SPECIALFUNCTION INIT: "+$mipsCodeS);
 
                  }
@@ -1714,7 +1747,7 @@ specialFunctions [IdentifiersTable idTH, Set set]
                         //This means that we need to save the information of the registers in the stack ! Because some Jump call will be called and we need to save the state of those registers for having a consistancy.
 
                         $mipsCodeS += m.textRestoreStateAfterCallingFunction(numberOfUsedRegisters);
-                        //m.textRestoreStateAfterEndedCallingFunction(numberOfRegistersUsed)+m.textReturnResultOfSpecialFunctions($h.line, $h.pos);
+                        //m.textRestoreStateAfterEndedCallingFunction(numberOfRegistersUsed)+m.textReturnResultOfSpecialFunctions(line, pos);
                         $idTH.popSP();
                     }
                     $mipsCodeS += m.textReturnResultOfSpecialFunctions($line, $pos);
@@ -2247,16 +2280,8 @@ succ_pred
 
 tail [IdentifiersTable idTH, Set set]
      returns [String typeS, int line, int pos, Node treeS, String mipsCodeS]
-     @init{
-
-     }
      // tail : sequence -> sequence
-     : t='tail' '('
-     {
-        //m.resetRegister();
-        m.addSpecialFunctionsToStackForCheckingRecursivity($t.text);
-     }
-       e=expression[idTH, set] ')'
+     : t='tail' '('e=expression[idTH, set] ')'
      {
         $line = $t.line;
         $pos = $t.pos;
@@ -2265,7 +2290,6 @@ tail [IdentifiersTable idTH, Set set]
 
             if($e.mipsCodeS!=null){
                 $mipsCodeS = m.textTail($e.mipsCodeS, $t.line, $t.pos);
-                //$mipsCodeS = m.textTail($e.mipsCodeS, $t.line, $t.pos)+m.textReturnResultOfSpecialFunctions($t.line, $t.pos);
             }
         }else{
             e.addMessage($e.line,$e.pos,ErrorMessage.semantic($e.text,ErrorMessage.type($e.typeS,"sequence")));
@@ -2286,19 +2310,10 @@ tail [IdentifiersTable idTH, Set set]
 head [IdentifiersTable idTH, Set set]
      returns [String typeS, int line, int pos, Node treeS, String mipsCodeS]
      @init{
-        int numberOfRegistersUsed = m.numbersOfRegisteresUsedRightNow();
         $mipsCodeS = null;
      }
      // head : sequence -> integer
-     : h='head'
-      {
-        m.addSpecialFunctionsToStackForCheckingRecursivity($h.text);
-        /*if(isThereAStateToBeSavedPreviously==true){
-            $idTH.pushStateRegistersToSP(numberOfRegistersUsed);
-            $mipsCodeS = m.textSaveStateBeforeCallingSpecialFunction(numberOfRegistersUsed);
-        }*/
-      }
-      '(' e=expression[idTH, set] ')'
+     : h='head' '(' e=expression[idTH, set] ')'
      {
         $line = $h.line;
         $pos = $h.pos;
@@ -2306,16 +2321,6 @@ head [IdentifiersTable idTH, Set set]
             $typeS = "integer";
             if($e.mipsCodeS!=null){
                 $mipsCodeS = m.textHead($e.mipsCodeS, $h.line, $h.pos);
-
-
-
-                /*if(isThereAStateToBeSavedPreviously==false && $mipsCodeS == null){
-                    $mipsCodeS = m.textHead($e.mipsCodeS, $h.line, $h.pos)+m.textReturnResultOfSpecialFunctions($h.line, $h.pos);
-                }else{
-                    $mipsCodeS += m.textHead($e.mipsCodeS, $h.line, $h.pos)+m.textRestoreStateAfterEndedCallingSpecialFunction(numberOfRegistersUsed)+m.textReturnResultOfSpecialFunctions($h.line, $h.pos);
-                    $idTH.popSP();
-                }*/
-                //isThereAStateToBeSavedPreviously=false;
             }
         }else{ 
             e.addMessage($e.line,$e.pos,ErrorMessage.semantic($e.text,ErrorMessage.type($e.typeS,"sequence")));
@@ -2335,16 +2340,10 @@ head [IdentifiersTable idTH, Set set]
 
 cons [IdentifiersTable idTH, Set set]
      returns [String typeS, int line, int pos, Node treeS, String mipsCodeS]
-     @init{
-
-     }
      // integer x sequence -> sequence
-     :  c='cons' '('
-        {
-        m.resetRegister();
-        m.addSpecialFunctionsToStackForCheckingRecursivity($c.text);
-        }
-        e1=expression[idTH, set] ',' e2=expression[idTH, set] ')'
+     :  c='cons' '(' e1=expression[idTH, set] ','
+        {m.resetRegister();}
+        e2=expression[idTH, set] ')'
         {
             //System.out.println("######################### CONS_FUNCTIOn #########################\n");
             //System.out.println($e1.mipsCodeS+"\n"+$e2.mipsCodeS+"\n");
@@ -2357,11 +2356,13 @@ cons [IdentifiersTable idTH, Set set]
                     $typeS = "sequence";
 
                     if($e1.mipsCodeS!=null && $e2.mipsCodeS!=null){
-                        /*$e2.mipsCodeS += m.textSaveArgumentOfFunctionInSP();
-                        $idTH.pushStateRegistersToSP(1);
 
-                        $mipsCodeS = m.textCons($e1.mipsCodeS, $e2.mipsCodeS, $c.line,$c.pos)+m.textReturnResultOfSpecialFunctions($c.line, $c.pos);
-                        $idTH.popSP();*/
+                        int numberOfUsedRegisters = m.numbersOfRegisteresUsedRightNow();
+                        $idTH.pushStateRegistersToSP(numberOfUsedRegisters);
+                        $e2.mipsCodeS += m.textSaveStateBeforeCallingFunction(numberOfUsedRegisters);
+
+                        $mipsCodeS = m.textCons($e1.mipsCodeS, $e2.mipsCodeS, $c.line,$c.pos);
+                        $idTH.popSP();
                     }
 
                 }else{
@@ -2384,16 +2385,10 @@ cons [IdentifiersTable idTH, Set set]
 
 delete [IdentifiersTable idTH, Set set]
        returns [String typeS, int line, int pos, Node treeS, String mipsCodeS]
-       @init{
-
-       }
        // del : integer x sequence -> sequence
-       : d='del' '('
-        {
-            m.resetRegister();
-            m.addSpecialFunctionsToStackForCheckingRecursivity($d.text);
-        }
-        e1=expression[idTH, set] ',' e2=expression[idTH, set] ')'
+       : d='del' '(' e1=expression[idTH, set] ','
+        {m.resetRegister();}
+        e2=expression[idTH, set] ')'
         {
 
             //System.out.println("######################### DELETE_FUNCTIOn #########################\n");
@@ -2407,10 +2402,13 @@ delete [IdentifiersTable idTH, Set set]
                     $typeS = "sequence";
 
                     if($e1.mipsCodeS!=null && $e2.mipsCodeS!=null){
-                        /*$e2.mipsCodeS += m.textSaveArgumentOfFunctionInSP();
-                        $idTH.pushStateRegistersToSP(1);
-                        $mipsCodeS = m.textDelete($e1.mipsCodeS, $e2.mipsCodeS, $d.line, $d.pos)+m.textReturnResultOfSpecialFunctions($d.line, $d.pos);
-                        $idTH.popSP();*/
+
+                        int numberOfUsedRegisters = m.numbersOfRegisteresUsedRightNow();
+                        $idTH.pushStateRegistersToSP(numberOfUsedRegisters);
+                        $e2.mipsCodeS += m.textSaveStateBeforeCallingFunction(numberOfUsedRegisters);
+
+                        $mipsCodeS = m.textDelete($e1.mipsCodeS, $e2.mipsCodeS, $d.line, $d.pos);
+                        $idTH.popSP();
                     }
                 }else{
                     e.addMessage($e2.line,$e2.pos,ErrorMessage.semantic($e2.text,ErrorMessage.type($e2.typeS,"sequence")));
@@ -2496,19 +2494,10 @@ cat_statement [IdentifiersTable idTH]
 is_empty [IdentifiersTable idTH, Set set]
          returns [String typeS, int line, int pos, Node treeS, String mipsCodeS]
          @init{
-            int numberOfRegistersUsed = m.numbersOfRegisteresUsedRightNow();
             $mipsCodeS = null;
          }
          // is_empty : sequence -> boolean
-         : i='isEmpty'
-         {
-            m.addSpecialFunctionsToStackForCheckingRecursivity($i.text);
-            /*if(isThereAStateToBeSavedPreviously==true){
-                $idTH.pushStateRegistersToSP(numberOfRegistersUsed);
-                $mipsCodeS = m.textSaveStateBeforeCallingSpecialFunction(numberOfRegistersUsed);
-            }*/
-         }
-          '(' e1=expression[idTH, set] ')'
+         : i='isEmpty' '(' e1=expression[idTH, set] ')'
          {
             $line = $i.line;
             $pos = $i.pos;
@@ -2516,13 +2505,7 @@ is_empty [IdentifiersTable idTH, Set set]
                 $typeS = "boolean";
                 if($e1.mipsCodeS!=null){
                     $mipsCodeS = m.textIsEmpty($e1.mipsCodeS, $i.line, $i.pos);
-                    /*if(isThereAStateToBeSavedPreviously==false && $mipsCodeS == null){
-                        $mipsCodeS = m.textIsEmpty($e1.mipsCodeS, $i.line, $i.pos)+m.textReturnResultOfSpecialFunctions($i.line, $i.pos);
-                    }else{
-                        $mipsCodeS += m.textIsEmpty($e1.mipsCodeS, $i.line, $i.pos)+m.textRestoreStateAfterEndedCallingSpecialFunction(numberOfRegistersUsed)+m.textReturnResultOfSpecialFunctions($i.line, $i.pos);
-                        $idTH.popSP();
-                    }*/
-                    //isThereAStateToBeSavedPreviously=false;
+
                 }
             }else{
                 e.addMessage($e1.line,$e1.pos,ErrorMessage.semantic($e1.text,ErrorMessage.type($e1.typeS,"sequence")));
@@ -2542,19 +2525,10 @@ is_empty [IdentifiersTable idTH, Set set]
 length [IdentifiersTable idTH, Set set]
        returns [String typeS, int line, int pos, Node treeS, String mipsCodeS]
        @init{
-          int numberOfRegistersUsed = m.numbersOfRegisteresUsedRightNow();
           $mipsCodeS = null;
        }
        // length : sequence -> integer
-       : l='length'
-         {
-            m.addSpecialFunctionsToStackForCheckingRecursivity($l.text);
-            /*if(isThereAStateToBeSavedPreviously==true){
-                $idTH.pushStateRegistersToSP(numberOfRegistersUsed);
-                $mipsCodeS = m.textSaveStateBeforeCallingSpecialFunction(numberOfRegistersUsed);
-            }*/
-         }
-        '(' e1=expression[idTH, set] ')'
+       : l='length''(' e1=expression[idTH, set] ')'
        {
           $line = $l.line;
           $pos = $l.pos;
@@ -2562,14 +2536,6 @@ length [IdentifiersTable idTH, Set set]
               $typeS = "integer";
               if($e1.mipsCodeS!=null){
                 $mipsCodeS = m.textLength($e1.mipsCodeS, $l.line, $l.pos);
-
-                /*if(isThereAStateToBeSavedPreviously==false && $mipsCodeS == null){
-                    $mipsCodeS = m.textLength($e1.mipsCodeS, $l.line, $l.pos)+m.textReturnResultOfSpecialFunctions($l.line, $l.pos);
-                }else{
-                    $mipsCodeS += m.textLength($e1.mipsCodeS, $l.line, $l.pos)+m.textRestoreStateAfterEndedCallingSpecialFunction(numberOfRegistersUsed)+m.textReturnResultOfSpecialFunctions($l.line, $l.pos);
-                    $idTH.popSP();
-                }*/
-                //isThereAStateToBeSavedPreviously=false;
               }
 
           }else{
@@ -2591,19 +2557,10 @@ length [IdentifiersTable idTH, Set set]
 member [IdentifiersTable idTH, Set set]
        returns [String typeS, int line, int pos, Node treeS, String mipsCodeS]
        @init{
-            int numberOfRegistersUsed = m.numbersOfRegisteresUsedRightNow();
             $mipsCodeS = null;
        }
        // isMember : integer x sequence -> boolean
-       : im='isMember'
-       {
-          m.addSpecialFunctionsToStackForCheckingRecursivity($im.text);
-          /*if(isThereAStateToBeSavedPreviously==true){
-              $idTH.pushStateRegistersToSP(numberOfRegistersUsed);
-              $mipsCodeS = m.textSaveStateBeforeCallingSpecialFunction(numberOfRegistersUsed);
-          }*/
-       }
-       '(' e=expression[idTH, set] ',' i=identifier ')'
+       : im='isMember''(' e=expression[idTH, set] ',' i=identifier ')'
        {
           $line = $im.line;
           $pos = $im.pos;
@@ -2621,16 +2578,6 @@ member [IdentifiersTable idTH, Set set]
                         if($e.mipsCodeS!=null){
                             Integer levelIdentifier = $idTH.getInfoIdentifiersTable($i.text).getLevel();
                             $mipsCodeS = m.textMember($e.mipsCodeS, $i.text, levelIdentifier, $idTH.getValueSP(level,$i.text), $im.line, $im.pos);
-
-                            /*if(isThereAStateToBeSavedPreviously==false && $mipsCodeS == null){
-                                Integer levelIdentifier = $idTH.getInfoIdentifiersTable($i.text).getLevel();
-                                $mipsCodeS = m.textMember($e.mipsCodeS, $i.text, levelIdentifier, $idTH.getValueSP(level,$i.text), $im.line, $im.pos)+m.textReturnResultOfSpecialFunctions($im.line, $im.pos);
-                            }else{
-                                Integer levelIdentifier = $idTH.getInfoIdentifiersTable($i.text).getLevel();
-                                $mipsCodeS += m.textMember($e.mipsCodeS, $i.text, levelIdentifier, $idTH.getValueSP(level,$i.text), $im.line, $im.pos)+m.textRestoreStateAfterEndedCallingSpecialFunction(numberOfRegistersUsed)+m.textReturnResultOfSpecialFunctions($im.line, $im.pos);
-                                $idTH.popSP();
-                            }*/
-                            //isThereAStateToBeSavedPreviously=false;
                         }
                     }else{
                         e.addMessage($e.line,$e.pos,ErrorMessage.semantic($e.text,ErrorMessage.type($e.typeS,"integer")));
