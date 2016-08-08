@@ -497,7 +497,7 @@ public class SyntaxDirectedEditor {
                                 compilerMessage = "["+hour+"] "+executingMessage;
                                 outputTextArea.appendText(compilerMessage);
 
-                                File marsSimulator = new File("res/mars_simulator/mars_simulator.jar");
+                                File marsSimulator = new File("mars_simulator/mars_simulator.jar");
                                 if( marsSimulator.exists() && temp.exists()){
                                     Process p = Runtime.getRuntime().exec(new String[]{"java","-jar",marsSimulator.getAbsolutePath(),tempAssembly.getAbsolutePath()});
 
@@ -677,7 +677,7 @@ public class SyntaxDirectedEditor {
                                     compilerMessage = "["+hour+"] "+executingMessage;
                                     outputTextArea.appendText(compilerMessage);
 
-                                    File marsSimulator = new File("res/mars_simulator/mars_simulator.jar");
+                                    File marsSimulator = new File("mars_simulator/mars_simulator.jar");
                                     if(marsSimulator.exists() && temp.exists()){
                                         Process p = Runtime.getRuntime().exec(new String[]{"java","-jar",marsSimulator.getAbsolutePath(),tempAssembly.getAbsolutePath()});
 
