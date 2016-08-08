@@ -81,7 +81,7 @@ program sequenceTest{
 
         seq3 = del(2+3+length(seq3),cons(2,seq3));
 
-        seq3 = del(2,del(4,del(5,cons(2,cons(4+length(seq3)+calculate(),cons(5,seq3))))));
+        seq3 = del(2,del(4,del(5,cons(2,cons(4+length(seq3)+calculate(seq3),cons(5,seq3))))));
 
 
         /*i = 3+4+head(seq3)+head(del(1+4,cons(3,seq3))); // i = 7 + 1 + 1 <=> i = 9 working correctly

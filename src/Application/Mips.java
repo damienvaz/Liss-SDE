@@ -968,9 +968,9 @@ public class Mips {
             s.append(argumentsMipsCodeS); //See if this is here where it belongs
         }
 
-        for(int i=0; i<this.registerSavedTemporaryName.length ; i++){
+        /*for(int i=0; i<this.registerSavedTemporaryName.length ; i++){
             s.append(textMove(this.registerName[i],this.registerSavedTemporaryName[i],line,pos));
-        }
+        }*/
 
         s.append("\tjal "+name+"\t\t# " + line + ":" + pos + "\n");
         //if(isThereAStateToBeSavedPreviously){
