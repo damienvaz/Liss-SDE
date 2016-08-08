@@ -84,49 +84,8 @@ public class Mips {
         this.howManyArgumentsDoesHavespecialFunctions.put("length_sequence",1);
         this.howManyArgumentsDoesHavespecialFunctions.put("member_sequence",2);
 
-        //this.stackOfSpecialFunctionsCalledRecursively = new LinkedList<String>();
     }
 
-    public boolean cycleRecursivityFinder(String name){
-        boolean res = false;
-        int lastIndexNodeLinkedListFunctionName = this.functionName.size()-1;
-
-        for(int i=lastIndexNodeLinkedListFunctionName;i>=0;i--){
-            if(this.functionName.get(i).equals(name) && i<lastIndexNodeLinkedListFunctionName){
-                res = true;
-                i=-1;
-            }
-        }
-        return res;
-    }
-
-    /*public void addSpecialFunctionsToStackForCheckingRecursivity(String nameOfSpecialFunctions){
-        switch (nameOfSpecialFunctions) {
-            case "tail":
-                this.stackOfSpecialFunctionsCalledRecursively.add("tail_sequence");
-                break;
-            case "head":
-                this.stackOfSpecialFunctionsCalledRecursively.add("head_sequence");
-                break;
-            case "cons":
-                this.stackOfSpecialFunctionsCalledRecursively.add("cons_sequence");
-                break;
-            case "del":
-                this.stackOfSpecialFunctionsCalledRecursively.add("delete_sequence");
-                break;
-            case "isEmpty":
-                this.stackOfSpecialFunctionsCalledRecursively.add("is_empty_sequence");
-                break;
-            case "length":
-                this.stackOfSpecialFunctionsCalledRecursively.add("length_sequence");
-                break;
-            case "isMember":
-                this.stackOfSpecialFunctionsCalledRecursively.add("member_sequence");
-                break;
-            default:
-                break;
-        }
-    }*/
 
     public Integer numberOfRegistersInBytes(){ return this.register.length* eachAddressOccupies;    }
 
@@ -1119,36 +1078,29 @@ public class Mips {
         StringBuilder s = new StringBuilder();
 
         int returnAddress = valueReturnAddressFunction(sizeFrameStack);
-        Integer registerNr = numberOfRegisters;
+        //Integer registerNr = numberOfRegisters;
 
-        for(String reg : this.registerSavedTemporaryName){
+        /*for(String reg : this.registerSavedTemporaryName){
             s.append(storeValueSP(reg,returnAddress-(registerNr* eachAddressOccupies)));
             registerNr--;
-        }
+        }*/
 
         s.append(storeValueSP("$ra",returnAddress));
 
         return s.toString();
     }
 
-    /*public String textBeginFunction(int line,int pos,int sizeFrameStack){
-        StringBuilder s = new StringBuilder();
-
-
-        return s.toString();
-    }*/
-
     public String textEndFunction(int sizeFrameStack, String returnMipsCode){
         StringBuilder s = new StringBuilder();
 
         //s.append("\taddi $sp, $sp, "+sizeFrameStack+"\t\t# " + line + ":" + pos +"\n");
-        int returnAddress = valueReturnAddressFunction(sizeFrameStack);
-        Integer registerNr = numberOfRegisters;
+        //int returnAddress = valueReturnAddressFunction(sizeFrameStack);
+        //Integer registerNr = numberOfRegisters;
 
-        for(String reg : this.registerSavedTemporaryName){
+        /*for(String reg : this.registerSavedTemporaryName){
             s.append(loadWordValueSP(reg,returnAddress-(registerNr* eachAddressOccupies)));
             registerNr--;
-        }
+        }*/
         s.append(loadWordValueSP("$ra",sizeFrameStack-this.numberOfBytesForEachAddress()));
         //System.out.println("RETURN2 : "+returnMipsCode);
         if(returnMipsCode!=null){
@@ -1520,19 +1472,6 @@ public class Mips {
 
     public String textReturnResultOfSpecialFunctions(int line, int pos){
         StringBuilder s = new StringBuilder();
-
-        /*System.out.println("################## STACK OF RECURSIVITY ##################");
-        for (String s1 : this.stackOfSpecialFunctionsCalledRecursively) {
-            System.out.println(s1+" line:"+line+" pos:"+pos);
-        }
-        System.out.println("##########################################################");*/
-
-        /*if(this.stackOfSpecialFunctionsCalledRecursively.size()>0) {
-            this.stackOfSpecialFunctionsCalledRecursively.removeLast();
-        }*/
-        /*if(this.stackOfSpecialFunctionsCalledRecursively.size()>0 && this.howManyArgumentsDoesHavespecialFunctions.get(this.stackOfSpecialFunctionsCalledRecursively.getLast()).equals(2)){
-            nextFreeRegister();
-        }*/
 
         String res = nextFreeRegister();
         s.append(textMove("$v0",res,line,pos));

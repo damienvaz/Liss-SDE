@@ -214,7 +214,7 @@ public class IdentifiersTable {
 
     public void pushSP(Integer savedRegisters){
         if(this.stackSP.size()>0 ){
-            this.stackSP.add(this.stackSP.get(this.stackSP.size()-1)+this.address+savedRegisters+4);
+            this.stackSP.add(this.stackSP.get(this.stackSP.size()-1)+this.address+4); //This address is the amount of information stored in the stack frame, and the 4 is related to the return address
             //It adds the position where the level begins in the levelstackSP
             this.levelstackSP.add(this.stackSP.size()-1);
         }else if(this.stackSP.size() == 0){

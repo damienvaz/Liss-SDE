@@ -3,7 +3,7 @@ program sequenceTest{
         seq1, seq2=<<>>, seq3=<<1,2>> -> sequence;
         i -> integer;
         t -> boolean;
-        /*subprogram calculate(seq3->sequence)->integer{
+        subprogram calculate(seq3->sequence)->integer{
             declarations
                 seq4=<<4>>, seq5=<<>> -> sequence;
                 i = 4 -> integer;
@@ -19,14 +19,14 @@ program sequenceTest{
                 //copy(seq2,seq5);
                 //cat(seq1,seq4);
             return i;
-        }*/
-        subprogram calculate(seq3 -> integer)->integer{
+        }
+        /*subprogram calculate(seq3 -> integer)->integer{
             declarations
                 i = 4 -> integer;
             statements
 
             return i;
-        }
+        }*/
     statements
         i = 4;
 

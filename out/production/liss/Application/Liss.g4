@@ -1103,7 +1103,6 @@ elem_array [IdentifiersTable idTH, Set set, String id] //id = name of the array
 function_call [IdentifiersTable idTH, Set set]
               returns [Node treeS, int line, int pos, String typeS, String mipsCodeS]
               @init{
-                //boolean checkRegistersUsedOrNot = isThereAStateToBeSavedPreviously;
                 boolean areRegistersBeingUsed = m.areSomeRegistersUsed();
                 int numberOfUsedRegisters = 0;
                 boolean returnBoolean = false;
@@ -1137,27 +1136,7 @@ function_call [IdentifiersTable idTH, Set set]
 
                     System.out.println("MIPSCODES SPECIALFUNCTION AFTER: "+$mipsCodeS);
               }
-              :
-                /*{
-                    if(checkRegistersUsedOrNot==true){
-                        $idTH.pushStateRegistersToSP(1);
-                        System.out.println(" Function_Call was called !");
-                        //m.nextFreeRegister();
-                        $mipsCodeS = m.textSaveArgumentOfFunctionInSP();
-                    }
-                }*/
-                i=identifier
-                 {
-                    /*System.out.println("LINE: "+$i.line+" Function_Call was called ! checkRegistersUsedOrNot: "+checkRegistersUsedOrNot);
-                    if(checkRegistersUsedOrNot==true){
-                        $idTH.pushStateRegistersToSP(1);
-                        System.out.println(" Function_Call was called !");
-                        m.nextFreeRegister();
-                        $mipsCodeS = m.textSaveArgumentOfFunctionInSP();
-                    }*/
-                 }
-
-                '(' s=sub_prg_args[idTH, set, $i.text] ')'
+              : i=identifier '(' s=sub_prg_args[idTH, set, $i.text] ')'
                 {
 
                     $line = $i.line;
@@ -1171,7 +1150,7 @@ function_call [IdentifiersTable idTH, Set set]
                         */
 
                         //if($idTH.getInfoIdentifiersTable($i.text) instanceof Function && !(((Function)$idTH.getInfoIdentifiersTable($i.text)).getLevel()<level)){
-                        if($idTH.getInfoIdentifiersTable($i.text) instanceof Function /*&& !(m.cycleRecursivityFinder($i.text))*/){
+                        if($idTH.getInfoIdentifiersTable($i.text) instanceof Function){
                             Function f = (Function) $idTH.getInfoIdentifiersTable($i.text);
                             $typeS = f.getInfoType();
 
@@ -1182,24 +1161,11 @@ function_call [IdentifiersTable idTH, Set set]
                                 returnBoolean = true;
                             }
 
-                            //int numberOfRegistersUsed = m.numbersOfRegisteresUsedRightNow();
-                            //$idTH.pushStateRegistersToSP(numberOfRegistersUsed);
-
-                            //boolean checkRegistersUsedOrNot = isThereAStateToBeSavedPreviously;
-
-                            //System.out.println("IsThereAStateToBeSavedPreviously: "+isThereAStateToBeSavedPreviously+" Line:"+$i.line);
-
                             System.out.println("FUNCTION: "+ $i.text+" Line: "+$i.line+" Pos: "+$i.pos);
-                            //if(!checkRegistersUsedOrNot){$mipsCodeS="";System.out.println("Entrei aqui ??? "+checkRegistersUsedOrNot);}
 
                             if(!areRegistersBeingUsed){$mipsCodeS = "";}
                             $mipsCodeS += m.textFunctionCall(m.getNameFunction()+$i.text, $i.line, $i.pos, returnBoolean,$s.argumentsMipsCodeS, true); // TODO: we need to change the 'true' value to a variable for checking if the register was called or not!
 
-                            /*if(checkRegistersUsedOrNot==true){
-                                $idTH.popSP();
-                                //isThereAStateToBeSavedPreviously=false;
-                                checkRegistersUsedOrNot=false;
-                            }*/
 
                             System.out.println("FUNCTION CALL HERE : ");
                             System.out.println($mipsCodeS);
