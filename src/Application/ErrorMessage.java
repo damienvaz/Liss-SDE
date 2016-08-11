@@ -23,6 +23,10 @@ public class ErrorMessage {
         return new String("Function '"+var.toString()+"' "+message.toString());
     }
 
+    public static String semanticVariableMissing(String var){
+        return new String("Variable '"+var+"' isn't declared.");
+    }
+
     //essa funçao nao é para remover, apenas é preciso ver se o argumento int line da função , é mesmo necessario ?
     public static String semanticAssignment(int line){
         return new String("Incompatible types in an Assignment.");

@@ -1,6 +1,7 @@
 program factorial{
     declarations
         factorial, res=1 -> integer;
+        i->integer;
     statements
         input(factorial);
         if(!(factorial>0))
