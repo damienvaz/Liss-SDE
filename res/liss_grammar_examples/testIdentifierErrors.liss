@@ -1,0 +1,17 @@
+program testIdentifier{
+    declarations
+    statements
+        i=3;
+        array1[2]=2;
+        blablabla();
+        input(woot);
+        for(b in 1..5){
+        }
+        for(b inArray array1){
+        }
+        for(b in minus..plus){
+        }
+        succ b;
+        pred r;
+        copy(seq1,seq2);
+}
