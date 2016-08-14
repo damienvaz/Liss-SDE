@@ -699,7 +699,7 @@ public class Mips {
             s.append(mipsCodeS);
 
             if(!isAString) {
-                System.out.println("LINE: " + line + " POS: " + pos);
+                //System.out.println("LINE: " + line + " POS: " + pos);
                 String res[] = lastRegisterOccupied();
                 String r0 = res[0];
 

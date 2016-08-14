@@ -1782,16 +1782,35 @@ write_statement [IdentifiersTable idTH]
                         String s1="";
                         if($p.typeS.equals("array")){
                             if($idTH.doesExist($p.text)){
-                                Var v = (Var) $idTH.getInfoIdentifiersTable($p.text);
+                                Array a = (Array) $idTH.getInfoIdentifiersTable($p.text);
 
                                 Integer level;
-                                if((level = v.getLevel()).equals(0)){
-                                    System.out.println("WRITE -> Variable: "+$p.text+" Level: "+level.toString());
+                                if((level = a.getLevel()).equals(0)){
+                                    int res = 1;
+                                    for(Integer i: a.getLimits()){
+                                        res*= i;
+                                        System.out.println("WRITE -> Variable: "+$p.text+" Level: "+level.toString()+" RES: "+res);
+                                    }
 
+                                    String mipsCodeS = "";
+
+                                    for(int i=0; i<res*m.numberOfBytesForEachAddress(); i+= m.numberOfBytesForEachAddress()){
+                                        mipsCodeS = m.loadImmediateWord(""+i, $line, $pos);
+                                        mipsCodeS += m.loadWordValueArrayWithName($p.text, $line, $pos);
+                                        m.freeLastRegister();
+                                        s1 += m.textWrite(mipsCodeS, true, false, $w.line, $w.pos);
+                                        m.freeLastRegister();
+                                        //need to make it beautifull now, the values are printed but not spaced.
+
+                                    }
+                                    System.out.println(s1);
+
+
+                                    //s1 += m.textWrite($p.mipsCodeS, $w.write, $p.isAString, $w.line, $w.pos);
                                 }else{
                                     System.out.println("WRITE -> Variable: "+$p.text+" Level: "+level.toString());
 
-
+                                    //s1 += m.textWrite($p.mipsCodeS, $w.write, $p.isAString, $w.line, $w.pos);
                                 }
                             }
                         }else{

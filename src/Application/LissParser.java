@@ -4841,16 +4841,35 @@ public class LissParser extends Parser {
 			                        String s1="";
 			                        if(((Write_statementContext)_localctx).p.typeS.equals("array")){
 			                            if(_localctx.idTH.doesExist((((Write_statementContext)_localctx).p!=null?_input.getText(((Write_statementContext)_localctx).p.start,((Write_statementContext)_localctx).p.stop):null))){
-			                                Var v = (Var) _localctx.idTH.getInfoIdentifiersTable((((Write_statementContext)_localctx).p!=null?_input.getText(((Write_statementContext)_localctx).p.start,((Write_statementContext)_localctx).p.stop):null));
+			                                Array a = (Array) _localctx.idTH.getInfoIdentifiersTable((((Write_statementContext)_localctx).p!=null?_input.getText(((Write_statementContext)_localctx).p.start,((Write_statementContext)_localctx).p.stop):null));
 
 			                                Integer level;
-			                                if((level = v.getLevel()).equals(0)){
-			                                    System.out.println("WRITE -> Variable: "+(((Write_statementContext)_localctx).p!=null?_input.getText(((Write_statementContext)_localctx).p.start,((Write_statementContext)_localctx).p.stop):null)+" Level: "+level.toString());
+			                                if((level = a.getLevel()).equals(0)){
+			                                    int res = 1;
+			                                    for(Integer i: a.getLimits()){
+			                                        res*= i;
+			                                        System.out.println("WRITE -> Variable: "+(((Write_statementContext)_localctx).p!=null?_input.getText(((Write_statementContext)_localctx).p.start,((Write_statementContext)_localctx).p.stop):null)+" Level: "+level.toString()+" RES: "+res);
+			                                    }
 
+			                                    String mipsCodeS = "";
+
+			                                    for(int i=0; i<res*m.numberOfBytesForEachAddress(); i+= m.numberOfBytesForEachAddress()){
+			                                        mipsCodeS = m.loadImmediateWord(""+i, _localctx.line, _localctx.pos);
+			                                        mipsCodeS += m.loadWordValueArrayWithName((((Write_statementContext)_localctx).p!=null?_input.getText(((Write_statementContext)_localctx).p.start,((Write_statementContext)_localctx).p.stop):null), _localctx.line, _localctx.pos);
+			                                        m.freeLastRegister();
+			                                        s1 += m.textWrite(mipsCodeS, true, false, ((Write_statementContext)_localctx).w.line, ((Write_statementContext)_localctx).w.pos);
+			                                        m.freeLastRegister();
+			                                        //need to make it beautifull now, the values are printed but not spaced.
+
+			                                    }
+			                                    System.out.println(s1);
+
+
+			                                    //s1 += m.textWrite(((Write_statementContext)_localctx).p.mipsCodeS, ((Write_statementContext)_localctx).w.write, ((Write_statementContext)_localctx).p.isAString, ((Write_statementContext)_localctx).w.line, ((Write_statementContext)_localctx).w.pos);
 			                                }else{
 			                                    System.out.println("WRITE -> Variable: "+(((Write_statementContext)_localctx).p!=null?_input.getText(((Write_statementContext)_localctx).p.start,((Write_statementContext)_localctx).p.stop):null)+" Level: "+level.toString());
 
-
+			                                    //s1 += m.textWrite(((Write_statementContext)_localctx).p.mipsCodeS, ((Write_statementContext)_localctx).w.write, ((Write_statementContext)_localctx).p.isAString, ((Write_statementContext)_localctx).w.line, ((Write_statementContext)_localctx).w.pos);
 			                                }
 			                            }
 			                        }else{
