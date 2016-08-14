@@ -1779,24 +1779,28 @@ write_statement [IdentifiersTable idTH]
                     $line = $w.line;
                     $pos = $w.pos;
                     if($p.mipsCodeS != null){
-                        if($w.write == true){
-                        //Means that it is only write !
-                            String s1 = m.textWrite($p.mipsCodeS, $w.write, $p.isAString, $w.line, $w.pos);
-                            //System.out.println("WRITE_STATEMENT : \n"+s1);
-                            if(functionState == false){
-                                m.addTextInstruction(s1);
-                            }else if(functionState == true){
-                                m.addMipsCodeFunction(m.getNameFunction(),s1);
+                        String s1="";
+                        if($p.typeS.equals("array")){
+                            if($idTH.doesExist($p.text)){
+                                Var v = (Var) $idTH.getInfoIdentifiersTable($p.text);
+
+                                Integer level;
+                                if((level = v.getLevel()).equals(0)){
+                                    System.out.println("WRITE -> Variable: "+$p.text+" Level: "+level.toString());
+
+                                }else{
+                                    System.out.println("WRITE -> Variable: "+$p.text+" Level: "+level.toString());
+
+
+                                }
                             }
-                        }else if($w.write == false){
-                        //Means that it is only writeln !
-                            String s2 = m.textWrite($p.mipsCodeS, $w.write, $p.isAString, $w.line, $w.pos);
-                            //System.out.println("WRITE_STATEMENT : \n"+s2);
-                            if(functionState == false){
-                                m.addTextInstruction(s2);
-                            }else if(functionState == true){
-                                m.addMipsCodeFunction(m.getNameFunction(),s2);
-                            }
+                        }else{
+                          s1 = m.textWrite($p.mipsCodeS, $w.write, $p.isAString, $w.line, $w.pos);
+                        }
+                        if(functionState == false){
+                            m.addTextInstruction(s1);
+                        }else if(functionState == true){
+                            m.addMipsCodeFunction(m.getNameFunction(),s1);
                         }
                     }
                  }
@@ -1809,7 +1813,7 @@ write_expr
            ;
 
 print_what [IdentifiersTable idTH]
-           returns [String mipsCodeS,boolean isAString]
+           returns [String mipsCodeS,boolean isAString, String typeS]
            @init{
               Set tree = null;
            }
@@ -1822,6 +1826,7 @@ print_what [IdentifiersTable idTH]
                     $mipsCodeS = $e.mipsCodeS;
                 }
                 $isAString=false;
+                $typeS = $e.typeS;
             } //conjuntos nao pode pertencer
            | s=string
             {
@@ -1829,6 +1834,7 @@ print_what [IdentifiersTable idTH]
                 $mipsCodeS = m.loadTextWrite(i);
                 i++;
                 $isAString=true;
+                $typeS = null;
             }
            ;
 

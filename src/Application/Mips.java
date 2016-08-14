@@ -699,18 +699,11 @@ public class Mips {
             s.append(mipsCodeS);
 
             if(!isAString) {
+                System.out.println("LINE: " + line + " POS: " + pos);
                 String res[] = lastRegisterOccupied();
                 String r0 = res[0];
 
                 s.append("\tmove $a0, " + r0 + "\t\t# " + line + ":" + pos + "\n");
-
-                freeLastRegister();
-                s.append("\tli $v0, 1\n");
-                s.append("\tsyscall\n");
-            }else{
-                //It means that it is a string!
-                s.append("\tli $v0, 4\n");
-                s.append("\tsyscall\n");
             }
             if(write == true) {
                 this.mipsCodeSpecialFunctionState.put("write",1);
@@ -730,6 +723,10 @@ public class Mips {
         if(value == false){
             s.append("\tli $v0, 4\n");
             s.append("\tla $a0, newline\n");
+            s.append("\tsyscall\n");
+        }else{
+            //This means that we have an integer value in the register
+            s.append("\tli $v0, 1\n");
             s.append("\tsyscall\n");
         }
         s.append("\tjr $ra\n");

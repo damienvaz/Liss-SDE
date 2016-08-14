@@ -2,13 +2,13 @@ program ArrayTest
 {
 declarations
 
-	//a = 4, b -> integer;
-	//vector1 = [1,2,3], vector2 -> array size 5;
+	a = 4, b -> integer;
+	vector1 = [1,2,3], vector2 -> array size 5;
 	vector3, vector4 = [[1,2],[3,4],[5,6]] -> array size 3,2;
-	//vector3 -> array size 3,2;
+	vector3 -> array size 3,2;
 	i -> integer;
-	//array1 = [[1,2],[4]] -> array size 4,2;
-	/*array2 = [
+	array1 = [[1,2],[4]] -> array size 4,2;
+	array2 = [
              [[1],[5]],
              [[2,2],[3]]
             ] -> array size 4,3,2;
@@ -27,35 +27,35 @@ declarations
 	      	  [
 			    [[[10,6]],[[4]]]
 	      	  ]
-	    	 ] -> array size 2,2,2,2,4;*/
+	    	 ] -> array size 2,2,2,2,4;
 
     subprogram arrayTest()->integer{
                 declarations
                     vector5, vector6 = [[7,8],[9,10],[11,12]] -> array size 3,2;
                     i = 3 -> integer;
                 statements
-                    //vector3 = vector6;
-                    //vector5 = vector4;
+                    vector3 = vector6;
+                    vector5 = vector4;
                     vector5 = vector6;
                 return i;
             }
 
 statements
 
-	//a = array2[1,2,3];
-	//b = array2[1,0,a*2];
-	//array2[2,b,a] = 15;
+	a = array2[1,2,3];
+	b = array2[1,0,a*2];
+	array2[2,b,a] = 15;
 
-	//writeln(array2);
+	write(array2);
 
-	//vector2 = array1;
-	//vector2 = vector1;
+	vector2 = array1;
+	vector2 = vector1;
 	vector3 = vector4;
 	//vector1[1] = vector2;
-	//writeln(vector2);
+	write(vector27);
 
-	//a = length(array4);
-	//writeln(a);
+	a = length(array4);
+	writeln(a);
 
 	i = arrayTest();
 }
