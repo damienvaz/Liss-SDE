@@ -436,13 +436,32 @@ public class LissParser extends Parser {
 			                                int addressSP = _localctx.idTH.getAddress();
 			                                for(String i : varsH.keySet()){
 			                                    varsH.get(i).put("dimension",((Variable_declarationContext)_localctx).type.arrayDimension);
+			                                    String mipsCodeS="";
 
+			                                    System.out.println("ARRAY: "+i+" FUNCTIONSTAT: "+functionState);
+
+			                                    //If variable_declaration is in a subprogram, we need to initialize all the area concerned in the SP to 0!
+			                                    if(functionState == true){
+			                                        System.out.println("ARRAY: "+i+" FUNCTIONSTAT: "+functionState+" ENTERED TO THAT STATE");
+			                                        ArrayList<Integer> dimension = ((Variable_declarationContext)_localctx).type.arrayDimension;
+			                                        int res = 1;
+			                                        for(Integer l : dimension){
+			                                            res *= l;
+			                                        }
+			                                        res *= m.numberOfBytesForEachAddress();
+
+			                                        mipsCodeS += "\t##### Initialize Array :"+i+"#####\n";
+			                                        for(int j = 0; j< res; j+=m.numberOfBytesForEachAddress()){
+			                                            mipsCodeS += m.loadImmediateWord("0", (int) varsH.get(i).get("line"), (int) varsH.get(i).get("pos")) + m.storeArgumentsSP(addressSP+j);
+			                                        }
+			                                        mipsCodeS += "\t#######################################\n";
+			                                    }
+
+			                                    //Now if there are some values to set to the array, we need to generate that code!
 			                                    if(varsH.get(i).get("accessArray") != null){
 			                                        ArrayList<ArrayList<Integer>> accessArray = (ArrayList<ArrayList<Integer>>) varsH.get(i).get("accessArray");
 
-			                                        String mipsCodeS;
-
-			                                        mipsCodeS = "\t##### Initialize Array :"+i+"#####\n";
+			                                        mipsCodeS += "\t##### Initialize Value Array :"+i+"#####\n";
 
 			                                        for(ArrayList<Integer> array :accessArray){
 			                                            int valueOfThePositionOfTheArray = array.get(array.size()-1);
@@ -461,8 +480,8 @@ public class LissParser extends Parser {
 			                                                    e.addMessage((int)varsH.get(i).get("line"),(int)varsH.get(i).get("pos"),ErrorMessage.semantic((((Variable_declarationContext)_localctx).vars!=null?_input.getText(((Variable_declarationContext)_localctx).vars.start,((Variable_declarationContext)_localctx).vars.stop):null),ErrorMessage.LimitsArray));
 			                                                }
 			                                            }
+			                                            res = res*m.numberOfBytesForEachAddress();
 
-			                                            res = res*4;
 			                                            //Add the value of the array firstly
 			                                            mipsCodeS += m.loadImmediateWord(String.valueOf(valueOfThePositionOfTheArray), (int)varsH.get(i).get("line"), (int)varsH.get(i).get("pos")); //generate mips code for value of the array
 			                                            //Add the address of the value of the array
@@ -470,17 +489,15 @@ public class LissParser extends Parser {
 			                                            if(functionState == false){
 			                                                //Function for adding the value and the address of the value to the given array
 			                                                mipsCodeS += m.storeWordArray(i,(int)varsH.get(i).get("line"), (int)varsH.get(i).get("pos"));
-			                                                //Add the instruction to the assembly
-			                                                //m.addTextInstruction(mipsCodeS);
+
 			                                            }else if(functionState == true){
 
 			                                                //System.out.println(_localctx.idTH.toString());
-			                                                //Integer address = _localctx.idTH.getAddress(); Nao pode ser !!!!
 			                                                System.out.println(i+" ADDRESS OF VARIABLE DECLARATION: "+addressSP);
 			                                                mipsCodeS += m.loadImmediateWord(""+addressSP, (int)varsH.get(i).get("line"), (int)varsH.get(i).get("pos"))+m.textAdd((int)varsH.get(i).get("line"), (int)varsH.get(i).get("pos"));
 			                                                //è necessario adicionar o endereço da stack frame a posicao calculado do endereço array (para acceder bem)
 			                                                mipsCodeS += m.storeValueWordArraySP((int)varsH.get(i).get("line"), (int)varsH.get(i).get("pos"));
-			                                                //m.addMipsCodeFunction(m.getNameFunction(),mipsCodeS);
+
 			                                            }
 
 			                                        }
@@ -488,24 +505,8 @@ public class LissParser extends Parser {
 			                                        mipsCodeS += "\t#######################################\n";
 			                                        varsH.get(i).put("mips",mipsCodeS);
 			                                    }else{
-			                                        //It means that there is no access Values in the initialization of the Array
-			                                        if(functionState==true){
-			                                            //When the array doesn't have values sets, we need to set the values to zero in SP (When 'functionState' is activated)!!!
-			                                            ArrayList<Integer> limits = ((Variable_declarationContext)_localctx).type.arrayDimension;
-			                                            int res= 1;
-			                                            for(Integer l: limits){
-			                                                res *= l;
-			                                            }
-			                                            res*= m.numberOfBytesForEachAddress();
-			                                            String mipsCodeS="\t##### Initialize Array :"+i+"#####\n";
-			                                            for(int j=0; j<res; j+= m.numberOfBytesForEachAddress()){
-			                                                mipsCodeS += m.loadImmediateWord(""+0,(int)varsH.get(i).get("line"), (int)varsH.get(i).get("pos"));
-			                                                mipsCodeS += m.storeWordSP(j+addressSP);
-			                                            }
-			                                            mipsCodeS+="\t#######################################\n";
-
-			                                            varsH.get(i).put("mips",mipsCodeS);
-			                                        }
+			                                        //It means that there is no access Values in the initialization of the Array, we need to add the generated code!
+			                                        varsH.get(i).put("mips",mipsCodeS);
 			                                    }
 
 			                                    //This algorithm counts the next address in the sp for the array(basically, it simulates the number)!!!
@@ -3802,7 +3803,7 @@ public class LissParser extends Parser {
 				                        }
 
 				                        Set s = ((ExpressionContext)_localctx).s2.setS;
-				                        if(s!=null && !isDeclarations){
+				                        if(s!=null && !isDeclarations && ((ExpressionContext)_localctx).s1.treeS!=null){
 				                            System.out.println(s.toString()+" LINE : "+((ExpressionContext)_localctx).rel_op.line);
 				                            s.setIdentifier(((ExpressionContext)_localctx).s1.treeS);
 				                            System.out.println(s.toString());
@@ -3964,15 +3965,24 @@ public class LissParser extends Parser {
 				                                                    Set s1 = ((Single_expressionContext)_localctx).t1.setS ;
 				                                                    Set s2 = ((Single_expressionContext)_localctx).t2.setS;
 				                                                    if(s1 == null ){
-				                                                        Application.SymbolTable.Set s = (Application.SymbolTable.Set) _localctx.idTH.getInfoIdentifiersTable((((Single_expressionContext)_localctx).t1!=null?_input.getText(((Single_expressionContext)_localctx).t1.start,((Single_expressionContext)_localctx).t1.stop):null));
-				                                                        s1 = s.getSet();
+				                                                        if(_localctx.idTH.doesExist((((Single_expressionContext)_localctx).t1!=null?_input.getText(((Single_expressionContext)_localctx).t1.start,((Single_expressionContext)_localctx).t1.stop):null))){
+				                                                            Application.SymbolTable.Set s = (Application.SymbolTable.Set) _localctx.idTH.getInfoIdentifiersTable((((Single_expressionContext)_localctx).t1!=null?_input.getText(((Single_expressionContext)_localctx).t1.start,((Single_expressionContext)_localctx).t1.stop):null));
+				                                                            s1 = s.getSet();
+				                                                        }else{
+
+				                                                        }
 				                                                    }
 				                                                    if(s2 == null ){
-				                                                        Application.SymbolTable.Set s = (Application.SymbolTable.Set) _localctx.idTH.getInfoIdentifiersTable((((Single_expressionContext)_localctx).t2!=null?_input.getText(((Single_expressionContext)_localctx).t2.start,((Single_expressionContext)_localctx).t2.stop):null));
-				                                                        s2 = s.getSet();
+				                                                        if(_localctx.idTH.doesExist((((Single_expressionContext)_localctx).t2!=null?_input.getText(((Single_expressionContext)_localctx).t2.start,((Single_expressionContext)_localctx).t2.stop):null))){
+				                                                            Application.SymbolTable.Set s = (Application.SymbolTable.Set) _localctx.idTH.getInfoIdentifiersTable((((Single_expressionContext)_localctx).t2!=null?_input.getText(((Single_expressionContext)_localctx).t2.start,((Single_expressionContext)_localctx).t2.stop):null));
+				                                                            s2 = s.getSet();
+				                                                        }else{
+				                                                            //TODO: sets que nao funciona, bem !!!!
+				                                                        }
 				                                                    }
-				                                                    ((Single_expressionContext)_localctx).setS =  new Set(s1,s2,(((Single_expressionContext)_localctx).a!=null?_input.getText(((Single_expressionContext)_localctx).a.start,((Single_expressionContext)_localctx).a.stop):null));
-
+				                                                    if(s1!=null && s2!=null){
+				                                                        ((Single_expressionContext)_localctx).setS =  new Set(s1,s2,(((Single_expressionContext)_localctx).a!=null?_input.getText(((Single_expressionContext)_localctx).a.start,((Single_expressionContext)_localctx).a.stop):null));
+				                                                    }
 				                                                }
 				                                            }
 				                                        }else{
@@ -4167,14 +4177,20 @@ public class LissParser extends Parser {
 				                                            Set s1 = ((TermContext)_localctx).f1.setS ;
 				                                            Set s2 = ((TermContext)_localctx).f2.setS;
 				                                            if(s1 == null ){
-				                                                Application.SymbolTable.Set s = (Application.SymbolTable.Set) _localctx.idTH.getInfoIdentifiersTable((((TermContext)_localctx).f1!=null?_input.getText(((TermContext)_localctx).f1.start,((TermContext)_localctx).f1.stop):null));
-				                                                s1 = s.getSet();
+				                                                if(_localctx.idTH.doesExist((((TermContext)_localctx).f1!=null?_input.getText(((TermContext)_localctx).f1.start,((TermContext)_localctx).f1.stop):null))){
+				                                                    Application.SymbolTable.Set s = (Application.SymbolTable.Set) _localctx.idTH.getInfoIdentifiersTable((((TermContext)_localctx).f1!=null?_input.getText(((TermContext)_localctx).f1.start,((TermContext)_localctx).f1.stop):null));
+				                                                    s1 = s.getSet();
+				                                                }
 				                                            }
 				                                            if(s2 == null ){
-				                                                Application.SymbolTable.Set s = (Application.SymbolTable.Set) _localctx.idTH.getInfoIdentifiersTable((((TermContext)_localctx).f2!=null?_input.getText(((TermContext)_localctx).f2.start,((TermContext)_localctx).f2.stop):null));
-				                                                s2 = s.getSet();
+				                                                if(_localctx.idTH.doesExist((((TermContext)_localctx).f2!=null?_input.getText(((TermContext)_localctx).f2.start,((TermContext)_localctx).f2.stop):null))){
+				                                                    Application.SymbolTable.Set s = (Application.SymbolTable.Set) _localctx.idTH.getInfoIdentifiersTable((((TermContext)_localctx).f2!=null?_input.getText(((TermContext)_localctx).f2.start,((TermContext)_localctx).f2.stop):null));
+				                                                    s2 = s.getSet();
+				                                                }
 				                                            }
-				                                            ((TermContext)_localctx).setS =  new Set(s1,s2,(((TermContext)_localctx).m!=null?_input.getText(((TermContext)_localctx).m.start,((TermContext)_localctx).m.stop):null));
+				                                            if(s1!=null && s2!=null){
+				                                                ((TermContext)_localctx).setS =  new Set(s1,s2,(((TermContext)_localctx).m!=null?_input.getText(((TermContext)_localctx).m.start,((TermContext)_localctx).m.stop):null));
+				                                            }
 				                                            //System.out.println(_localctx.setS.toString());
 				                                            //_localctx.setS.setIdentifier(new Node("3"));
 				                                            //System.out.println(_localctx.setS.toString());

@@ -100,13 +100,32 @@ variable_declaration [IdentifiersTable idTH]
                                 int addressSP = $idTH.getAddress();
                                 for(String i : varsH.keySet()){
                                     varsH.get(i).put("dimension",$type.arrayDimension);
+                                    String mipsCodeS="";
 
+                                    System.out.println("ARRAY: "+i+" FUNCTIONSTAT: "+functionState);
+
+                                    //If variable_declaration is in a subprogram, we need to initialize all the area concerned in the SP to 0!
+                                    if(functionState == true){
+                                        System.out.println("ARRAY: "+i+" FUNCTIONSTAT: "+functionState+" ENTERED TO THAT STATE");
+                                        ArrayList<Integer> dimension = $type.arrayDimension;
+                                        int res = 1;
+                                        for(Integer l : dimension){
+                                            res *= l;
+                                        }
+                                        res *= m.numberOfBytesForEachAddress();
+
+                                        mipsCodeS += "\t##### Initialize Array :"+i+"#####\n";
+                                        for(int j = 0; j< res; j+=m.numberOfBytesForEachAddress()){
+                                            mipsCodeS += m.loadImmediateWord("0", (int) varsH.get(i).get("line"), (int) varsH.get(i).get("pos")) + m.storeArgumentsSP(addressSP+j);
+                                        }
+                                        mipsCodeS += "\t#######################################\n";
+                                    }
+
+                                    //Now if there are some values to set to the array, we need to generate that code!
                                     if(varsH.get(i).get("accessArray") != null){
                                         ArrayList<ArrayList<Integer>> accessArray = (ArrayList<ArrayList<Integer>>) varsH.get(i).get("accessArray");
 
-                                        String mipsCodeS;
-
-                                        mipsCodeS = "\t##### Initialize Array :"+i+"#####\n";
+                                        mipsCodeS += "\t##### Initialize Value Array :"+i+"#####\n";
 
                                         for(ArrayList<Integer> array :accessArray){
                                             int valueOfThePositionOfTheArray = array.get(array.size()-1);
@@ -125,8 +144,8 @@ variable_declaration [IdentifiersTable idTH]
                                                     e.addMessage((int)varsH.get(i).get("line"),(int)varsH.get(i).get("pos"),ErrorMessage.semantic($vars.text,ErrorMessage.LimitsArray));
                                                 }
                                             }
+                                            res = res*m.numberOfBytesForEachAddress();
 
-                                            res = res*4;
                                             //Add the value of the array firstly
                                             mipsCodeS += m.loadImmediateWord(String.valueOf(valueOfThePositionOfTheArray), (int)varsH.get(i).get("line"), (int)varsH.get(i).get("pos")); //generate mips code for value of the array
                                             //Add the address of the value of the array
@@ -134,17 +153,15 @@ variable_declaration [IdentifiersTable idTH]
                                             if(functionState == false){
                                                 //Function for adding the value and the address of the value to the given array
                                                 mipsCodeS += m.storeWordArray(i,(int)varsH.get(i).get("line"), (int)varsH.get(i).get("pos"));
-                                                //Add the instruction to the assembly
-                                                //m.addTextInstruction(mipsCodeS);
+
                                             }else if(functionState == true){
 
                                                 //System.out.println($idTH.toString());
-                                                //Integer address = $idTH.getAddress(); Nao pode ser !!!!
                                                 System.out.println(i+" ADDRESS OF VARIABLE DECLARATION: "+addressSP);
                                                 mipsCodeS += m.loadImmediateWord(""+addressSP, (int)varsH.get(i).get("line"), (int)varsH.get(i).get("pos"))+m.textAdd((int)varsH.get(i).get("line"), (int)varsH.get(i).get("pos"));
                                                 //è necessario adicionar o endereço da stack frame a posicao calculado do endereço array (para acceder bem)
                                                 mipsCodeS += m.storeValueWordArraySP((int)varsH.get(i).get("line"), (int)varsH.get(i).get("pos"));
-                                                //m.addMipsCodeFunction(m.getNameFunction(),mipsCodeS);
+
                                             }
 
                                         }
@@ -152,24 +169,8 @@ variable_declaration [IdentifiersTable idTH]
                                         mipsCodeS += "\t#######################################\n";
                                         varsH.get(i).put("mips",mipsCodeS);
                                     }else{
-                                        //It means that there is no access Values in the initialization of the Array
-                                        if(functionState==true){
-                                            //When the array doesn't have values sets, we need to set the values to zero in SP (When 'functionState' is activated)!!!
-                                            ArrayList<Integer> limits = $type.arrayDimension;
-                                            int res= 1;
-                                            for(Integer l: limits){
-                                                res *= l;
-                                            }
-                                            res*= m.numberOfBytesForEachAddress();
-                                            String mipsCodeS="\t##### Initialize Array :"+i+"#####\n";
-                                            for(int j=0; j<res; j+= m.numberOfBytesForEachAddress()){
-                                                mipsCodeS += m.loadImmediateWord(""+0,(int)varsH.get(i).get("line"), (int)varsH.get(i).get("pos"));
-                                                mipsCodeS += m.storeWordSP(j+addressSP);
-                                            }
-                                            mipsCodeS+="\t#######################################\n";
-
-                                            varsH.get(i).put("mips",mipsCodeS);
-                                        }
+                                        //It means that there is no access Values in the initialization of the Array, we need to add the generated code!
+                                        varsH.get(i).put("mips",mipsCodeS);
                                     }
 
                                     //This algorithm counts the next address in the sp for the array(basically, it simulates the number)!!!
@@ -1389,7 +1390,7 @@ expression [IdentifiersTable idTH, Set set]
                         }
 
                         Set s = $s2.setS;
-                        if(s!=null && !isDeclarations){
+                        if(s!=null && !isDeclarations && $s1.treeS!=null){
                             System.out.println(s.toString()+" LINE : "+$rel_op.line);
                             s.setIdentifier($s1.treeS);
                             System.out.println(s.toString());
@@ -1480,15 +1481,24 @@ single_expression [IdentifiersTable idTH, Set set]
                                                     Set s1 = $t1.setS ;
                                                     Set s2 = $t2.setS;
                                                     if(s1 == null ){
-                                                        Application.SymbolTable.Set s = (Application.SymbolTable.Set) $idTH.getInfoIdentifiersTable($t1.text);
-                                                        s1 = s.getSet();
+                                                        if($idTH.doesExist($t1.text)){
+                                                            Application.SymbolTable.Set s = (Application.SymbolTable.Set) $idTH.getInfoIdentifiersTable($t1.text);
+                                                            s1 = s.getSet();
+                                                        }else{
+
+                                                        }
                                                     }
                                                     if(s2 == null ){
-                                                        Application.SymbolTable.Set s = (Application.SymbolTable.Set) $idTH.getInfoIdentifiersTable($t2.text);
-                                                        s2 = s.getSet();
+                                                        if($idTH.doesExist($t2.text)){
+                                                            Application.SymbolTable.Set s = (Application.SymbolTable.Set) $idTH.getInfoIdentifiersTable($t2.text);
+                                                            s2 = s.getSet();
+                                                        }else{
+                                                            //TODO: sets que nao funciona, bem !!!!
+                                                        }
                                                     }
-                                                    $setS = new Set(s1,s2,$a.text);
-
+                                                    if(s1!=null && s2!=null){
+                                                        $setS = new Set(s1,s2,$a.text);
+                                                    }
                                                 }
                                             }
                                         }else{
@@ -1607,14 +1617,20 @@ term [IdentifiersTable idTH, Set set]
                                             Set s1 = $f1.setS ;
                                             Set s2 = $f2.setS;
                                             if(s1 == null ){
-                                                Application.SymbolTable.Set s = (Application.SymbolTable.Set) $idTH.getInfoIdentifiersTable($f1.text);
-                                                s1 = s.getSet();
+                                                if($idTH.doesExist($f1.text)){
+                                                    Application.SymbolTable.Set s = (Application.SymbolTable.Set) $idTH.getInfoIdentifiersTable($f1.text);
+                                                    s1 = s.getSet();
+                                                }
                                             }
                                             if(s2 == null ){
-                                                Application.SymbolTable.Set s = (Application.SymbolTable.Set) $idTH.getInfoIdentifiersTable($f2.text);
-                                                s2 = s.getSet();
+                                                if($idTH.doesExist($f2.text)){
+                                                    Application.SymbolTable.Set s = (Application.SymbolTable.Set) $idTH.getInfoIdentifiersTable($f2.text);
+                                                    s2 = s.getSet();
+                                                }
                                             }
-                                            $setS = new Set(s1,s2,$m.text);
+                                            if(s1!=null && s2!=null){
+                                                $setS = new Set(s1,s2,$m.text);
+                                            }
                                             //System.out.println($setS.toString());
                                             //$setS.setIdentifier(new Node("3"));
                                             //System.out.println($setS.toString());

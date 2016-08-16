@@ -3,12 +3,13 @@ program Factorial {
 
 	declarations
         int1 = 2 -> integer;
+        vector3 = [1,2,3], vector4 -> array size 5;
 
 		subprogram factorial(n -> integer) -> integer
 		{
 		  declarations
 				res = 1 -> integer;
-				array23 -> array size 2,2;
+				vector1 = [1,2,3], vector2 -> array size 5;
 
 		  statements
 				while (n > 0)
