@@ -2,8 +2,7 @@
 program Factorial {
 
 	declarations
-
-		int1 = 2 -> integer;
+        int1 = 2 -> integer;
 
 		subprogram factorial(n -> integer) -> integer
 		{

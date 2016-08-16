@@ -2,13 +2,13 @@
 program Factorial {
 
 	declarations
-
-		int1 = 2 -> integer;
+        int1 = 2 -> integer;
 
 		subprogram factorial(n -> integer) -> integer
 		{
 		  declarations
 				res = 1 -> integer;
+				array23 -> array size 2,2;
 
 		  statements
 				while (n > 0)

@@ -151,6 +151,25 @@ variable_declaration [IdentifiersTable idTH]
 
                                         mipsCodeS += "\t#######################################\n";
                                         varsH.get(i).put("mips",mipsCodeS);
+                                    }else{
+                                        //It means that there is no access Values in the initialization of the Array
+                                        if(functionState==true){
+                                            //When the array doesn't have values sets, we need to set the values to zero in SP (When 'functionState' is activated)!!!
+                                            ArrayList<Integer> limits = $type.arrayDimension;
+                                            int res= 1;
+                                            for(Integer l: limits){
+                                                res *= l;
+                                            }
+                                            res*= m.numberOfBytesForEachAddress();
+                                            String mipsCodeS="\t##### Initialize Array :"+i+"#####\n";
+                                            for(int j=0; j<res; j+= m.numberOfBytesForEachAddress()){
+                                                mipsCodeS += m.loadImmediateWord(""+0,(int)varsH.get(i).get("line"), (int)varsH.get(i).get("pos"));
+                                                mipsCodeS += m.storeWordSP(j+addressSP);
+                                            }
+                                            mipsCodeS+="\t#######################################\n";
+
+                                            varsH.get(i).put("mips",mipsCodeS);
+                                        }
                                     }
 
                                     //This algorithm counts the next address in the sp for the array(basically, it simulates the number)!!!
@@ -159,7 +178,7 @@ variable_declaration [IdentifiersTable idTH]
                                     for(Integer l : limits){
                                         res*=l;
                                     }
-                                    addressSP+=res*4;
+                                    addressSP+=res*m.numberOfBytesForEachAddress();
 
                                 }
                             }else if($type.typeS == "set"){
@@ -167,15 +186,17 @@ variable_declaration [IdentifiersTable idTH]
                                     HashMap<String,Object> v = (HashMap<String,Object>)varsH.get(i);
                                     if(v.get("set") == null){
                                         v.put("set", new Set());
+                                    }else{
+                                        Application.Set ss= (Application.Set) varsH.get(i).get("set");
                                     }
                                 }
-                                for(String i : varsH.keySet()){
+                                /*for(String i : varsH.keySet()){
                                     Node n1 = new Node(new String("2"),null,null);
                                     Node n2 = new Node(new String("3"),null,null);
                                     Node n3 = new Node(new String("+"),n1,n2);
 
                                     Application.Set ss= (Application.Set) varsH.get(i).get("set");
-                                }
+                                }*/
                             }else if($type.typeS == "boolean"){
                                 if(functionState == true){
                                     int address = $idTH.getAddress();
@@ -184,6 +205,11 @@ variable_declaration [IdentifiersTable idTH]
                                     for(String i : varsH.keySet()){
                                         if(varsH.get(i).get("mips")!=null){
                                             String mipsCodeS = varsH.get(i).get("mips") + m.storeArgumentsSP(address);
+                                            varsH.get(i).put("mips",mipsCodeS);
+                                            address += typeSpace.getSpace();
+                                        }else{
+                                            //This means that the integer exists but the mipsCode is null, we must set it for the function otherwise there will be a random value
+                                            String mipsCodeS = m.loadImmediateWord("0", (int) varsH.get(i).get("line"), (int) varsH.get(i).get("pos")) + m.storeArgumentsSP(address);
                                             varsH.get(i).put("mips",mipsCodeS);
                                             address += typeSpace.getSpace();
                                         }
@@ -197,6 +223,11 @@ variable_declaration [IdentifiersTable idTH]
                                     for(String i : varsH.keySet()){
                                         if(varsH.get(i).get("mips")!=null){
                                             String mipsCodeS = varsH.get(i).get("mips") + m.storeArgumentsSP(address);
+                                            varsH.get(i).put("mips",mipsCodeS);
+                                            address += typeSpace.getSpace();
+                                        }else{
+                                            //This means that the integer exists but the mipsCode is null, we must set it for the function otherwise there will be a random value
+                                            String mipsCodeS = m.loadImmediateWord("0", (int) varsH.get(i).get("line"), (int) varsH.get(i).get("pos")) + m.storeArgumentsSP(address);
                                             varsH.get(i).put("mips",mipsCodeS);
                                             address += typeSpace.getSpace();
                                         }
@@ -397,6 +428,8 @@ inic_var [IdentifiersTable idTH, Set set]
                                                     $typeS = "array";
 
                                                     $accessArrayS = accessArray;
+                                                    $line = $a.line;
+                                                    $pos = $a.pos;
                                               }
          | s1=set_definition[idTH]  {$typeS = "set"; $line = $s1.line; $pos = $s1.pos; $treeS = $s1.treeS; $setS = $s1.setS;/*if(isSet && $s1.treeS!=null){$treeS = $s1.treeS;} if(isSet && $s1.setS!=null){$setS = $s1.setS;}*/}
          | s2=sequence_definition[sequence]   {$typeS = "sequence"; $line = $s2.line; $pos = $s2.pos; $treeS = $s2.treeS; $sequenceS = sequence; /*if(isSet && $set!=null){$treeS = $s2.treeS;}*/}
@@ -429,7 +462,8 @@ sign :
 /* ****** Array definition ****** */
 
 array_definition [ArrayList<Integer> a, ArrayList<ArrayList<Integer>> accessArray]
-                 : '[' array_initialization[a,accessArray] ']'
+                 returns [int line, int pos]
+                 : b='[' array_initialization[a,accessArray] ']'{$line = $b.line; $pos = $b.pos;}
                  ;
 
 array_initialization [ArrayList<Integer> a, ArrayList<ArrayList<Integer>> accessArray]
