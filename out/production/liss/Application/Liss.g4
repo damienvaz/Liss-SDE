@@ -1794,23 +1794,52 @@ write_statement [IdentifiersTable idTH]
 
                                     String mipsCodeS = "";
 
+                                    s1 = m.textWriteArray(true, false, false, $line, $pos);
+
                                     for(int i=0; i<res*m.numberOfBytesForEachAddress(); i+= m.numberOfBytesForEachAddress()){
                                         mipsCodeS = m.loadImmediateWord(""+i, $line, $pos);
                                         mipsCodeS += m.loadWordValueArrayWithName($p.text, $line, $pos);
-                                        m.freeLastRegister();
                                         s1 += m.textWrite(mipsCodeS, true, false, $w.line, $w.pos);
                                         m.freeLastRegister();
+                                        m.freeLastRegister();
+                                        if(i+m.numberOfBytesForEachAddress()<res*m.numberOfBytesForEachAddress()){
+                                            s1 += m.textWriteArray(false, true, false, $line, $pos);
+                                        }
                                         //need to make it beautifull now, the values are printed but not spaced.
 
                                     }
+                                    s1 += m.textWriteArray(false, false, true, $line, $pos);
+                                    s1 += m.textWrite("", $w.write, true, $line, $pos);
+
                                     System.out.println(s1);
-
-
-                                    //s1 += m.textWrite($p.mipsCodeS, $w.write, $p.isAString, $w.line, $w.pos);
                                 }else{
-                                    System.out.println("WRITE -> Variable: "+$p.text+" Level: "+level.toString());
 
-                                    //s1 += m.textWrite($p.mipsCodeS, $w.write, $p.isAString, $w.line, $w.pos);
+                                    int res = 1;
+                                    for(Integer i: a.getLimits()){
+                                        res*= i;
+                                        System.out.println("WRITE -> Variable: "+$p.text+" Level: "+level.toString()+" RES: "+res);
+                                    }
+
+                                    String mipsCodeS = "";
+
+                                    s1 = m.textWriteArray(true, false, false, $line, $pos);
+                                    Integer positionOfArrayInSP = $idTH.getValueSP(level,$p.text);
+
+                                    for(int i=0; i<res*m.numberOfBytesForEachAddress(); i+= m.numberOfBytesForEachAddress()){
+                                        mipsCodeS = m.loadWordSP(i+positionOfArrayInSP);
+
+                                        s1 += m.textWrite(mipsCodeS, true, false, $w.line, $w.pos);
+                                        m.freeLastRegister();
+                                        if(i+m.numberOfBytesForEachAddress()<res*m.numberOfBytesForEachAddress()){
+                                            s1 += m.textWriteArray(false, true, false, $line, $pos);
+                                        }
+                                        //need to make it beautifull now, the values are printed but not spaced.
+
+                                    }
+                                    s1 += m.textWriteArray(false, false, true, $line, $pos);
+                                    s1 += m.textWrite("", $w.write, true, $line, $pos);
+
+
                                 }
                             }
                         }else{

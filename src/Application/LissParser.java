@@ -4853,23 +4853,52 @@ public class LissParser extends Parser {
 
 			                                    String mipsCodeS = "";
 
+			                                    s1 = m.textWriteArray(true, false, false, _localctx.line, _localctx.pos);
+
 			                                    for(int i=0; i<res*m.numberOfBytesForEachAddress(); i+= m.numberOfBytesForEachAddress()){
 			                                        mipsCodeS = m.loadImmediateWord(""+i, _localctx.line, _localctx.pos);
 			                                        mipsCodeS += m.loadWordValueArrayWithName((((Write_statementContext)_localctx).p!=null?_input.getText(((Write_statementContext)_localctx).p.start,((Write_statementContext)_localctx).p.stop):null), _localctx.line, _localctx.pos);
-			                                        m.freeLastRegister();
 			                                        s1 += m.textWrite(mipsCodeS, true, false, ((Write_statementContext)_localctx).w.line, ((Write_statementContext)_localctx).w.pos);
 			                                        m.freeLastRegister();
+			                                        m.freeLastRegister();
+			                                        if(i+m.numberOfBytesForEachAddress()<res*m.numberOfBytesForEachAddress()){
+			                                            s1 += m.textWriteArray(false, true, false, _localctx.line, _localctx.pos);
+			                                        }
 			                                        //need to make it beautifull now, the values are printed but not spaced.
 
 			                                    }
+			                                    s1 += m.textWriteArray(false, false, true, _localctx.line, _localctx.pos);
+			                                    s1 += m.textWrite("", ((Write_statementContext)_localctx).w.write, true, _localctx.line, _localctx.pos);
+
 			                                    System.out.println(s1);
-
-
-			                                    //s1 += m.textWrite(((Write_statementContext)_localctx).p.mipsCodeS, ((Write_statementContext)_localctx).w.write, ((Write_statementContext)_localctx).p.isAString, ((Write_statementContext)_localctx).w.line, ((Write_statementContext)_localctx).w.pos);
 			                                }else{
-			                                    System.out.println("WRITE -> Variable: "+(((Write_statementContext)_localctx).p!=null?_input.getText(((Write_statementContext)_localctx).p.start,((Write_statementContext)_localctx).p.stop):null)+" Level: "+level.toString());
 
-			                                    //s1 += m.textWrite(((Write_statementContext)_localctx).p.mipsCodeS, ((Write_statementContext)_localctx).w.write, ((Write_statementContext)_localctx).p.isAString, ((Write_statementContext)_localctx).w.line, ((Write_statementContext)_localctx).w.pos);
+			                                    int res = 1;
+			                                    for(Integer i: a.getLimits()){
+			                                        res*= i;
+			                                        System.out.println("WRITE -> Variable: "+(((Write_statementContext)_localctx).p!=null?_input.getText(((Write_statementContext)_localctx).p.start,((Write_statementContext)_localctx).p.stop):null)+" Level: "+level.toString()+" RES: "+res);
+			                                    }
+
+			                                    String mipsCodeS = "";
+
+			                                    s1 = m.textWriteArray(true, false, false, _localctx.line, _localctx.pos);
+			                                    Integer positionOfArrayInSP = _localctx.idTH.getValueSP(level,(((Write_statementContext)_localctx).p!=null?_input.getText(((Write_statementContext)_localctx).p.start,((Write_statementContext)_localctx).p.stop):null));
+
+			                                    for(int i=0; i<res*m.numberOfBytesForEachAddress(); i+= m.numberOfBytesForEachAddress()){
+			                                        mipsCodeS = m.loadWordSP(i+positionOfArrayInSP);
+
+			                                        s1 += m.textWrite(mipsCodeS, true, false, ((Write_statementContext)_localctx).w.line, ((Write_statementContext)_localctx).w.pos);
+			                                        m.freeLastRegister();
+			                                        if(i+m.numberOfBytesForEachAddress()<res*m.numberOfBytesForEachAddress()){
+			                                            s1 += m.textWriteArray(false, true, false, _localctx.line, _localctx.pos);
+			                                        }
+			                                        //need to make it beautifull now, the values are printed but not spaced.
+
+			                                    }
+			                                    s1 += m.textWriteArray(false, false, true, _localctx.line, _localctx.pos);
+			                                    s1 += m.textWrite("", ((Write_statementContext)_localctx).w.write, true, _localctx.line, _localctx.pos);
+
+
 			                                }
 			                            }
 			                        }else{

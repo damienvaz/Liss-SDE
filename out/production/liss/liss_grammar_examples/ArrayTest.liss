@@ -5,7 +5,7 @@ declarations
 	a = 4, b -> integer;
 	vector1 = [1,2,3], vector2 -> array size 5;
 	vector3, vector4 = [[1,2],[3,4],[5,6]] -> array size 3,2;
-	vector3 -> array size 3,2;
+	//vector3 -> array size 3,2;
 	i -> integer;
 	array1 = [[1,2],[4]] -> array size 4,2;
 	array2 = [
@@ -37,6 +37,7 @@ declarations
                     vector3 = vector6;
                     vector5 = vector4;
                     vector5 = vector6;
+                    writeln(vector6);
                 return i;
             }
 
@@ -46,15 +47,15 @@ statements
 	b = array2[1,0,a*2];
 	array2[2,b,a] = 15;
 
-	write(array2);
+	writeln(array2);
 
-	vector2 = array1;
+	//vector2 = array1;
 	vector2 = vector1;
 	vector3 = vector4;
 	//vector1[1] = vector2;
-	write(vector27);
+	writeln(vector2);
 
-	a = length(array4);
+	//a = length(array4);
 	writeln(a);
 
 	i = arrayTest();

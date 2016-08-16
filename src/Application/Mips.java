@@ -295,6 +295,9 @@ public class Mips {
         }
         s.append("\tline: .asciiz \"line: \" \n");
         s.append("\tnewline: .asciiz \"\\n\" \n");
+        s.append("\tbrackets_opened: .asciiz \"[ \"\n");
+        s.append("\tbrackets_closed: .asciiz \" ]\"\n");
+        s.append("\tpipe: .asciiz \" | \"\n");
 
         if(this.mipsCodeSpecialFunctionState.get("read").equals(1)) {
             s.append("\tmessagereadvalue: .asciiz \"Enter integer value:\\n\" \n");
@@ -305,6 +308,7 @@ public class Mips {
         if(this.mipsCodeSpecialFunctionState.get("head_sequence").equals(1)) {
             s.append("\talert_head: .asciiz \"Head function - Sequence length is inferior of 1.\"\n");
         }
+
         return s.toString();
     }
 
@@ -713,6 +717,26 @@ public class Mips {
                 s.append("\tjal writeln\t\t# " + line + ":" + pos + "\n");
             }
         }
+        return s.toString();
+    }
+
+    public String textWriteArray(boolean brackets_opened, boolean pipe_sumbol, boolean brackets_closed, int line, int pos){
+        StringBuilder s = new StringBuilder();
+
+        if(brackets_opened){
+            s.append("\tla $a0, brackets_opened\n");
+            s.append("\tli $v0, 4\t\t# " + line + ":" + pos + "\n");
+            s.append("\tsyscall\n");
+        }else if(pipe_sumbol){
+            s.append("\tla $a0, pipe\n");
+            s.append("\tli $v0, 4\t\t# " + line + ":" + pos + "\n");
+            s.append("\tsyscall\n");
+        }else if(brackets_closed){
+            s.append("\tla $a0, brackets_closed\n");
+            s.append("\tli $v0, 4\t\t# " + line + ":" + pos + "\n");
+            s.append("\tsyscall\n");
+        }
+
         return s.toString();
     }
 
