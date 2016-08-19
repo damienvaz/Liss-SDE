@@ -1892,6 +1892,11 @@ write_statement [IdentifiersTable idTH]
 
                                 }
                             }
+                        }else if($p.typeS.equals("sequence")){
+                            if($idTH.doesExist($p.text)){
+
+
+                            }
                         }else{
                           s1 = m.textWrite($p.mipsCodeS, $w.write, $p.isAString, $w.line, $w.pos);
                         }

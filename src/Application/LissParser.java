@@ -4954,6 +4954,11 @@ public class LissParser extends Parser {
 
 			                                }
 			                            }
+			                        }else if(((Write_statementContext)_localctx).p.typeS.equals("sequence")){
+			                            if(_localctx.idTH.doesExist((((Write_statementContext)_localctx).p!=null?_input.getText(((Write_statementContext)_localctx).p.start,((Write_statementContext)_localctx).p.stop):null))){
+
+
+			                            }
 			                        }else{
 			                          s1 = m.textWrite(((Write_statementContext)_localctx).p.mipsCodeS, ((Write_statementContext)_localctx).w.write, ((Write_statementContext)_localctx).p.isAString, ((Write_statementContext)_localctx).w.line, ((Write_statementContext)_localctx).w.pos);
 			                        }
