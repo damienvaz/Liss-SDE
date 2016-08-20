@@ -4892,7 +4892,7 @@ public class LissParser extends Parser {
 			                    ((Write_statementContext)_localctx).pos =  ((Write_statementContext)_localctx).w.pos;
 			                    if(((Write_statementContext)_localctx).p.mipsCodeS != null){
 			                        String s1="";
-			                        if(((Write_statementContext)_localctx).p.typeS.equals("array")){
+			                        if(((Write_statementContext)_localctx).p.typeS!=null && ((Write_statementContext)_localctx).p.typeS.equals("array")){
 			                            if(_localctx.idTH.doesExist((((Write_statementContext)_localctx).p!=null?_input.getText(((Write_statementContext)_localctx).p.start,((Write_statementContext)_localctx).p.stop):null))){
 			                                Array a = (Array) _localctx.idTH.getInfoIdentifiersTable((((Write_statementContext)_localctx).p!=null?_input.getText(((Write_statementContext)_localctx).p.start,((Write_statementContext)_localctx).p.stop):null));
 
@@ -4954,7 +4954,7 @@ public class LissParser extends Parser {
 
 			                                }
 			                            }
-			                        }else if(((Write_statementContext)_localctx).p.typeS.equals("sequence")){
+			                        }else if(((Write_statementContext)_localctx).p.typeS!=null && ((Write_statementContext)_localctx).p.typeS.equals("sequence")){
 			                            if(_localctx.idTH.doesExist((((Write_statementContext)_localctx).p!=null?_input.getText(((Write_statementContext)_localctx).p.start,((Write_statementContext)_localctx).p.stop):null))){
 			                                //now we must add the level of the variable because it can be level 0 or superior (also take the variable and check the level)
 			                                Var v = (Var) _localctx.idTH.getInfoIdentifiersTable((((Write_statementContext)_localctx).p!=null?_input.getText(((Write_statementContext)_localctx).p.start,((Write_statementContext)_localctx).p.stop):null));

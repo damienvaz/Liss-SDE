@@ -703,23 +703,42 @@ public class Mips {
 
             s.append(mipsCodeS);
 
-            if(!isAString) {
+            if(!isAString) { //only write can write integer or string ! Writeln only add new line...
                 //System.out.println("LINE: " + line + " POS: " + pos);
                 String res[] = lastRegisterOccupied();
                 String r0 = res[0];
 
                 s.append("\tmove $a0, " + r0 + "\t\t# " + line + ":" + pos + "\n");
-            }
-            if(write == true) {
+                s.append("\tli $v0, 1\n");
                 this.mipsCodeSpecialFunctionState.put("write",1);
                 s.append("\tjal write\t\t# " + line + ":" + pos + "\n");
-            }else if(write == false){
+            }else{
+                //it means that it is a string
+                s.append("\tli $v0, 4\n");
+                this.mipsCodeSpecialFunctionState.put("write",1);
+                s.append("\tjal write\t\t# " + line + ":" + pos + "\n");
+            }
+            if(write == false){
                 this.mipsCodeSpecialFunctionState.put("writeln",1);
                 s.append("\tjal writeln\t\t# " + line + ":" + pos + "\n");
             }
         }
         return s.toString();
     }
+
+    /*public String textWriteString(int line, int pos){
+        StringBuilder s = new StringBuilder();
+
+        String res[] = lastRegisterOccupied();
+        String r0 = res[0];
+
+        s.append("\tmove $a0, " + r0 + "\t\t# " + line + ":" + pos + "\n");
+
+        this.mipsCodeSpecialFunctionState.put("write",1);
+        s.append("\tjal write\t\t# " + line + ":" + pos + "\n");
+
+        return s.toString();
+    }*/
 
     public String textWriteArray(boolean brackets_opened, boolean pipe_sumbol, boolean brackets_closed, int line, int pos){
         StringBuilder s = new StringBuilder();
@@ -751,7 +770,7 @@ public class Mips {
             s.append("\tsyscall\n");
         }else{
             //This means that we have an integer value in the register
-            s.append("\tli $v0, 1\n");
+            //s.append("\tli $v0, 1\n");
             s.append("\tsyscall\n");
         }
         s.append("\tjr $ra\n");

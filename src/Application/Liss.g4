@@ -1830,7 +1830,7 @@ write_statement [IdentifiersTable idTH]
                     $pos = $w.pos;
                     if($p.mipsCodeS != null){
                         String s1="";
-                        if($p.typeS.equals("array")){
+                        if($p.typeS!=null && $p.typeS.equals("array")){
                             if($idTH.doesExist($p.text)){
                                 Array a = (Array) $idTH.getInfoIdentifiersTable($p.text);
 
@@ -1892,7 +1892,7 @@ write_statement [IdentifiersTable idTH]
 
                                 }
                             }
-                        }else if($p.typeS.equals("sequence")){
+                        }else if($p.typeS!=null && $p.typeS.equals("sequence")){
                             if($idTH.doesExist($p.text)){
                                 //now we must add the level of the variable because it can be level 0 or superior (also take the variable and check the level)
                                 Var v = (Var) $idTH.getInfoIdentifiersTable($p.text);
