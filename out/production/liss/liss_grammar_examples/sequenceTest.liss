@@ -49,7 +49,12 @@ program sequenceTest{
         i = calculate(seq3); //correct
         i = calculate(seq3)+calculate(seq2); //correct
 
+        writeln(seq3);
+
         seq2 = tail(seq3);       //correct
+
+        writeln(seq2);
+
         //seq3 = cons(3,seq3);
         //seq3 = del(2,seq3);
         t = isEmpty(seq1);       //correct
@@ -83,6 +88,15 @@ program sequenceTest{
 
         seq3 = del(2,del(4,del(5,cons(2,cons(4+length(seq3)+calculate(seq3),cons(5,seq3))))));    //correct
 
+        writeln(seq3);
+
+        seq2 = cons(5, seq2);
+
+        write(seq2);
+
+        write(seq1);
+
+        writeln(seq3);
 
         /*i = 3+4+head(seq3)+head(del(1+4,cons(3,seq3))); // i = 7 + 1 + 1 <=> i = 9 working correctly
         //seq3 = cons(5,cons(3,seq3));

@@ -74,6 +74,7 @@ public class Mips {
         this.mipsCodeSpecialFunctionState.put("member_sequence",0);
         this.mipsCodeSpecialFunctionState.put("copy_sequence",0);
         this.mipsCodeSpecialFunctionState.put("cat_sequence",0);
+        this.mipsCodeSpecialFunctionState.put("print_sequence",0);
 
         this.howManyArgumentsDoesHavespecialFunctions = new HashMap<String,Integer>();
         this.howManyArgumentsDoesHavespecialFunctions.put("tail_sequence",1);
@@ -1564,6 +1565,26 @@ public class Mips {
         return s.toString();
     }
 
+    public String textPrintSequence(String nameOfSequence, boolean functionState, int positionInSFOfSequence, boolean writePrint, int line, int pos){
+        StringBuilder s = new StringBuilder();
+
+        this.mipsCodeSpecialFunctionState.put("print_sequence",1);
+
+        if(!functionState){
+            s.append("\tlw $s0, "+nameOfSequence+"\t\t# " + line + ":" + pos + "\n");
+        }else{
+            s.append("\tlw $s0, "+positionInSFOfSequence+"($sp)\t\t# " + line + ":" + pos + "\n");
+        }
+        s.append("\tjal print_sequence\n");
+
+        if(!writePrint){
+            this.mipsCodeSpecialFunctionState.put("writeln",1);
+            s.append("\tjal writeln\n");
+        }
+
+        return s.toString();
+    }
+
     public String textConsFunction(){
         StringBuilder s = new StringBuilder();
 
@@ -1855,6 +1876,48 @@ public class Mips {
         return s.toString();
     }
 
+    public String textPrintFunction(){
+        StringBuilder s = new StringBuilder();
+
+        s.append("\taddi $sp, $sp, -8\n"); //#allocate space to the stack
+        s.append("\tsw $s0, 0($sp)\n");    //#store the address of the first sequence to the stack
+        s.append("\tsw $ra, 4($sp)\n");    //#store the return address to the stack
+        s.append("\tj print_algorithm\n");
+        s.append("  print_algorithm:\n");
+        //#print the string '['
+        s.append("\tli $v0, 4\n");
+        s.append("\tla $a0, brackets_opened\n");
+        s.append("\tsyscall\n");
+        //#see if the sequence is not empty
+        s.append("\tlw $t0, 0($sp)\n");
+        s.append("\tbeq $t0, -1, exit_print_algorithm\n");
+        s.append("\tmove $s0, $t0\n");
+        s.append("\tj begin_print_algorithm\n");
+        s.append("  begin_print_algorithm:\n");
+        s.append("\tlw $t0, 4($s0)\n");
+        //#print the value of the node pointed in the sequence
+        s.append("\tli $v0, 1\n");
+        s.append("\tmove $a0, $t0\n");
+        s.append("\tsyscall\n");
+        s.append("\tlw $t0, 0($s0)\n");
+        s.append("\tbeq $t0, -1, exit_print_algorithm\n");
+        s.append("\tli $v0, 4\n");
+        s.append("\tla $a0, pipe\n");
+        s.append("\tsyscall\n");
+        s.append("\tlw $s0, 0($s0)\n");
+        s.append("\tj begin_print_algorithm\n");
+        s.append("  exit_print_algorithm:\n");
+        s.append("\tli $v0, 4\n");
+        s.append("\tla $a0, brackets_closed\n");
+        s.append("\tsyscall\n");
+        s.append("\tlw $ra, 4($sp)\n");
+        s.append("\taddi $sp, $sp, 8\n");
+        s.append("\tjr $ra\n");
+
+
+        return s.toString();
+    }
+
     /***********************************************************************/
     public void removeLastStack(){
         if(this.counterJumpStack.size()>0) {
@@ -1905,6 +1968,9 @@ public class Mips {
         }
         if(this.mipsCodeSpecialFunctionState.get("copy_sequence").equals(1)) {
             addLineInstruction("copy_sequence", textCopyFunction());
+        }
+        if(this.mipsCodeSpecialFunctionState.get("print_sequence").equals(1)){
+            addLineInstruction("print_sequence",textPrintFunction());
         }
     }
 

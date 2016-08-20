@@ -4956,7 +4956,10 @@ public class LissParser extends Parser {
 			                            }
 			                        }else if(((Write_statementContext)_localctx).p.typeS.equals("sequence")){
 			                            if(_localctx.idTH.doesExist((((Write_statementContext)_localctx).p!=null?_input.getText(((Write_statementContext)_localctx).p.start,((Write_statementContext)_localctx).p.stop):null))){
+			                                //now we must add the level of the variable because it can be level 0 or superior (also take the variable and check the level)
+			                                Var v = (Var) _localctx.idTH.getInfoIdentifiersTable((((Write_statementContext)_localctx).p!=null?_input.getText(((Write_statementContext)_localctx).p.start,((Write_statementContext)_localctx).p.stop):null));
 
+			                                s1 = m.textPrintSequence((((Write_statementContext)_localctx).p!=null?_input.getText(((Write_statementContext)_localctx).p.start,((Write_statementContext)_localctx).p.stop):null), functionState, v.getLevel(), ((Write_statementContext)_localctx).w.write, _localctx.line, _localctx.pos);
 
 			                            }
 			                        }else{

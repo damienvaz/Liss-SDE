@@ -1894,7 +1894,10 @@ write_statement [IdentifiersTable idTH]
                             }
                         }else if($p.typeS.equals("sequence")){
                             if($idTH.doesExist($p.text)){
+                                //now we must add the level of the variable because it can be level 0 or superior (also take the variable and check the level)
+                                Var v = (Var) $idTH.getInfoIdentifiersTable($p.text);
 
+                                s1 = m.textPrintSequence($p.text, functionState, v.getLevel(), $w.write, $line, $pos);
 
                             }
                         }else{
