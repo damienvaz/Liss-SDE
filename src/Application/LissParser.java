@@ -4921,8 +4921,10 @@ public class LissParser extends Parser {
 
 			                                    }
 			                                    s1 += m.textWriteArray(false, false, true, _localctx.line, _localctx.pos);
-			                                    s1 += m.textWrite("", ((Write_statementContext)_localctx).w.write, true, _localctx.line, _localctx.pos);
-
+			                                    //s1 += m.textWrite("", ((Write_statementContext)_localctx).w.write, true, _localctx.line, _localctx.pos);
+			                                    if(!((Write_statementContext)_localctx).w.write){
+			                                        s1+= m.textJumpWriteln();
+			                                    }
 			                                    System.out.println(s1);
 			                                }else{
 
@@ -4949,8 +4951,10 @@ public class LissParser extends Parser {
 
 			                                    }
 			                                    s1 += m.textWriteArray(false, false, true, _localctx.line, _localctx.pos);
-			                                    s1 += m.textWrite("", ((Write_statementContext)_localctx).w.write, true, _localctx.line, _localctx.pos);
-
+			                                    //s1 += m.textWrite("", ((Write_statementContext)_localctx).w.write, true, _localctx.line, _localctx.pos);
+			                                    if(!((Write_statementContext)_localctx).w.write){
+			                                        s1+= m.textJumpWriteln();
+			                                    }
 
 			                                }
 			                            }

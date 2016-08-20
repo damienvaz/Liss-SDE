@@ -1859,8 +1859,10 @@ write_statement [IdentifiersTable idTH]
 
                                     }
                                     s1 += m.textWriteArray(false, false, true, $line, $pos);
-                                    s1 += m.textWrite("", $w.write, true, $line, $pos);
-
+                                    //s1 += m.textWrite("", $w.write, true, $line, $pos);
+                                    if(!$w.write){
+                                        s1+= m.textJumpWriteln();
+                                    }
                                     System.out.println(s1);
                                 }else{
 
@@ -1887,8 +1889,10 @@ write_statement [IdentifiersTable idTH]
 
                                     }
                                     s1 += m.textWriteArray(false, false, true, $line, $pos);
-                                    s1 += m.textWrite("", $w.write, true, $line, $pos);
-
+                                    //s1 += m.textWrite("", $w.write, true, $line, $pos);
+                                    if(!$w.write){
+                                        s1+= m.textJumpWriteln();
+                                    }
 
                                 }
                             }

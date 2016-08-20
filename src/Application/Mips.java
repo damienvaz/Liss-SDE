@@ -703,7 +703,7 @@ public class Mips {
 
             s.append(mipsCodeS);
 
-            if(!isAString) { //only write can write integer or string ! Writeln only add new line...
+            if(!isAString) { //If it is integer we must write it to the console.
                 //System.out.println("LINE: " + line + " POS: " + pos);
                 String res[] = lastRegisterOccupied();
                 String r0 = res[0];
@@ -713,11 +713,12 @@ public class Mips {
                 this.mipsCodeSpecialFunctionState.put("write",1);
                 s.append("\tjal write\t\t# " + line + ":" + pos + "\n");
             }else{
-                //it means that it is a string
+                //Otherwise it is a string and we must output it !
                 s.append("\tli $v0, 4\n");
                 this.mipsCodeSpecialFunctionState.put("write",1);
                 s.append("\tjal write\t\t# " + line + ":" + pos + "\n");
             }
+            //If we have a writeln, we must activate it !
             if(write == false){
                 this.mipsCodeSpecialFunctionState.put("writeln",1);
                 s.append("\tjal writeln\t\t# " + line + ":" + pos + "\n");
@@ -725,20 +726,6 @@ public class Mips {
         }
         return s.toString();
     }
-
-    /*public String textWriteString(int line, int pos){
-        StringBuilder s = new StringBuilder();
-
-        String res[] = lastRegisterOccupied();
-        String r0 = res[0];
-
-        s.append("\tmove $a0, " + r0 + "\t\t# " + line + ":" + pos + "\n");
-
-        this.mipsCodeSpecialFunctionState.put("write",1);
-        s.append("\tjal write\t\t# " + line + ":" + pos + "\n");
-
-        return s.toString();
-    }*/
 
     public String textWriteArray(boolean brackets_opened, boolean pipe_sumbol, boolean brackets_closed, int line, int pos){
         StringBuilder s = new StringBuilder();
@@ -758,6 +745,10 @@ public class Mips {
         }
 
         return s.toString();
+    }
+
+    public String textJumpWriteln(){
+        return "\tjal writeln\n";
     }
 
     public String textWriteMessage(boolean value){
