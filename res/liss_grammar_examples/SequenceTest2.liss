@@ -9,7 +9,8 @@ declarations
 
 statements
 
-/*		for (a in 6..20) stepUp 2
+        /*
+		for (a in 6..20) stepUp 2
 		{
 		  cons(a,seq3);
 		}
@@ -20,7 +21,7 @@ statements
 		a = head(tail(tail(tail(seq1))));
 		writeln(a);
 
-	  seq2 = tail(tail(seq1));
+	    seq2 = tail(tail(seq1));
 		writeln(seq2);
 
 
@@ -33,9 +34,10 @@ statements
 		flag = isEmpty(seq4);
 		writeln(flag);
 
-		writeln(seq3);*/
+		writeln(seq3);
+		*/
 
-		int2 = seq3[(head(tail(seq1)))+4];
+		//int2 = seq3[(head(tail(seq1)))+4]; //must throw an error because seq3 isnt an array!!!
 
 //		writeln(int2);
 

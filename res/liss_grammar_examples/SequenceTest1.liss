@@ -10,29 +10,35 @@ declarations
 statements
 
 		input(a);
+        writeln(a);
+
 
 		for (a in 1..5)
 		{
-		  seq2 = cons(head(seq1) * a,seq2);
-			seq1 = tail(seq1);
+		  seq2 = cons(head(seq1) * a,seq2); //head(seq1)=10 //seq2 = <<10>>; seq2=<<10,40>>; seq2=<<10,40,90>>; seq2=<<10,40,90,160>>; seq2=<<10,40,90,160,250>>
+		  seq1 = tail(seq1); //seq1 = <<20,30,40,50>>; seq1 = <<30,40,50>>; seq1 = <<40,50>>; seq1 = <<50>> ; seq1=<<>>
 		} // seq1 << >>, seq2 <<250,160,90,40,10>>
 
-		seq1 = cons(head(tail(seq3)),seq2);     // <<2,250,160,90,40,10>>
-		seq3 = cons(head(seq1)*2,seq3);        // <<4,1,2>>
+		seq1 = cons(head(tail(seq3)),seq2);     //seq1=<<10,40,90,160,250,2>> && seq2=<<10,40,90,160,250,2>>
+		writeln(seq1);
+		seq3 = cons(head(seq1)*2,seq3);        // <<1,2,20>>
+		writeln(seq3);
 
 /*
     vamos para o segundo ciclo
 */
 
-		writeln(seq2);
+		writeln(seq2); //seq2=<<10,40,90,160,250,2>>
 
 		while(isMember(10,seq2))
 		{
-			seq2 = del(10,seq2);
+			seq2 = del(10,seq2); seq2=<<40,90,160,250,2>>
 			writeln(seq2);
 		}
 
-		copy(seq1,seq2);
+		copy(seq1,seq2); //seq1=<<10,40,90,160,250,2>> && seq2=<<10,40,90,160,250,2>>
+		writeln(seq1);   //seq1=<<10,40,90,160,250,2>>
+		writeln(seq2);   //seq2=<<10,40,90,160,250,2>>
 		b = isMember(10,seq2); // b = true
 		writeln(b);
 

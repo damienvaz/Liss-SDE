@@ -3191,11 +3191,13 @@ public class LissParser extends Parser {
 
 		                //((Elem_arrayContext)_localctx).mipsCodeS =  null;
 		                Array array=null;
-		                if(_localctx.idTH.doesExist(id)){
+		                Var typeOfArray = (Var) idTH.getInfoIdentifiersTable(id);
+		                if(_localctx.idTH.doesExist(id) && typeOfArray.getInfoType().equals("array")){
 		                    array= (Array) idTH.getInfoIdentifiersTable(id);
 		                }
+
 		                int n = 1;
-		                //System.out.println("Dimension: "+array.getDimension());
+
 		           
 		int _la;
 		try {

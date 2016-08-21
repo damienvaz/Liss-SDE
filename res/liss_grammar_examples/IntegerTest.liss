@@ -3,19 +3,22 @@ program IntegerTest {
 declarations
 
     intA = 4, intB, intC = 6 -> integer;
-    c = [1,2,3], vector -> array size 8;
+    c = [1,2,3], vector -> array size 8; //c=[1,2,3,0,0,0,0,0]
     bool, flag = false -> boolean;
 
 
 statements
 
-    intA = -3 + intC * (7 + c[1]);
-    bool = c[2] < 8;
+    intA = -3 + intC * (7 + c[1]); //intA = -3 +6 * (7+2) = 51
+    bool = c[2] < 8; //bool = 3 < 8 = true
     writeln(c);
-    c[5] = 1;
+    c[5] = 1; //c=[1,2,3,0,0,1,0,0]
+    writeln(c);
 
 /* logic operations */
 
-    flag = (intB != intA) && (intA > 7) || bool;
-    bool = !( (intA == intB) || (intA != intC) && (c[1] < 6) ) || flag;
+    flag = (intB != intA) && (intA > 7) || bool; //flag =  (0!=51) && (51>7) = true && true = true
+    writeln(flag);
+    bool = !( (intA == intB) || (intA != intC) && (c[1] < 6) ) || flag; //bool= !( (4==0) || (4!=6) && (2<6)) || false = !(false ||true && true) || false = false || false = false
+    writeln(bool);
 }

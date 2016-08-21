@@ -1053,11 +1053,13 @@ elem_array [IdentifiersTable idTH, Set set, String id] //id = name of the array
 
                 //$mipsCodeS = null;
                 Array array=null;
-                if($idTH.doesExist(id)){
+                Var typeOfArray = (Var) idTH.getInfoIdentifiersTable(id);
+                if($idTH.doesExist(id) && typeOfArray.getInfoType().equals("array")){
                     array= (Array) idTH.getInfoIdentifiersTable(id);
                 }
+
                 int n = 1;
-                //System.out.println("Dimension: "+array.getDimension());
+
            }
            : s1=single_expression[idTH, set]
                                     {

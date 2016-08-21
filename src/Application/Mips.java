@@ -748,6 +748,7 @@ public class Mips {
     }
 
     public String textJumpWriteln(){
+        this.mipsCodeSpecialFunctionState.put("writeln",1);
         return "\tjal writeln\n";
     }
 
