@@ -4892,8 +4892,8 @@ public class LissParser extends Parser {
 
 			                    ((Write_statementContext)_localctx).line =  ((Write_statementContext)_localctx).w.line;
 			                    ((Write_statementContext)_localctx).pos =  ((Write_statementContext)_localctx).w.pos;
+			                    String s1="";
 			                    if(((Write_statementContext)_localctx).p.mipsCodeS != null){
-			                        String s1="";
 			                        if(((Write_statementContext)_localctx).p.typeS!=null && ((Write_statementContext)_localctx).p.typeS.equals("array")){
 			                            if(_localctx.idTH.doesExist((((Write_statementContext)_localctx).p!=null?_input.getText(((Write_statementContext)_localctx).p.start,((Write_statementContext)_localctx).p.stop):null))){
 			                                Array a = (Array) _localctx.idTH.getInfoIdentifiersTable((((Write_statementContext)_localctx).p!=null?_input.getText(((Write_statementContext)_localctx).p.start,((Write_statementContext)_localctx).p.stop):null));
@@ -4971,11 +4971,19 @@ public class LissParser extends Parser {
 			                        }else{
 			                          s1 = m.textWrite(((Write_statementContext)_localctx).p.mipsCodeS, ((Write_statementContext)_localctx).w.write, ((Write_statementContext)_localctx).p.isAString, ((Write_statementContext)_localctx).w.line, ((Write_statementContext)_localctx).w.pos);
 			                        }
-			                        if(functionState == false){
-			                            m.addTextInstruction(s1);
-			                        }else if(functionState == true){
-			                            m.addMipsCodeFunction(m.getNameFunction(),s1);
+			                    }else{
+			                        //it means that there is nothing to print
+			                        if(!((Write_statementContext)_localctx).w.write){
+			                            s1=m.textJumpWriteln();
 			                        }
+			                    }
+
+
+
+			                    if(functionState == false){
+			                        m.addTextInstruction(s1);
+			                    }else if(functionState == true){
+			                        m.addMipsCodeFunction(m.getNameFunction(),s1);
 			                    }
 			                 
 			}
@@ -5088,6 +5096,7 @@ public class LissParser extends Parser {
 			case T__26:
 				enterOuterAlt(_localctx, 1);
 				{
+				((Print_whatContext)_localctx).mipsCodeS = null;
 				}
 				break;
 			case T__1:
@@ -7720,20 +7729,20 @@ public class LissParser extends Parser {
 		"\5`\61\2\u0274\u0275\7\35\2\2\u0275\u0276\b/\1\2\u0276]\3\2\2\2\u0277"+
 		"\u0278\7-\2\2\u0278\u027c\b\60\1\2\u0279\u027a\7.\2\2\u027a\u027c\b\60"+
 		"\1\2\u027b\u0277\3\2\2\2\u027b\u0279\3\2\2\2\u027c_\3\2\2\2\u027d\u0285"+
-		"\3\2\2\2\u027e\u027f\5L\'\2\u027f\u0280\b\61\1\2\u0280\u0285\3\2\2\2\u0281"+
-		"\u0282\5\u0096L\2\u0282\u0283\b\61\1\2\u0283\u0285\3\2\2\2\u0284\u027d"+
-		"\3\2\2\2\u0284\u027e\3\2\2\2\u0284\u0281\3\2\2\2\u0285a\3\2\2\2\u0286"+
-		"\u0287\7/\2\2\u0287\u0288\7\34\2\2\u0288\u0289\5\u009aN\2\u0289\u028a"+
-		"\7\35\2\2\u028a\u028b\b\62\1\2\u028bc\3\2\2\2\u028c\u028d\5h\65\2\u028d"+
-		"\u028e\b\63\1\2\u028ee\3\2\2\2\u028f\u0290\5l\67\2\u0290\u0291\b\64\1"+
-		"\2\u0291\u0296\3\2\2\2\u0292\u0293\5~@\2\u0293\u0294\b\64\1\2\u0294\u0296"+
-		"\3\2\2\2\u0295\u028f\3\2\2\2\u0295\u0292\3\2\2\2\u0296g\3\2\2\2\u0297"+
-		"\u0298\7\60\2\2\u0298\u0299\7\34\2\2\u0299\u029a\5L\'\2\u029a\u029b\7"+
-		"\35\2\2\u029b\u029c\b\65\1\2\u029c\u029d\7\61\2\2\u029d\u029e\7\4\2\2"+
-		"\u029e\u029f\5:\36\2\u029f\u02a0\7\7\2\2\u02a0\u02a1\5j\66\2\u02a1i\3"+
-		"\2\2\2\u02a2\u02ab\b\66\1\2\u02a3\u02a4\7\62\2\2\u02a4\u02a5\7\4\2\2\u02a5"+
-		"\u02a6\b\66\1\2\u02a6\u02a7\5:\36\2\u02a7\u02a8\b\66\1\2\u02a8\u02a9\7"+
-		"\7\2\2\u02a9\u02ab\3\2\2\2\u02aa\u02a2\3\2\2\2\u02aa\u02a3\3\2\2\2\u02ab"+
+		"\b\61\1\2\u027e\u027f\5L\'\2\u027f\u0280\b\61\1\2\u0280\u0285\3\2\2\2"+
+		"\u0281\u0282\5\u0096L\2\u0282\u0283\b\61\1\2\u0283\u0285\3\2\2\2\u0284"+
+		"\u027d\3\2\2\2\u0284\u027e\3\2\2\2\u0284\u0281\3\2\2\2\u0285a\3\2\2\2"+
+		"\u0286\u0287\7/\2\2\u0287\u0288\7\34\2\2\u0288\u0289\5\u009aN\2\u0289"+
+		"\u028a\7\35\2\2\u028a\u028b\b\62\1\2\u028bc\3\2\2\2\u028c\u028d\5h\65"+
+		"\2\u028d\u028e\b\63\1\2\u028ee\3\2\2\2\u028f\u0290\5l\67\2\u0290\u0291"+
+		"\b\64\1\2\u0291\u0296\3\2\2\2\u0292\u0293\5~@\2\u0293\u0294\b\64\1\2\u0294"+
+		"\u0296\3\2\2\2\u0295\u028f\3\2\2\2\u0295\u0292\3\2\2\2\u0296g\3\2\2\2"+
+		"\u0297\u0298\7\60\2\2\u0298\u0299\7\34\2\2\u0299\u029a\5L\'\2\u029a\u029b"+
+		"\7\35\2\2\u029b\u029c\b\65\1\2\u029c\u029d\7\61\2\2\u029d\u029e\7\4\2"+
+		"\2\u029e\u029f\5:\36\2\u029f\u02a0\7\7\2\2\u02a0\u02a1\5j\66\2\u02a1i"+
+		"\3\2\2\2\u02a2\u02ab\b\66\1\2\u02a3\u02a4\7\62\2\2\u02a4\u02a5\7\4\2\2"+
+		"\u02a5\u02a6\b\66\1\2\u02a6\u02a7\5:\36\2\u02a7\u02a8\b\66\1\2\u02a8\u02a9"+
+		"\7\7\2\2\u02a9\u02ab\3\2\2\2\u02aa\u02a2\3\2\2\2\u02aa\u02a3\3\2\2\2\u02ab"+
 		"k\3\2\2\2\u02ac\u02ad\7\63\2\2\u02ad\u02ae\7\34\2\2\u02ae\u02af\5n8\2"+
 		"\u02af\u02b0\7\35\2\2\u02b0\u02b1\5x=\2\u02b1\u02b2\b\67\1\2\u02b2\u02b3"+
 		"\5|?\2\u02b3\u02b4\b\67\1\2\u02b4\u02b5\7\4\2\2\u02b5\u02b6\5:\36\2\u02b6"+

@@ -1056,11 +1056,10 @@ elem_array [IdentifiersTable idTH, Set set, String id] //id = name of the array
                 Var typeOfArray = (Var) idTH.getInfoIdentifiersTable(id);
                 if($idTH.doesExist(id) && typeOfArray.getInfoType().equals("array")){
                     array= (Array) idTH.getInfoIdentifiersTable(id);
-                }else{
-
                 }
+
                 int n = 1;
-                //System.out.println("Dimension: "+array.getDimension());
+
            }
            : s1=single_expression[idTH, set]
                                     {
@@ -1831,8 +1830,8 @@ write_statement [IdentifiersTable idTH]
                  {
                     $line = $w.line;
                     $pos = $w.pos;
+                    String s1="";
                     if($p.mipsCodeS != null){
-                        String s1="";
                         if($p.typeS!=null && $p.typeS.equals("array")){
                             if($idTH.doesExist($p.text)){
                                 Array a = (Array) $idTH.getInfoIdentifiersTable($p.text);
@@ -1910,11 +1909,19 @@ write_statement [IdentifiersTable idTH]
                         }else{
                           s1 = m.textWrite($p.mipsCodeS, $w.write, $p.isAString, $w.line, $w.pos);
                         }
-                        if(functionState == false){
-                            m.addTextInstruction(s1);
-                        }else if(functionState == true){
-                            m.addMipsCodeFunction(m.getNameFunction(),s1);
+                    }else{
+                        //it means that there is nothing to print
+                        if(!$w.write){
+                            s1=m.textJumpWriteln();
                         }
+                    }
+
+
+
+                    if(functionState == false){
+                        m.addTextInstruction(s1);
+                    }else if(functionState == true){
+                        m.addMipsCodeFunction(m.getNameFunction(),s1);
                     }
                  }
                 ;
@@ -1930,7 +1937,7 @@ print_what [IdentifiersTable idTH]
            @init{
               Set tree = null;
            }
-           :
+           :  {$mipsCodeS=null;}
            | e=expression[idTH, tree]
             {
                 if( $e.typeS == null || $e.typeS.equals("set")){
