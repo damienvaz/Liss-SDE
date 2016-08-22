@@ -9,6 +9,9 @@ declarations
 
 statements
 
+        writeln(seq2);
+        writeln(seq1);
 		copy(seq1,seq2);
 		writeln(seq2);
+		writeln(seq1);
 }

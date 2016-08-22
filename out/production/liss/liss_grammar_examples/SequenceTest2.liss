@@ -28,7 +28,7 @@ statements
 		seq3 = tail(seq3); //seq3=<<2,3,4,5,6,8,10,12,14,16,18,20>>
 		//int1 = seq3[0];
 		write(int1);
-		writeln();  //problem this doesnt work !!!!
+		writeln();
 
 
 		flag = isEmpty(seq4);
@@ -42,6 +42,7 @@ statements
 		writeln(int2);
 
 		writeln(seq1);
+
 		b = isMember(5,seq1);
 		writeln(b);
 		b = isMember(50,seq1);

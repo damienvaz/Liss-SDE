@@ -22,7 +22,6 @@ grammar Liss;
 
     boolean functionState = false;
 
-    boolean isThereAStateToBeSavedPreviously = false;
 
      //Mips m = new Mips();
      Mips m;
@@ -448,7 +447,7 @@ constant returns [String typeS, int line, int pos, String mipsCodeS]
                                 }
                             }else{
                                 $mipsCodeS = m.loadImmediateWord($sign.text+$number.text,$number.line,$number.pos);
-                                System.out.println("TODO: "+$mipsCodeS);
+                                //System.out.println("TODO: "+$mipsCodeS);
                             }
                          }
          | t='true'      {$typeS = "boolean"; $line = $t.line; $pos = $t.pos; if(isDeclarations){ if(functionState == false){$mipsCodeS = m.dataBoolean(true,$t.line,$t.pos);}else{$mipsCodeS = m.loadBoolTrue($t.line,$t.pos);}}else{ $mipsCodeS = m.loadBoolTrue($t.line,$t.pos);} }
@@ -872,8 +871,18 @@ assignment [IdentifiersTable idTH]
                         }else if(functionState == true){
                             m.addMipsCodeFunction(m.getNameFunction(),mipsCodeS);
                         }
+                    }else{
+                        //This means that it is a set (For this particular case: f= f++g)
+                        if($d.typeS.equals("set")){
+                            if($e.setS!=null){
+                                Set s1 = $e.setS ;
+                                if($idTH.doesExist($d.text)){
+                                    Application.SymbolTable.Set s = (Application.SymbolTable.Set) $idTH.getInfoIdentifiersTable($d.text);
+                                    s.setSet(s1);
+                                }
+                            }
+                        }
                     }
-
                   }else{
                     e.addMessage($designator.line,-1,ErrorMessage.semanticAssignment($designator.line)); //-1 => assignemen error => there is no pos.
                   }
@@ -974,6 +983,14 @@ designator [IdentifiersTable idTH, Set set, String side]
                                             //System.out.println("NT : designator, é um identificador que nao é igual ao identificador do set, i.e., setId:"+d.getData()+" designatorId: "+$identifier.text);
                                         }
                                         $treeS = n;
+                                    }else{
+                                        if($idTH.doesExist($i.text)){
+                                            Var v = (Var) $idTH.getInfoIdentifiersTable($i.text);
+                                            if(v.getInfoType().equals("integer")){
+                                                Node n = new Node(new String($i.text));
+                                                $treeS = n;
+                                            }
+                                        }
                                     }
                                 }
                                 //Pre-Condicao: é um array
@@ -1309,7 +1326,7 @@ expression [IdentifiersTable idTH, Set set]
                 $mipsCodeS = null;
             }
            : s1=single_expression[idTH, set]{ $line = $s1.line; $pos = $s1.pos; n = $s1.treeS; $setS = $s1.setS; $mipsCodeS = $s1.mipsCodeS;/*if($rel_op.text == null){$mipsCodeS = $s1.mipsCodeS;}*/}
-            (rel_op{isThereAStateToBeSavedPreviously=true;} s2=single_expression[idTH,set]
+            (rel_op s2=single_expression[idTH,set]
                 {   relationExp = true;
                     if(!$rel_op.text.equals("in")){
                         if(($s1.typeS != null) && ($rel_op.text.equals("==") || $rel_op.text.equals("!=")) && $s1.typeS.equals("boolean")){
@@ -1392,12 +1409,22 @@ expression [IdentifiersTable idTH, Set set]
                         }
 
                         Set s = $s2.setS;
-                        if(s!=null && !isDeclarations && $s1.treeS!=null){
+                        if(s!=null && !isDeclarations && $s1.treeS!=null /*&& $rel_op.text.equals("in")*/){ // Only can be built if the rel_op is equals to 'in'
                             System.out.println(s.toString()+" LINE : "+$rel_op.line);
                             s.setIdentifier($s1.treeS);
                             System.out.println(s.toString());
                             //escrever o mips code para gerar !
                             $mipsCodeS = s.mipsCode($idTH,m, $rel_op.line);
+                            System.out.println("Constructing the set: "+$mipsCodeS);
+                        }else{
+                            //This means that s == null or s1.treeS is null
+                            if(s==null){
+                                System.out.println("S is NULL");
+                            }
+                            if($s1.treeS==null){
+                                System.out.println("S1.treeS is NULL");
+                            }
+
                         }
 
                     }
@@ -1409,9 +1436,7 @@ expression [IdentifiersTable idTH, Set set]
                 }
             )?
             {
-                if(isThereAStateToBeSavedPreviously==true){
-                    isThereAStateToBeSavedPreviously=false;
-                }
+
                 if(correctType){
                     if(!relationExp){
                         $typeS = $s1.typeS;
@@ -1442,8 +1467,7 @@ single_expression [IdentifiersTable idTH, Set set]
                     LinkedList<ErrorInfo> errorManagement = new LinkedList<ErrorInfo>();
                   }
                   : t1=term[idTH, set] {$line = $term.line; $pos = $term.pos; errorManagement.add(new ErrorInfo($t1.text,$t1.typeS,$t1.line,$t1.pos)); n = $t1.treeS; $setS = $t1.setS; $mipsCodeS = $t1.mipsCodeS;}
-                  (a=add_op{isThereAStateToBeSavedPreviously=true;System.out.println("IsThereAStateToBeSavedPreviously: "+isThereAStateToBeSavedPreviously+" Line:"+$a.line);}
-                  t2=term[idTH, set] {
+                  (a=add_op t2=term[idTH, set] {
                                         errorManagement.add(new ErrorInfo($add_op.text,$add_op.typeS,$add_op.line,$add_op.pos));
                                         errorManagement.add(new ErrorInfo($t2.text,$t2.typeS,$t2.line,$t2.pos));
 
@@ -1489,6 +1513,9 @@ single_expression [IdentifiersTable idTH, Set set]
                                                         }else{
 
                                                         }
+                                                    }else{
+                                                        System.out.println("SET1 IS NOT NULL!");
+                                                        System.out.println(s1.toString());
                                                     }
                                                     if(s2 == null ){
                                                         if($idTH.doesExist($t2.text)){
@@ -1497,9 +1524,13 @@ single_expression [IdentifiersTable idTH, Set set]
                                                         }else{
                                                             //TODO: sets que nao funciona, bem !!!!
                                                         }
+                                                    }else{
+                                                        System.out.println("SET2 IS NOT NULL!");
+                                                        System.out.println(s2.toString());
                                                     }
                                                     if(s1!=null && s2!=null){
                                                         $setS = new Set(s1,s2,$a.text);
+                                                        System.out.println($setS.toString());
                                                     }
                                                 }
                                             }
@@ -1580,10 +1611,10 @@ term [IdentifiersTable idTH, Set set]
 
         //Tratar os erros com mais especificaçoes (queue de erros de informaçoes)
         LinkedList<ErrorInfo> errorManagement = new LinkedList<ErrorInfo>();
-        System.out.println("IsThereAStateToBeSavedPreviouslyTerm: "+isThereAStateToBeSavedPreviously);
+
      }
      : f1=factor[idTH, set] { $line = $f1.line; $pos = $f1.pos;  errorManagement.add(new ErrorInfo($f1.text, $f1.typeS, $f1.line,$f1.pos)); n = $f1.treeS; if($f1.setS == null && !isDeclarations){ if($idTH.doesExist($f1.text)){if($idTH.getInfoIdentifiersTable($f1.text) instanceof Application.SymbolTable.Set){Application.SymbolTable.Set s = (Application.SymbolTable.Set) $idTH.getInfoIdentifiersTable($f1.text); $setS = s.getSet();}}}else{$setS = $f1.setS;} $mipsCodeS = $f1.mipsCodeS; }
-     (m=mul_op{isThereAStateToBeSavedPreviously=true;} f2=factor[idTH, set] {
+     (m=mul_op f2=factor[idTH, set] {
 
                                 errorManagement.add(new ErrorInfo($mul_op.text,$mul_op.typeS,$mul_op.line,$mul_op.pos));
                                 errorManagement.add(new ErrorInfo($f2.text,$f2.typeS,$f2.line,$f2.pos));
@@ -1715,7 +1746,7 @@ factor [IdentifiersTable idTH,Set set] //vai ser preciso ver as pre-condiçoes d
         $mipsCodeS = null;
         String side = "right";
         $setS = null;
-        System.out.println("IsThereAStateToBeSavedPreviouslyFactor: "+isThereAStateToBeSavedPreviously);
+
        }
        : i=inic_var[idTH, set]           {$typeS = $i.typeS; $line = $i.line; $pos = $i.pos; $treeS = $i.treeS; $setS = $i.setS; /*if(isSet && $i.treeS!=null && $set!=null){ $treeS = $i.treeS;}*/ $mipsCodeS = $i.mipsCodeS;}
        | d=designator[idTH, set, side]   {$typeS = $d.typeS; $line = $d.line; $pos = $d.pos; $mipsCodeS = $d.mipsCodeS; $treeS = $d.treeS;}
@@ -1769,9 +1800,7 @@ specialFunctions [IdentifiersTable idTH, Set set]
                  }
                  @after{
                     //m.textReturnResultOfSpecialFunctions($t.line, $t.pos);
-                    /*if(isThereAStateToBeSavedPreviously == true){
-                        isThereAStateToBeSavedPreviously = false;
-                    }*/
+
 
                     if(areRegistersBeingUsed){
                         //This means that we need to save the information of the registers in the stack ! Because some Jump call will be called and we need to save the state of those registers for having a consistancy.
