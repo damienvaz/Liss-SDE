@@ -6,7 +6,8 @@ declarations
 	d = true, flag, flag2, bool   -> boolean;
 	e, f = { x | x > 7}, g = {x |((x < 8) || (x > 15)) && (x < 130) } -> set;
 	s1 -> sequence;
-	v1 -> array size 2;
+	v1=[3,4] -> array size 2;
+	v2 -> array size 2,3;
 
 
 statements
@@ -23,5 +24,6 @@ statements
 	bool = 8 in {x | (x < 10) && (x > 7) }; //this does work
 	d = 3 in g; //this does work
 	s1 = cons(1,cons(2,s1));
-	v1 = [1,2]; //This shouldn't work and throw an error....
+	v1 = [1,2,3]; //This should work...
+	v2 = [[1,2,3],[4,5,6]];
 }

@@ -418,19 +418,25 @@ inic_var [IdentifiersTable idTH, Set set]
             $treeS = null;
 
             $mipsCodeS = null;
-            ArrayList<Integer> a= new ArrayList<Integer>();
-            ArrayList<ArrayList<Integer>> accessArray = new ArrayList<ArrayList<Integer>>();
+            //ArrayList<Integer> a= new ArrayList<Integer>();
+            //ArrayList<ArrayList<Integer>> accessArray = new ArrayList<ArrayList<Integer>>();
+            $accessArrayS = null;
+
             LinkedList<Integer> sequence = new LinkedList<Integer>();
          }
          : c=constant               {$typeS = $constant.typeS; $line = $constant.line; $pos = $constant.pos; $mipsCodeS = $c.mipsCodeS; Node n = new Node(new String($c.text)); $treeS = n; /*if(isSet && $set!=null){ Node n = new Node(new String($c.text)); $treeS = n; }*/ }
-         | a=array_definition[a, accessArray] {
-                                                    //$typeS = "integer";
-                                                    $typeS = "array";
+         |  {
+            ArrayList<Integer> a= new ArrayList<Integer>();
+            ArrayList<ArrayList<Integer>> accessArray = new ArrayList<ArrayList<Integer>>();
+            }
+            a=array_definition[a, accessArray]
+            {
+                $typeS = "array";
 
-                                                    $accessArrayS = accessArray;
-                                                    $line = $a.line;
-                                                    $pos = $a.pos;
-                                              }
+                $accessArrayS = accessArray; //stores the position and the value of the array
+                $line = $a.line;
+                $pos = $a.pos;
+            }
          | s1=set_definition[idTH]  {$typeS = "set"; $line = $s1.line; $pos = $s1.pos; $treeS = $s1.treeS; $setS = $s1.setS;/*if(isSet && $s1.treeS!=null){$treeS = $s1.treeS;} if(isSet && $s1.setS!=null){$setS = $s1.setS;}*/}
          | s2=sequence_definition[sequence]   {$typeS = "sequence"; $line = $s2.line; $pos = $s2.pos; $treeS = $s2.treeS; $sequenceS = sequence; /*if(isSet && $set!=null){$treeS = $s2.treeS;}*/}
          ;
@@ -463,7 +469,19 @@ sign :
 
 array_definition [ArrayList<Integer> a, ArrayList<ArrayList<Integer>> accessArray]
                  returns [int line, int pos]
-                 : b='[' array_initialization[a,accessArray] ']'{$line = $b.line; $pos = $b.pos;}
+                 : b='[' array_initialization[a,accessArray] ']'
+                 {
+                    $line = $b.line; $pos = $b.pos;
+
+                    System.out.println("/**** ACCESS_ARRAY DEF ****/");
+                    for(ArrayList<Integer> b : accessArray){
+                        for(Integer i: b){
+                            System.out.print(i+" ");
+                        }
+                        System.out.println("");
+                    }
+
+                 }
                  ;
 
 array_initialization [ArrayList<Integer> a, ArrayList<ArrayList<Integer>> accessArray]
@@ -477,6 +495,7 @@ array_initialization [ArrayList<Integer> a, ArrayList<ArrayList<Integer>> access
 
 elem [ArrayList<Integer> a, ArrayList<ArrayList<Integer>> accessArray]
      : number           {
+                            //ArrayList from variable 'a' stores the position of those values, which will be copied to the variable 'm'.
                             ArrayList<Integer> m = new ArrayList<Integer>();
                             for(Integer i: a){
                                 //System.out.print(i.toString()+" ");
@@ -756,9 +775,6 @@ assignment [IdentifiersTable idTH]
 
                     //MIPS
                     if($expression.mipsCodeS != null){
-                        //System.out.println("INICIO <- assignment");
-                        //System.out.println($expression.mipsCodeS);
-                        //System.out.println("FIM <- assignment");
                         String mipsCodeS = "";
                         if($designator.arrayS == false){
                             mipsCodeS = $expression.mipsCodeS;
@@ -768,7 +784,7 @@ assignment [IdentifiersTable idTH]
                             if($idTH.getInfoIdentifiersTable($designator.text).getLevel().equals(0)){
                                 if($designator.typeS.equals("sequence")){
                                     mipsCodeS += m.textStoreSequence($designator.text, functionState, $idTH.getValueSP(level,$designator.text), $designator.line, $designator.pos);
-                                }else if($designator.typeS.equals("array")){
+                                }else if($designator.typeS.equals("array") && $e.accessArrayS==null /*test if accessArray is null or not (it must be null for this condition) (only allowed*/){
                                     Array designator = (Array) $idTH.getInfoIdentifiersTable($designator.text);
                                     Array expression = (Array) $idTH.getInfoIdentifiersTable($expression.text);
 
@@ -814,7 +830,7 @@ assignment [IdentifiersTable idTH]
                             }else{ //if(!$idTH.getInfoIdentifiersTable($designator.text).getLevel().equals(0)){
                                 if($designator.typeS.equals("sequence")){
                                     mipsCodeS += m.textStoreSequence($designator.text, functionState, $idTH.getValueSP(level,$designator.text), $designator.line, $designator.pos);
-                                }else if($designator.typeS.equals("array")){
+                                }else if($designator.typeS.equals("array") && $e.accessArrayS==null){
                                     Array designator = (Array) $idTH.getInfoIdentifiersTable($designator.text);
                                     Array expression = (Array) $idTH.getInfoIdentifiersTable($expression.text);
 
@@ -853,6 +869,17 @@ assignment [IdentifiersTable idTH]
                                         }
                                     }
 
+                                }else if($designator.typeS.equals("array") && $e.accessArrayS!=null){
+                                    ArrayList<ArrayList<Integer>> accessArrayS = $e.accessArrayS;
+
+                                    System.out.println("ASSIGNMENT ARRAY = [....] LEVEL: +0");
+                                    for(ArrayList<Integer> pos : accessArrayS){
+                                        for(Integer i : pos){
+                                            System.out.print(i+" ");
+                                        }
+                                    }
+
+
                                 }else{
                                     mipsCodeS += m.storeWordSP($idTH.getValueSP(level,$designator.text));
                                 }
@@ -880,6 +907,66 @@ assignment [IdentifiersTable idTH]
                                     Application.SymbolTable.Set s = (Application.SymbolTable.Set) $idTH.getInfoIdentifiersTable($d.text);
                                     s.setSet(s1);
                                 }
+                            }
+                        }else if($designator.typeS.equals("array") && $e.accessArrayS!=null){
+                            if($idTH.doesExist($designator.text)){
+                                Array array = (Array) $idTH.getInfoIdentifiersTable($designator.text);
+                                ArrayList<ArrayList<Integer>> accessArrayS = $e.accessArrayS;
+
+                                Integer dimension = array.getDimension();
+                                ArrayList<Integer> limits = array.getLimits();
+
+                                //we need to count the limits and dimension of the array, and compare it (but also we need to report some errormessages
+                                Integer memorySizeOfArray = array.getMemorySize();
+
+                                boolean cont=true;
+                                for(int i=0; i<accessArrayS.size() && cont; i++){
+                                    ArrayList<Integer> listOfPositionAndTheValue = (ArrayList<Integer>) accessArrayS.get(i);
+                                    if(listOfPositionAndTheValue.size()-1 != dimension){
+                                        //Throw error of dimension
+                                        cont = false;
+                                        e.addMessage($designator.line,-1,ErrorMessage.semantic($d.text+" "+$r.text+" "+$e.text,ErrorMessage.limitsAndDimensionsNotEqualForBothArrays()));
+                                        break;
+                                    }else{
+                                        for(int j=0; j<listOfPositionAndTheValue.size()-1 && cont;j++){
+                                            if(listOfPositionAndTheValue.get(j)>=limits.get(j)){
+                                                //Throw error of limits
+                                                cont = false;
+                                                e.addMessage($designator.line,-1,ErrorMessage.semantic($d.text+" "+$r.text+" "+$e.text,ErrorMessage.limitsAndDimensionsNotEqualForBothArrays()));
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+
+                                System.out.println("/**************/");
+                                for(Integer j : limits){
+                                    System.out.println(j);
+                                }
+
+
+
+                                /*if(){
+                                    if(array.getLevel().equals(0)){
+                                        System.out.println("ASSIGNMENT ARRAY = [....] LEVEL: 0");
+                                        for(ArrayList<Integer> pos : accessArrayS){
+                                            for(Integer int : pos){
+                                                System.out.print(int+" ");
+                                            }
+                                            System.out.println("");
+                                        }
+                                    }else{
+                                        System.out.println("ASSIGNMENT ARRAY = [....] LEVEL: +0");
+                                        for(ArrayList<Integer> pos : accessArrayS){
+                                            for(Integer i : pos){
+                                                System.out.print(i+" ");
+                                            }
+                                            System.out.println("");
+                                        }
+                                    }
+                                }else{
+                                    //Throw error of limits and dimension !!!!
+                                }*/
                             }
                         }
                     }
@@ -938,16 +1025,6 @@ designator [IdentifiersTable idTH, Set set, String side]
                                                                     $mipsCodeS = m.loadWordSP(addressOfVariable);
                                                                     //$mipsCodeS = m.loadWord($i.text, $i.line, $i.pos);
                                                                     System.out.println($mipsCodeS+" "+$identifier.text+" line: "+$i.line);
-                                                                }
-                                                            }else if($typeS.equals("array")){
-                                                                if(v.getLevel().equals(0)){
-                                                                    if($mipsCodeS==null){
-                                                                        System.out.println("Identifier: "+$identifier.text+" Type: "+$typeS+" Level: "+v.getLevel());
-                                                                        $mipsCodeS = "";
-                                                                    }
-                                                                }else if(!v.getLevel().equals(0)){
-                                                                    System.out.println($typeS+" Level: "+v.getLevel());
-                                                                    $mipsCodeS = "";
                                                                 }
                                                             }else if($typeS.equals("sequence")){
                                                                 if(v.getLevel().equals(0)){
@@ -1317,7 +1394,7 @@ args [IdentifiersTable idTH, Set set,String nameOfTheFunction]
 /* ****** Expression ****** */
 
 expression [IdentifiersTable idTH, Set set]
-            returns [String typeS, int line, int pos, Node treeS, String mipsCodeS,Set setS, boolean relationExp ]
+            returns [String typeS, int line, int pos, Node treeS, String mipsCodeS,Set setS, boolean relationExp, ArrayList<ArrayList<Integer>> accessArrayS]
             @init{
                 $typeS = null;
                 boolean correctType = true;
@@ -1325,7 +1402,7 @@ expression [IdentifiersTable idTH, Set set]
                 Node n = null;
                 $mipsCodeS = null;
             }
-           : s1=single_expression[idTH, set]{ $line = $s1.line; $pos = $s1.pos; n = $s1.treeS; $setS = $s1.setS; $mipsCodeS = $s1.mipsCodeS;/*if($rel_op.text == null){$mipsCodeS = $s1.mipsCodeS;}*/}
+           : s1=single_expression[idTH, set]{ $line = $s1.line; $pos = $s1.pos; n = $s1.treeS; $setS = $s1.setS; $mipsCodeS = $s1.mipsCodeS; $accessArrayS=$s1.accessArrayS;/*if($rel_op.text == null){$mipsCodeS = $s1.mipsCodeS;}*/}
             (rel_op s2=single_expression[idTH,set]
                 {   relationExp = true;
                     if(!$rel_op.text.equals("in")){
@@ -1454,7 +1531,7 @@ expression [IdentifiersTable idTH, Set set]
 /* ****** Single expression ****** */
 
 single_expression [IdentifiersTable idTH, Set set]
-                  returns [String typeS, Set setS, int line, int pos, Node treeS, String mipsCodeS ]
+                  returns [String typeS, Set setS, int line, int pos, Node treeS, String mipsCodeS, ArrayList<ArrayList<Integer>> accessArrayS]
                   @init{
                     $typeS = null;
                     boolean correctType = true;
@@ -1466,7 +1543,7 @@ single_expression [IdentifiersTable idTH, Set set]
                     //Tratar os erros com mais especificaçoes
                     LinkedList<ErrorInfo> errorManagement = new LinkedList<ErrorInfo>();
                   }
-                  : t1=term[idTH, set] {$line = $term.line; $pos = $term.pos; errorManagement.add(new ErrorInfo($t1.text,$t1.typeS,$t1.line,$t1.pos)); n = $t1.treeS; $setS = $t1.setS; $mipsCodeS = $t1.mipsCodeS;}
+                  : t1=term[idTH, set] {$line = $term.line; $pos = $term.pos; errorManagement.add(new ErrorInfo($t1.text,$t1.typeS,$t1.line,$t1.pos)); n = $t1.treeS; $setS = $t1.setS; $mipsCodeS = $t1.mipsCodeS; $accessArrayS = $t1.accessArrayS;}
                   (a=add_op t2=term[idTH, set] {
                                         errorManagement.add(new ErrorInfo($add_op.text,$add_op.typeS,$add_op.line,$add_op.pos));
                                         errorManagement.add(new ErrorInfo($t2.text,$t2.typeS,$t2.line,$t2.pos));
@@ -1599,7 +1676,7 @@ single_expression [IdentifiersTable idTH, Set set]
 
 /* ****** Term ****** */
 term [IdentifiersTable idTH, Set set]
-     returns [String typeS, Set setS, int line, int pos, Node treeS, String mipsCodeS]
+     returns [String typeS, Set setS, int line, int pos, Node treeS, String mipsCodeS, ArrayList<ArrayList<Integer>> accessArrayS]
      @init{
         $typeS = null;
         boolean correctType = true;
@@ -1613,7 +1690,7 @@ term [IdentifiersTable idTH, Set set]
         LinkedList<ErrorInfo> errorManagement = new LinkedList<ErrorInfo>();
 
      }
-     : f1=factor[idTH, set] { $line = $f1.line; $pos = $f1.pos;  errorManagement.add(new ErrorInfo($f1.text, $f1.typeS, $f1.line,$f1.pos)); n = $f1.treeS; if($f1.setS == null && !isDeclarations){ if($idTH.doesExist($f1.text)){if($idTH.getInfoIdentifiersTable($f1.text) instanceof Application.SymbolTable.Set){Application.SymbolTable.Set s = (Application.SymbolTable.Set) $idTH.getInfoIdentifiersTable($f1.text); $setS = s.getSet();}}}else{$setS = $f1.setS;} $mipsCodeS = $f1.mipsCodeS; }
+     : f1=factor[idTH, set] { $line = $f1.line; $pos = $f1.pos;  errorManagement.add(new ErrorInfo($f1.text, $f1.typeS, $f1.line,$f1.pos)); n = $f1.treeS; if($f1.setS == null && !isDeclarations){ if($idTH.doesExist($f1.text)){if($idTH.getInfoIdentifiersTable($f1.text) instanceof Application.SymbolTable.Set){Application.SymbolTable.Set s = (Application.SymbolTable.Set) $idTH.getInfoIdentifiersTable($f1.text); $setS = s.getSet();}}}else{$setS = $f1.setS;} $mipsCodeS = $f1.mipsCodeS; $accessArrayS = $f1.accessArrayS;}
      (m=mul_op f2=factor[idTH, set] {
 
                                 errorManagement.add(new ErrorInfo($mul_op.text,$mul_op.typeS,$mul_op.line,$mul_op.pos));
@@ -1740,7 +1817,7 @@ term [IdentifiersTable idTH, Set set]
 /* ****** Factor ****** */
 
 factor [IdentifiersTable idTH,Set set] //vai ser preciso ver as pre-condiçoes de todos as alternativas feitas
-       returns [String typeS, Set setS, int line, int pos,Node treeS, String mipsCodeS]
+       returns [String typeS, Set setS, int line, int pos,Node treeS, String mipsCodeS, ArrayList<ArrayList<Integer>> accessArrayS]
        @init{
         $treeS = null;
         $mipsCodeS = null;
@@ -1748,7 +1825,7 @@ factor [IdentifiersTable idTH,Set set] //vai ser preciso ver as pre-condiçoes d
         $setS = null;
 
        }
-       : i=inic_var[idTH, set]           {$typeS = $i.typeS; $line = $i.line; $pos = $i.pos; $treeS = $i.treeS; $setS = $i.setS; /*if(isSet && $i.treeS!=null && $set!=null){ $treeS = $i.treeS;}*/ $mipsCodeS = $i.mipsCodeS;}
+       : i=inic_var[idTH, set]           {$typeS = $i.typeS; $line = $i.line; $pos = $i.pos; $treeS = $i.treeS; $setS = $i.setS; $accessArrayS = $i.accessArrayS;/*if(isSet && $i.treeS!=null && $set!=null){ $treeS = $i.treeS;}*/ $mipsCodeS = $i.mipsCodeS;}
        | d=designator[idTH, set, side]   {$typeS = $d.typeS; $line = $d.line; $pos = $d.pos; $mipsCodeS = $d.mipsCodeS; $treeS = $d.treeS;}
        | '(' e=expression[idTH, set] ')' {$typeS = $e.typeS; $line = $e.line; $pos = $e.pos; $mipsCodeS = $e.mipsCodeS; $treeS = $e.treeS; $setS = $e.setS;/*if(isSet && $e.treeS!=null && $set!=null){ $treeS = $e.treeS;}*/}
        | '!' f1=factor[idTH, set]
