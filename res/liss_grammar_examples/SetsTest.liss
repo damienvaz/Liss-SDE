@@ -24,6 +24,6 @@ statements
 	bool = 8 in {x | (x < 10) && (x > 7) }; //this does work
 	d = 3 in g; //this does work
 	s1 = cons(1,cons(2,s1));
-	v1 = [1,2,3]; //This should work...
-	v2 = [[1,2,3],[4,5,6]];
+	v1 = [4,5]; //This should work...
+	v2 = [[6,5],[3,2,1]];
 }

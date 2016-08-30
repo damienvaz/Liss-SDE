@@ -2866,7 +2866,7 @@ public class LissParser extends Parser {
 			                                Integer dimension = array.getDimension();
 			                                ArrayList<Integer> limits = array.getLimits();
 
-			                                //we need to count the limits and dimension of the array, and compare it (but also we need to report some errormessages
+			                                //we need to count the limits and dimension of the array, and compare it (but also we need to report some errormessages)
 			                                Integer memorySizeOfArray = array.getMemorySize();
 
 			                                boolean cont=true;
@@ -2890,33 +2890,57 @@ public class LissParser extends Parser {
 			                                }
 
 			                                System.out.println("/**************/");
+
+			                                int sizeOfArray = 1;
 			                                for(Integer j : limits){
 			                                    System.out.println(j);
+			                                    sizeOfArray*=j;
 			                                }
+			                                System.out.println("SIZE OF ARRAY: "+sizeOfArray);
 
+			                                ArrayList<String> mipsCodeOfArray = new ArrayList<String>();
 
-
-			                                /*if(){
+			                                if(cont){
+			                                    int res;
 			                                    if(array.getLevel().equals(0)){
 			                                        System.out.println("ASSIGNMENT ARRAY = [....] LEVEL: 0");
-			                                        for(ArrayList<Integer> pos : accessArrayS){
-			                                            for(Integer int : pos){
-			                                                System.out.print(int+" ");
-			                                            }
-			                                            System.out.println("");
+			                                        for(int i=0; i<sizeOfArray; i++){
+			                                            String mipsCode = m.loadImmediateWord("0", ((AssignmentContext)_localctx).designator.line, ((AssignmentContext)_localctx).designator.pos)+m.loadImmediateWord(i*m.numberOfBytesForEachAddress()+"", ((AssignmentContext)_localctx).designator.line, ((AssignmentContext)_localctx).designator.pos)+m.storeWordArray((((AssignmentContext)_localctx).designator!=null?_input.getText(((AssignmentContext)_localctx).designator.start,((AssignmentContext)_localctx).designator.stop):null), ((AssignmentContext)_localctx).designator.line, ((AssignmentContext)_localctx).designator.pos);
+			                                            mipsCodeOfArray.add(i, mipsCode);
 			                                        }
+
+			                                        for(ArrayList<Integer> pos : accessArrayS){
+			                                            res=0;
+			                                            Integer valueToStore = pos.get(pos.size()-1);
+			                                            pos.remove(pos.size()-1);
+			                                            for(int j=0; j< pos.size(); j++){
+			                                                int calc = pos.get(j);
+			                                                //Verify if the position of the value for setting the array is in the limits of the array !!!
+			                                                for(int h=j+1; h< pos.size(); h++){
+			                                                    calc = calc*limits.get(h);
+			                                                }
+			                                                res = res + calc;
+			                                            }
+			                                            System.out.println("POS: "+res+" VALUE: "+valueToStore);
+			                                            String mipsCode = m.loadImmediateWord(valueToStore+"", ((AssignmentContext)_localctx).designator.line, ((AssignmentContext)_localctx).designator.pos)+m.loadImmediateWord(res*m.numberOfBytesForEachAddress()+"", ((AssignmentContext)_localctx).designator.line, ((AssignmentContext)_localctx).designator.pos)+m.storeWordArray((((AssignmentContext)_localctx).designator!=null?_input.getText(((AssignmentContext)_localctx).designator.start,((AssignmentContext)_localctx).designator.stop):null), ((AssignmentContext)_localctx).designator.line, ((AssignmentContext)_localctx).designator.pos);
+			                                            mipsCodeOfArray.remove(res);
+			                                            mipsCodeOfArray.add(res,mipsCode);
+
+			                                        }
+
+			                                        System.out.println("ARRAY MIPSCODE BEGIN:");
+			                                        for(String s: mipsCodeOfArray){
+			                                            System.out.println(s);
+			                                        }
+			                                        System.out.println("ARRAY MIPSCODE FINISH:");
+
+			                                        //Now we need to send to the output!
+
 			                                    }else{
 			                                        System.out.println("ASSIGNMENT ARRAY = [....] LEVEL: +0");
-			                                        for(ArrayList<Integer> pos : accessArrayS){
-			                                            for(Integer i : pos){
-			                                                System.out.print(i+" ");
-			                                            }
-			                                            System.out.println("");
-			                                        }
+
 			                                    }
-			                                }else{
-			                                    //Throw error of limits and dimension !!!!
-			                                }*/
+			                                }
 			                            }
 			                        }
 			                    }
