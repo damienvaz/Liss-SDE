@@ -959,13 +959,6 @@ assignment [IdentifiersTable idTH]
                                             mipsCodeOfArray.add(i, mipsCode);
                                         }
 
-                                        System.out.println("ARRAY MIPSCODE BEGIN:");
-                                        for(String s: mipsCodeOfArray){
-                                            System.out.println(s);
-                                        }
-                                        System.out.println("ARRAY MIPSCODE FINISH:");
-
-
                                         for(ArrayList<Integer> pos : accessArrayS){
                                             res=0;
                                             Integer valueToStore = pos.get(pos.size()-1);
@@ -986,14 +979,60 @@ assignment [IdentifiersTable idTH]
                                         }
 
                                         System.out.println("ARRAY MIPSCODE BEGIN:");
+                                        String mipsCodeS = "";
                                         for(String s: mipsCodeOfArray){
                                             System.out.println(s);
+                                            mipsCodeS+=s;
                                         }
                                         System.out.println("ARRAY MIPSCODE FINISH:");
 
+                                        //Now we need to send to the output!
+                                        if(!functionState){
+                                            m.addTextInstruction(mipsCodeS);
+                                        }else{
+                                            m.addMipsCodeFunction(m.getNameFunction(),mipsCodeS);
+                                        }
+
                                     }else{
                                         System.out.println("ASSIGNMENT ARRAY = [....] LEVEL: +0");
+                                        for(int i=0; i<sizeOfArray; i++){
+                                            String mipsCode = m.loadImmediateWord("0", $designator.line, $designator.pos)+m.storeWordSP($idTH.getValueSP(level, $designator.text)+i*m.numberOfBytesForEachAddress());
+                                            mipsCodeOfArray.add(i, mipsCode);
+                                        }
 
+                                        for(ArrayList<Integer> pos : accessArrayS){
+                                            res=0;
+                                            Integer valueToStore = pos.get(pos.size()-1);
+                                            pos.remove(pos.size()-1);
+                                            for(int j=0; j< pos.size(); j++){
+                                                int calc = pos.get(j);
+                                                //Verify if the position of the value for setting the array is in the limits of the array !!!
+                                                for(int h=j+1; h< pos.size(); h++){
+                                                    calc = calc*limits.get(h);
+                                                }
+                                                res = res + calc;
+                                            }
+                                            System.out.println("POS: "+res+" VALUE: "+valueToStore);
+                                            String mipsCode = m.loadImmediateWord(valueToStore+"", $designator.line, $designator.pos)+m.storeWordSP($idTH.getValueSP(level, $designator.text)+res*m.numberOfBytesForEachAddress());
+                                            mipsCodeOfArray.remove(res);
+                                            mipsCodeOfArray.add(res,mipsCode);
+
+                                        }
+
+                                        System.out.println("ARRAY MIPSCODE BEGIN:");
+                                        String mipsCodeS = "";
+                                        for(String s: mipsCodeOfArray){
+                                            System.out.println(s);
+                                            mipsCodeS+=s;
+                                        }
+                                        System.out.println("ARRAY MIPSCODE FINISH:");
+
+                                        //Now we need to send to the output!
+                                        if(!functionState){
+                                            m.addTextInstruction(mipsCodeS);
+                                        }else{
+                                            m.addMipsCodeFunction(m.getNameFunction(),mipsCodeS);
+                                        }
                                     }
                                 }
                             }

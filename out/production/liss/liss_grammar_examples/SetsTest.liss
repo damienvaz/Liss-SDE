@@ -9,6 +9,13 @@ declarations
 	v1=[3,4] -> array size 2;
 	v2 -> array size 2,3;
 
+    subprogram calculate(){
+        declarations
+            i = 4 -> integer;
+            v3 -> array size 2, 2;
+        statements
+            v3 = [[2,3],[7]];
+    }
 
 statements
 
@@ -26,4 +33,5 @@ statements
 	s1 = cons(1,cons(2,s1));
 	v1 = [4,5]; //This should work...
 	v2 = [[6,5],[3,2,1]];
+	calculate();
 }
