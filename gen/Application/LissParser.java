@@ -5441,7 +5441,7 @@ public class LissParser extends Parser {
 			                    e.addMessage((((For_statContext)_localctx).f!=null?((For_statContext)_localctx).f.getLine():0), (((For_statContext)_localctx).f!=null?((For_statContext)_localctx).f.getCharPositionInLine():0), ErrorMessage.forEachStep());
 			                }else{
 			                    String s1 = ((For_statContext)_localctx).i.mipsCodeS;
-			                    Integer positionFromSP = 0, variableLevel = _localctx.idTH.getInfoIdentifiersTable(((For_statContext)_localctx).i.variableS).getLevel(); //we must declare that for textForCondition function, it is needed for the use of variables for functions and also, not including IdentifiersTable into Mips class
+			                    Integer positionFromSP = 0, variableLevel = _localctx.idTH.getInfoIdentifiersTable(((For_statContext)_localctx).i.variableS).getLevel(); //we must declare that for textForCondition function, it is needed for the use of variables for functions and also, not including SymbolTable into Mips class
 			                    if(!variableLevel.equals(0)){
 			                        positionFromSP = _localctx.idTH.getValueSP(level, ((For_statContext)_localctx).i.variableS);
 			                    }

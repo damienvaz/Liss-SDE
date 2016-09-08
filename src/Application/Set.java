@@ -1,7 +1,7 @@
 package Application;
 
 import Application.SymbolTable.Array;
-import Application.SymbolTable.IdentifiersTable;
+import Application.SymbolTable.SymbolTable;
 import Application.SymbolTable.Int;
 
 
@@ -90,7 +90,7 @@ public class Set {
 
     public void isntASet(){this.identifier=null;}
 
-    public String mipsCode(IdentifiersTable id, Mips m,int line){
+    public String mipsCode(SymbolTable id, Mips m, int line){
         String res = "" ;
 
         Node n = this.head;
@@ -102,7 +102,7 @@ public class Set {
         return res;
     }
 
-    private String search(String res, IdentifiersTable id, Mips m, Node n, int line){
+    private String search(String res, SymbolTable id, Mips m, Node n, int line){
         //MIPS CODE
         if(n != null) {
             if (n.getData().matches("^array$")) {
@@ -111,8 +111,8 @@ public class Set {
                 String name = n.getLeft().getData();
                 n = n.getRight();
                 if(id.doesExist(name)) {
-                    if (id.getInfoIdentifiersTable(name) instanceof Array) {        //A confirmar
-                        Array a = (Array) id.getInfoIdentifiersTable(name);
+                    if (id.getInfoIdentifier(name) instanceof Array) {        //A confirmar
+                        Array a = (Array) id.getInfoIdentifier(name);
                         Integer dimension = a.getDimension();
                         ArrayList<Integer> limits = a.getLimits();
                         int i = 0;
@@ -155,7 +155,7 @@ public class Set {
                 res = res + s;
             } else if(n.getData().matches("^[A-Za-z0-9]+$")) {
                 if(id.doesExist(n.getData())){
-                   if(id.getInfoIdentifiersTable(n.getData()) instanceof Int){
+                   if(id.getInfoIdentifier(n.getData()) instanceof Int){
                        String s = m.loadWord(n.getData(), line, 0);
                        System.out.println(s);
                        res = res + s;

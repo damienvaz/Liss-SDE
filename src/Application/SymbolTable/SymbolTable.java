@@ -10,7 +10,7 @@ import java.util.LinkedList;
 
 /**
  * <p>
- * IdentifiersTable is a class which creates an identifier table (also known by symbol table).
+ * SymbolTable is a class which creates an identifier table (also known by symbol table).
  * </p>
  * <p>
  * It is based by a HashMap where the key is the identifier and the value is all the information of that identifier.
@@ -18,9 +18,9 @@ import java.util.LinkedList;
  *
  * @author damienvaz
  */
-public class IdentifiersTable {
+public class SymbolTable {
 
-    private HashMap<String, LinkedList<InfoIdentifiersTable>> idTable;
+    private HashMap<String, LinkedList<InfoIdentifiersTable>> symbolTable;
     private int address;
     private ArrayList<Integer> stackSP;             // It is a stack for saving all the stack pointer (=SP) !!!!
     private ArrayList<Integer> levelstackSP; //This is a structure which tells where do you find the level in the stackSP! for example levelstackSP=[0|2|3]
@@ -32,8 +32,8 @@ public class IdentifiersTable {
      *  Also it add the four primitive data in that table which are : INTEGER, SET, SEQUENCE and BOOLEAN (regarding to the Liss Language).
      *  </p>
      */
-    public IdentifiersTable(){
-        this.idTable = new HashMap<String, LinkedList<InfoIdentifiersTable>>();
+    public SymbolTable(){
+        this.symbolTable = new HashMap<String, LinkedList<InfoIdentifiersTable>>();
         this.address = 0;
 
         Type integer = new Type(0,"integer");
@@ -43,14 +43,14 @@ public class IdentifiersTable {
 
 
         //Put the primitive types to the Identifier Table
-        this.idTable.put("integer", new LinkedList<InfoIdentifiersTable>());
-        this.idTable.get("integer").add(integer);
-        this.idTable.put("set", new LinkedList<InfoIdentifiersTable>());
-        this.idTable.get("set").add(set);
-        this.idTable.put("sequence", new LinkedList<InfoIdentifiersTable>());
-        this.idTable.get("sequence").add(seq);
-        this.idTable.put("boolean", new LinkedList<InfoIdentifiersTable>());
-        this.idTable.get("boolean").add(bool);
+        this.symbolTable.put("integer", new LinkedList<InfoIdentifiersTable>());
+        this.symbolTable.get("integer").add(integer);
+        this.symbolTable.put("set", new LinkedList<InfoIdentifiersTable>());
+        this.symbolTable.get("set").add(set);
+        this.symbolTable.put("sequence", new LinkedList<InfoIdentifiersTable>());
+        this.symbolTable.get("sequence").add(seq);
+        this.symbolTable.put("boolean", new LinkedList<InfoIdentifiersTable>());
+        this.symbolTable.get("boolean").add(bool);
 
         //The stack pointer initially is 0
         this.stackSP = new ArrayList<Integer>();
@@ -65,22 +65,21 @@ public class IdentifiersTable {
      *
      * @return A hashmap where `<b>key</b> = identifier` and <b>value</b> = `{@link InfoIdentifiersTable}`
      */
-    public HashMap<String, LinkedList<InfoIdentifiersTable>> getIdentifiersTable() {
-        return this.idTable;
+    public HashMap<String, LinkedList<InfoIdentifiersTable>> getSymbolTable() {
+        return this.symbolTable;
     }
 
-    public boolean doesExist(String id){return (this.idTable.get(id) != null)? true : false;}
+    public boolean doesExist(String id){return (this.symbolTable.get(id) != null)? true : false;}
 
-    public InfoIdentifiersTable getInfoIdentifiersTable(String id){return this.idTable.get(id).getLast();} //Return the last element of the linkedlist
+    public InfoIdentifiersTable getInfoIdentifier(String id){return this.symbolTable.get(id).getLast();} //Return the last element of the linkedlist
 
-    public LinkedList<InfoIdentifiersTable> getListInfoIdentifiersTable(String id){return this.idTable.get(id);}
 
     /******************************************* SP instructions***********************************************/
     public Integer getValueSP(Integer actualLevel, String variable){
         //P.-C. : Size of the stackSP + Different level +
         Integer i = 0;
-        //Integer levelOfVariable = this.getInfoIdentifiersTable(variable).getLevel();
-        Info v = (Var) this.getInfoIdentifiersTable(variable);
+        //Integer levelOfVariable = this.getInfoIdentifier(variable).getLevel();
+        Info v = (Var) this.getInfoIdentifier(variable);
         //System.out.println("Variable: "+variable+" Address: "+v.getAddress()+" Level: "+v.getLevel());
         if(!actualLevel.equals(v.getLevel())){
             //Apply algorithms for searching the position on the stack pointer stack
@@ -237,7 +236,7 @@ public class IdentifiersTable {
         System.out.println("#######################################################");
     }
 
-    public void pushStateRegistersToSP(Integer SavedRegisters){
+    public void pushStateRegistersToSP(Integer SavedRegisters){ //related to functions (subprograms)
         //if(!SavedRegisters.equals(0)) {
             if (this.stackSP.size() > 0) {
                 this.stackSP.add(this.stackSP.get(this.stackSP.size() - 1) + (SavedRegisters * 4));
@@ -290,8 +289,8 @@ public class IdentifiersTable {
 
     public void removeLevel(Integer level){
         LinkedList<String> idS = new LinkedList<String>();
-        for(String id : this.idTable.keySet()){  //nao se pode remover elementos que sao usados com o foreach (dá erro )
-            LinkedList<InfoIdentifiersTable> li = this.idTable.get(id);
+        for(String id : this.symbolTable.keySet()){  //nao se pode remover elementos que sao usados com o foreach (dá erro )
+            LinkedList<InfoIdentifiersTable> li = this.symbolTable.get(id);
             if(li.getLast().getLevel().equals(level) && li.size()>1){
                 li.removeLast();
             }else if(li.getLast().getLevel().equals(level) && li.size()==1){
@@ -299,7 +298,7 @@ public class IdentifiersTable {
             }
         }
         for(String id : idS){
-            this.idTable.remove(id);
+            this.symbolTable.remove(id);
         }
     }
 
@@ -318,23 +317,23 @@ public class IdentifiersTable {
         switch(type) {
             case "integer":
                 Int i = new Int(new Integer(level),this.address);
-                typeSpace = (Type) this.idTable.get(type).getLast();
+                typeSpace = (Type) this.symbolTable.get(type).getLast();
 
                 for(String id : hashmapVar.keySet()){
-                        if(!this.idTable.containsKey(id)){
+                        if(!this.symbolTable.containsKey(id)){
                             LinkedList<InfoIdentifiersTable> l = new LinkedList<InfoIdentifiersTable>();
                             l.add(i.clone());
-                            this.idTable.put(id, l);
+                            this.symbolTable.put(id, l);
 
                             //this.address = this.address + typeSpace.getSpace();
                             setAddress(this.address + typeSpace.getSpace());
                             i.setAddress(this.address);
                         }else {
                             //Pre-Condition : Verificar e comparar o nivel da variavel na tabela de identificador e o nivel do identificador
-                            if (!this.idTable.get(id).getLast().getLevel().equals(i.getLevel())) {
-                                LinkedList<InfoIdentifiersTable> l = this.idTable.get(id);
+                            if (!this.symbolTable.get(id).getLast().getLevel().equals(i.getLevel())) {
+                                LinkedList<InfoIdentifiersTable> l = this.symbolTable.get(id);
                                 l.add(i.clone());
-                                //this.idTable.put(id,l);
+                                //this.symbolTable.put(id,l);
 
                                 //this.address = this.address + typeSpace.getSpace();
                                 setAddress(this.address + typeSpace.getSpace());
@@ -348,21 +347,21 @@ public class IdentifiersTable {
                 break;
             case "boolean":
                 Bool b = new Bool(new Integer(level),this.address);
-                typeSpace = (Type) this.idTable.get(type).getLast();
+                typeSpace = (Type) this.symbolTable.get(type).getLast();
 
                 for(String id : hashmapVar.keySet()){
                     //Pré-Condição : Verificar se as variaveis (do HashMap) ja existem na tabela de identificadores
-                    if(!this.idTable.containsKey(id)) {
+                    if(!this.symbolTable.containsKey(id)) {
                         LinkedList<InfoIdentifiersTable> l = new LinkedList<InfoIdentifiersTable>();
                         l.add(b.clone());
-                        this.idTable.put(id,l);
+                        this.symbolTable.put(id,l);
 
                         this.address = this.address + typeSpace.getSpace();
                         b.setAddress(this.address);
                     }else{
                         //Pre-Condition : Verificar e comparar o nivel da variavel na tabela de identificador e o nivel do identificador
-                        if (!this.idTable.get(id).getLast().getLevel().equals(b.getLevel())) {
-                            LinkedList<InfoIdentifiersTable> l = this.idTable.get(id);
+                        if (!this.symbolTable.get(id).getLast().getLevel().equals(b.getLevel())) {
+                            LinkedList<InfoIdentifiersTable> l = this.symbolTable.get(id);
                             l.add(b.clone());
 
                             //this.address = this.address + typeSpace.getSpace();
@@ -377,16 +376,16 @@ public class IdentifiersTable {
                 break;
             case "array":
                 Array a ;
-                typeSpace = (Type) this.idTable.get("integer").getLast(); //porque os elementos do array sao inteiros
+                typeSpace = (Type) this.symbolTable.get("integer").getLast(); //porque os elementos do array sao inteiros
 
                 for(String id : hashmapVar.keySet()){
                     //Pré-Condição : Verificar se as variaveis (do HashMap) ja existem na tabela de identificadores
-                    if(!this.idTable.containsKey(id)) {
+                    if(!this.symbolTable.containsKey(id)) {
                         ArrayList<Integer> arrayDimension = (ArrayList<Integer>) hashmapVar.get(id).get("dimension");
                         a = new Array(new Integer(level), new Integer(arrayDimension.size()), arrayDimension, this.address);
                         LinkedList<InfoIdentifiersTable> l = new LinkedList<InfoIdentifiersTable>();
                         l.add(a.clone());
-                        this.idTable.put(id,l);
+                        this.symbolTable.put(id,l);
 
                         //this.address = this.address + (a.getMemorySize() * typeSpace.getSpace());
                         setAddress(this.address + (a.getMemorySize() * typeSpace.getSpace()));
@@ -396,8 +395,8 @@ public class IdentifiersTable {
                         ArrayList<Integer> arrayDimension = (ArrayList<Integer>) hashmapVar.get(id).get("dimension");
                         a = new Array(new Integer(level), new Integer(arrayDimension.size()), arrayDimension, this.address);
                         //Pre-Condition : Verificar e comparar o nivel da variavel na tabela de identificador e o nivel do identificador
-                        if (!this.idTable.get(id).getLast().getLevel().equals(a.getLevel())) {
-                            LinkedList<InfoIdentifiersTable> l = this.idTable.get(id);
+                        if (!this.symbolTable.get(id).getLast().getLevel().equals(a.getLevel())) {
+                            LinkedList<InfoIdentifiersTable> l = this.symbolTable.get(id);
                             l.add(a.clone());
 
                             //this.address = this.address + (a.getMemorySize() * typeSpace.getSpace());
@@ -414,22 +413,22 @@ public class IdentifiersTable {
                 break;
             case "sequence":
                 Sequence s = new Sequence(new Integer(level),this.address,"integer");
-                typeSpace = (Type) this.idTable.get(type).getLast();
+                typeSpace = (Type) this.symbolTable.get(type).getLast();
 
                 for(String id : hashmapVar.keySet()){
                     //Pré-Condição : Verificar se as variaveis (do HashMap) ja existem na tabela de identificadores
-                    if(!this.idTable.containsKey(id)) {
+                    if(!this.symbolTable.containsKey(id)) {
                         LinkedList<InfoIdentifiersTable> l = new LinkedList<InfoIdentifiersTable>();
                         l.add(s.clone());
-                        this.idTable.put(id,l);
+                        this.symbolTable.put(id,l);
 
                         //this.address = this.address + typeSpace.getSpace();
                         setAddress(this.address + typeSpace.getSpace());
                         s.setAddress(this.address);
                     }else{
                         //Pre-Condition : Verificar e comparar o nivel da variavel na tabela de identificador e o nivel do identificador
-                        if (!this.idTable.get(id).getLast().getLevel().equals(s.getLevel())) {
-                            LinkedList<InfoIdentifiersTable> l = this.idTable.get(id);
+                        if (!this.symbolTable.get(id).getLast().getLevel().equals(s.getLevel())) {
+                            LinkedList<InfoIdentifiersTable> l = this.symbolTable.get(id);
                             l.add(s.clone());
 
                             //this.address = this.address + typeSpace.getSpace();
@@ -445,17 +444,17 @@ public class IdentifiersTable {
                 break;
             case "set":
                 Set set = null;
-                typeSpace = (Type) this.idTable.get(type).getLast();
+                typeSpace = (Type) this.symbolTable.get(type).getLast();
 
                 for(String id : hashmapVar.keySet()){
                     //Pré-Condição : Verificar se as variaveis (do HashMap) ja existem na tabela de identificadores
-                    if(!this.idTable.containsKey(id)) {
+                    if(!this.symbolTable.containsKey(id)) {
                         Application.Set s1 = (Application.Set) hashmapVar.get(id).get("set");
                         set = new Set(new Integer(level),s1);
 
                         LinkedList<InfoIdentifiersTable> l = new LinkedList<InfoIdentifiersTable>();
                         l.add(set.clone());
-                        this.idTable.put(id,l);
+                        this.symbolTable.put(id,l);
 
                         //this.address = this.address + typeSpace.getSpace();
                         setAddress(this.address + typeSpace.getSpace());
@@ -465,8 +464,8 @@ public class IdentifiersTable {
                         set = new Set(new Integer(level),s1);
 
                         //Pre-Condition : Verificar e comparar o nivel da variavel na tabela de identificador e o nivel do identificador
-                        if (!this.idTable.get(id).getLast().getLevel().equals(set.getLevel())) {
-                            LinkedList<InfoIdentifiersTable> l = this.idTable.get(id);
+                        if (!this.symbolTable.get(id).getLast().getLevel().equals(set.getLevel())) {
+                            LinkedList<InfoIdentifiersTable> l = this.symbolTable.get(id);
                             l.add(set.clone());
 
                             //this.address = this.address + typeSpace.getSpace();
@@ -483,13 +482,13 @@ public class IdentifiersTable {
                 Function f = null;
                 for(String id : hashmapVar.keySet()){
                     //Pré-Condição : Verificar se as variaveis (do HashMap) ja existem na tabela de identificadores
-                    if(!this.idTable.containsKey(id)) {
+                    if(!this.symbolTable.containsKey(id)) {
                         //Application.Set s1 = (Application.Set) hashmapVar.get(id).get("set");
                         f = new Function(new Integer(level),(String)hashmapVar.get(id).get("return"),(Integer)hashmapVar.get(id).get("numberArguments"),(LinkedList<String>)hashmapVar.get(id).get("typeList"),(Integer)hashmapVar.get(id).get("address"));
 
                         LinkedList<InfoIdentifiersTable> l = new LinkedList<InfoIdentifiersTable>();
                         l.add(f.clone());
-                        this.idTable.put(id, l);
+                        this.symbolTable.put(id, l);
 
                         //this.address = 0;
                         //System.out.println("Function: "+id+" Passei por aqui1. Address: "+this.address);
@@ -498,13 +497,13 @@ public class IdentifiersTable {
                         f = new Function(new Integer(level),(String)hashmapVar.get(id).get("return"),(Integer)hashmapVar.get(id).get("numberArguments"),(LinkedList<String>)hashmapVar.get(id).get("typeList"),(Integer)hashmapVar.get(id).get("address"));
 
                         //Pre-Condition : Verificar e comparar o nivel da variavel na tabela de identificador e o nivel do identificador
-                        if (!this.idTable.get(id).getLast().getLevel().equals(f.getLevel())) {
-                            LinkedList<InfoIdentifiersTable> l = this.idTable.get(id);
+                        if (!this.symbolTable.get(id).getLast().getLevel().equals(f.getLevel())) {
+                            LinkedList<InfoIdentifiersTable> l = this.symbolTable.get(id);
                             l.add(f.clone());
 
-                            //typeSpace = (Type) this.idTable.get(type).getLast();
+                            //typeSpace = (Type) this.symbolTable.get(type).getLast();
 
-                            //this.address = this.idTable.get((LinkedList<String>) hashmapVar.get(id).get("typeList")).getFirst()).;
+                            //this.address = this.symbolTable.get((LinkedList<String>) hashmapVar.get(id).get("typeList")).getFirst()).;
                             //this.address = 0;
                             //System.out.println("Function: "+id+" Passei por aqui2. Address: "+this.address);
                             //f.setAddress(this.address);
@@ -513,7 +512,7 @@ public class IdentifiersTable {
                             //Como sei que a funçao nao pode ser inserido, criar um "errorFuncao" na tabela so para verificar
                             //LinkedList<InfoIdentifiersTable> l = new LinkedList<InfoIdentifiersTable>();
                             //l.add(f.clone());
-                            //this.idTable.put("error"+id, l);
+                            //this.symbolTable.put("error"+id, l);
                             e.addMessage((int) hashmapVar.get(id).get("line"),(int) hashmapVar.get(id).get("pos"),ErrorMessage.semantic(id,ErrorMessage.Declarations));
                         }
                     }
@@ -545,12 +544,12 @@ public class IdentifiersTable {
         LinkedList<String> type = new LinkedList<String>();
         LinkedList<String> function = new LinkedList<String>();
         LinkedList<String> sortCategory = new LinkedList<String>();
-        for(String id : this.idTable.keySet()) {
-            if(this.idTable.get(id).getLast().getCategory().equals("TYPE")){
+        for(String id : this.symbolTable.keySet()) {
+            if(this.symbolTable.get(id).getLast().getCategory().equals("TYPE")){
                 //sortCategory.addFirst(id);
                 type.add(id);
             }
-            else if(this.idTable.get(id).getLast().getCategory().equals("FUNCTION")){//sortCategory.addLast(id);}
+            else if(this.symbolTable.get(id).getLast().getCategory().equals("FUNCTION")){//sortCategory.addLast(id);}
                 function.addLast(id);
             }else{
                 function.addFirst(id);
@@ -563,7 +562,7 @@ public class IdentifiersTable {
 
         //Printing the table
         for(String id : sortCategory) {
-            for(InfoIdentifiersTable i : this.idTable.get(id)){
+            for(InfoIdentifiersTable i : this.symbolTable.get(id)){
                 s.append(String.format("%-20s", id));
                 s.append(i.toString());
             }

@@ -4,7 +4,7 @@ package Application;
  * @author damienvaz
  */
 
-import Application.SymbolTable.IdentifiersTable;
+import Application.SymbolTable.SymbolTable;
 import org.antlr.v4.runtime.ANTLRFileStream;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CharStream;
@@ -18,15 +18,15 @@ import java.io.IOException;
 public class Main {
     private TableError tableError;
     private Mips mips;
-    private IdentifiersTable idt;
+    private SymbolTable idt;
 
     public Main(){
-        this.idt = new IdentifiersTable();
+        this.idt = new SymbolTable();
         this.tableError = new TableError();
         this.mips = new Mips();
     }
 
-    public IdentifiersTable getIdth() {
+    public SymbolTable getIdth() {
         return idt;
     }
 
@@ -96,7 +96,7 @@ public class Main {
         LissParser parser = new LissParser(token);
 
         //create identifier table
-        IdentifiersTable idT = new IdentifiersTable();
+        SymbolTable idT = new SymbolTable();
         TableError e = new TableError();
         Mips m = new Mips();
         parser.liss(idT, e, m);

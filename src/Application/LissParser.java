@@ -155,7 +155,7 @@ public class LissParser extends Parser {
 		_interp = new ParserATNSimulator(this,_ATN,_decisionToDFA,_sharedContextCache);
 	}
 	public static class LissContext extends ParserRuleContext {
-		public IdentifiersTable idTH;
+		public SymbolTable sT;
 		public TableError tableError;
 		public Mips mips;
 		public IdentifierContext identifier() {
@@ -165,9 +165,9 @@ public class LissParser extends Parser {
 			return getRuleContext(BodyContext.class,0);
 		}
 		public LissContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public LissContext(ParserRuleContext parent, int invokingState, IdentifiersTable idTH, TableError tableError, Mips mips) {
+		public LissContext(ParserRuleContext parent, int invokingState, SymbolTable sT, TableError tableError, Mips mips) {
 			super(parent, invokingState);
-			this.idTH = idTH;
+			this.sT = sT;
 			this.tableError = tableError;
 			this.mips = mips;
 		}
@@ -182,8 +182,8 @@ public class LissParser extends Parser {
 		}
 	}
 
-	public final LissContext liss(IdentifiersTable idTH,TableError tableError,Mips mips) throws RecognitionException {
-		LissContext _localctx = new LissContext(_ctx, getState(), idTH, tableError, mips);
+	public final LissContext liss(SymbolTable sT,TableError tableError,Mips mips) throws RecognitionException {
+		LissContext _localctx = new LissContext(_ctx, getState(), sT, tableError, mips);
 		enterRule(_localctx, 0, RULE_liss);
 
 		        e = tableError;
@@ -197,7 +197,7 @@ public class LissParser extends Parser {
 			setState(155);
 			identifier();
 			setState(156);
-			body(idTH);
+			body(sT);
 			 m.addDataInstruction(m.dataTextOriginal()); m.textExitCode(); System.out.println(e.toString()); System.out.println("/***************************************/\n"+m.getAssemblyCode()+"/***************************************/\n"); /*System.out.println(m.areSomeRegistersUsed());if(e.isNull()){ m.write();}*/
 			}
 		}
@@ -213,7 +213,7 @@ public class LissParser extends Parser {
 	}
 
 	public static class BodyContext extends ParserRuleContext {
-		public IdentifiersTable idTH;
+		public SymbolTable sT;
 		public StatementsContext s;
 		public DeclarationsContext declarations() {
 			return getRuleContext(DeclarationsContext.class,0);
@@ -222,9 +222,9 @@ public class LissParser extends Parser {
 			return getRuleContext(StatementsContext.class,0);
 		}
 		public BodyContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public BodyContext(ParserRuleContext parent, int invokingState, IdentifiersTable idTH) {
+		public BodyContext(ParserRuleContext parent, int invokingState, SymbolTable sT) {
 			super(parent, invokingState);
-			this.idTH = idTH;
+			this.sT = sT;
 		}
 		@Override public int getRuleIndex() { return RULE_body; }
 		@Override
@@ -237,8 +237,8 @@ public class LissParser extends Parser {
 		}
 	}
 
-	public final BodyContext body(IdentifiersTable idTH) throws RecognitionException {
-		BodyContext _localctx = new BodyContext(_ctx, getState(), idTH);
+	public final BodyContext body(SymbolTable sT) throws RecognitionException {
+		BodyContext _localctx = new BodyContext(_ctx, getState(), sT);
 		enterRule(_localctx, 2, RULE_body);
 		try {
 			enterOuterAlt(_localctx, 1);
@@ -249,12 +249,12 @@ public class LissParser extends Parser {
 			match(T__2);
 			isDeclarations = true;
 			setState(162);
-			declarations(idTH,null);
+			declarations(sT,null);
 			setState(163);
 			match(T__3);
 			isDeclarations = false; String mipsCodeS = "\t#########BEGIN STATEMENTS#########\n"; m.addTextInstruction(mipsCodeS); 
 			setState(165);
-			((BodyContext)_localctx).s = statements(idTH);
+			((BodyContext)_localctx).s = statements(sT);
 			mipsCodeS = "\t##########END STATEMENTS##########\n"; m.addTextInstruction(mipsCodeS);
 			setState(167);
 			match(T__4);
@@ -272,7 +272,7 @@ public class LissParser extends Parser {
 	}
 
 	public static class DeclarationsContext extends ParserRuleContext {
-		public IdentifiersTable idTH;
+		public SymbolTable sT;
 		public HashMap<String,Object> varInfo;
 		public List<Variable_declarationContext> variable_declaration() {
 			return getRuleContexts(Variable_declarationContext.class);
@@ -287,9 +287,9 @@ public class LissParser extends Parser {
 			return getRuleContext(Subprogram_definitionContext.class,i);
 		}
 		public DeclarationsContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public DeclarationsContext(ParserRuleContext parent, int invokingState, IdentifiersTable idTH, HashMap<String,Object> varInfo) {
+		public DeclarationsContext(ParserRuleContext parent, int invokingState, SymbolTable sT, HashMap<String,Object> varInfo) {
 			super(parent, invokingState);
-			this.idTH = idTH;
+			this.sT = sT;
 			this.varInfo = varInfo;
 		}
 		@Override public int getRuleIndex() { return RULE_declarations; }
@@ -303,8 +303,8 @@ public class LissParser extends Parser {
 		}
 	}
 
-	public final DeclarationsContext declarations(IdentifiersTable idTH,HashMap<String,Object> varInfo) throws RecognitionException {
-		DeclarationsContext _localctx = new DeclarationsContext(_ctx, getState(), idTH, varInfo);
+	public final DeclarationsContext declarations(SymbolTable sT,HashMap<String,Object> varInfo) throws RecognitionException {
+		DeclarationsContext _localctx = new DeclarationsContext(_ctx, getState(), sT, varInfo);
 		enterRule(_localctx, 4, RULE_declarations);
 
 		                 HashMap<String, HashMap<String, Object>> hashmapVar = new HashMap<String, HashMap<String,Object>>();
@@ -320,7 +320,7 @@ public class LissParser extends Parser {
 				{
 				{
 				setState(169);
-				variable_declaration(idTH);
+				variable_declaration(sT);
 				}
 				}
 				setState(174);
@@ -329,25 +329,25 @@ public class LissParser extends Parser {
 			}
 
 
-			                //It is necessary to the add function ASAP on the idTH due to consistency of the idTH ! And to add it, we must know ASAP when we know the stack frame size !! Even before a subprogram is detected or a statement !!
+			                //It is necessary to the add function ASAP on the sT due to consistency of the sT ! And to add it, we must know ASAP when we know the stack frame size !! Even before a subprogram is detected or a statement !!
 			                if(functionState == true && varInfo!=null){
-			                    _localctx.idTH.pushSP(m.numberOfRegistersInBytes()); //only add when subprogram are activated !!!!
-			                    varInfo.put("address",_localctx.idTH.getSizeSP(level));
+			                    _localctx.sT.pushSP(m.numberOfRegistersInBytes()); //only add when subprogram are activated !!!!
+			                    varInfo.put("address",_localctx.sT.getSizeSP(level));
 
 			                    String nameFunction = (String) varInfo.get("nameFunction");
 			                    //varInfo.remove("nameFunction");
 			                    hashmapVar.put(nameFunction,varInfo);
 
-			                    _localctx.idTH.add(e,hashmapVar,"function",level-1); //Name of the function is always one level below (for this part of the code) !
+			                    _localctx.sT.add(e,hashmapVar,"function",level-1); //Name of the function is always one level below (for this part of the code) !
 			                    //Code below generate the mipscode for functions
-			                    String mipsCodeS = m.increaseStackFrameSP(_localctx.idTH.getSizeSP(level));
-			                    mipsCodeS += m.saveRegistersAndReturnAddressBeginFunctions(_localctx.idTH.getSizeSP(level));
+			                    String mipsCodeS = m.increaseStackFrameSP(_localctx.sT.getSizeSP(level));
+			                    mipsCodeS += m.saveRegistersAndReturnAddressBeginFunctions(_localctx.sT.getSizeSP(level));
 			                    mipsCodeS += "\t#########BEGIN DECLARATIONS#########\n";
 			                    m.addIncreaseSFMipsCodeFunction(m.getNameFunction(),mipsCodeS);
 
 
 			                    mipsCodeS = "\t#########END DECLARATIONS#########\n";
-			                    //mipsCodeS += m.saveRegistersAndReturnAddressBeginFunctions(_localctx.idTH.getSizeSP(level));
+			                    //mipsCodeS += m.saveRegistersAndReturnAddressBeginFunctions(_localctx.sT.getSizeSP(level));
 
 			                    m.addMipsCodeFunction(m.getNameFunction(),mipsCodeS);
 			                    //add the rest of the mipsCode of variable_Declaration NT
@@ -361,7 +361,7 @@ public class LissParser extends Parser {
 				{
 				{
 				setState(176);
-				subprogram_definition(idTH);
+				subprogram_definition(sT);
 				}
 				}
 				setState(181);
@@ -370,9 +370,9 @@ public class LissParser extends Parser {
 			}
 
 			                System.out.println("-------");
-			                _localctx.idTH.printSP();
-			                //_localctx.idTH.popSP();
-			                //_localctx.idTH.printSP();
+			                _localctx.sT.printSP();
+			                //_localctx.sT.popSP();
+			                //_localctx.sT.printSP();
 			                System.out.println("-------");
 			              
 			}
@@ -389,7 +389,7 @@ public class LissParser extends Parser {
 	}
 
 	public static class Variable_declarationContext extends ParserRuleContext {
-		public IdentifiersTable idTH;
+		public SymbolTable sT;
 		public VarsContext vars;
 		public TypeContext type;
 		public VarsContext vars() {
@@ -399,9 +399,9 @@ public class LissParser extends Parser {
 			return getRuleContext(TypeContext.class,0);
 		}
 		public Variable_declarationContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public Variable_declarationContext(ParserRuleContext parent, int invokingState, IdentifiersTable idTH) {
+		public Variable_declarationContext(ParserRuleContext parent, int invokingState, SymbolTable sT) {
 			super(parent, invokingState);
-			this.idTH = idTH;
+			this.sT = sT;
 		}
 		@Override public int getRuleIndex() { return RULE_variable_declaration; }
 		@Override
@@ -414,14 +414,14 @@ public class LissParser extends Parser {
 		}
 	}
 
-	public final Variable_declarationContext variable_declaration(IdentifiersTable idTH) throws RecognitionException {
-		Variable_declarationContext _localctx = new Variable_declarationContext(_ctx, getState(), idTH);
+	public final Variable_declarationContext variable_declaration(SymbolTable sT) throws RecognitionException {
+		Variable_declarationContext _localctx = new Variable_declarationContext(_ctx, getState(), sT);
 		enterRule(_localctx, 6, RULE_variable_declaration);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(184);
-			((Variable_declarationContext)_localctx).vars = vars(idTH);
+			((Variable_declarationContext)_localctx).vars = vars(sT);
 			setState(185);
 			match(T__5);
 			setState(186);
@@ -432,7 +432,7 @@ public class LissParser extends Parser {
 			                        HashMap<String, HashMap<String,Object>> varsH = ((Variable_declarationContext)_localctx).vars.varsS;
 			                            if(((Variable_declarationContext)_localctx).type.typeS == "array" ){
 			                                //we need to count which position will you store in the sp. And for that we need to count it for each array declared.
-			                                int addressSP = _localctx.idTH.getAddress();
+			                                int addressSP = _localctx.sT.getAddress();
 			                                for(String i : varsH.keySet()){
 			                                    varsH.get(i).put("dimension",((Variable_declarationContext)_localctx).type.arrayDimension);
 			                                    String mipsCodeS="";
@@ -491,7 +491,7 @@ public class LissParser extends Parser {
 
 			                                            }else if(functionState == true){
 
-			                                                //System.out.println(_localctx.idTH.toString());
+			                                                //System.out.println(_localctx.sT.toString());
 			                                                System.out.println(i+" ADDRESS OF VARIABLE DECLARATION: "+addressSP);
 			                                                mipsCodeS += m.loadImmediateWord(""+addressSP, (int)varsH.get(i).get("line"), (int)varsH.get(i).get("pos"))+m.textAdd((int)varsH.get(i).get("line"), (int)varsH.get(i).get("pos"));
 			                                                //è necessario adicionar o endereço da stack frame a posicao calculado do endereço array (para acceder bem)
@@ -535,8 +535,8 @@ public class LissParser extends Parser {
 			                                }*/
 			                            }else if(((Variable_declarationContext)_localctx).type.typeS == "boolean"){
 			                                if(functionState == true){
-			                                    int address = _localctx.idTH.getAddress();
-			                                    Type typeSpace = (Type) _localctx.idTH.getInfoIdentifiersTable("boolean");
+			                                    int address = _localctx.sT.getAddress();
+			                                    Type typeSpace = (Type) _localctx.sT.getInfoIdentifier("boolean");
 
 			                                    for(String i : varsH.keySet()){
 			                                        if(varsH.get(i).get("mips")!=null){
@@ -553,8 +553,8 @@ public class LissParser extends Parser {
 			                                }
 			                            }else if(((Variable_declarationContext)_localctx).type.typeS == "integer"){
 			                                if(functionState == true){
-			                                    int address = _localctx.idTH.getAddress();
-			                                    Type typeSpace = (Type) _localctx.idTH.getInfoIdentifiersTable("integer");
+			                                    int address = _localctx.sT.getAddress();
+			                                    Type typeSpace = (Type) _localctx.sT.getInfoIdentifier("integer");
 
 			                                    for(String i : varsH.keySet()){
 			                                        if(varsH.get(i).get("mips")!=null){
@@ -570,7 +570,7 @@ public class LissParser extends Parser {
 			                                    }
 			                                }
 			                            }else if(((Variable_declarationContext)_localctx).type.typeS == "sequence"){
-			                                int address = _localctx.idTH.getAddress();
+			                                int address = _localctx.sT.getAddress();
 			                                for(String i : varsH.keySet()){
 			                                    LinkedList<Integer> sequence = (LinkedList<Integer>) varsH.get(i).get("sequence");
 
@@ -625,7 +625,7 @@ public class LissParser extends Parser {
 			                            }
 
 
-			                            _localctx.idTH.add(e,varsH,((Variable_declarationContext)_localctx).type.typeS,level);
+			                            _localctx.sT.add(e,varsH,((Variable_declarationContext)_localctx).type.typeS,level);
 
 
 
@@ -634,7 +634,7 @@ public class LissParser extends Parser {
 			                            if(functionState == false){
 			                                m.addDataInstructions(varsH,((Variable_declarationContext)_localctx).type.typeS);
 			                            }else if(functionState == true){
-			                                System.out.println(_localctx.idTH.toString());
+			                                System.out.println(_localctx.sT.toString());
 			                                m.addDataFunctionInstructions(varsH, ((Variable_declarationContext)_localctx).type.typeS);
 			                            }
 			                     
@@ -652,7 +652,7 @@ public class LissParser extends Parser {
 	}
 
 	public static class VarsContext extends ParserRuleContext {
-		public IdentifiersTable idTH;
+		public SymbolTable sT;
 		public HashMap<String, HashMap<String,Object>> varsS;
 		public VarContext v1;
 		public VarContext var;
@@ -664,9 +664,9 @@ public class LissParser extends Parser {
 			return getRuleContext(VarContext.class,i);
 		}
 		public VarsContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public VarsContext(ParserRuleContext parent, int invokingState, IdentifiersTable idTH) {
+		public VarsContext(ParserRuleContext parent, int invokingState, SymbolTable sT) {
 			super(parent, invokingState);
-			this.idTH = idTH;
+			this.sT = sT;
 		}
 		@Override public int getRuleIndex() { return RULE_vars; }
 		@Override
@@ -679,8 +679,8 @@ public class LissParser extends Parser {
 		}
 	}
 
-	public final VarsContext vars(IdentifiersTable idTH) throws RecognitionException {
-		VarsContext _localctx = new VarsContext(_ctx, getState(), idTH);
+	public final VarsContext vars(SymbolTable sT) throws RecognitionException {
+		VarsContext _localctx = new VarsContext(_ctx, getState(), sT);
 		enterRule(_localctx, 8, RULE_vars);
 
 		        HashMap<String, HashMap<String,Object>> info = new HashMap<String, HashMap<String,Object>>();
@@ -690,7 +690,7 @@ public class LissParser extends Parser {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(190);
-			((VarsContext)_localctx).v1 = ((VarsContext)_localctx).var = var(idTH);
+			((VarsContext)_localctx).v1 = ((VarsContext)_localctx).var = var(sT);
 
 			                if(!info.containsKey((((VarsContext)_localctx).var!=null?_input.getText(((VarsContext)_localctx).var.start,((VarsContext)_localctx).var.stop):null))){
 			                    info.put(((VarsContext)_localctx).var.idS,((VarsContext)_localctx).var.infoVarS);
@@ -708,7 +708,7 @@ public class LissParser extends Parser {
 				setState(192);
 				match(T__7);
 				setState(193);
-				((VarsContext)_localctx).v2 = ((VarsContext)_localctx).var = var(idTH);
+				((VarsContext)_localctx).v2 = ((VarsContext)_localctx).var = var(sT);
 
 				                    if(!info.containsKey((((VarsContext)_localctx).var!=null?_input.getText(((VarsContext)_localctx).var.start,((VarsContext)_localctx).var.stop):null))){
 				                        info.put(((VarsContext)_localctx).var.idS,((VarsContext)_localctx).var.infoVarS);
@@ -739,7 +739,7 @@ public class LissParser extends Parser {
 	}
 
 	public static class VarContext extends ParserRuleContext {
-		public IdentifiersTable idTH;
+		public SymbolTable sT;
 		public String idS;
 		public HashMap<String,Object> infoVarS;
 		public IdentifierContext i;
@@ -752,9 +752,9 @@ public class LissParser extends Parser {
 			return getRuleContext(Value_varContext.class,0);
 		}
 		public VarContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public VarContext(ParserRuleContext parent, int invokingState, IdentifiersTable idTH) {
+		public VarContext(ParserRuleContext parent, int invokingState, SymbolTable sT) {
 			super(parent, invokingState);
-			this.idTH = idTH;
+			this.sT = sT;
 		}
 		@Override public int getRuleIndex() { return RULE_var; }
 		@Override
@@ -767,8 +767,8 @@ public class LissParser extends Parser {
 		}
 	}
 
-	public final VarContext var(IdentifiersTable idTH) throws RecognitionException {
-		VarContext _localctx = new VarContext(_ctx, getState(), idTH);
+	public final VarContext var(SymbolTable sT) throws RecognitionException {
+		VarContext _localctx = new VarContext(_ctx, getState(), sT);
 		enterRule(_localctx, 10, RULE_var);
 
 		        HashMap<String, Object> info = new HashMap<String, Object>();
@@ -779,7 +779,7 @@ public class LissParser extends Parser {
 			setState(203);
 			((VarContext)_localctx).i = ((VarContext)_localctx).identifier = identifier();
 			setState(204);
-			((VarContext)_localctx).v = value_var(idTH);
+			((VarContext)_localctx).v = value_var(sT);
 
 			        info.put("pos",((VarContext)_localctx).i.pos);
 			        info.put("line",((VarContext)_localctx).i.line);
@@ -820,7 +820,7 @@ public class LissParser extends Parser {
 	}
 
 	public static class Value_varContext extends ParserRuleContext {
-		public IdentifiersTable idTH;
+		public SymbolTable sT;
 		public Set setS;
 		public String typeS;
 		public String mipsCodeS;
@@ -831,9 +831,9 @@ public class LissParser extends Parser {
 			return getRuleContext(Inic_varContext.class,0);
 		}
 		public Value_varContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public Value_varContext(ParserRuleContext parent, int invokingState, IdentifiersTable idTH) {
+		public Value_varContext(ParserRuleContext parent, int invokingState, SymbolTable sT) {
 			super(parent, invokingState);
-			this.idTH = idTH;
+			this.sT = sT;
 		}
 		@Override public int getRuleIndex() { return RULE_value_var; }
 		@Override
@@ -846,8 +846,8 @@ public class LissParser extends Parser {
 		}
 	}
 
-	public final Value_varContext value_var(IdentifiersTable idTH) throws RecognitionException {
-		Value_varContext _localctx = new Value_varContext(_ctx, getState(), idTH);
+	public final Value_varContext value_var(SymbolTable sT) throws RecognitionException {
+		Value_varContext _localctx = new Value_varContext(_ctx, getState(), sT);
 		enterRule(_localctx, 12, RULE_value_var);
 
 		            Set set = null;
@@ -870,7 +870,7 @@ public class LissParser extends Parser {
 				setState(208);
 				match(T__8);
 				setState(209);
-				((Value_varContext)_localctx).i = inic_var(idTH, set);
+				((Value_varContext)_localctx).i = inic_var(sT, set);
 
 				                //if(isSet){ set = ((Value_varContext)_localctx).i.setS; ((Value_varContext)_localctx).setS =  set;}
 				                set = ((Value_varContext)_localctx).i.setS; ((Value_varContext)_localctx).setS =  set;
@@ -1108,7 +1108,7 @@ public class LissParser extends Parser {
 	}
 
 	public static class Inic_varContext extends ParserRuleContext {
-		public IdentifiersTable idTH;
+		public SymbolTable sT;
 		public Set set;
 		public String typeS;
 		public int line;
@@ -1136,9 +1136,9 @@ public class LissParser extends Parser {
 			return getRuleContext(Sequence_definitionContext.class,0);
 		}
 		public Inic_varContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public Inic_varContext(ParserRuleContext parent, int invokingState, IdentifiersTable idTH, Set set) {
+		public Inic_varContext(ParserRuleContext parent, int invokingState, SymbolTable sT, Set set) {
 			super(parent, invokingState);
-			this.idTH = idTH;
+			this.sT = sT;
 			this.set = set;
 		}
 		@Override public int getRuleIndex() { return RULE_inic_var; }
@@ -1152,8 +1152,8 @@ public class LissParser extends Parser {
 		}
 	}
 
-	public final Inic_varContext inic_var(IdentifiersTable idTH,Set set) throws RecognitionException {
-		Inic_varContext _localctx = new Inic_varContext(_ctx, getState(), idTH, set);
+	public final Inic_varContext inic_var(SymbolTable sT,Set set) throws RecognitionException {
+		Inic_varContext _localctx = new Inic_varContext(_ctx, getState(), sT, set);
 		enterRule(_localctx, 20, RULE_inic_var);
 
 		            ((Inic_varContext)_localctx).treeS =  null;
@@ -1202,7 +1202,7 @@ public class LissParser extends Parser {
 				enterOuterAlt(_localctx, 3);
 				{
 				setState(255);
-				((Inic_varContext)_localctx).s1 = set_definition(idTH);
+				((Inic_varContext)_localctx).s1 = set_definition(sT);
 				((Inic_varContext)_localctx).typeS =  "set"; ((Inic_varContext)_localctx).line =  ((Inic_varContext)_localctx).s1.line; ((Inic_varContext)_localctx).pos =  ((Inic_varContext)_localctx).s1.pos; ((Inic_varContext)_localctx).treeS =  ((Inic_varContext)_localctx).s1.treeS; ((Inic_varContext)_localctx).setS =  ((Inic_varContext)_localctx).s1.setS;/*if(isSet && $s1.treeS!=null){$treeS = $s1.treeS;} if(isSet && $s1.setS!=null){$setS = $s1.setS;}*/
 				}
 				break;
@@ -1773,7 +1773,7 @@ public class LissParser extends Parser {
 	}
 
 	public static class Set_definitionContext extends ParserRuleContext {
-		public IdentifiersTable idTH;
+		public SymbolTable sT;
 		public Set setS;
 		public Node treeS;
 		public int line;
@@ -1784,9 +1784,9 @@ public class LissParser extends Parser {
 			return getRuleContext(Set_initializationContext.class,0);
 		}
 		public Set_definitionContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public Set_definitionContext(ParserRuleContext parent, int invokingState, IdentifiersTable idTH) {
+		public Set_definitionContext(ParserRuleContext parent, int invokingState, SymbolTable sT) {
 			super(parent, invokingState);
-			this.idTH = idTH;
+			this.sT = sT;
 		}
 		@Override public int getRuleIndex() { return RULE_set_definition; }
 		@Override
@@ -1799,8 +1799,8 @@ public class LissParser extends Parser {
 		}
 	}
 
-	public final Set_definitionContext set_definition(IdentifiersTable idTH) throws RecognitionException {
-		Set_definitionContext _localctx = new Set_definitionContext(_ctx, getState(), idTH);
+	public final Set_definitionContext set_definition(SymbolTable sT) throws RecognitionException {
+		Set_definitionContext _localctx = new Set_definitionContext(_ctx, getState(), sT);
 		enterRule(_localctx, 38, RULE_set_definition);
 		try {
 			enterOuterAlt(_localctx, 1);
@@ -1808,7 +1808,7 @@ public class LissParser extends Parser {
 			setState(328);
 			((Set_definitionContext)_localctx).m = match(T__1);
 			setState(329);
-			((Set_definitionContext)_localctx).s = set_initialization(idTH);
+			((Set_definitionContext)_localctx).s = set_initialization(sT);
 			((Set_definitionContext)_localctx).line =  (((Set_definitionContext)_localctx).m!=null?((Set_definitionContext)_localctx).m.getLine():0); ((Set_definitionContext)_localctx).pos =  (((Set_definitionContext)_localctx).m!=null?((Set_definitionContext)_localctx).m.getCharPositionInLine():0);((Set_definitionContext)_localctx).setS =  ((Set_definitionContext)_localctx).s.setS; ((Set_definitionContext)_localctx).treeS =  ((Set_definitionContext)_localctx).s.treeS; if(((Set_definitionContext)_localctx).s.setS!=null){/*System.out.println("SET_DEFINITION: {"+(((Set_definitionContext)_localctx).s!=null?_input.getText(((Set_definitionContext)_localctx).s.start,((Set_definitionContext)_localctx).s.stop):null)+"} -> "+((Set_definitionContext)_localctx).s.setS.toString());*/}
 			setState(331);
 			match(T__4);
@@ -1827,7 +1827,7 @@ public class LissParser extends Parser {
 	}
 
 	public static class Set_initializationContext extends ParserRuleContext {
-		public IdentifiersTable idTH;
+		public SymbolTable sT;
 		public Set setS;
 		public Node treeS;
 		public IdentifierContext i;
@@ -1839,9 +1839,9 @@ public class LissParser extends Parser {
 			return getRuleContext(ExpressionContext.class,0);
 		}
 		public Set_initializationContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public Set_initializationContext(ParserRuleContext parent, int invokingState, IdentifiersTable idTH) {
+		public Set_initializationContext(ParserRuleContext parent, int invokingState, SymbolTable sT) {
 			super(parent, invokingState);
-			this.idTH = idTH;
+			this.sT = sT;
 		}
 		@Override public int getRuleIndex() { return RULE_set_initialization; }
 		@Override
@@ -1854,8 +1854,8 @@ public class LissParser extends Parser {
 		}
 	}
 
-	public final Set_initializationContext set_initialization(IdentifiersTable idTH) throws RecognitionException {
-		Set_initializationContext _localctx = new Set_initializationContext(_ctx, getState(), idTH);
+	public final Set_initializationContext set_initialization(SymbolTable sT) throws RecognitionException {
+		Set_initializationContext _localctx = new Set_initializationContext(_ctx, getState(), sT);
 		enterRule(_localctx, 40, RULE_set_initialization);
 
 		                      isSet = true;
@@ -1883,7 +1883,7 @@ public class LissParser extends Parser {
 				setState(337);
 				match(T__23);
 				setState(338);
-				((Set_initializationContext)_localctx).e = expression(idTH,s);
+				((Set_initializationContext)_localctx).e = expression(sT,s);
 
 				                    if( !(((Set_initializationContext)_localctx).e.typeS != null && ((Set_initializationContext)_localctx).e.typeS.equals("boolean")) ){
 				                        e.addMessage(((Set_initializationContext)_localctx).e.line,((Set_initializationContext)_localctx).e.pos,ErrorMessage.semantic((((Set_initializationContext)_localctx).e!=null?_input.getText(((Set_initializationContext)_localctx).e.start,((Set_initializationContext)_localctx).e.stop):null),ErrorMessage.type(((Set_initializationContext)_localctx).e.typeS,"boolean")));
@@ -1917,7 +1917,7 @@ public class LissParser extends Parser {
 	}
 
 	public static class Subprogram_definitionContext extends ParserRuleContext {
-		public IdentifiersTable idTH;
+		public SymbolTable sT;
 		public IdentifierContext i;
 		public Formal_argsContext f;
 		public Return_typeContext r;
@@ -1935,9 +1935,9 @@ public class LissParser extends Parser {
 			return getRuleContext(F_bodyContext.class,0);
 		}
 		public Subprogram_definitionContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public Subprogram_definitionContext(ParserRuleContext parent, int invokingState, IdentifiersTable idTH) {
+		public Subprogram_definitionContext(ParserRuleContext parent, int invokingState, SymbolTable sT) {
 			super(parent, invokingState);
-			this.idTH = idTH;
+			this.sT = sT;
 		}
 		@Override public int getRuleIndex() { return RULE_subprogram_definition; }
 		@Override
@@ -1950,8 +1950,8 @@ public class LissParser extends Parser {
 		}
 	}
 
-	public final Subprogram_definitionContext subprogram_definition(IdentifiersTable idTH) throws RecognitionException {
-		Subprogram_definitionContext _localctx = new Subprogram_definitionContext(_ctx, getState(), idTH);
+	public final Subprogram_definitionContext subprogram_definition(SymbolTable sT) throws RecognitionException {
+		Subprogram_definitionContext _localctx = new Subprogram_definitionContext(_ctx, getState(), sT);
 		enterRule(_localctx, 42, RULE_subprogram_definition);
 
 		                        HashMap<String,Object> varInfo = new HashMap<String, Object>();
@@ -1959,7 +1959,7 @@ public class LissParser extends Parser {
 		                        //If level == 0 , then it means that it will enter to a subprogram and must activate the flag of functionState (state which is saying if it is on a subprogram or not) to true !!!
 		                        if(level == 0){functionState = true;}
 		                        level++;
-		                        _localctx.idTH.setAddress(0);
+		                        _localctx.sT.setAddress(0);
 		                      
 		try {
 			enterOuterAlt(_localctx, 1);
@@ -1972,7 +1972,7 @@ public class LissParser extends Parser {
 			setState(346);
 			match(T__25);
 			setState(347);
-			((Subprogram_definitionContext)_localctx).f = formal_args(idTH);
+			((Subprogram_definitionContext)_localctx).f = formal_args(sT);
 			setState(348);
 			match(T__26);
 			setState(349);
@@ -1987,23 +1987,23 @@ public class LissParser extends Parser {
 			                            varInfo.put("nameFunction",(((Subprogram_definitionContext)_localctx).i!=null?_input.getText(((Subprogram_definitionContext)_localctx).i.start,((Subprogram_definitionContext)_localctx).i.stop):null));
 			                        
 			setState(351);
-			((Subprogram_definitionContext)_localctx).f2 = f_body(idTH, varInfo);
+			((Subprogram_definitionContext)_localctx).f2 = f_body(sT, varInfo);
 
 			                            //MIPS
 			                            System.out.println(level+" WOOOTTTTT");
-			                            String mipsCodeS = m.textEndFunction(_localctx.idTH.getSizeSP(level),((Subprogram_definitionContext)_localctx).f2.returnMipsCodeS);
+			                            String mipsCodeS = m.textEndFunction(_localctx.sT.getSizeSP(level),((Subprogram_definitionContext)_localctx).f2.returnMipsCodeS);
 			                            m.addMipsCodeFunction(m.getNameFunction(),mipsCodeS);
 			                            m.removeMipsCodeFunction();
 
 
 			                            //Pre-Condition : Remover todas as variaveis do nivel actual
-			                            _localctx.idTH.removeLevel(level);
+			                            _localctx.sT.removeLevel(level);
 			                            //System.out.println(m.getNameFunction());
 			                            m.removeNameFunction();
 
 			                            //Remove the last SP !
 			                            if(level != 0){
-			                                _localctx.idTH.popSP();
+			                                _localctx.sT.popSP();
 			                            }
 			                            //Decrease level by one
 			                            level--;
@@ -2037,7 +2037,7 @@ public class LissParser extends Parser {
 	}
 
 	public static class F_bodyContext extends ParserRuleContext {
-		public IdentifiersTable idTH;
+		public SymbolTable sT;
 		public HashMap<String,Object> varInfo;
 		public String typeS;
 		public String returnS;
@@ -2053,9 +2053,9 @@ public class LissParser extends Parser {
 			return getRuleContext(ReturnSubPrgContext.class,0);
 		}
 		public F_bodyContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public F_bodyContext(ParserRuleContext parent, int invokingState, IdentifiersTable idTH, HashMap<String,Object> varInfo) {
+		public F_bodyContext(ParserRuleContext parent, int invokingState, SymbolTable sT, HashMap<String,Object> varInfo) {
 			super(parent, invokingState);
-			this.idTH = idTH;
+			this.sT = sT;
 			this.varInfo = varInfo;
 		}
 		@Override public int getRuleIndex() { return RULE_f_body; }
@@ -2069,8 +2069,8 @@ public class LissParser extends Parser {
 		}
 	}
 
-	public final F_bodyContext f_body(IdentifiersTable idTH,HashMap<String,Object> varInfo) throws RecognitionException {
-		F_bodyContext _localctx = new F_bodyContext(_ctx, getState(), idTH, varInfo);
+	public final F_bodyContext f_body(SymbolTable sT,HashMap<String,Object> varInfo) throws RecognitionException {
+		F_bodyContext _localctx = new F_bodyContext(_ctx, getState(), sT, varInfo);
 		enterRule(_localctx, 44, RULE_f_body);
 		try {
 			enterOuterAlt(_localctx, 1);
@@ -2081,15 +2081,15 @@ public class LissParser extends Parser {
 			match(T__2);
 			isDeclarations = true;
 			setState(357);
-			declarations(idTH, varInfo);
+			declarations(sT, varInfo);
 			setState(358);
 			match(T__3);
 			isDeclarations = false; String mipsCodeS = "\t#########BEGIN STATEMENTS#########\n"; m.addMipsCodeFunction(m.getNameFunction(),mipsCodeS);
 			setState(360);
-			statements(idTH);
+			statements(sT);
 			mipsCodeS = "\t##########END STATEMENTS##########\n"; m.addMipsCodeFunction(m.getNameFunction(),mipsCodeS);
 			setState(362);
-			((F_bodyContext)_localctx).r = returnSubPrg(idTH);
+			((F_bodyContext)_localctx).r = returnSubPrg(sT);
 			((F_bodyContext)_localctx).typeS =  ((F_bodyContext)_localctx).r.typeS; ((F_bodyContext)_localctx).returnS =  (((F_bodyContext)_localctx).r!=null?_input.getText(((F_bodyContext)_localctx).r.start,((F_bodyContext)_localctx).r.stop):null); ((F_bodyContext)_localctx).returnMipsCodeS =  ((F_bodyContext)_localctx).r.mipsCodeS;
 			setState(364);
 			match(T__4);
@@ -2107,7 +2107,7 @@ public class LissParser extends Parser {
 	}
 
 	public static class Formal_argsContext extends ParserRuleContext {
-		public IdentifiersTable idTH;
+		public SymbolTable sT;
 		public int numberArgumentS;
 		public LinkedList<String> typeListS;
 		public F_argsContext f;
@@ -2115,9 +2115,9 @@ public class LissParser extends Parser {
 			return getRuleContext(F_argsContext.class,0);
 		}
 		public Formal_argsContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public Formal_argsContext(ParserRuleContext parent, int invokingState, IdentifiersTable idTH) {
+		public Formal_argsContext(ParserRuleContext parent, int invokingState, SymbolTable sT) {
 			super(parent, invokingState);
-			this.idTH = idTH;
+			this.sT = sT;
 		}
 		@Override public int getRuleIndex() { return RULE_formal_args; }
 		@Override
@@ -2130,8 +2130,8 @@ public class LissParser extends Parser {
 		}
 	}
 
-	public final Formal_argsContext formal_args(IdentifiersTable idTH) throws RecognitionException {
-		Formal_argsContext _localctx = new Formal_argsContext(_ctx, getState(), idTH);
+	public final Formal_argsContext formal_args(SymbolTable sT) throws RecognitionException {
+		Formal_argsContext _localctx = new Formal_argsContext(_ctx, getState(), sT);
 		enterRule(_localctx, 46, RULE_formal_args);
 		try {
 			setState(370);
@@ -2146,7 +2146,7 @@ public class LissParser extends Parser {
 				enterOuterAlt(_localctx, 2);
 				{
 				setState(367);
-				((Formal_argsContext)_localctx).f = f_args(idTH);
+				((Formal_argsContext)_localctx).f = f_args(sT);
 				 ((Formal_argsContext)_localctx).numberArgumentS =  ((Formal_argsContext)_localctx).f.numberArgumentS; ((Formal_argsContext)_localctx).typeListS =  ((Formal_argsContext)_localctx).f.typeListS;
 				}
 				break;
@@ -2166,7 +2166,7 @@ public class LissParser extends Parser {
 	}
 
 	public static class F_argsContext extends ParserRuleContext {
-		public IdentifiersTable idTH;
+		public SymbolTable sT;
 		public int numberArgumentS;
 		public LinkedList<String> typeListS;
 		public Formal_argContext f1;
@@ -2178,9 +2178,9 @@ public class LissParser extends Parser {
 			return getRuleContext(Formal_argContext.class,i);
 		}
 		public F_argsContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public F_argsContext(ParserRuleContext parent, int invokingState, IdentifiersTable idTH) {
+		public F_argsContext(ParserRuleContext parent, int invokingState, SymbolTable sT) {
 			super(parent, invokingState);
-			this.idTH = idTH;
+			this.sT = sT;
 		}
 		@Override public int getRuleIndex() { return RULE_f_args; }
 		@Override
@@ -2193,8 +2193,8 @@ public class LissParser extends Parser {
 		}
 	}
 
-	public final F_argsContext f_args(IdentifiersTable idTH) throws RecognitionException {
-		F_argsContext _localctx = new F_argsContext(_ctx, getState(), idTH);
+	public final F_argsContext f_args(SymbolTable sT) throws RecognitionException {
+		F_argsContext _localctx = new F_argsContext(_ctx, getState(), sT);
 		enterRule(_localctx, 48, RULE_f_args);
 
 		            int numberArgument = 0;
@@ -2208,7 +2208,7 @@ public class LissParser extends Parser {
 			((F_argsContext)_localctx).f1 = formal_arg();
 
 			            numberArgument++;
-			            _localctx.idTH.add(e,((F_argsContext)_localctx).f1.hashmapVarS,((F_argsContext)_localctx).f1.typeS,level);
+			            _localctx.sT.add(e,((F_argsContext)_localctx).f1.hashmapVarS,((F_argsContext)_localctx).f1.typeS,level);
 			            typeList.add(((F_argsContext)_localctx).f1.typeS);
 			          
 			setState(380);
@@ -2223,7 +2223,7 @@ public class LissParser extends Parser {
 				((F_argsContext)_localctx).f2 = formal_arg();
 
 				            numberArgument++;
-				            _localctx.idTH.add(e,((F_argsContext)_localctx).f2.hashmapVarS,((F_argsContext)_localctx).f2.typeS,level);
+				            _localctx.sT.add(e,((F_argsContext)_localctx).f2.hashmapVarS,((F_argsContext)_localctx).f2.typeS,level);
 				            typeList.add(((F_argsContext)_localctx).f2.typeS);
 				          
 				}
@@ -2374,7 +2374,7 @@ public class LissParser extends Parser {
 	}
 
 	public static class ReturnSubPrgContext extends ParserRuleContext {
-		public IdentifiersTable idTH;
+		public SymbolTable sT;
 		public String typeS;
 		public int line;
 		public int pos;
@@ -2385,9 +2385,9 @@ public class LissParser extends Parser {
 			return getRuleContext(ExpressionContext.class,0);
 		}
 		public ReturnSubPrgContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public ReturnSubPrgContext(ParserRuleContext parent, int invokingState, IdentifiersTable idTH) {
+		public ReturnSubPrgContext(ParserRuleContext parent, int invokingState, SymbolTable sT) {
 			super(parent, invokingState);
-			this.idTH = idTH;
+			this.sT = sT;
 		}
 		@Override public int getRuleIndex() { return RULE_returnSubPrg; }
 		@Override
@@ -2400,8 +2400,8 @@ public class LissParser extends Parser {
 		}
 	}
 
-	public final ReturnSubPrgContext returnSubPrg(IdentifiersTable idTH) throws RecognitionException {
-		ReturnSubPrgContext _localctx = new ReturnSubPrgContext(_ctx, getState(), idTH);
+	public final ReturnSubPrgContext returnSubPrg(SymbolTable sT) throws RecognitionException {
+		ReturnSubPrgContext _localctx = new ReturnSubPrgContext(_ctx, getState(), sT);
 		enterRule(_localctx, 54, RULE_returnSubPrg);
 
 		                Set tree = null;
@@ -2423,7 +2423,7 @@ public class LissParser extends Parser {
 				setState(398);
 				((ReturnSubPrgContext)_localctx).r = match(T__27);
 				setState(399);
-				((ReturnSubPrgContext)_localctx).e = expression(idTH,tree);
+				((ReturnSubPrgContext)_localctx).e = expression(sT,tree);
 				((ReturnSubPrgContext)_localctx).typeS =  ((ReturnSubPrgContext)_localctx).e.typeS; ((ReturnSubPrgContext)_localctx).mipsCodeS =  ((ReturnSubPrgContext)_localctx).e.mipsCodeS;
 				setState(401);
 				match(T__6);
@@ -2445,7 +2445,7 @@ public class LissParser extends Parser {
 	}
 
 	public static class StatementsContext extends ParserRuleContext {
-		public IdentifiersTable idTH;
+		public SymbolTable sT;
 		public int line;
 		public int pos;
 		public StatementContext s;
@@ -2456,9 +2456,9 @@ public class LissParser extends Parser {
 			return getRuleContext(StatementContext.class,i);
 		}
 		public StatementsContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public StatementsContext(ParserRuleContext parent, int invokingState, IdentifiersTable idTH) {
+		public StatementsContext(ParserRuleContext parent, int invokingState, SymbolTable sT) {
 			super(parent, invokingState);
-			this.idTH = idTH;
+			this.sT = sT;
 		}
 		@Override public int getRuleIndex() { return RULE_statements; }
 		@Override
@@ -2471,8 +2471,8 @@ public class LissParser extends Parser {
 		}
 	}
 
-	public final StatementsContext statements(IdentifiersTable idTH) throws RecognitionException {
-		StatementsContext _localctx = new StatementsContext(_ctx, getState(), idTH);
+	public final StatementsContext statements(SymbolTable sT) throws RecognitionException {
+		StatementsContext _localctx = new StatementsContext(_ctx, getState(), sT);
 		enterRule(_localctx, 56, RULE_statements);
 		int _la;
 		try {
@@ -2486,7 +2486,7 @@ public class LissParser extends Parser {
 				{
 				 m.resetRegister(); 
 				setState(406);
-				((StatementsContext)_localctx).s = statement(idTH);
+				((StatementsContext)_localctx).s = statement(sT);
 				 ((StatementsContext)_localctx).line =  ((StatementsContext)_localctx).s.line; ((StatementsContext)_localctx).pos =  ((StatementsContext)_localctx).s.pos; 
 				}
 				}
@@ -2508,7 +2508,7 @@ public class LissParser extends Parser {
 	}
 
 	public static class StatementContext extends ParserRuleContext {
-		public IdentifiersTable idTH;
+		public SymbolTable sT;
 		public int line;
 		public int pos;
 		public AssignmentContext a;
@@ -2546,9 +2546,9 @@ public class LissParser extends Parser {
 			return getRuleContext(Cat_statementContext.class,0);
 		}
 		public StatementContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public StatementContext(ParserRuleContext parent, int invokingState, IdentifiersTable idTH) {
+		public StatementContext(ParserRuleContext parent, int invokingState, SymbolTable sT) {
 			super(parent, invokingState);
-			this.idTH = idTH;
+			this.sT = sT;
 		}
 		@Override public int getRuleIndex() { return RULE_statement; }
 		@Override
@@ -2561,8 +2561,8 @@ public class LissParser extends Parser {
 		}
 	}
 
-	public final StatementContext statement(IdentifiersTable idTH) throws RecognitionException {
-		StatementContext _localctx = new StatementContext(_ctx, getState(), idTH);
+	public final StatementContext statement(SymbolTable sT) throws RecognitionException {
+		StatementContext _localctx = new StatementContext(_ctx, getState(), sT);
 		enterRule(_localctx, 58, RULE_statement);
 
 		            Set set = null;
@@ -2574,7 +2574,7 @@ public class LissParser extends Parser {
 				enterOuterAlt(_localctx, 1);
 				{
 				setState(414);
-				((StatementContext)_localctx).a = assignment(idTH);
+				((StatementContext)_localctx).a = assignment(sT);
 				setState(415);
 				match(T__6);
 				((StatementContext)_localctx).line = ((StatementContext)_localctx).a.line; ((StatementContext)_localctx).pos = ((StatementContext)_localctx).a.pos;
@@ -2584,7 +2584,7 @@ public class LissParser extends Parser {
 				enterOuterAlt(_localctx, 2);
 				{
 				setState(418);
-				((StatementContext)_localctx).w = write_statement(idTH);
+				((StatementContext)_localctx).w = write_statement(sT);
 				setState(419);
 				match(T__6);
 				((StatementContext)_localctx).line = ((StatementContext)_localctx).w.line; ((StatementContext)_localctx).pos = ((StatementContext)_localctx).w.pos;
@@ -2594,7 +2594,7 @@ public class LissParser extends Parser {
 				enterOuterAlt(_localctx, 3);
 				{
 				setState(422);
-				((StatementContext)_localctx).r = read_statement(idTH);
+				((StatementContext)_localctx).r = read_statement(sT);
 				setState(423);
 				match(T__6);
 				((StatementContext)_localctx).line = ((StatementContext)_localctx).r.line; ((StatementContext)_localctx).pos = ((StatementContext)_localctx).r.pos;
@@ -2604,7 +2604,7 @@ public class LissParser extends Parser {
 				enterOuterAlt(_localctx, 4);
 				{
 				setState(426);
-				((StatementContext)_localctx).c = conditional_statement(idTH);
+				((StatementContext)_localctx).c = conditional_statement(sT);
 				((StatementContext)_localctx).line = ((StatementContext)_localctx).c.line; ((StatementContext)_localctx).pos = ((StatementContext)_localctx).c.pos;
 				}
 				break;
@@ -2612,7 +2612,7 @@ public class LissParser extends Parser {
 				enterOuterAlt(_localctx, 5);
 				{
 				setState(429);
-				((StatementContext)_localctx).i = iterative_statement(idTH);
+				((StatementContext)_localctx).i = iterative_statement(sT);
 				((StatementContext)_localctx).line = ((StatementContext)_localctx).i.line; ((StatementContext)_localctx).pos = ((StatementContext)_localctx).i.pos;
 				}
 				break;
@@ -2620,7 +2620,7 @@ public class LissParser extends Parser {
 				enterOuterAlt(_localctx, 6);
 				{
 				setState(432);
-				((StatementContext)_localctx).f = function_call(idTH, set);
+				((StatementContext)_localctx).f = function_call(sT, set);
 				setState(433);
 				match(T__6);
 				((StatementContext)_localctx).line = ((StatementContext)_localctx).f.line; ((StatementContext)_localctx).pos = ((StatementContext)_localctx).f.pos;
@@ -2630,7 +2630,7 @@ public class LissParser extends Parser {
 				enterOuterAlt(_localctx, 7);
 				{
 				setState(436);
-				((StatementContext)_localctx).s = succ_or_pred(idTH);
+				((StatementContext)_localctx).s = succ_or_pred(sT);
 				setState(437);
 				match(T__6);
 				((StatementContext)_localctx).line = ((StatementContext)_localctx).s.line; ((StatementContext)_localctx).pos = ((StatementContext)_localctx).s.pos;
@@ -2640,7 +2640,7 @@ public class LissParser extends Parser {
 				enterOuterAlt(_localctx, 8);
 				{
 				setState(440);
-				copy_statement(idTH);
+				copy_statement(sT);
 				setState(441);
 				match(T__6);
 				}
@@ -2649,7 +2649,7 @@ public class LissParser extends Parser {
 				enterOuterAlt(_localctx, 9);
 				{
 				setState(443);
-				cat_statement(idTH);
+				cat_statement(sT);
 				setState(444);
 				match(T__6);
 				}
@@ -2668,7 +2668,7 @@ public class LissParser extends Parser {
 	}
 
 	public static class AssignmentContext extends ParserRuleContext {
-		public IdentifiersTable idTH;
+		public SymbolTable sT;
 		public String typeS;
 		public int line;
 		public int pos;
@@ -2684,9 +2684,9 @@ public class LissParser extends Parser {
 			return getRuleContext(ExpressionContext.class,0);
 		}
 		public AssignmentContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public AssignmentContext(ParserRuleContext parent, int invokingState, IdentifiersTable idTH) {
+		public AssignmentContext(ParserRuleContext parent, int invokingState, SymbolTable sT) {
 			super(parent, invokingState);
-			this.idTH = idTH;
+			this.sT = sT;
 		}
 		@Override public int getRuleIndex() { return RULE_assignment; }
 		@Override
@@ -2699,8 +2699,8 @@ public class LissParser extends Parser {
 		}
 	}
 
-	public final AssignmentContext assignment(IdentifiersTable idTH) throws RecognitionException {
-		AssignmentContext _localctx = new AssignmentContext(_ctx, getState(), idTH);
+	public final AssignmentContext assignment(SymbolTable sT) throws RecognitionException {
+		AssignmentContext _localctx = new AssignmentContext(_ctx, getState(), sT);
 		enterRule(_localctx, 60, RULE_assignment);
 
 		                ((AssignmentContext)_localctx).typeS =  null;
@@ -2711,11 +2711,11 @@ public class LissParser extends Parser {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(448);
-			((AssignmentContext)_localctx).d = ((AssignmentContext)_localctx).designator = designator(idTH, set, side);
+			((AssignmentContext)_localctx).d = ((AssignmentContext)_localctx).designator = designator(sT, set, side);
 			setState(449);
 			((AssignmentContext)_localctx).r = match(T__8);
 			setState(450);
-			((AssignmentContext)_localctx).e = ((AssignmentContext)_localctx).expression = expression(idTH,set);
+			((AssignmentContext)_localctx).e = ((AssignmentContext)_localctx).expression = expression(sT,set);
 
 			              ((AssignmentContext)_localctx).line =  (((AssignmentContext)_localctx).r!=null?((AssignmentContext)_localctx).r.getLine():0);
 			              ((AssignmentContext)_localctx).pos =  (((AssignmentContext)_localctx).r!=null?((AssignmentContext)_localctx).r.getCharPositionInLine():0);
@@ -2731,16 +2731,16 @@ public class LissParser extends Parser {
 			                            //System.out.println("####################### ASSIGNMENT SEQUENCE #######################");
 			                            //System.out.println(mipsCodeS);
 			                            //System.out.println("###################################################################");
-			                            if(_localctx.idTH.getInfoIdentifiersTable((((AssignmentContext)_localctx).designator!=null?_input.getText(((AssignmentContext)_localctx).designator.start,((AssignmentContext)_localctx).designator.stop):null)).getLevel().equals(0)){
+			                            if(_localctx.sT.getInfoIdentifier((((AssignmentContext)_localctx).designator!=null?_input.getText(((AssignmentContext)_localctx).designator.start,((AssignmentContext)_localctx).designator.stop):null)).getLevel().equals(0)){
 			                                if(((AssignmentContext)_localctx).designator.typeS.equals("sequence")){
-			                                    mipsCodeS += m.textStoreSequence((((AssignmentContext)_localctx).designator!=null?_input.getText(((AssignmentContext)_localctx).designator.start,((AssignmentContext)_localctx).designator.stop):null), functionState, _localctx.idTH.getValueSP(level,(((AssignmentContext)_localctx).designator!=null?_input.getText(((AssignmentContext)_localctx).designator.start,((AssignmentContext)_localctx).designator.stop):null)), ((AssignmentContext)_localctx).designator.line, ((AssignmentContext)_localctx).designator.pos);
+			                                    mipsCodeS += m.textStoreSequence((((AssignmentContext)_localctx).designator!=null?_input.getText(((AssignmentContext)_localctx).designator.start,((AssignmentContext)_localctx).designator.stop):null), functionState, _localctx.sT.getValueSP(level,(((AssignmentContext)_localctx).designator!=null?_input.getText(((AssignmentContext)_localctx).designator.start,((AssignmentContext)_localctx).designator.stop):null)), ((AssignmentContext)_localctx).designator.line, ((AssignmentContext)_localctx).designator.pos);
 			                                }else if(((AssignmentContext)_localctx).designator.typeS.equals("array") && ((AssignmentContext)_localctx).e.accessArrayS==null /*test if accessArray is null or not (it must be null for this condition) (only allowed*/){
-			                                    Array designator = (Array) _localctx.idTH.getInfoIdentifiersTable((((AssignmentContext)_localctx).designator!=null?_input.getText(((AssignmentContext)_localctx).designator.start,((AssignmentContext)_localctx).designator.stop):null));
-			                                    Array expression = (Array) _localctx.idTH.getInfoIdentifiersTable((((AssignmentContext)_localctx).expression!=null?_input.getText(((AssignmentContext)_localctx).expression.start,((AssignmentContext)_localctx).expression.stop):null));
+			                                    Array designator = (Array) _localctx.sT.getInfoIdentifier((((AssignmentContext)_localctx).designator!=null?_input.getText(((AssignmentContext)_localctx).designator.start,((AssignmentContext)_localctx).designator.stop):null));
+			                                    Array expression = (Array) _localctx.sT.getInfoIdentifier((((AssignmentContext)_localctx).expression!=null?_input.getText(((AssignmentContext)_localctx).expression.start,((AssignmentContext)_localctx).expression.stop):null));
 
 			                                    //designator variable is level 0, we need to check the level of variable expression. It might be level 0 or any others level
 			                                    if(designator!=null && expression!=null){
-			                                        if(_localctx.idTH.limitsAndDimensionOfArraysEquals(designator, expression)){
+			                                        if(_localctx.sT.limitsAndDimensionOfArraysEquals(designator, expression)){
 			                                            if(expression.getLevel().equals(0)){
 			                                                Integer numberOfPositionToCopy = 1;
 			                                                for(Integer limit : expression.getLimits()){
@@ -2763,7 +2763,7 @@ public class LissParser extends Parser {
 
 			                                                for(int i=0; i<numberOfPositionToCopy*4;i+=4){
 			                                                    mipsCodeS += m.loadImmediateWord(""+i,((AssignmentContext)_localctx).e.line,((AssignmentContext)_localctx).e.pos); //this load the position of the array to the register
-			                                                    mipsCodeS += m.loadWordSP(_localctx.idTH.getValueSP(level, (((AssignmentContext)_localctx).e!=null?_input.getText(((AssignmentContext)_localctx).e.start,((AssignmentContext)_localctx).e.stop):null))+i);
+			                                                    mipsCodeS += m.loadWordSP(_localctx.sT.getValueSP(level, (((AssignmentContext)_localctx).e!=null?_input.getText(((AssignmentContext)_localctx).e.start,((AssignmentContext)_localctx).e.stop):null))+i);
 			                                                    mipsCodeS += m.copyWordArray((((AssignmentContext)_localctx).d!=null?_input.getText(((AssignmentContext)_localctx).d.start,((AssignmentContext)_localctx).d.stop):null), ((AssignmentContext)_localctx).d.line, ((AssignmentContext)_localctx).d.pos);
 			                                                }
 			                                            }
@@ -2777,15 +2777,15 @@ public class LissParser extends Parser {
 			                                }else{
 			                                    mipsCodeS += m.storeWord((((AssignmentContext)_localctx).designator!=null?_input.getText(((AssignmentContext)_localctx).designator.start,((AssignmentContext)_localctx).designator.stop):null), ((AssignmentContext)_localctx).designator.line, ((AssignmentContext)_localctx).designator.pos);
 			                                }
-			                            }else{ //if(!_localctx.idTH.getInfoIdentifiersTable((((AssignmentContext)_localctx).designator!=null?_input.getText(((AssignmentContext)_localctx).designator.start,((AssignmentContext)_localctx).designator.stop):null)).getLevel().equals(0)){
+			                            }else{ //if(!_localctx.sT.getInfoIdentifier((((AssignmentContext)_localctx).designator!=null?_input.getText(((AssignmentContext)_localctx).designator.start,((AssignmentContext)_localctx).designator.stop):null)).getLevel().equals(0)){
 			                                if(((AssignmentContext)_localctx).designator.typeS.equals("sequence")){
-			                                    mipsCodeS += m.textStoreSequence((((AssignmentContext)_localctx).designator!=null?_input.getText(((AssignmentContext)_localctx).designator.start,((AssignmentContext)_localctx).designator.stop):null), functionState, _localctx.idTH.getValueSP(level,(((AssignmentContext)_localctx).designator!=null?_input.getText(((AssignmentContext)_localctx).designator.start,((AssignmentContext)_localctx).designator.stop):null)), ((AssignmentContext)_localctx).designator.line, ((AssignmentContext)_localctx).designator.pos);
+			                                    mipsCodeS += m.textStoreSequence((((AssignmentContext)_localctx).designator!=null?_input.getText(((AssignmentContext)_localctx).designator.start,((AssignmentContext)_localctx).designator.stop):null), functionState, _localctx.sT.getValueSP(level,(((AssignmentContext)_localctx).designator!=null?_input.getText(((AssignmentContext)_localctx).designator.start,((AssignmentContext)_localctx).designator.stop):null)), ((AssignmentContext)_localctx).designator.line, ((AssignmentContext)_localctx).designator.pos);
 			                                }else if(((AssignmentContext)_localctx).designator.typeS.equals("array") && ((AssignmentContext)_localctx).e.accessArrayS==null){
-			                                    Array designator = (Array) _localctx.idTH.getInfoIdentifiersTable((((AssignmentContext)_localctx).designator!=null?_input.getText(((AssignmentContext)_localctx).designator.start,((AssignmentContext)_localctx).designator.stop):null));
-			                                    Array expression = (Array) _localctx.idTH.getInfoIdentifiersTable((((AssignmentContext)_localctx).expression!=null?_input.getText(((AssignmentContext)_localctx).expression.start,((AssignmentContext)_localctx).expression.stop):null));
+			                                    Array designator = (Array) _localctx.sT.getInfoIdentifier((((AssignmentContext)_localctx).designator!=null?_input.getText(((AssignmentContext)_localctx).designator.start,((AssignmentContext)_localctx).designator.stop):null));
+			                                    Array expression = (Array) _localctx.sT.getInfoIdentifier((((AssignmentContext)_localctx).expression!=null?_input.getText(((AssignmentContext)_localctx).expression.start,((AssignmentContext)_localctx).expression.stop):null));
 
 			                                    if(designator!=null && expression!=null){
-			                                        if(_localctx.idTH.limitsAndDimensionOfArraysEquals(designator, expression)){
+			                                        if(_localctx.sT.limitsAndDimensionOfArraysEquals(designator, expression)){
 			                                            if(expression.getLevel().equals(0)){
 			                                                System.out.println("WOOT3");
 			                                                Integer numberOfPositionToCopy = 1;
@@ -2797,7 +2797,7 @@ public class LissParser extends Parser {
 			                                                for(int i=0; i<numberOfPositionToCopy*4;i+=4){
 			                                                    mipsCodeS += m.loadImmediateWord(""+i, ((AssignmentContext)_localctx).e.line, ((AssignmentContext)_localctx).e.pos);
 			                                                    mipsCodeS += m.loadWordValueArrayWithName((((AssignmentContext)_localctx).e!=null?_input.getText(((AssignmentContext)_localctx).e.start,((AssignmentContext)_localctx).e.stop):null), ((AssignmentContext)_localctx).e.line, ((AssignmentContext)_localctx).e.pos);
-			                                                    mipsCodeS += m.copyWordValueArraySP(_localctx.idTH.getValueSP(level, (((AssignmentContext)_localctx).d!=null?_input.getText(((AssignmentContext)_localctx).d.start,((AssignmentContext)_localctx).d.stop):null))+i);
+			                                                    mipsCodeS += m.copyWordValueArraySP(_localctx.sT.getValueSP(level, (((AssignmentContext)_localctx).d!=null?_input.getText(((AssignmentContext)_localctx).d.start,((AssignmentContext)_localctx).d.stop):null))+i);
 			                                                }
 
 			                                            }else{
@@ -2808,8 +2808,8 @@ public class LissParser extends Parser {
 			                                                //System.out.println("Number Of Position to copy for the array: "+numberOfPositionToCopy);
 
 			                                                for(int i=0; i<numberOfPositionToCopy*4;i+=4){
-			                                                    mipsCodeS += m.loadWordSP(i+_localctx.idTH.getValueSP(level, (((AssignmentContext)_localctx).e!=null?_input.getText(((AssignmentContext)_localctx).e.start,((AssignmentContext)_localctx).e.stop):null)));
-			                                                    mipsCodeS += m.storeWordSP(i+_localctx.idTH.getValueSP(level, (((AssignmentContext)_localctx).d!=null?_input.getText(((AssignmentContext)_localctx).d.start,((AssignmentContext)_localctx).d.stop):null)));
+			                                                    mipsCodeS += m.loadWordSP(i+_localctx.sT.getValueSP(level, (((AssignmentContext)_localctx).e!=null?_input.getText(((AssignmentContext)_localctx).e.start,((AssignmentContext)_localctx).e.stop):null)));
+			                                                    mipsCodeS += m.storeWordSP(i+_localctx.sT.getValueSP(level, (((AssignmentContext)_localctx).d!=null?_input.getText(((AssignmentContext)_localctx).d.start,((AssignmentContext)_localctx).d.stop):null)));
 
 			                                                }
 			                                            }
@@ -2831,7 +2831,7 @@ public class LissParser extends Parser {
 
 
 			                                }else{
-			                                    mipsCodeS += m.storeWordSP(_localctx.idTH.getValueSP(level,(((AssignmentContext)_localctx).designator!=null?_input.getText(((AssignmentContext)_localctx).designator.start,((AssignmentContext)_localctx).designator.stop):null)));
+			                                    mipsCodeS += m.storeWordSP(_localctx.sT.getValueSP(level,(((AssignmentContext)_localctx).designator!=null?_input.getText(((AssignmentContext)_localctx).designator.start,((AssignmentContext)_localctx).designator.stop):null)));
 			                                }
 			                            }
 			                            //m.addTextInstruction((((AssignmentContext)_localctx).designator!=null?_input.getText(((AssignmentContext)_localctx).designator.start,((AssignmentContext)_localctx).designator.stop):null),((AssignmentContext)_localctx).expression.mipsCodeS,((AssignmentContext)_localctx).designator.typeS,((AssignmentContext)_localctx).designator.line,((AssignmentContext)_localctx).designator.pos);
@@ -2853,14 +2853,14 @@ public class LissParser extends Parser {
 			                        if(((AssignmentContext)_localctx).d.typeS.equals("set")){
 			                            if(((AssignmentContext)_localctx).e.setS!=null){
 			                                Set s1 = ((AssignmentContext)_localctx).e.setS ;
-			                                if(_localctx.idTH.doesExist((((AssignmentContext)_localctx).d!=null?_input.getText(((AssignmentContext)_localctx).d.start,((AssignmentContext)_localctx).d.stop):null))){
-			                                    Application.SymbolTable.Set s = (Application.SymbolTable.Set) _localctx.idTH.getInfoIdentifiersTable((((AssignmentContext)_localctx).d!=null?_input.getText(((AssignmentContext)_localctx).d.start,((AssignmentContext)_localctx).d.stop):null));
+			                                if(_localctx.sT.doesExist((((AssignmentContext)_localctx).d!=null?_input.getText(((AssignmentContext)_localctx).d.start,((AssignmentContext)_localctx).d.stop):null))){
+			                                    Application.SymbolTable.Set s = (Application.SymbolTable.Set) _localctx.sT.getInfoIdentifier((((AssignmentContext)_localctx).d!=null?_input.getText(((AssignmentContext)_localctx).d.start,((AssignmentContext)_localctx).d.stop):null));
 			                                    s.setSet(s1);
 			                                }
 			                            }
 			                        }else if(((AssignmentContext)_localctx).designator.typeS.equals("array") && ((AssignmentContext)_localctx).e.accessArrayS!=null){
-			                            if(_localctx.idTH.doesExist((((AssignmentContext)_localctx).designator!=null?_input.getText(((AssignmentContext)_localctx).designator.start,((AssignmentContext)_localctx).designator.stop):null))){
-			                                Array array = (Array) _localctx.idTH.getInfoIdentifiersTable((((AssignmentContext)_localctx).designator!=null?_input.getText(((AssignmentContext)_localctx).designator.start,((AssignmentContext)_localctx).designator.stop):null));
+			                            if(_localctx.sT.doesExist((((AssignmentContext)_localctx).designator!=null?_input.getText(((AssignmentContext)_localctx).designator.start,((AssignmentContext)_localctx).designator.stop):null))){
+			                                Array array = (Array) _localctx.sT.getInfoIdentifier((((AssignmentContext)_localctx).designator!=null?_input.getText(((AssignmentContext)_localctx).designator.start,((AssignmentContext)_localctx).designator.stop):null));
 			                                ArrayList<ArrayList<Integer>> accessArrayS = ((AssignmentContext)_localctx).e.accessArrayS;
 
 			                                Integer dimension = array.getDimension();
@@ -2946,7 +2946,7 @@ public class LissParser extends Parser {
 			                                    }else{
 			                                        System.out.println("ASSIGNMENT ARRAY = [....] LEVEL: +0");
 			                                        for(int i=0; i<sizeOfArray; i++){
-			                                            String mipsCode = m.loadImmediateWord("0", ((AssignmentContext)_localctx).designator.line, ((AssignmentContext)_localctx).designator.pos)+m.storeWordSP(_localctx.idTH.getValueSP(level, (((AssignmentContext)_localctx).designator!=null?_input.getText(((AssignmentContext)_localctx).designator.start,((AssignmentContext)_localctx).designator.stop):null))+i*m.numberOfBytesForEachAddress());
+			                                            String mipsCode = m.loadImmediateWord("0", ((AssignmentContext)_localctx).designator.line, ((AssignmentContext)_localctx).designator.pos)+m.storeWordSP(_localctx.sT.getValueSP(level, (((AssignmentContext)_localctx).designator!=null?_input.getText(((AssignmentContext)_localctx).designator.start,((AssignmentContext)_localctx).designator.stop):null))+i*m.numberOfBytesForEachAddress());
 			                                            mipsCodeOfArray.add(i, mipsCode);
 			                                        }
 
@@ -2963,7 +2963,7 @@ public class LissParser extends Parser {
 			                                                res = res + calc;
 			                                            }
 			                                            System.out.println("POS: "+res+" VALUE: "+valueToStore);
-			                                            String mipsCode = m.loadImmediateWord(valueToStore+"", ((AssignmentContext)_localctx).designator.line, ((AssignmentContext)_localctx).designator.pos)+m.storeWordSP(_localctx.idTH.getValueSP(level, (((AssignmentContext)_localctx).designator!=null?_input.getText(((AssignmentContext)_localctx).designator.start,((AssignmentContext)_localctx).designator.stop):null))+res*m.numberOfBytesForEachAddress());
+			                                            String mipsCode = m.loadImmediateWord(valueToStore+"", ((AssignmentContext)_localctx).designator.line, ((AssignmentContext)_localctx).designator.pos)+m.storeWordSP(_localctx.sT.getValueSP(level, (((AssignmentContext)_localctx).designator!=null?_input.getText(((AssignmentContext)_localctx).designator.start,((AssignmentContext)_localctx).designator.stop):null))+res*m.numberOfBytesForEachAddress());
 			                                            mipsCodeOfArray.remove(res);
 			                                            mipsCodeOfArray.add(res,mipsCode);
 
@@ -3010,7 +3010,7 @@ public class LissParser extends Parser {
 	}
 
 	public static class DesignatorContext extends ParserRuleContext {
-		public IdentifiersTable idTH;
+		public SymbolTable sT;
 		public Set set;
 		public String side;
 		public String identifierS;
@@ -3031,9 +3031,9 @@ public class LissParser extends Parser {
 			return getRuleContext(Array_accessContext.class,0);
 		}
 		public DesignatorContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public DesignatorContext(ParserRuleContext parent, int invokingState, IdentifiersTable idTH, Set set, String side) {
+		public DesignatorContext(ParserRuleContext parent, int invokingState, SymbolTable sT, Set set, String side) {
 			super(parent, invokingState);
-			this.idTH = idTH;
+			this.sT = sT;
 			this.set = set;
 			this.side = side;
 		}
@@ -3048,8 +3048,8 @@ public class LissParser extends Parser {
 		}
 	}
 
-	public final DesignatorContext designator(IdentifiersTable idTH,Set set,String side) throws RecognitionException {
-		DesignatorContext _localctx = new DesignatorContext(_ctx, getState(), idTH, set, side);
+	public final DesignatorContext designator(SymbolTable sT,Set set,String side) throws RecognitionException {
+		DesignatorContext _localctx = new DesignatorContext(_ctx, getState(), sT, set, side);
 		enterRule(_localctx, 62, RULE_designator);
 
 		                ((DesignatorContext)_localctx).typeS =  null;
@@ -3063,7 +3063,7 @@ public class LissParser extends Parser {
 			setState(453);
 			((DesignatorContext)_localctx).i = ((DesignatorContext)_localctx).identifier = identifier();
 			setState(454);
-			((DesignatorContext)_localctx).a = ((DesignatorContext)_localctx).array_access = array_access(idTH, set, (((DesignatorContext)_localctx).identifier!=null?_input.getText(((DesignatorContext)_localctx).identifier.start,((DesignatorContext)_localctx).identifier.stop):null));
+			((DesignatorContext)_localctx).a = ((DesignatorContext)_localctx).array_access = array_access(sT, set, (((DesignatorContext)_localctx).identifier!=null?_input.getText(((DesignatorContext)_localctx).identifier.start,((DesignatorContext)_localctx).identifier.stop):null));
 
 			                                ((DesignatorContext)_localctx).identifierS =  (((DesignatorContext)_localctx).identifier!=null?_input.getText(((DesignatorContext)_localctx).identifier.start,((DesignatorContext)_localctx).identifier.stop):null);
 			                                ((DesignatorContext)_localctx).arrayS =  ((DesignatorContext)_localctx).array_access.response;
@@ -3072,18 +3072,18 @@ public class LissParser extends Parser {
 			                                //Pre-Condicao: é um identificador
 			                                if(!((DesignatorContext)_localctx).array_access.response){
 			                                    //Pre-Condicao: ver se existe na tabela de identificador
-			                                    if(!isSet && !_localctx.idTH.getIdentifiersTable().containsKey((((DesignatorContext)_localctx).identifier!=null?_input.getText(((DesignatorContext)_localctx).identifier.start,((DesignatorContext)_localctx).identifier.stop):null))){
+			                                    if(!isSet && !_localctx.sT.doesExist((((DesignatorContext)_localctx).identifier!=null?_input.getText(((DesignatorContext)_localctx).identifier.start,((DesignatorContext)_localctx).identifier.stop):null))/*!_localctx.sT.getIdentifiersTable().containsKey((((DesignatorContext)_localctx).identifier!=null?_input.getText(((DesignatorContext)_localctx).identifier.start,((DesignatorContext)_localctx).identifier.stop):null))*/){
 
 			                                        //ErrorMessage.errorSemantic((((DesignatorContext)_localctx).identifier!=null?_input.getText(((DesignatorContext)_localctx).identifier.start,((DesignatorContext)_localctx).identifier.stop):null),((DesignatorContext)_localctx).identifier.line,((DesignatorContext)_localctx).identifier.pos,ErrorMessage.errorStatements);
 			                                        e.addMessage(((DesignatorContext)_localctx).identifier.line,((DesignatorContext)_localctx).identifier.pos,ErrorMessage.semantic((((DesignatorContext)_localctx).identifier!=null?_input.getText(((DesignatorContext)_localctx).identifier.start,((DesignatorContext)_localctx).identifier.stop):null),ErrorMessage.Statements));
 
 			                                    }else{
 			                                        //Só se pode buscar os elementos que estao na tabela de identificador ! Casos como variaveis livres de um conjunto, nao podem ser pesquisado ! Daí o '!isSet'
-			                                        //if(!isSet && !_localctx.idTH.getInfoIdentifiersTable((((DesignatorContext)_localctx).identifier!=null?_input.getText(((DesignatorContext)_localctx).identifier.start,((DesignatorContext)_localctx).identifier.stop):null)).getCategory().equals(new String("TYPE"))){
-			                                        if(_localctx.idTH.doesExist((((DesignatorContext)_localctx).identifier!=null?_input.getText(((DesignatorContext)_localctx).identifier.start,((DesignatorContext)_localctx).identifier.stop):null))){
-			                                            if(!isSet && !_localctx.idTH.getInfoIdentifiersTable((((DesignatorContext)_localctx).identifier!=null?_input.getText(((DesignatorContext)_localctx).identifier.start,((DesignatorContext)_localctx).identifier.stop):null)).getCategory().equals(new String("TYPE"))){
-			                                                if(_localctx.idTH.getInfoIdentifiersTable((((DesignatorContext)_localctx).identifier!=null?_input.getText(((DesignatorContext)_localctx).identifier.start,((DesignatorContext)_localctx).identifier.stop):null)) instanceof Var){
-			                                                    Var v = (Var) _localctx.idTH.getInfoIdentifiersTable((((DesignatorContext)_localctx).identifier!=null?_input.getText(((DesignatorContext)_localctx).identifier.start,((DesignatorContext)_localctx).identifier.stop):null));
+			                                        //if(!isSet && !_localctx.sT.getInfoIdentifier((((DesignatorContext)_localctx).identifier!=null?_input.getText(((DesignatorContext)_localctx).identifier.start,((DesignatorContext)_localctx).identifier.stop):null)).getCategory().equals(new String("TYPE"))){
+			                                        if(_localctx.sT.doesExist((((DesignatorContext)_localctx).identifier!=null?_input.getText(((DesignatorContext)_localctx).identifier.start,((DesignatorContext)_localctx).identifier.stop):null))){
+			                                            if(!isSet && !_localctx.sT.getInfoIdentifier((((DesignatorContext)_localctx).identifier!=null?_input.getText(((DesignatorContext)_localctx).identifier.start,((DesignatorContext)_localctx).identifier.stop):null)).getCategory().equals(new String("TYPE"))){
+			                                                if(_localctx.sT.getInfoIdentifier((((DesignatorContext)_localctx).identifier!=null?_input.getText(((DesignatorContext)_localctx).identifier.start,((DesignatorContext)_localctx).identifier.stop):null)) instanceof Var){
+			                                                    Var v = (Var) _localctx.sT.getInfoIdentifier((((DesignatorContext)_localctx).identifier!=null?_input.getText(((DesignatorContext)_localctx).identifier.start,((DesignatorContext)_localctx).identifier.stop):null));
 			                                                    ((DesignatorContext)_localctx).typeS =  v.getInfoType();
 
 			                                                    //MIPS
@@ -3094,7 +3094,7 @@ public class LissParser extends Parser {
 			                                                                    ((DesignatorContext)_localctx).mipsCodeS =  m.loadWord((((DesignatorContext)_localctx).i!=null?_input.getText(((DesignatorContext)_localctx).i.start,((DesignatorContext)_localctx).i.stop):null), ((DesignatorContext)_localctx).i.line, ((DesignatorContext)_localctx).i.pos);
 			                                                                    //System.out.println(_localctx.mipsCodeS);
 			                                                                }else if(!v.getLevel().equals(0)){
-			                                                                    int addressOfVariable = _localctx.idTH.getValueSP(level,(((DesignatorContext)_localctx).i!=null?_input.getText(((DesignatorContext)_localctx).i.start,((DesignatorContext)_localctx).i.stop):null));
+			                                                                    int addressOfVariable = _localctx.sT.getValueSP(level,(((DesignatorContext)_localctx).i!=null?_input.getText(((DesignatorContext)_localctx).i.start,((DesignatorContext)_localctx).i.stop):null));
 			                                                                    ((DesignatorContext)_localctx).mipsCodeS =  m.loadWordSP(addressOfVariable);
 			                                                                    //((DesignatorContext)_localctx).mipsCodeS =  m.loadWord((((DesignatorContext)_localctx).i!=null?_input.getText(((DesignatorContext)_localctx).i.start,((DesignatorContext)_localctx).i.stop):null), ((DesignatorContext)_localctx).i.line, ((DesignatorContext)_localctx).i.pos);
 			                                                                    System.out.println(_localctx.mipsCodeS+" "+(((DesignatorContext)_localctx).identifier!=null?_input.getText(((DesignatorContext)_localctx).identifier.start,((DesignatorContext)_localctx).identifier.stop):null)+" line: "+((DesignatorContext)_localctx).i.line);
@@ -3106,7 +3106,7 @@ public class LissParser extends Parser {
 			                                                                    }
 			                                                                }else if(!v.getLevel().equals(0)){
 			                                                                    if(_localctx.mipsCodeS==null){
-			                                                                        int addressOfVariable = _localctx.idTH.getValueSP(level,(((DesignatorContext)_localctx).i!=null?_input.getText(((DesignatorContext)_localctx).i.start,((DesignatorContext)_localctx).i.stop):null));
+			                                                                        int addressOfVariable = _localctx.sT.getValueSP(level,(((DesignatorContext)_localctx).i!=null?_input.getText(((DesignatorContext)_localctx).i.start,((DesignatorContext)_localctx).i.stop):null));
 			                                                                        //((DesignatorContext)_localctx).mipsCodeS =  m.loadWord((((DesignatorContext)_localctx).i!=null?_input.getText(((DesignatorContext)_localctx).i.start,((DesignatorContext)_localctx).i.stop):null), ((DesignatorContext)_localctx).i.line, ((DesignatorContext)_localctx).i.pos);
 			                                                                        ((DesignatorContext)_localctx).mipsCodeS =  m.loadWordSP(addressOfVariable);
 			                                                                    }
@@ -3134,8 +3134,8 @@ public class LissParser extends Parser {
 			                                        }
 			                                        ((DesignatorContext)_localctx).treeS =  n;
 			                                    }else{
-			                                        if(_localctx.idTH.doesExist((((DesignatorContext)_localctx).i!=null?_input.getText(((DesignatorContext)_localctx).i.start,((DesignatorContext)_localctx).i.stop):null))){
-			                                            Var v = (Var) _localctx.idTH.getInfoIdentifiersTable((((DesignatorContext)_localctx).i!=null?_input.getText(((DesignatorContext)_localctx).i.start,((DesignatorContext)_localctx).i.stop):null));
+			                                        if(_localctx.sT.doesExist((((DesignatorContext)_localctx).i!=null?_input.getText(((DesignatorContext)_localctx).i.start,((DesignatorContext)_localctx).i.stop):null))){
+			                                            Var v = (Var) _localctx.sT.getInfoIdentifier((((DesignatorContext)_localctx).i!=null?_input.getText(((DesignatorContext)_localctx).i.start,((DesignatorContext)_localctx).i.stop):null));
 			                                            if(v.getInfoType().equals("integer")){
 			                                                Node n = new Node(new String((((DesignatorContext)_localctx).i!=null?_input.getText(((DesignatorContext)_localctx).i.start,((DesignatorContext)_localctx).i.stop):null)));
 			                                                ((DesignatorContext)_localctx).treeS =  n;
@@ -3146,13 +3146,13 @@ public class LissParser extends Parser {
 			                                //Pre-Condicao: é um array
 			                                else{
 			                                    //Pre-Condicao: se existe na tabela de identificador
-			                                    if(!_localctx.idTH.getIdentifiersTable().containsKey((((DesignatorContext)_localctx).identifier!=null?_input.getText(((DesignatorContext)_localctx).identifier.start,((DesignatorContext)_localctx).identifier.stop):null))){
+			                                    if(!sT.doesExist((((DesignatorContext)_localctx).identifier!=null?_input.getText(((DesignatorContext)_localctx).identifier.start,((DesignatorContext)_localctx).identifier.stop):null))/*!_localctx.sT.getIdentifiersTable().containsKey((((DesignatorContext)_localctx).identifier!=null?_input.getText(((DesignatorContext)_localctx).identifier.start,((DesignatorContext)_localctx).identifier.stop):null))*/){
 			                                        //ErrorMessage.errorSemantic((((DesignatorContext)_localctx).identifier!=null?_input.getText(((DesignatorContext)_localctx).identifier.start,((DesignatorContext)_localctx).identifier.stop):null),((DesignatorContext)_localctx).identifier.line,((DesignatorContext)_localctx).identifier.pos,ErrorMessage.errorStatements);
 			                                        e.addMessage(((DesignatorContext)_localctx).identifier.line,((DesignatorContext)_localctx).identifier.pos,ErrorMessage.semantic((((DesignatorContext)_localctx).identifier!=null?_input.getText(((DesignatorContext)_localctx).identifier.start,((DesignatorContext)_localctx).identifier.stop):null),ErrorMessage.Statements));
 
 			                                    }else{
-			                                        if(_localctx.idTH.doesExist((((DesignatorContext)_localctx).identifier!=null?_input.getText(((DesignatorContext)_localctx).identifier.start,((DesignatorContext)_localctx).identifier.stop):null))){
-			                                            Var v = (Var) _localctx.idTH.getInfoIdentifiersTable((((DesignatorContext)_localctx).identifier!=null?_input.getText(((DesignatorContext)_localctx).identifier.start,((DesignatorContext)_localctx).identifier.stop):null));
+			                                        if(_localctx.sT.doesExist((((DesignatorContext)_localctx).identifier!=null?_input.getText(((DesignatorContext)_localctx).identifier.start,((DesignatorContext)_localctx).identifier.stop):null))){
+			                                            Var v = (Var) _localctx.sT.getInfoIdentifier((((DesignatorContext)_localctx).identifier!=null?_input.getText(((DesignatorContext)_localctx).identifier.start,((DesignatorContext)_localctx).identifier.stop):null));
 
 			                                            if(v!=null && v.getCategory().equals(new String("TYPE"))){
 			                                                //ErrorMessage.errorSemantic((((DesignatorContext)_localctx).identifier!=null?_input.getText(((DesignatorContext)_localctx).identifier.start,((DesignatorContext)_localctx).identifier.stop):null),((DesignatorContext)_localctx).identifier.line,((DesignatorContext)_localctx).identifier.pos,ErrorMessage.errorStatements);
@@ -3216,7 +3216,7 @@ public class LissParser extends Parser {
 	}
 
 	public static class Array_accessContext extends ParserRuleContext {
-		public IdentifiersTable idTH;
+		public SymbolTable sT;
 		public Set set;
 		public String id;
 		public boolean response;
@@ -3229,9 +3229,9 @@ public class LissParser extends Parser {
 			return getRuleContext(Elem_arrayContext.class,0);
 		}
 		public Array_accessContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public Array_accessContext(ParserRuleContext parent, int invokingState, IdentifiersTable idTH, Set set, String id) {
+		public Array_accessContext(ParserRuleContext parent, int invokingState, SymbolTable sT, Set set, String id) {
 			super(parent, invokingState);
-			this.idTH = idTH;
+			this.sT = sT;
 			this.set = set;
 			this.id = id;
 		}
@@ -3246,8 +3246,8 @@ public class LissParser extends Parser {
 		}
 	}
 
-	public final Array_accessContext array_access(IdentifiersTable idTH,Set set,String id) throws RecognitionException {
-		Array_accessContext _localctx = new Array_accessContext(_ctx, getState(), idTH, set, id);
+	public final Array_accessContext array_access(SymbolTable sT,Set set,String id) throws RecognitionException {
+		Array_accessContext _localctx = new Array_accessContext(_ctx, getState(), sT, set, id);
 		enterRule(_localctx, 64, RULE_array_access);
 		try {
 			setState(463);
@@ -3285,7 +3285,7 @@ public class LissParser extends Parser {
 				setState(458);
 				match(T__19);
 				setState(459);
-				((Array_accessContext)_localctx).e = ((Array_accessContext)_localctx).elem_array = elem_array(idTH, set, id);
+				((Array_accessContext)_localctx).e = ((Array_accessContext)_localctx).elem_array = elem_array(sT, set, id);
 				setState(460);
 				match(T__20);
 				((Array_accessContext)_localctx).response =  true; ((Array_accessContext)_localctx).dimensionS =  ((Array_accessContext)_localctx).elem_array.dimensionS; ((Array_accessContext)_localctx).treeS =  ((Array_accessContext)_localctx).e.treeS; if(((Array_accessContext)_localctx).e.mipsCodeS != null){((Array_accessContext)_localctx).mipsCodeS =  ((Array_accessContext)_localctx).e.mipsCodeS;}
@@ -3307,7 +3307,7 @@ public class LissParser extends Parser {
 	}
 
 	public static class Elem_arrayContext extends ParserRuleContext {
-		public IdentifiersTable idTH;
+		public SymbolTable sT;
 		public Set set;
 		public String id;
 		public int dimensionS;
@@ -3323,9 +3323,9 @@ public class LissParser extends Parser {
 			return getRuleContext(Single_expressionContext.class,i);
 		}
 		public Elem_arrayContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public Elem_arrayContext(ParserRuleContext parent, int invokingState, IdentifiersTable idTH, Set set, String id) {
+		public Elem_arrayContext(ParserRuleContext parent, int invokingState, SymbolTable sT, Set set, String id) {
 			super(parent, invokingState);
-			this.idTH = idTH;
+			this.sT = sT;
 			this.set = set;
 			this.id = id;
 		}
@@ -3340,8 +3340,8 @@ public class LissParser extends Parser {
 		}
 	}
 
-	public final Elem_arrayContext elem_array(IdentifiersTable idTH,Set set,String id) throws RecognitionException {
-		Elem_arrayContext _localctx = new Elem_arrayContext(_ctx, getState(), idTH, set, id);
+	public final Elem_arrayContext elem_array(SymbolTable sT,Set set,String id) throws RecognitionException {
+		Elem_arrayContext _localctx = new Elem_arrayContext(_ctx, getState(), sT, set, id);
 		enterRule(_localctx, 66, RULE_elem_array);
 
 		                int dimension = 0;
@@ -3351,9 +3351,9 @@ public class LissParser extends Parser {
 
 		                //((Elem_arrayContext)_localctx).mipsCodeS =  null;
 		                Array array=null;
-		                Var typeOfArray = (Var) idTH.getInfoIdentifiersTable(id);
-		                if(_localctx.idTH.doesExist(id) && typeOfArray.getInfoType().equals("array")){
-		                    array= (Array) idTH.getInfoIdentifiersTable(id);
+		                Var typeOfArray = (Var) sT.getInfoIdentifier(id);
+		                if(_localctx.sT.doesExist(id) && typeOfArray.getInfoType().equals("array")){
+		                    array= (Array) sT.getInfoIdentifier(id);
 		                }
 
 		                int n = 1;
@@ -3364,7 +3364,7 @@ public class LissParser extends Parser {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(465);
-			((Elem_arrayContext)_localctx).s1 = ((Elem_arrayContext)_localctx).single_expression = single_expression(idTH, set);
+			((Elem_arrayContext)_localctx).s1 = ((Elem_arrayContext)_localctx).single_expression = single_expression(sT, set);
 
 			                                        if(array!=null){
 			                                          dimension++;
@@ -3404,7 +3404,7 @@ public class LissParser extends Parser {
 				setState(467);
 				match(T__7);
 				setState(468);
-				((Elem_arrayContext)_localctx).s2 = ((Elem_arrayContext)_localctx).single_expression = single_expression(idTH, set);
+				((Elem_arrayContext)_localctx).s2 = ((Elem_arrayContext)_localctx).single_expression = single_expression(sT, set);
 
 				                                        if(array!=null){
 				                                            dimension++;
@@ -3476,7 +3476,7 @@ public class LissParser extends Parser {
 	}
 
 	public static class Function_callContext extends ParserRuleContext {
-		public IdentifiersTable idTH;
+		public SymbolTable sT;
 		public Set set;
 		public Node treeS;
 		public int line;
@@ -3493,9 +3493,9 @@ public class LissParser extends Parser {
 			return getRuleContext(Sub_prg_argsContext.class,0);
 		}
 		public Function_callContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public Function_callContext(ParserRuleContext parent, int invokingState, IdentifiersTable idTH, Set set) {
+		public Function_callContext(ParserRuleContext parent, int invokingState, SymbolTable sT, Set set) {
 			super(parent, invokingState);
-			this.idTH = idTH;
+			this.sT = sT;
 			this.set = set;
 		}
 		@Override public int getRuleIndex() { return RULE_function_call; }
@@ -3509,8 +3509,8 @@ public class LissParser extends Parser {
 		}
 	}
 
-	public final Function_callContext function_call(IdentifiersTable idTH,Set set) throws RecognitionException {
-		Function_callContext _localctx = new Function_callContext(_ctx, getState(), idTH, set);
+	public final Function_callContext function_call(SymbolTable sT,Set set) throws RecognitionException {
+		Function_callContext _localctx = new Function_callContext(_ctx, getState(), sT, set);
 		enterRule(_localctx, 68, RULE_function_call);
 
 		                boolean areRegistersBeingUsed = m.areSomeRegistersUsed();
@@ -3525,7 +3525,7 @@ public class LissParser extends Parser {
 		                    //We need to calculate how many registers are being used
 		                    numberOfUsedRegisters = m.numbersOfRegisteresUsedRightNow();
 		                    //we need to calculate
-		                    _localctx.idTH.pushStateRegistersToSP(numberOfUsedRegisters);
+		                    _localctx.sT.pushStateRegistersToSP(numberOfUsedRegisters);
 		                    ((Function_callContext)_localctx).mipsCodeS =  m.textSaveStateBeforeCallingFunction(numberOfUsedRegisters);
 
 		                    //we need to reset the registers (but i dont know if this worth due to the fact that the function 'textSaveStateBeforeCallingFunction' uses 'freeLastRegister'
@@ -3540,24 +3540,24 @@ public class LissParser extends Parser {
 			setState(479);
 			match(T__25);
 			setState(480);
-			((Function_callContext)_localctx).s = sub_prg_args(idTH, set, (((Function_callContext)_localctx).i!=null?_input.getText(((Function_callContext)_localctx).i.start,((Function_callContext)_localctx).i.stop):null));
+			((Function_callContext)_localctx).s = sub_prg_args(sT, set, (((Function_callContext)_localctx).i!=null?_input.getText(((Function_callContext)_localctx).i.start,((Function_callContext)_localctx).i.stop):null));
 			setState(481);
 			match(T__26);
 
 
 			                    ((Function_callContext)_localctx).line =  ((Function_callContext)_localctx).i.line;
 			                    ((Function_callContext)_localctx).pos =  ((Function_callContext)_localctx).i.pos;
-			                    if(_localctx.idTH.doesExist((((Function_callContext)_localctx).identifier!=null?_input.getText(((Function_callContext)_localctx).identifier.start,((Function_callContext)_localctx).identifier.stop):null)) && _localctx.idTH.getIdentifiersTable().containsKey((((Function_callContext)_localctx).i!=null?_input.getText(((Function_callContext)_localctx).i.start,((Function_callContext)_localctx).i.stop):null))){
+			                    if(_localctx.sT.doesExist((((Function_callContext)_localctx).identifier!=null?_input.getText(((Function_callContext)_localctx).identifier.start,((Function_callContext)_localctx).identifier.stop):null)) /*&& _localctx.sT.getIdentifiersTable().containsKey((((Function_callContext)_localctx).i!=null?_input.getText(((Function_callContext)_localctx).i.start,((Function_callContext)_localctx).i.stop):null))*/){ //TODO: Don't know if it sure to do that...
 			                        System.out.println("IDENTIFIER: "+(((Function_callContext)_localctx).identifier!=null?_input.getText(((Function_callContext)_localctx).identifier.start,((Function_callContext)_localctx).identifier.stop):null));
 			                        System.out.println("GLOBAL LEVEL: "+level);
-			                        System.out.println("LEVEL OF FUNCTION: "+((Function)_localctx.idTH.getInfoIdentifiersTable((((Function_callContext)_localctx).i!=null?_input.getText(((Function_callContext)_localctx).i.start,((Function_callContext)_localctx).i.stop):null))).getLevel());
-			                        /*!(((Function)_localctx.idTH.getInfoIdentifiersTable((((Function_callContext)_localctx).i!=null?_input.getText(((Function_callContext)_localctx).i.start,((Function_callContext)_localctx).i.stop):null))).getLevel()<level)
+			                        System.out.println("LEVEL OF FUNCTION: "+((Function)_localctx.sT.getInfoIdentifier((((Function_callContext)_localctx).i!=null?_input.getText(((Function_callContext)_localctx).i.start,((Function_callContext)_localctx).i.stop):null))).getLevel());
+			                        /*!(((Function)_localctx.sT.getInfoIdentifier((((Function_callContext)_localctx).i!=null?_input.getText(((Function_callContext)_localctx).i.start,((Function_callContext)_localctx).i.stop):null))).getLevel()<level)
 			                        *This is a test for testing the level of the function and the global level for cycle redundacy (infinite cycle)
 			                        */
 
-			                        //if(_localctx.idTH.getInfoIdentifiersTable((((Function_callContext)_localctx).i!=null?_input.getText(((Function_callContext)_localctx).i.start,((Function_callContext)_localctx).i.stop):null)) instanceof Function && !(((Function)_localctx.idTH.getInfoIdentifiersTable((((Function_callContext)_localctx).i!=null?_input.getText(((Function_callContext)_localctx).i.start,((Function_callContext)_localctx).i.stop):null))).getLevel()<level)){
-			                        if(_localctx.idTH.getInfoIdentifiersTable((((Function_callContext)_localctx).i!=null?_input.getText(((Function_callContext)_localctx).i.start,((Function_callContext)_localctx).i.stop):null)) instanceof Function){
-			                            Function f = (Function) _localctx.idTH.getInfoIdentifiersTable((((Function_callContext)_localctx).i!=null?_input.getText(((Function_callContext)_localctx).i.start,((Function_callContext)_localctx).i.stop):null));
+			                        //if(_localctx.sT.getInfoIdentifier((((Function_callContext)_localctx).i!=null?_input.getText(((Function_callContext)_localctx).i.start,((Function_callContext)_localctx).i.stop):null)) instanceof Function && !(((Function)_localctx.sT.getInfoIdentifier((((Function_callContext)_localctx).i!=null?_input.getText(((Function_callContext)_localctx).i.start,((Function_callContext)_localctx).i.stop):null))).getLevel()<level)){
+			                        if(_localctx.sT.getInfoIdentifier((((Function_callContext)_localctx).i!=null?_input.getText(((Function_callContext)_localctx).i.start,((Function_callContext)_localctx).i.stop):null)) instanceof Function){
+			                            Function f = (Function) _localctx.sT.getInfoIdentifier((((Function_callContext)_localctx).i!=null?_input.getText(((Function_callContext)_localctx).i.start,((Function_callContext)_localctx).i.stop):null));
 			                            ((Function_callContext)_localctx).typeS =  f.getInfoType();
 
 			                            //MIPS
@@ -3595,7 +3595,7 @@ public class LissParser extends Parser {
 
 			                        _localctx.mipsCodeS += m.textRestoreStateAfterCallingFunction(numberOfUsedRegisters);
 			                        //m.textRestoreStateAfterEndedCallingFunction(numberOfRegistersUsed)+m.textReturnResultOfSpecialFunctions(line, pos);
-			                        _localctx.idTH.popSP();
+			                        _localctx.sT.popSP();
 			                    }
 			                    if(returnBoolean){
 			                        _localctx.mipsCodeS += m.textReturnResultOfSpecialFunctions(_localctx.line, _localctx.pos);
@@ -3616,7 +3616,7 @@ public class LissParser extends Parser {
 	}
 
 	public static class Sub_prg_argsContext extends ParserRuleContext {
-		public IdentifiersTable idTH;
+		public SymbolTable sT;
 		public Set set;
 		public String nameOfTheFunction;
 		public Node treeS;
@@ -3626,9 +3626,9 @@ public class LissParser extends Parser {
 			return getRuleContext(ArgsContext.class,0);
 		}
 		public Sub_prg_argsContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public Sub_prg_argsContext(ParserRuleContext parent, int invokingState, IdentifiersTable idTH, Set set, String nameOfTheFunction) {
+		public Sub_prg_argsContext(ParserRuleContext parent, int invokingState, SymbolTable sT, Set set, String nameOfTheFunction) {
 			super(parent, invokingState);
-			this.idTH = idTH;
+			this.sT = sT;
 			this.set = set;
 			this.nameOfTheFunction = nameOfTheFunction;
 		}
@@ -3643,8 +3643,8 @@ public class LissParser extends Parser {
 		}
 	}
 
-	public final Sub_prg_argsContext sub_prg_args(IdentifiersTable idTH,Set set,String nameOfTheFunction) throws RecognitionException {
-		Sub_prg_argsContext _localctx = new Sub_prg_argsContext(_ctx, getState(), idTH, set, nameOfTheFunction);
+	public final Sub_prg_argsContext sub_prg_args(SymbolTable sT,Set set,String nameOfTheFunction) throws RecognitionException {
+		Sub_prg_argsContext _localctx = new Sub_prg_argsContext(_ctx, getState(), sT, set, nameOfTheFunction);
 		enterRule(_localctx, 70, RULE_sub_prg_args);
 		try {
 			setState(488);
@@ -3676,7 +3676,7 @@ public class LissParser extends Parser {
 				enterOuterAlt(_localctx, 2);
 				{
 				setState(485);
-				((Sub_prg_argsContext)_localctx).a = args(idTH, set, nameOfTheFunction);
+				((Sub_prg_argsContext)_localctx).a = args(sT, set, nameOfTheFunction);
 				 ((Sub_prg_argsContext)_localctx).argumentsMipsCodeS =  ((Sub_prg_argsContext)_localctx).a.mipsCodeS; ((Sub_prg_argsContext)_localctx).treeS =  ((Sub_prg_argsContext)_localctx).a.treeS;/*if(isSet && $set!=null){$treeS = $a.treeS;}*/
 				}
 				break;
@@ -3696,7 +3696,7 @@ public class LissParser extends Parser {
 	}
 
 	public static class ArgsContext extends ParserRuleContext {
-		public IdentifiersTable idTH;
+		public SymbolTable sT;
 		public Set set;
 		public String nameOfTheFunction;
 		public Node treeS;
@@ -3711,9 +3711,9 @@ public class LissParser extends Parser {
 			return getRuleContext(ExpressionContext.class,i);
 		}
 		public ArgsContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public ArgsContext(ParserRuleContext parent, int invokingState, IdentifiersTable idTH, Set set, String nameOfTheFunction) {
+		public ArgsContext(ParserRuleContext parent, int invokingState, SymbolTable sT, Set set, String nameOfTheFunction) {
 			super(parent, invokingState);
-			this.idTH = idTH;
+			this.sT = sT;
 			this.set = set;
 			this.nameOfTheFunction = nameOfTheFunction;
 		}
@@ -3728,16 +3728,16 @@ public class LissParser extends Parser {
 		}
 	}
 
-	public final ArgsContext args(IdentifiersTable idTH,Set set,String nameOfTheFunction) throws RecognitionException {
-		ArgsContext _localctx = new ArgsContext(_ctx, getState(), idTH, set, nameOfTheFunction);
+	public final ArgsContext args(SymbolTable sT,Set set,String nameOfTheFunction) throws RecognitionException {
+		ArgsContext _localctx = new ArgsContext(_ctx, getState(), sT, set, nameOfTheFunction);
 		enterRule(_localctx, 72, RULE_args);
 
 		        Node head = null;
 		        Node m1 = null;
 		        Integer addressOfArgumentsOnSF = 0;
 		        Integer sizeOfSFFunction = 0;
-		        if(_localctx.idTH.doesExist(nameOfTheFunction)){
-		            sizeOfSFFunction = ((Info)_localctx.idTH.getInfoIdentifiersTable(nameOfTheFunction)).getAddress();
+		        if(_localctx.sT.doesExist(nameOfTheFunction)){
+		            sizeOfSFFunction = ((Info)_localctx.sT.getInfoIdentifier(nameOfTheFunction)).getAddress();
 		        }
 
 		     
@@ -3746,16 +3746,16 @@ public class LissParser extends Parser {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(490);
-			((ArgsContext)_localctx).e1 = ((ArgsContext)_localctx).expression = expression(idTH, set);
+			((ArgsContext)_localctx).e1 = ((ArgsContext)_localctx).expression = expression(sT, set);
 			  if(!((ArgsContext)_localctx).e1.typeS.equals("array")){
 			                                            ((ArgsContext)_localctx).mipsCodeS =  ((ArgsContext)_localctx).e1.mipsCodeS;
 			                                            _localctx.mipsCodeS += m.storeArgumentsSP(-(sizeOfSFFunction-addressOfArgumentsOnSF));
 			                                        }else if(((ArgsContext)_localctx).e1.typeS.equals("array")){
-			                                            if(_localctx.idTH.getInfoIdentifiersTable((((ArgsContext)_localctx).expression!=null?_input.getText(((ArgsContext)_localctx).expression.start,((ArgsContext)_localctx).expression.stop):null)) instanceof Var){
-			                                                Array a = (Array) _localctx.idTH.getInfoIdentifiersTable((((ArgsContext)_localctx).expression!=null?_input.getText(((ArgsContext)_localctx).expression.start,((ArgsContext)_localctx).expression.stop):null));
+			                                            if(_localctx.sT.getInfoIdentifier((((ArgsContext)_localctx).expression!=null?_input.getText(((ArgsContext)_localctx).expression.start,((ArgsContext)_localctx).expression.stop):null)) instanceof Var){
+			                                                Array a = (Array) _localctx.sT.getInfoIdentifier((((ArgsContext)_localctx).expression!=null?_input.getText(((ArgsContext)_localctx).expression.start,((ArgsContext)_localctx).expression.stop):null));
 			                                                Integer level = a.getLevel();
 			                                                System.out.println("SIZE: "+a.getMemorySize());
-			                                                ((ArgsContext)_localctx).mipsCodeS =  m.copyArrayArgumentsForFunctions(level,(((ArgsContext)_localctx).expression!=null?_input.getText(((ArgsContext)_localctx).expression.start,((ArgsContext)_localctx).expression.stop):null),a.getMemorySize(),sizeOfSFFunction-addressOfArgumentsOnSF,_localctx.idTH.getValueSP(level,(((ArgsContext)_localctx).e1!=null?_input.getText(((ArgsContext)_localctx).e1.start,((ArgsContext)_localctx).e1.stop):null)),((ArgsContext)_localctx).e1.line,((ArgsContext)_localctx).e1.pos);
+			                                                ((ArgsContext)_localctx).mipsCodeS =  m.copyArrayArgumentsForFunctions(level,(((ArgsContext)_localctx).expression!=null?_input.getText(((ArgsContext)_localctx).expression.start,((ArgsContext)_localctx).expression.stop):null),a.getMemorySize(),sizeOfSFFunction-addressOfArgumentsOnSF,_localctx.sT.getValueSP(level,(((ArgsContext)_localctx).e1!=null?_input.getText(((ArgsContext)_localctx).e1.start,((ArgsContext)_localctx).e1.stop):null)),((ArgsContext)_localctx).e1.line,((ArgsContext)_localctx).e1.pos);
 			                                            }
 			                                        }
 			                                        addressOfArgumentsOnSF += m.numberOfBytesForEachAddress();
@@ -3770,15 +3770,15 @@ public class LissParser extends Parser {
 				setState(492);
 				match(T__7);
 				setState(493);
-				((ArgsContext)_localctx).e2 = ((ArgsContext)_localctx).expression = expression(idTH, set);
+				((ArgsContext)_localctx).e2 = ((ArgsContext)_localctx).expression = expression(sT, set);
 				  if(!((ArgsContext)_localctx).e2.typeS.equals("array")){
 				                                            _localctx.mipsCodeS += ((ArgsContext)_localctx).e2.mipsCodeS;
 				                                            _localctx.mipsCodeS += m.storeArgumentsSP(-(sizeOfSFFunction-addressOfArgumentsOnSF));
 				                                        }else if(((ArgsContext)_localctx).e2.typeS.equals("array")){
-				                                            if(_localctx.idTH.getInfoIdentifiersTable((((ArgsContext)_localctx).expression!=null?_input.getText(((ArgsContext)_localctx).expression.start,((ArgsContext)_localctx).expression.stop):null)) instanceof Var){
-				                                                Array a = (Array) _localctx.idTH.getInfoIdentifiersTable((((ArgsContext)_localctx).expression!=null?_input.getText(((ArgsContext)_localctx).expression.start,((ArgsContext)_localctx).expression.stop):null));
+				                                            if(_localctx.sT.getInfoIdentifier((((ArgsContext)_localctx).expression!=null?_input.getText(((ArgsContext)_localctx).expression.start,((ArgsContext)_localctx).expression.stop):null)) instanceof Var){
+				                                                Array a = (Array) _localctx.sT.getInfoIdentifier((((ArgsContext)_localctx).expression!=null?_input.getText(((ArgsContext)_localctx).expression.start,((ArgsContext)_localctx).expression.stop):null));
 				                                                Integer level = a.getLevel();
-				                                                _localctx.mipsCodeS += m.copyArrayArgumentsForFunctions(level,(((ArgsContext)_localctx).expression!=null?_input.getText(((ArgsContext)_localctx).expression.start,((ArgsContext)_localctx).expression.stop):null),a.getMemorySize(),sizeOfSFFunction-addressOfArgumentsOnSF,_localctx.idTH.getValueSP(level,(((ArgsContext)_localctx).e1!=null?_input.getText(((ArgsContext)_localctx).e1.start,((ArgsContext)_localctx).e1.stop):null)),((ArgsContext)_localctx).e1.line,((ArgsContext)_localctx).e1.pos);
+				                                                _localctx.mipsCodeS += m.copyArrayArgumentsForFunctions(level,(((ArgsContext)_localctx).expression!=null?_input.getText(((ArgsContext)_localctx).expression.start,((ArgsContext)_localctx).expression.stop):null),a.getMemorySize(),sizeOfSFFunction-addressOfArgumentsOnSF,_localctx.sT.getValueSP(level,(((ArgsContext)_localctx).e1!=null?_input.getText(((ArgsContext)_localctx).e1.start,((ArgsContext)_localctx).e1.stop):null)),((ArgsContext)_localctx).e1.line,((ArgsContext)_localctx).e1.pos);
 				                                            }
 				                                        }
 				                                        addressOfArgumentsOnSF += m.numberOfBytesForEachAddress();
@@ -3819,7 +3819,7 @@ public class LissParser extends Parser {
 	}
 
 	public static class ExpressionContext extends ParserRuleContext {
-		public IdentifiersTable idTH;
+		public SymbolTable sT;
 		public Set set;
 		public String typeS;
 		public int line;
@@ -3842,9 +3842,9 @@ public class LissParser extends Parser {
 			return getRuleContext(Rel_opContext.class,0);
 		}
 		public ExpressionContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public ExpressionContext(ParserRuleContext parent, int invokingState, IdentifiersTable idTH, Set set) {
+		public ExpressionContext(ParserRuleContext parent, int invokingState, SymbolTable sT, Set set) {
 			super(parent, invokingState);
-			this.idTH = idTH;
+			this.sT = sT;
 			this.set = set;
 		}
 		@Override public int getRuleIndex() { return RULE_expression; }
@@ -3858,8 +3858,8 @@ public class LissParser extends Parser {
 		}
 	}
 
-	public final ExpressionContext expression(IdentifiersTable idTH,Set set) throws RecognitionException {
-		ExpressionContext _localctx = new ExpressionContext(_ctx, getState(), idTH, set);
+	public final ExpressionContext expression(SymbolTable sT,Set set) throws RecognitionException {
+		ExpressionContext _localctx = new ExpressionContext(_ctx, getState(), sT, set);
 		enterRule(_localctx, 74, RULE_expression);
 
 		                ((ExpressionContext)_localctx).typeS =  null;
@@ -3873,7 +3873,7 @@ public class LissParser extends Parser {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(503);
-			((ExpressionContext)_localctx).s1 = single_expression(idTH, set);
+			((ExpressionContext)_localctx).s1 = single_expression(sT, set);
 			 ((ExpressionContext)_localctx).line =  ((ExpressionContext)_localctx).s1.line; ((ExpressionContext)_localctx).pos =  ((ExpressionContext)_localctx).s1.pos; n = ((ExpressionContext)_localctx).s1.treeS; ((ExpressionContext)_localctx).setS =  ((ExpressionContext)_localctx).s1.setS; ((ExpressionContext)_localctx).mipsCodeS =  ((ExpressionContext)_localctx).s1.mipsCodeS; ((ExpressionContext)_localctx).accessArrayS = ((ExpressionContext)_localctx).s1.accessArrayS;/*if($rel_op.text == null){$mipsCodeS = $s1.mipsCodeS;}*/
 			setState(509);
 			_la = _input.LA(1);
@@ -3882,7 +3882,7 @@ public class LissParser extends Parser {
 				setState(505);
 				((ExpressionContext)_localctx).rel_op = rel_op();
 				setState(506);
-				((ExpressionContext)_localctx).s2 = single_expression(idTH,set);
+				((ExpressionContext)_localctx).s2 = single_expression(sT,set);
 				   relationExp = true;
 				                    if(!(((ExpressionContext)_localctx).rel_op!=null?_input.getText(((ExpressionContext)_localctx).rel_op.start,((ExpressionContext)_localctx).rel_op.stop):null).equals("in")){
 				                        if((((ExpressionContext)_localctx).s1.typeS != null) && ((((ExpressionContext)_localctx).rel_op!=null?_input.getText(((ExpressionContext)_localctx).rel_op.start,((ExpressionContext)_localctx).rel_op.stop):null).equals("==") || (((ExpressionContext)_localctx).rel_op!=null?_input.getText(((ExpressionContext)_localctx).rel_op.start,((ExpressionContext)_localctx).rel_op.stop):null).equals("!=")) && ((ExpressionContext)_localctx).s1.typeS.equals("boolean")){
@@ -3970,7 +3970,7 @@ public class LissParser extends Parser {
 				                            s.setIdentifier(((ExpressionContext)_localctx).s1.treeS);
 				                            System.out.println(s.toString());
 				                            //escrever o mips code para gerar !
-				                            ((ExpressionContext)_localctx).mipsCodeS =  s.mipsCode(_localctx.idTH,m, ((ExpressionContext)_localctx).rel_op.line);
+				                            ((ExpressionContext)_localctx).mipsCodeS =  s.mipsCode(_localctx.sT,m, ((ExpressionContext)_localctx).rel_op.line);
 				                            System.out.println("Constructing the set: "+_localctx.mipsCodeS);
 				                        }else{
 				                            //This means that s == null or s1.treeS is null
@@ -4021,7 +4021,7 @@ public class LissParser extends Parser {
 	}
 
 	public static class Single_expressionContext extends ParserRuleContext {
-		public IdentifiersTable idTH;
+		public SymbolTable sT;
 		public Set set;
 		public String typeS;
 		public Set setS;
@@ -4048,9 +4048,9 @@ public class LissParser extends Parser {
 			return getRuleContext(Add_opContext.class,i);
 		}
 		public Single_expressionContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public Single_expressionContext(ParserRuleContext parent, int invokingState, IdentifiersTable idTH, Set set) {
+		public Single_expressionContext(ParserRuleContext parent, int invokingState, SymbolTable sT, Set set) {
 			super(parent, invokingState);
-			this.idTH = idTH;
+			this.sT = sT;
 			this.set = set;
 		}
 		@Override public int getRuleIndex() { return RULE_single_expression; }
@@ -4064,8 +4064,8 @@ public class LissParser extends Parser {
 		}
 	}
 
-	public final Single_expressionContext single_expression(IdentifiersTable idTH,Set set) throws RecognitionException {
-		Single_expressionContext _localctx = new Single_expressionContext(_ctx, getState(), idTH, set);
+	public final Single_expressionContext single_expression(SymbolTable sT,Set set) throws RecognitionException {
+		Single_expressionContext _localctx = new Single_expressionContext(_ctx, getState(), sT, set);
 		enterRule(_localctx, 76, RULE_single_expression);
 
 		                    ((Single_expressionContext)_localctx).typeS =  null;
@@ -4083,7 +4083,7 @@ public class LissParser extends Parser {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(513);
-			((Single_expressionContext)_localctx).t1 = ((Single_expressionContext)_localctx).term = term(idTH, set);
+			((Single_expressionContext)_localctx).t1 = ((Single_expressionContext)_localctx).term = term(sT, set);
 			((Single_expressionContext)_localctx).line =  ((Single_expressionContext)_localctx).term.line; ((Single_expressionContext)_localctx).pos =  ((Single_expressionContext)_localctx).term.pos; errorManagement.add(new ErrorInfo((((Single_expressionContext)_localctx).t1!=null?_input.getText(((Single_expressionContext)_localctx).t1.start,((Single_expressionContext)_localctx).t1.stop):null),((Single_expressionContext)_localctx).t1.typeS,((Single_expressionContext)_localctx).t1.line,((Single_expressionContext)_localctx).t1.pos)); n = ((Single_expressionContext)_localctx).t1.treeS; ((Single_expressionContext)_localctx).setS =  ((Single_expressionContext)_localctx).t1.setS; ((Single_expressionContext)_localctx).mipsCodeS =  ((Single_expressionContext)_localctx).t1.mipsCodeS; ((Single_expressionContext)_localctx).accessArrayS =  ((Single_expressionContext)_localctx).t1.accessArrayS;
 			setState(521);
 			_errHandler.sync(this);
@@ -4094,7 +4094,7 @@ public class LissParser extends Parser {
 				setState(515);
 				((Single_expressionContext)_localctx).a = ((Single_expressionContext)_localctx).add_op = add_op();
 				setState(516);
-				((Single_expressionContext)_localctx).t2 = ((Single_expressionContext)_localctx).term = term(idTH, set);
+				((Single_expressionContext)_localctx).t2 = ((Single_expressionContext)_localctx).term = term(sT, set);
 
 				                                        errorManagement.add(new ErrorInfo((((Single_expressionContext)_localctx).add_op!=null?_input.getText(((Single_expressionContext)_localctx).add_op.start,((Single_expressionContext)_localctx).add_op.stop):null),((Single_expressionContext)_localctx).add_op.typeS,((Single_expressionContext)_localctx).add_op.line,((Single_expressionContext)_localctx).add_op.pos));
 				                                        errorManagement.add(new ErrorInfo((((Single_expressionContext)_localctx).t2!=null?_input.getText(((Single_expressionContext)_localctx).t2.start,((Single_expressionContext)_localctx).t2.stop):null),((Single_expressionContext)_localctx).t2.typeS,((Single_expressionContext)_localctx).t2.line,((Single_expressionContext)_localctx).t2.pos));
@@ -4135,8 +4135,8 @@ public class LissParser extends Parser {
 				                                                    Set s1 = ((Single_expressionContext)_localctx).t1.setS ;
 				                                                    Set s2 = ((Single_expressionContext)_localctx).t2.setS;
 				                                                    if(s1 == null ){
-				                                                        if(_localctx.idTH.doesExist((((Single_expressionContext)_localctx).t1!=null?_input.getText(((Single_expressionContext)_localctx).t1.start,((Single_expressionContext)_localctx).t1.stop):null))){
-				                                                            Application.SymbolTable.Set s = (Application.SymbolTable.Set) _localctx.idTH.getInfoIdentifiersTable((((Single_expressionContext)_localctx).t1!=null?_input.getText(((Single_expressionContext)_localctx).t1.start,((Single_expressionContext)_localctx).t1.stop):null));
+				                                                        if(_localctx.sT.doesExist((((Single_expressionContext)_localctx).t1!=null?_input.getText(((Single_expressionContext)_localctx).t1.start,((Single_expressionContext)_localctx).t1.stop):null))){
+				                                                            Application.SymbolTable.Set s = (Application.SymbolTable.Set) _localctx.sT.getInfoIdentifier((((Single_expressionContext)_localctx).t1!=null?_input.getText(((Single_expressionContext)_localctx).t1.start,((Single_expressionContext)_localctx).t1.stop):null));
 				                                                            s1 = s.getSet();
 				                                                        }else{
 
@@ -4146,8 +4146,8 @@ public class LissParser extends Parser {
 				                                                        System.out.println(s1.toString());
 				                                                    }
 				                                                    if(s2 == null ){
-				                                                        if(_localctx.idTH.doesExist((((Single_expressionContext)_localctx).t2!=null?_input.getText(((Single_expressionContext)_localctx).t2.start,((Single_expressionContext)_localctx).t2.stop):null))){
-				                                                            Application.SymbolTable.Set s = (Application.SymbolTable.Set) _localctx.idTH.getInfoIdentifiersTable((((Single_expressionContext)_localctx).t2!=null?_input.getText(((Single_expressionContext)_localctx).t2.start,((Single_expressionContext)_localctx).t2.stop):null));
+				                                                        if(_localctx.sT.doesExist((((Single_expressionContext)_localctx).t2!=null?_input.getText(((Single_expressionContext)_localctx).t2.start,((Single_expressionContext)_localctx).t2.stop):null))){
+				                                                            Application.SymbolTable.Set s = (Application.SymbolTable.Set) _localctx.sT.getInfoIdentifier((((Single_expressionContext)_localctx).t2!=null?_input.getText(((Single_expressionContext)_localctx).t2.start,((Single_expressionContext)_localctx).t2.stop):null));
 				                                                            s2 = s.getSet();
 				                                                        }else{
 				                                                            //TODO: sets que nao funciona, bem !!!!
@@ -4198,11 +4198,11 @@ public class LissParser extends Parser {
 				                                                Set s1 = _localctx.setS ;
 				                                                Set s2 = ((Single_expressionContext)_localctx).t2.setS;
 				                                                if(s1 == null ){
-				                                                    Application.SymbolTable.Set s = (Application.SymbolTable.Set) _localctx.idTH.getInfoIdentifiersTable((((Single_expressionContext)_localctx).t1!=null?_input.getText(((Single_expressionContext)_localctx).t1.start,((Single_expressionContext)_localctx).t1.stop):null));
+				                                                    Application.SymbolTable.Set s = (Application.SymbolTable.Set) _localctx.sT.getInfoIdentifier((((Single_expressionContext)_localctx).t1!=null?_input.getText(((Single_expressionContext)_localctx).t1.start,((Single_expressionContext)_localctx).t1.stop):null));
 				                                                    s1 = s.getSet();
 				                                                }
 				                                                if(s2 == null ){
-				                                                    Application.SymbolTable.Set s = (Application.SymbolTable.Set) _localctx.idTH.getInfoIdentifiersTable((((Single_expressionContext)_localctx).t2!=null?_input.getText(((Single_expressionContext)_localctx).t2.start,((Single_expressionContext)_localctx).t2.stop):null));
+				                                                    Application.SymbolTable.Set s = (Application.SymbolTable.Set) _localctx.sT.getInfoIdentifier((((Single_expressionContext)_localctx).t2!=null?_input.getText(((Single_expressionContext)_localctx).t2.start,((Single_expressionContext)_localctx).t2.stop):null));
 				                                                    s2 = s.getSet();
 				                                                }
 				                                                ((Single_expressionContext)_localctx).setS =  new Set(s1,s2,(((Single_expressionContext)_localctx).a!=null?_input.getText(((Single_expressionContext)_localctx).a.start,((Single_expressionContext)_localctx).a.stop):null));
@@ -4243,7 +4243,7 @@ public class LissParser extends Parser {
 	}
 
 	public static class TermContext extends ParserRuleContext {
-		public IdentifiersTable idTH;
+		public SymbolTable sT;
 		public Set set;
 		public String typeS;
 		public Set setS;
@@ -4269,9 +4269,9 @@ public class LissParser extends Parser {
 			return getRuleContext(Mul_opContext.class,i);
 		}
 		public TermContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public TermContext(ParserRuleContext parent, int invokingState, IdentifiersTable idTH, Set set) {
+		public TermContext(ParserRuleContext parent, int invokingState, SymbolTable sT, Set set) {
 			super(parent, invokingState);
-			this.idTH = idTH;
+			this.sT = sT;
 			this.set = set;
 		}
 		@Override public int getRuleIndex() { return RULE_term; }
@@ -4285,8 +4285,8 @@ public class LissParser extends Parser {
 		}
 	}
 
-	public final TermContext term(IdentifiersTable idTH,Set set) throws RecognitionException {
-		TermContext _localctx = new TermContext(_ctx, getState(), idTH, set);
+	public final TermContext term(SymbolTable sT,Set set) throws RecognitionException {
+		TermContext _localctx = new TermContext(_ctx, getState(), sT, set);
 		enterRule(_localctx, 78, RULE_term);
 
 		        ((TermContext)_localctx).typeS =  null;
@@ -4306,8 +4306,8 @@ public class LissParser extends Parser {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(526);
-			((TermContext)_localctx).f1 = factor(idTH, set);
-			 ((TermContext)_localctx).line =  ((TermContext)_localctx).f1.line; ((TermContext)_localctx).pos =  ((TermContext)_localctx).f1.pos;  errorManagement.add(new ErrorInfo((((TermContext)_localctx).f1!=null?_input.getText(((TermContext)_localctx).f1.start,((TermContext)_localctx).f1.stop):null), ((TermContext)_localctx).f1.typeS, ((TermContext)_localctx).f1.line,((TermContext)_localctx).f1.pos)); n = ((TermContext)_localctx).f1.treeS; if(((TermContext)_localctx).f1.setS == null && !isDeclarations){ if(_localctx.idTH.doesExist((((TermContext)_localctx).f1!=null?_input.getText(((TermContext)_localctx).f1.start,((TermContext)_localctx).f1.stop):null))){if(_localctx.idTH.getInfoIdentifiersTable((((TermContext)_localctx).f1!=null?_input.getText(((TermContext)_localctx).f1.start,((TermContext)_localctx).f1.stop):null)) instanceof Application.SymbolTable.Set){Application.SymbolTable.Set s = (Application.SymbolTable.Set) _localctx.idTH.getInfoIdentifiersTable((((TermContext)_localctx).f1!=null?_input.getText(((TermContext)_localctx).f1.start,((TermContext)_localctx).f1.stop):null)); ((TermContext)_localctx).setS =  s.getSet();}}}else{((TermContext)_localctx).setS =  ((TermContext)_localctx).f1.setS;} ((TermContext)_localctx).mipsCodeS =  ((TermContext)_localctx).f1.mipsCodeS; ((TermContext)_localctx).accessArrayS =  ((TermContext)_localctx).f1.accessArrayS;
+			((TermContext)_localctx).f1 = factor(sT, set);
+			 ((TermContext)_localctx).line =  ((TermContext)_localctx).f1.line; ((TermContext)_localctx).pos =  ((TermContext)_localctx).f1.pos;  errorManagement.add(new ErrorInfo((((TermContext)_localctx).f1!=null?_input.getText(((TermContext)_localctx).f1.start,((TermContext)_localctx).f1.stop):null), ((TermContext)_localctx).f1.typeS, ((TermContext)_localctx).f1.line,((TermContext)_localctx).f1.pos)); n = ((TermContext)_localctx).f1.treeS; if(((TermContext)_localctx).f1.setS == null && !isDeclarations){ if(_localctx.sT.doesExist((((TermContext)_localctx).f1!=null?_input.getText(((TermContext)_localctx).f1.start,((TermContext)_localctx).f1.stop):null))){if(_localctx.sT.getInfoIdentifier((((TermContext)_localctx).f1!=null?_input.getText(((TermContext)_localctx).f1.start,((TermContext)_localctx).f1.stop):null)) instanceof Application.SymbolTable.Set){Application.SymbolTable.Set s = (Application.SymbolTable.Set) _localctx.sT.getInfoIdentifier((((TermContext)_localctx).f1!=null?_input.getText(((TermContext)_localctx).f1.start,((TermContext)_localctx).f1.stop):null)); ((TermContext)_localctx).setS =  s.getSet();}}}else{((TermContext)_localctx).setS =  ((TermContext)_localctx).f1.setS;} ((TermContext)_localctx).mipsCodeS =  ((TermContext)_localctx).f1.mipsCodeS; ((TermContext)_localctx).accessArrayS =  ((TermContext)_localctx).f1.accessArrayS;
 			setState(534);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
@@ -4317,7 +4317,7 @@ public class LissParser extends Parser {
 				setState(528);
 				((TermContext)_localctx).m = ((TermContext)_localctx).mul_op = mul_op();
 				setState(529);
-				((TermContext)_localctx).f2 = factor(idTH, set);
+				((TermContext)_localctx).f2 = factor(sT, set);
 
 
 				                                errorManagement.add(new ErrorInfo((((TermContext)_localctx).mul_op!=null?_input.getText(((TermContext)_localctx).mul_op.start,((TermContext)_localctx).mul_op.stop):null),((TermContext)_localctx).mul_op.typeS,((TermContext)_localctx).mul_op.line,((TermContext)_localctx).mul_op.pos));
@@ -4354,14 +4354,14 @@ public class LissParser extends Parser {
 				                                            Set s1 = ((TermContext)_localctx).f1.setS ;
 				                                            Set s2 = ((TermContext)_localctx).f2.setS;
 				                                            if(s1 == null ){
-				                                                if(_localctx.idTH.doesExist((((TermContext)_localctx).f1!=null?_input.getText(((TermContext)_localctx).f1.start,((TermContext)_localctx).f1.stop):null))){
-				                                                    Application.SymbolTable.Set s = (Application.SymbolTable.Set) _localctx.idTH.getInfoIdentifiersTable((((TermContext)_localctx).f1!=null?_input.getText(((TermContext)_localctx).f1.start,((TermContext)_localctx).f1.stop):null));
+				                                                if(_localctx.sT.doesExist((((TermContext)_localctx).f1!=null?_input.getText(((TermContext)_localctx).f1.start,((TermContext)_localctx).f1.stop):null))){
+				                                                    Application.SymbolTable.Set s = (Application.SymbolTable.Set) _localctx.sT.getInfoIdentifier((((TermContext)_localctx).f1!=null?_input.getText(((TermContext)_localctx).f1.start,((TermContext)_localctx).f1.stop):null));
 				                                                    s1 = s.getSet();
 				                                                }
 				                                            }
 				                                            if(s2 == null ){
-				                                                if(_localctx.idTH.doesExist((((TermContext)_localctx).f2!=null?_input.getText(((TermContext)_localctx).f2.start,((TermContext)_localctx).f2.stop):null))){
-				                                                    Application.SymbolTable.Set s = (Application.SymbolTable.Set) _localctx.idTH.getInfoIdentifiersTable((((TermContext)_localctx).f2!=null?_input.getText(((TermContext)_localctx).f2.start,((TermContext)_localctx).f2.stop):null));
+				                                                if(_localctx.sT.doesExist((((TermContext)_localctx).f2!=null?_input.getText(((TermContext)_localctx).f2.start,((TermContext)_localctx).f2.stop):null))){
+				                                                    Application.SymbolTable.Set s = (Application.SymbolTable.Set) _localctx.sT.getInfoIdentifier((((TermContext)_localctx).f2!=null?_input.getText(((TermContext)_localctx).f2.start,((TermContext)_localctx).f2.stop):null));
 				                                                    s2 = s.getSet();
 				                                                }
 				                                            }
@@ -4412,11 +4412,11 @@ public class LissParser extends Parser {
 				                                                Set s1 = _localctx.setS ;
 				                                                Set s2 = ((TermContext)_localctx).f2.setS;
 				                                                if(s1 == null ){
-				                                                    Application.SymbolTable.Set s = (Application.SymbolTable.Set) _localctx.idTH.getInfoIdentifiersTable((((TermContext)_localctx).f1!=null?_input.getText(((TermContext)_localctx).f1.start,((TermContext)_localctx).f1.stop):null));
+				                                                    Application.SymbolTable.Set s = (Application.SymbolTable.Set) _localctx.sT.getInfoIdentifier((((TermContext)_localctx).f1!=null?_input.getText(((TermContext)_localctx).f1.start,((TermContext)_localctx).f1.stop):null));
 				                                                    s1 = s.getSet();
 				                                                }
 				                                                if(s2 == null ){
-				                                                    Application.SymbolTable.Set s = (Application.SymbolTable.Set) _localctx.idTH.getInfoIdentifiersTable((((TermContext)_localctx).f2!=null?_input.getText(((TermContext)_localctx).f2.start,((TermContext)_localctx).f2.stop):null));
+				                                                    Application.SymbolTable.Set s = (Application.SymbolTable.Set) _localctx.sT.getInfoIdentifier((((TermContext)_localctx).f2!=null?_input.getText(((TermContext)_localctx).f2.start,((TermContext)_localctx).f2.stop):null));
 				                                                    s2 = s.getSet();
 				                                                }
 				                                                ((TermContext)_localctx).setS =  new Set(s1,s2,(((TermContext)_localctx).m!=null?_input.getText(((TermContext)_localctx).m.start,((TermContext)_localctx).m.stop):null));
@@ -4459,7 +4459,7 @@ public class LissParser extends Parser {
 	}
 
 	public static class FactorContext extends ParserRuleContext {
-		public IdentifiersTable idTH;
+		public SymbolTable sT;
 		public Set set;
 		public String typeS;
 		public Set setS;
@@ -4493,9 +4493,9 @@ public class LissParser extends Parser {
 			return getRuleContext(SpecialFunctionsContext.class,0);
 		}
 		public FactorContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public FactorContext(ParserRuleContext parent, int invokingState, IdentifiersTable idTH, Set set) {
+		public FactorContext(ParserRuleContext parent, int invokingState, SymbolTable sT, Set set) {
 			super(parent, invokingState);
-			this.idTH = idTH;
+			this.sT = sT;
 			this.set = set;
 		}
 		@Override public int getRuleIndex() { return RULE_factor; }
@@ -4509,8 +4509,8 @@ public class LissParser extends Parser {
 		}
 	}
 
-	public final FactorContext factor(IdentifiersTable idTH,Set set) throws RecognitionException {
-		FactorContext _localctx = new FactorContext(_ctx, getState(), idTH, set);
+	public final FactorContext factor(SymbolTable sT,Set set) throws RecognitionException {
+		FactorContext _localctx = new FactorContext(_ctx, getState(), sT, set);
 		enterRule(_localctx, 80, RULE_factor);
 
 		        ((FactorContext)_localctx).treeS =  null;
@@ -4526,7 +4526,7 @@ public class LissParser extends Parser {
 				enterOuterAlt(_localctx, 1);
 				{
 				setState(539);
-				((FactorContext)_localctx).i = inic_var(idTH, set);
+				((FactorContext)_localctx).i = inic_var(sT, set);
 				((FactorContext)_localctx).typeS =  ((FactorContext)_localctx).i.typeS; ((FactorContext)_localctx).line =  ((FactorContext)_localctx).i.line; ((FactorContext)_localctx).pos =  ((FactorContext)_localctx).i.pos; ((FactorContext)_localctx).treeS =  ((FactorContext)_localctx).i.treeS; ((FactorContext)_localctx).setS =  ((FactorContext)_localctx).i.setS; ((FactorContext)_localctx).accessArrayS =  ((FactorContext)_localctx).i.accessArrayS;/*if(isSet && $i.treeS!=null && $set!=null){ $treeS = $i.treeS;}*/ ((FactorContext)_localctx).mipsCodeS =  ((FactorContext)_localctx).i.mipsCodeS;
 				}
 				break;
@@ -4534,7 +4534,7 @@ public class LissParser extends Parser {
 				enterOuterAlt(_localctx, 2);
 				{
 				setState(542);
-				((FactorContext)_localctx).d = designator(idTH, set, side);
+				((FactorContext)_localctx).d = designator(sT, set, side);
 				((FactorContext)_localctx).typeS =  ((FactorContext)_localctx).d.typeS; ((FactorContext)_localctx).line =  ((FactorContext)_localctx).d.line; ((FactorContext)_localctx).pos =  ((FactorContext)_localctx).d.pos; ((FactorContext)_localctx).mipsCodeS =  ((FactorContext)_localctx).d.mipsCodeS; ((FactorContext)_localctx).treeS =  ((FactorContext)_localctx).d.treeS;
 				}
 				break;
@@ -4544,7 +4544,7 @@ public class LissParser extends Parser {
 				setState(545);
 				match(T__25);
 				setState(546);
-				((FactorContext)_localctx).e = expression(idTH, set);
+				((FactorContext)_localctx).e = expression(sT, set);
 				setState(547);
 				match(T__26);
 				((FactorContext)_localctx).typeS =  ((FactorContext)_localctx).e.typeS; ((FactorContext)_localctx).line =  ((FactorContext)_localctx).e.line; ((FactorContext)_localctx).pos =  ((FactorContext)_localctx).e.pos; ((FactorContext)_localctx).mipsCodeS =  ((FactorContext)_localctx).e.mipsCodeS; ((FactorContext)_localctx).treeS =  ((FactorContext)_localctx).e.treeS; ((FactorContext)_localctx).setS =  ((FactorContext)_localctx).e.setS;/*if(isSet && $e.treeS!=null && $set!=null){ $treeS = $e.treeS;}*/
@@ -4556,7 +4556,7 @@ public class LissParser extends Parser {
 				setState(550);
 				match(T__28);
 				setState(551);
-				((FactorContext)_localctx).f1 = factor(idTH, set);
+				((FactorContext)_localctx).f1 = factor(sT, set);
 
 				            ((FactorContext)_localctx).line =  ((FactorContext)_localctx).f1.line;
 				            ((FactorContext)_localctx).pos =  ((FactorContext)_localctx).f1.pos;
@@ -4580,7 +4580,7 @@ public class LissParser extends Parser {
 				enterOuterAlt(_localctx, 5);
 				{
 				setState(554);
-				((FactorContext)_localctx).f2 = function_call(idTH, set);
+				((FactorContext)_localctx).f2 = function_call(sT, set);
 				((FactorContext)_localctx).typeS =  ((FactorContext)_localctx).f2.typeS; ((FactorContext)_localctx).mipsCodeS =  ((FactorContext)_localctx).f2.mipsCodeS; ((FactorContext)_localctx).treeS =  ((FactorContext)_localctx).f2.treeS; /*if(isSet && _localctx.set!=null){((FactorContext)_localctx).treeS =  ((FactorContext)_localctx).f2.treeS;}*/
 				}
 				break;
@@ -4588,7 +4588,7 @@ public class LissParser extends Parser {
 				enterOuterAlt(_localctx, 6);
 				{
 				setState(557);
-				((FactorContext)_localctx).s = specialFunctions(idTH, set);
+				((FactorContext)_localctx).s = specialFunctions(sT, set);
 				((FactorContext)_localctx).typeS =  ((FactorContext)_localctx).s.typeS; ((FactorContext)_localctx).line =  ((FactorContext)_localctx).s.line; ((FactorContext)_localctx).pos =  ((FactorContext)_localctx).s.pos; ((FactorContext)_localctx).treeS =  ((FactorContext)_localctx).s.treeS; ((FactorContext)_localctx).mipsCodeS =  ((FactorContext)_localctx).s.mipsCodeS; /*if(isSet && ((FactorContext)_localctx).s.treeS!=null && _localctx.set!=null){ ((FactorContext)_localctx).treeS =  ((FactorContext)_localctx).s.treeS;}*/
 				}
 				break;
@@ -4606,7 +4606,7 @@ public class LissParser extends Parser {
 	}
 
 	public static class SpecialFunctionsContext extends ParserRuleContext {
-		public IdentifiersTable idTH;
+		public SymbolTable sT;
 		public Set set;
 		public String typeS;
 		public int line;
@@ -4649,9 +4649,9 @@ public class LissParser extends Parser {
 			return getRuleContext(DeleteContext.class,0);
 		}
 		public SpecialFunctionsContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public SpecialFunctionsContext(ParserRuleContext parent, int invokingState, IdentifiersTable idTH, Set set) {
+		public SpecialFunctionsContext(ParserRuleContext parent, int invokingState, SymbolTable sT, Set set) {
 			super(parent, invokingState);
-			this.idTH = idTH;
+			this.sT = sT;
 			this.set = set;
 		}
 		@Override public int getRuleIndex() { return RULE_specialFunctions; }
@@ -4665,8 +4665,8 @@ public class LissParser extends Parser {
 		}
 	}
 
-	public final SpecialFunctionsContext specialFunctions(IdentifiersTable idTH,Set set) throws RecognitionException {
-		SpecialFunctionsContext _localctx = new SpecialFunctionsContext(_ctx, getState(), idTH, set);
+	public final SpecialFunctionsContext specialFunctions(SymbolTable sT,Set set) throws RecognitionException {
+		SpecialFunctionsContext _localctx = new SpecialFunctionsContext(_ctx, getState(), sT, set);
 		enterRule(_localctx, 82, RULE_specialFunctions);
 
 		                    boolean areRegistersBeingUsed = m.areSomeRegistersUsed();
@@ -4680,7 +4680,7 @@ public class LissParser extends Parser {
 		                        //We need to calculate how many registers are being used
 		                        numberOfUsedRegisters = m.numbersOfRegisteresUsedRightNow();
 		                        //we need to calculate
-		                        _localctx.idTH.pushStateRegistersToSP(numberOfUsedRegisters);
+		                        _localctx.sT.pushStateRegistersToSP(numberOfUsedRegisters);
 		                        ((SpecialFunctionsContext)_localctx).mipsCodeS =  m.textSaveStateBeforeCallingFunction(numberOfUsedRegisters);
 
 		                        //we need to reset the registers (but i dont know if this worth due to the fact that the function 'textSaveStateBeforeCallingFunction' uses 'freeLastRegister'
@@ -4698,7 +4698,7 @@ public class LissParser extends Parser {
 				enterOuterAlt(_localctx, 1);
 				{
 				setState(562);
-				((SpecialFunctionsContext)_localctx).t = ((SpecialFunctionsContext)_localctx).tail = tail(idTH, set);
+				((SpecialFunctionsContext)_localctx).t = ((SpecialFunctionsContext)_localctx).tail = tail(sT, set);
 				((SpecialFunctionsContext)_localctx).typeS =  ((SpecialFunctionsContext)_localctx).tail.typeS; ((SpecialFunctionsContext)_localctx).line =  ((SpecialFunctionsContext)_localctx).tail.line; ((SpecialFunctionsContext)_localctx).pos =  ((SpecialFunctionsContext)_localctx).tail.pos; ((SpecialFunctionsContext)_localctx).treeS =  ((SpecialFunctionsContext)_localctx).t.treeS; if(areRegistersBeingUsed){_localctx.mipsCodeS += ((SpecialFunctionsContext)_localctx).t.mipsCodeS;}else{((SpecialFunctionsContext)_localctx).mipsCodeS =  ((SpecialFunctionsContext)_localctx).t.mipsCodeS;} /*if(isSet && ((SpecialFunctionsContext)_localctx).t.treeS!=null && _localctx.set!=null){((SpecialFunctionsContext)_localctx).treeS =  ((SpecialFunctionsContext)_localctx).t.treeS;}*/
 				}
 				break;
@@ -4706,7 +4706,7 @@ public class LissParser extends Parser {
 				enterOuterAlt(_localctx, 2);
 				{
 				setState(565);
-				((SpecialFunctionsContext)_localctx).h = ((SpecialFunctionsContext)_localctx).head = head(idTH, set);
+				((SpecialFunctionsContext)_localctx).h = ((SpecialFunctionsContext)_localctx).head = head(sT, set);
 				((SpecialFunctionsContext)_localctx).typeS =  ((SpecialFunctionsContext)_localctx).head.typeS; ((SpecialFunctionsContext)_localctx).line =  ((SpecialFunctionsContext)_localctx).head.line; ((SpecialFunctionsContext)_localctx).pos =  ((SpecialFunctionsContext)_localctx).head.pos; ((SpecialFunctionsContext)_localctx).treeS =  ((SpecialFunctionsContext)_localctx).h.treeS; if(areRegistersBeingUsed){_localctx.mipsCodeS += ((SpecialFunctionsContext)_localctx).h.mipsCodeS;}else{((SpecialFunctionsContext)_localctx).mipsCodeS =  ((SpecialFunctionsContext)_localctx).h.mipsCodeS;} /*if(isSet && ((SpecialFunctionsContext)_localctx).h.treeS!=null && _localctx.set!=null){((SpecialFunctionsContext)_localctx).treeS =  ((SpecialFunctionsContext)_localctx).h.treeS;}*/
 				}
 				break;
@@ -4714,7 +4714,7 @@ public class LissParser extends Parser {
 				enterOuterAlt(_localctx, 3);
 				{
 				setState(568);
-				((SpecialFunctionsContext)_localctx).c = ((SpecialFunctionsContext)_localctx).cons = cons(idTH, set);
+				((SpecialFunctionsContext)_localctx).c = ((SpecialFunctionsContext)_localctx).cons = cons(sT, set);
 				((SpecialFunctionsContext)_localctx).typeS =  ((SpecialFunctionsContext)_localctx).cons.typeS; ((SpecialFunctionsContext)_localctx).line =  ((SpecialFunctionsContext)_localctx).cons.line; ((SpecialFunctionsContext)_localctx).pos =  ((SpecialFunctionsContext)_localctx).cons.pos; ((SpecialFunctionsContext)_localctx).treeS =  ((SpecialFunctionsContext)_localctx).c.treeS; if(areRegistersBeingUsed){_localctx.mipsCodeS += ((SpecialFunctionsContext)_localctx).c.mipsCodeS;}else{((SpecialFunctionsContext)_localctx).mipsCodeS =  ((SpecialFunctionsContext)_localctx).c.mipsCodeS;} /*if(isSet && ((SpecialFunctionsContext)_localctx).c.treeS!=null && _localctx.set!=null){((SpecialFunctionsContext)_localctx).treeS =  ((SpecialFunctionsContext)_localctx).c.treeS;}*/
 				}
 				break;
@@ -4722,7 +4722,7 @@ public class LissParser extends Parser {
 				enterOuterAlt(_localctx, 4);
 				{
 				setState(571);
-				((SpecialFunctionsContext)_localctx).m = ((SpecialFunctionsContext)_localctx).member = member(idTH, set);
+				((SpecialFunctionsContext)_localctx).m = ((SpecialFunctionsContext)_localctx).member = member(sT, set);
 				((SpecialFunctionsContext)_localctx).typeS =  ((SpecialFunctionsContext)_localctx).member.typeS; ((SpecialFunctionsContext)_localctx).line =  ((SpecialFunctionsContext)_localctx).member.line; ((SpecialFunctionsContext)_localctx).pos =  ((SpecialFunctionsContext)_localctx).member.pos; ((SpecialFunctionsContext)_localctx).treeS =  ((SpecialFunctionsContext)_localctx).m.treeS; if(areRegistersBeingUsed){_localctx.mipsCodeS += ((SpecialFunctionsContext)_localctx).m.mipsCodeS;}else{((SpecialFunctionsContext)_localctx).mipsCodeS =  ((SpecialFunctionsContext)_localctx).m.mipsCodeS;} /*if(isSet && ((SpecialFunctionsContext)_localctx).m.treeS!=null && _localctx.set!=null){((SpecialFunctionsContext)_localctx).treeS =  ((SpecialFunctionsContext)_localctx).m.treeS;}*/
 				}
 				break;
@@ -4730,7 +4730,7 @@ public class LissParser extends Parser {
 				enterOuterAlt(_localctx, 5);
 				{
 				setState(574);
-				((SpecialFunctionsContext)_localctx).i = ((SpecialFunctionsContext)_localctx).is_empty = is_empty(idTH, set);
+				((SpecialFunctionsContext)_localctx).i = ((SpecialFunctionsContext)_localctx).is_empty = is_empty(sT, set);
 				((SpecialFunctionsContext)_localctx).typeS =  ((SpecialFunctionsContext)_localctx).is_empty.typeS; ((SpecialFunctionsContext)_localctx).line =  ((SpecialFunctionsContext)_localctx).is_empty.line; ((SpecialFunctionsContext)_localctx).pos =  ((SpecialFunctionsContext)_localctx).is_empty.pos; ((SpecialFunctionsContext)_localctx).treeS =  ((SpecialFunctionsContext)_localctx).i.treeS; if(areRegistersBeingUsed){_localctx.mipsCodeS += ((SpecialFunctionsContext)_localctx).i.mipsCodeS;}else{((SpecialFunctionsContext)_localctx).mipsCodeS =  ((SpecialFunctionsContext)_localctx).i.mipsCodeS;} /*if(isSet && ((SpecialFunctionsContext)_localctx).i.treeS!=null && _localctx.set!=null){((SpecialFunctionsContext)_localctx).treeS =  ((SpecialFunctionsContext)_localctx).i.treeS;}*/
 				}
 				break;
@@ -4738,7 +4738,7 @@ public class LissParser extends Parser {
 				enterOuterAlt(_localctx, 6);
 				{
 				setState(577);
-				((SpecialFunctionsContext)_localctx).l = ((SpecialFunctionsContext)_localctx).length = length(idTH, set);
+				((SpecialFunctionsContext)_localctx).l = ((SpecialFunctionsContext)_localctx).length = length(sT, set);
 				((SpecialFunctionsContext)_localctx).typeS =  ((SpecialFunctionsContext)_localctx).length.typeS; ((SpecialFunctionsContext)_localctx).line =  ((SpecialFunctionsContext)_localctx).length.line; ((SpecialFunctionsContext)_localctx).pos =  ((SpecialFunctionsContext)_localctx).length.pos; ((SpecialFunctionsContext)_localctx).treeS =  ((SpecialFunctionsContext)_localctx).l.treeS; if(areRegistersBeingUsed){_localctx.mipsCodeS += ((SpecialFunctionsContext)_localctx).l.mipsCodeS;}else{((SpecialFunctionsContext)_localctx).mipsCodeS =  ((SpecialFunctionsContext)_localctx).l.mipsCodeS;} /*if(isSet && ((SpecialFunctionsContext)_localctx).l.treeS!=null && _localctx.set!=null){((SpecialFunctionsContext)_localctx).treeS =  ((SpecialFunctionsContext)_localctx).l.treeS;}*/
 				}
 				break;
@@ -4746,7 +4746,7 @@ public class LissParser extends Parser {
 				enterOuterAlt(_localctx, 7);
 				{
 				setState(580);
-				((SpecialFunctionsContext)_localctx).d = ((SpecialFunctionsContext)_localctx).delete = delete(idTH, set);
+				((SpecialFunctionsContext)_localctx).d = ((SpecialFunctionsContext)_localctx).delete = delete(sT, set);
 				((SpecialFunctionsContext)_localctx).typeS =  ((SpecialFunctionsContext)_localctx).delete.typeS; ((SpecialFunctionsContext)_localctx).line =  ((SpecialFunctionsContext)_localctx).delete.line; ((SpecialFunctionsContext)_localctx).pos =  ((SpecialFunctionsContext)_localctx).delete.pos; ((SpecialFunctionsContext)_localctx).treeS =  ((SpecialFunctionsContext)_localctx).d.treeS; if(areRegistersBeingUsed){_localctx.mipsCodeS += ((SpecialFunctionsContext)_localctx).d.mipsCodeS;}else{((SpecialFunctionsContext)_localctx).mipsCodeS =  ((SpecialFunctionsContext)_localctx).d.mipsCodeS;} /*if(isSet && ((SpecialFunctionsContext)_localctx).d.treeS!=null && _localctx.set!=null){((SpecialFunctionsContext)_localctx).treeS =  ((SpecialFunctionsContext)_localctx).d.treeS;}*/
 				}
 				break;
@@ -4762,7 +4762,7 @@ public class LissParser extends Parser {
 
 			                        _localctx.mipsCodeS += m.textRestoreStateAfterCallingFunction(numberOfUsedRegisters);
 			                        //m.textRestoreStateAfterEndedCallingFunction(numberOfRegistersUsed)+m.textReturnResultOfSpecialFunctions(line, pos);
-			                        _localctx.idTH.popSP();
+			                        _localctx.sT.popSP();
 			                    }
 			                    _localctx.mipsCodeS += m.textReturnResultOfSpecialFunctions(_localctx.line, _localctx.pos);
 
@@ -5022,7 +5022,7 @@ public class LissParser extends Parser {
 	}
 
 	public static class Write_statementContext extends ParserRuleContext {
-		public IdentifiersTable idTH;
+		public SymbolTable sT;
 		public int line;
 		public int pos;
 		public Write_exprContext w;
@@ -5034,9 +5034,9 @@ public class LissParser extends Parser {
 			return getRuleContext(Print_whatContext.class,0);
 		}
 		public Write_statementContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public Write_statementContext(ParserRuleContext parent, int invokingState, IdentifiersTable idTH) {
+		public Write_statementContext(ParserRuleContext parent, int invokingState, SymbolTable sT) {
 			super(parent, invokingState);
-			this.idTH = idTH;
+			this.sT = sT;
 		}
 		@Override public int getRuleIndex() { return RULE_write_statement; }
 		@Override
@@ -5049,8 +5049,8 @@ public class LissParser extends Parser {
 		}
 	}
 
-	public final Write_statementContext write_statement(IdentifiersTable idTH) throws RecognitionException {
-		Write_statementContext _localctx = new Write_statementContext(_ctx, getState(), idTH);
+	public final Write_statementContext write_statement(SymbolTable sT) throws RecognitionException {
+		Write_statementContext _localctx = new Write_statementContext(_ctx, getState(), sT);
 		enterRule(_localctx, 90, RULE_write_statement);
 		try {
 			enterOuterAlt(_localctx, 1);
@@ -5060,7 +5060,7 @@ public class LissParser extends Parser {
 			setState(622);
 			match(T__25);
 			setState(623);
-			((Write_statementContext)_localctx).p = print_what(idTH);
+			((Write_statementContext)_localctx).p = print_what(sT);
 			setState(624);
 			match(T__26);
 
@@ -5069,8 +5069,8 @@ public class LissParser extends Parser {
 			                    String s1="";
 			                    if(((Write_statementContext)_localctx).p.mipsCodeS != null){
 			                        if(((Write_statementContext)_localctx).p.typeS!=null && ((Write_statementContext)_localctx).p.typeS.equals("array")){
-			                            if(_localctx.idTH.doesExist((((Write_statementContext)_localctx).p!=null?_input.getText(((Write_statementContext)_localctx).p.start,((Write_statementContext)_localctx).p.stop):null))){
-			                                Array a = (Array) _localctx.idTH.getInfoIdentifiersTable((((Write_statementContext)_localctx).p!=null?_input.getText(((Write_statementContext)_localctx).p.start,((Write_statementContext)_localctx).p.stop):null));
+			                            if(_localctx.sT.doesExist((((Write_statementContext)_localctx).p!=null?_input.getText(((Write_statementContext)_localctx).p.start,((Write_statementContext)_localctx).p.stop):null))){
+			                                Array a = (Array) _localctx.sT.getInfoIdentifier((((Write_statementContext)_localctx).p!=null?_input.getText(((Write_statementContext)_localctx).p.start,((Write_statementContext)_localctx).p.stop):null));
 
 			                                Integer level;
 			                                if((level = a.getLevel()).equals(0)){
@@ -5113,7 +5113,7 @@ public class LissParser extends Parser {
 			                                    String mipsCodeS = "";
 
 			                                    s1 = m.textWriteArray(true, false, false, _localctx.line, _localctx.pos);
-			                                    Integer positionOfArrayInSP = _localctx.idTH.getValueSP(level,(((Write_statementContext)_localctx).p!=null?_input.getText(((Write_statementContext)_localctx).p.start,((Write_statementContext)_localctx).p.stop):null));
+			                                    Integer positionOfArrayInSP = _localctx.sT.getValueSP(level,(((Write_statementContext)_localctx).p!=null?_input.getText(((Write_statementContext)_localctx).p.start,((Write_statementContext)_localctx).p.stop):null));
 
 			                                    for(int i=0; i<res*m.numberOfBytesForEachAddress(); i+= m.numberOfBytesForEachAddress()){
 			                                        mipsCodeS = m.loadWordSP(i+positionOfArrayInSP);
@@ -5135,9 +5135,9 @@ public class LissParser extends Parser {
 			                                }
 			                            }
 			                        }else if(((Write_statementContext)_localctx).p.typeS!=null && ((Write_statementContext)_localctx).p.typeS.equals("sequence")){
-			                            if(_localctx.idTH.doesExist((((Write_statementContext)_localctx).p!=null?_input.getText(((Write_statementContext)_localctx).p.start,((Write_statementContext)_localctx).p.stop):null))){
+			                            if(_localctx.sT.doesExist((((Write_statementContext)_localctx).p!=null?_input.getText(((Write_statementContext)_localctx).p.start,((Write_statementContext)_localctx).p.stop):null))){
 			                                //now we must add the level of the variable because it can be level 0 or superior (also take the variable and check the level)
-			                                Var v = (Var) _localctx.idTH.getInfoIdentifiersTable((((Write_statementContext)_localctx).p!=null?_input.getText(((Write_statementContext)_localctx).p.start,((Write_statementContext)_localctx).p.stop):null));
+			                                Var v = (Var) _localctx.sT.getInfoIdentifier((((Write_statementContext)_localctx).p!=null?_input.getText(((Write_statementContext)_localctx).p.start,((Write_statementContext)_localctx).p.stop):null));
 
 			                                s1 = m.textPrintSequence((((Write_statementContext)_localctx).p!=null?_input.getText(((Write_statementContext)_localctx).p.start,((Write_statementContext)_localctx).p.stop):null), functionState, v.getLevel(), ((Write_statementContext)_localctx).w.write, _localctx.line, _localctx.pos);
 
@@ -5230,7 +5230,7 @@ public class LissParser extends Parser {
 	}
 
 	public static class Print_whatContext extends ParserRuleContext {
-		public IdentifiersTable idTH;
+		public SymbolTable sT;
 		public String mipsCodeS;
 		public boolean isAString;
 		public String typeS;
@@ -5243,9 +5243,9 @@ public class LissParser extends Parser {
 			return getRuleContext(StringContext.class,0);
 		}
 		public Print_whatContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public Print_whatContext(ParserRuleContext parent, int invokingState, IdentifiersTable idTH) {
+		public Print_whatContext(ParserRuleContext parent, int invokingState, SymbolTable sT) {
 			super(parent, invokingState);
-			this.idTH = idTH;
+			this.sT = sT;
 		}
 		@Override public int getRuleIndex() { return RULE_print_what; }
 		@Override
@@ -5258,8 +5258,8 @@ public class LissParser extends Parser {
 		}
 	}
 
-	public final Print_whatContext print_what(IdentifiersTable idTH) throws RecognitionException {
-		Print_whatContext _localctx = new Print_whatContext(_ctx, getState(), idTH);
+	public final Print_whatContext print_what(SymbolTable sT) throws RecognitionException {
+		Print_whatContext _localctx = new Print_whatContext(_ctx, getState(), sT);
 		enterRule(_localctx, 94, RULE_print_what);
 
 		              Set tree = null;
@@ -5294,7 +5294,7 @@ public class LissParser extends Parser {
 				enterOuterAlt(_localctx, 2);
 				{
 				setState(634);
-				((Print_whatContext)_localctx).e = expression(idTH, tree);
+				((Print_whatContext)_localctx).e = expression(sT, tree);
 
 				                if( ((Print_whatContext)_localctx).e.typeS == null || ((Print_whatContext)_localctx).e.typeS.equals("set")){
 				                    e.addMessage(((Print_whatContext)_localctx).e.line,((Print_whatContext)_localctx).e.pos,ErrorMessage.semantic((((Print_whatContext)_localctx).e!=null?_input.getText(((Print_whatContext)_localctx).e.start,((Print_whatContext)_localctx).e.stop):null),ErrorMessage.type(((Print_whatContext)_localctx).e.typeS,"integer | boolean | sequence | array")));
@@ -5336,7 +5336,7 @@ public class LissParser extends Parser {
 	}
 
 	public static class Read_statementContext extends ParserRuleContext {
-		public IdentifiersTable idTH;
+		public SymbolTable sT;
 		public int line;
 		public int pos;
 		public Token in;
@@ -5345,9 +5345,9 @@ public class LissParser extends Parser {
 			return getRuleContext(IdentifierContext.class,0);
 		}
 		public Read_statementContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public Read_statementContext(ParserRuleContext parent, int invokingState, IdentifiersTable idTH) {
+		public Read_statementContext(ParserRuleContext parent, int invokingState, SymbolTable sT) {
 			super(parent, invokingState);
-			this.idTH = idTH;
+			this.sT = sT;
 		}
 		@Override public int getRuleIndex() { return RULE_read_statement; }
 		@Override
@@ -5360,8 +5360,8 @@ public class LissParser extends Parser {
 		}
 	}
 
-	public final Read_statementContext read_statement(IdentifiersTable idTH) throws RecognitionException {
-		Read_statementContext _localctx = new Read_statementContext(_ctx, getState(), idTH);
+	public final Read_statementContext read_statement(SymbolTable sT) throws RecognitionException {
+		Read_statementContext _localctx = new Read_statementContext(_ctx, getState(), sT);
 		enterRule(_localctx, 96, RULE_read_statement);
 		try {
 			enterOuterAlt(_localctx, 1);
@@ -5377,16 +5377,16 @@ public class LissParser extends Parser {
 
 			                  ((Read_statementContext)_localctx).line =  (((Read_statementContext)_localctx).in!=null?((Read_statementContext)_localctx).in.getLine():0);
 			                  ((Read_statementContext)_localctx).pos =  (((Read_statementContext)_localctx).in!=null?((Read_statementContext)_localctx).in.getCharPositionInLine():0);
-			                  if(_localctx.idTH.doesExist((((Read_statementContext)_localctx).i!=null?_input.getText(((Read_statementContext)_localctx).i.start,((Read_statementContext)_localctx).i.stop):null))){
-			                      Var v = (Var) _localctx.idTH.getInfoIdentifiersTable((((Read_statementContext)_localctx).i!=null?_input.getText(((Read_statementContext)_localctx).i.start,((Read_statementContext)_localctx).i.stop):null));
+			                  if(_localctx.sT.doesExist((((Read_statementContext)_localctx).i!=null?_input.getText(((Read_statementContext)_localctx).i.start,((Read_statementContext)_localctx).i.stop):null))){
+			                      Var v = (Var) _localctx.sT.getInfoIdentifier((((Read_statementContext)_localctx).i!=null?_input.getText(((Read_statementContext)_localctx).i.start,((Read_statementContext)_localctx).i.stop):null));
 			                      if(!(v != null && v.getCategory().equals("VAR") && v.getInfoType().equals("integer"))){       //verificar se existe e é tipo inteiro e class VAR
 			                        e.addMessage(((Read_statementContext)_localctx).i.line,((Read_statementContext)_localctx).i.pos,ErrorMessage.semantic((((Read_statementContext)_localctx).i!=null?_input.getText(((Read_statementContext)_localctx).i.start,((Read_statementContext)_localctx).i.stop):null),ErrorMessage.type(v.getInfoType(),"integer")));
 			                      }else{
 			                        String mipsCodeS=null,s=null;
-			                        /*if(_localctx.idTH.getInfoIdentifiersTable((((Read_statementContext)_localctx).i!=null?_input.getText(((Read_statementContext)_localctx).i.start,((Read_statementContext)_localctx).i.stop):null)).getLevel().equals(0)){
+			                        /*if(_localctx.sT.getInfoIdentifier((((Read_statementContext)_localctx).i!=null?_input.getText(((Read_statementContext)_localctx).i.start,((Read_statementContext)_localctx).i.stop):null)).getLevel().equals(0)){
 			                            s = m.textRead((((Read_statementContext)_localctx).i!=null?_input.getText(((Read_statementContext)_localctx).i.start,((Read_statementContext)_localctx).i.stop):null), ((Read_statementContext)_localctx).i.line, ((Read_statementContext)_localctx).i.pos);
 			                        }else{
-			                            //mipsCodeS = m.storeWordSP(_localctx.idTH.getValueSP(level,(((Read_statementContext)_localctx).i!=null?_input.getText(((Read_statementContext)_localctx).i.start,((Read_statementContext)_localctx).i.stop):null)));
+			                            //mipsCodeS = m.storeWordSP(_localctx.sT.getValueSP(level,(((Read_statementContext)_localctx).i!=null?_input.getText(((Read_statementContext)_localctx).i.start,((Read_statementContext)_localctx).i.stop):null)));
 			                            s = m.textRead((((Read_statementContext)_localctx).i!=null?_input.getText(((Read_statementContext)_localctx).i.start,((Read_statementContext)_localctx).i.stop):null), ((Read_statementContext)_localctx).i.line, ((Read_statementContext)_localctx).i.pos);
 			                        }*/
 
@@ -5418,7 +5418,7 @@ public class LissParser extends Parser {
 	}
 
 	public static class Conditional_statementContext extends ParserRuleContext {
-		public IdentifiersTable idTH;
+		public SymbolTable sT;
 		public int line;
 		public int pos;
 		public If_then_else_statContext i;
@@ -5426,9 +5426,9 @@ public class LissParser extends Parser {
 			return getRuleContext(If_then_else_statContext.class,0);
 		}
 		public Conditional_statementContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public Conditional_statementContext(ParserRuleContext parent, int invokingState, IdentifiersTable idTH) {
+		public Conditional_statementContext(ParserRuleContext parent, int invokingState, SymbolTable sT) {
 			super(parent, invokingState);
-			this.idTH = idTH;
+			this.sT = sT;
 		}
 		@Override public int getRuleIndex() { return RULE_conditional_statement; }
 		@Override
@@ -5441,14 +5441,14 @@ public class LissParser extends Parser {
 		}
 	}
 
-	public final Conditional_statementContext conditional_statement(IdentifiersTable idTH) throws RecognitionException {
-		Conditional_statementContext _localctx = new Conditional_statementContext(_ctx, getState(), idTH);
+	public final Conditional_statementContext conditional_statement(SymbolTable sT) throws RecognitionException {
+		Conditional_statementContext _localctx = new Conditional_statementContext(_ctx, getState(), sT);
 		enterRule(_localctx, 98, RULE_conditional_statement);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(648);
-			((Conditional_statementContext)_localctx).i = if_then_else_stat(idTH);
+			((Conditional_statementContext)_localctx).i = if_then_else_stat(sT);
 			 ((Conditional_statementContext)_localctx).line =  ((Conditional_statementContext)_localctx).i.line; ((Conditional_statementContext)_localctx).pos =  ((Conditional_statementContext)_localctx).i.pos; m.removeLastStack();
 			}
 		}
@@ -5464,7 +5464,7 @@ public class LissParser extends Parser {
 	}
 
 	public static class Iterative_statementContext extends ParserRuleContext {
-		public IdentifiersTable idTH;
+		public SymbolTable sT;
 		public int line;
 		public int pos;
 		public For_statContext f;
@@ -5476,9 +5476,9 @@ public class LissParser extends Parser {
 			return getRuleContext(While_statContext.class,0);
 		}
 		public Iterative_statementContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public Iterative_statementContext(ParserRuleContext parent, int invokingState, IdentifiersTable idTH) {
+		public Iterative_statementContext(ParserRuleContext parent, int invokingState, SymbolTable sT) {
 			super(parent, invokingState);
-			this.idTH = idTH;
+			this.sT = sT;
 		}
 		@Override public int getRuleIndex() { return RULE_iterative_statement; }
 		@Override
@@ -5491,8 +5491,8 @@ public class LissParser extends Parser {
 		}
 	}
 
-	public final Iterative_statementContext iterative_statement(IdentifiersTable idTH) throws RecognitionException {
-		Iterative_statementContext _localctx = new Iterative_statementContext(_ctx, getState(), idTH);
+	public final Iterative_statementContext iterative_statement(SymbolTable sT) throws RecognitionException {
+		Iterative_statementContext _localctx = new Iterative_statementContext(_ctx, getState(), sT);
 		enterRule(_localctx, 100, RULE_iterative_statement);
 		try {
 			setState(657);
@@ -5501,7 +5501,7 @@ public class LissParser extends Parser {
 				enterOuterAlt(_localctx, 1);
 				{
 				setState(651);
-				((Iterative_statementContext)_localctx).f = for_stat(idTH);
+				((Iterative_statementContext)_localctx).f = for_stat(sT);
 				((Iterative_statementContext)_localctx).line =  ((Iterative_statementContext)_localctx).f.line; ((Iterative_statementContext)_localctx).pos =  ((Iterative_statementContext)_localctx).f.pos;
 				}
 				break;
@@ -5509,7 +5509,7 @@ public class LissParser extends Parser {
 				enterOuterAlt(_localctx, 2);
 				{
 				setState(654);
-				((Iterative_statementContext)_localctx).w = while_stat(idTH);
+				((Iterative_statementContext)_localctx).w = while_stat(sT);
 				((Iterative_statementContext)_localctx).line =  ((Iterative_statementContext)_localctx).w.line; ((Iterative_statementContext)_localctx).pos =  ((Iterative_statementContext)_localctx).w.pos;
 				}
 				break;
@@ -5529,7 +5529,7 @@ public class LissParser extends Parser {
 	}
 
 	public static class If_then_else_statContext extends ParserRuleContext {
-		public IdentifiersTable idTH;
+		public SymbolTable sT;
 		public int line;
 		public int pos;
 		public Token i;
@@ -5546,9 +5546,9 @@ public class LissParser extends Parser {
 			return getRuleContext(Else_expressionContext.class,0);
 		}
 		public If_then_else_statContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public If_then_else_statContext(ParserRuleContext parent, int invokingState, IdentifiersTable idTH) {
+		public If_then_else_statContext(ParserRuleContext parent, int invokingState, SymbolTable sT) {
 			super(parent, invokingState);
-			this.idTH = idTH;
+			this.sT = sT;
 		}
 		@Override public int getRuleIndex() { return RULE_if_then_else_stat; }
 		@Override
@@ -5561,8 +5561,8 @@ public class LissParser extends Parser {
 		}
 	}
 
-	public final If_then_else_statContext if_then_else_stat(IdentifiersTable idTH) throws RecognitionException {
-		If_then_else_statContext _localctx = new If_then_else_statContext(_ctx, getState(), idTH);
+	public final If_then_else_statContext if_then_else_stat(SymbolTable sT) throws RecognitionException {
+		If_then_else_statContext _localctx = new If_then_else_statContext(_ctx, getState(), sT);
 		enterRule(_localctx, 102, RULE_if_then_else_stat);
 
 		                    Set tree = null;
@@ -5576,7 +5576,7 @@ public class LissParser extends Parser {
 			setState(660);
 			match(T__25);
 			setState(661);
-			((If_then_else_statContext)_localctx).e1 = expression(idTH, tree);
+			((If_then_else_statContext)_localctx).e1 = expression(sT, tree);
 			setState(662);
 			match(T__26);
 
@@ -5599,11 +5599,11 @@ public class LissParser extends Parser {
 			setState(665);
 			match(T__1);
 			setState(666);
-			((If_then_else_statContext)_localctx).s = statements(idTH);
+			((If_then_else_statContext)_localctx).s = statements(sT);
 			setState(667);
 			match(T__4);
 			setState(668);
-			((If_then_else_statContext)_localctx).e2 = else_expression(idTH, (((If_then_else_statContext)_localctx).i!=null?((If_then_else_statContext)_localctx).i.getLine():0), (((If_then_else_statContext)_localctx).i!=null?((If_then_else_statContext)_localctx).i.getCharPositionInLine():0));
+			((If_then_else_statContext)_localctx).e2 = else_expression(sT, (((If_then_else_statContext)_localctx).i!=null?((If_then_else_statContext)_localctx).i.getLine():0), (((If_then_else_statContext)_localctx).i!=null?((If_then_else_statContext)_localctx).i.getCharPositionInLine():0));
 			}
 		}
 		catch (RecognitionException re) {
@@ -5618,7 +5618,7 @@ public class LissParser extends Parser {
 	}
 
 	public static class Else_expressionContext extends ParserRuleContext {
-		public IdentifiersTable idTH;
+		public SymbolTable sT;
 		public int line;
 		public int pos;
 		public Token e;
@@ -5627,9 +5627,9 @@ public class LissParser extends Parser {
 			return getRuleContext(StatementsContext.class,0);
 		}
 		public Else_expressionContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public Else_expressionContext(ParserRuleContext parent, int invokingState, IdentifiersTable idTH, int line, int pos) {
+		public Else_expressionContext(ParserRuleContext parent, int invokingState, SymbolTable sT, int line, int pos) {
 			super(parent, invokingState);
-			this.idTH = idTH;
+			this.sT = sT;
 			this.line = line;
 			this.pos = pos;
 		}
@@ -5644,8 +5644,8 @@ public class LissParser extends Parser {
 		}
 	}
 
-	public final Else_expressionContext else_expression(IdentifiersTable idTH,int line,int pos) throws RecognitionException {
-		Else_expressionContext _localctx = new Else_expressionContext(_ctx, getState(), idTH, line, pos);
+	public final Else_expressionContext else_expression(SymbolTable sT,int line,int pos) throws RecognitionException {
+		Else_expressionContext _localctx = new Else_expressionContext(_ctx, getState(), sT, line, pos);
 		enterRule(_localctx, 104, RULE_else_expression);
 
 		                    String mipsCodeS = null;
@@ -5689,7 +5689,7 @@ public class LissParser extends Parser {
 				                        }
 				                    
 				setState(674);
-				((Else_expressionContext)_localctx).s = statements(idTH);
+				((Else_expressionContext)_localctx).s = statements(sT);
 				 String s3 = m.textJumpAfterElse((((Else_expressionContext)_localctx).e!=null?((Else_expressionContext)_localctx).e.getLine():0), (((Else_expressionContext)_localctx).e!=null?((Else_expressionContext)_localctx).e.getCharPositionInLine():0)); if(s3 != null){ if(functionState == false){m.addTextInstruction(s3);}else if(functionState == true){ m.addMipsCodeFunction(m.getNameFunction(),s3);}}
 				setState(676);
 				match(T__4);
@@ -5711,7 +5711,7 @@ public class LissParser extends Parser {
 	}
 
 	public static class For_statContext extends ParserRuleContext {
-		public IdentifiersTable idTH;
+		public SymbolTable sT;
 		public int line;
 		public int pos;
 		public Token f;
@@ -5732,9 +5732,9 @@ public class LissParser extends Parser {
 			return getRuleContext(StatementsContext.class,0);
 		}
 		public For_statContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public For_statContext(ParserRuleContext parent, int invokingState, IdentifiersTable idTH) {
+		public For_statContext(ParserRuleContext parent, int invokingState, SymbolTable sT) {
 			super(parent, invokingState);
-			this.idTH = idTH;
+			this.sT = sT;
 		}
 		@Override public int getRuleIndex() { return RULE_for_stat; }
 		@Override
@@ -5747,8 +5747,8 @@ public class LissParser extends Parser {
 		}
 	}
 
-	public final For_statContext for_stat(IdentifiersTable idTH) throws RecognitionException {
-		For_statContext _localctx = new For_statContext(_ctx, getState(), idTH);
+	public final For_statContext for_stat(SymbolTable sT) throws RecognitionException {
+		For_statContext _localctx = new For_statContext(_ctx, getState(), sT);
 		enterRule(_localctx, 106, RULE_for_stat);
 		try {
 			enterOuterAlt(_localctx, 1);
@@ -5758,7 +5758,7 @@ public class LissParser extends Parser {
 			setState(681);
 			match(T__25);
 			setState(682);
-			((For_statContext)_localctx).i = interval(idTH);
+			((For_statContext)_localctx).i = interval(sT);
 			setState(683);
 			match(T__26);
 			setState(684);
@@ -5770,15 +5770,15 @@ public class LissParser extends Parser {
 			                    e.addMessage((((For_statContext)_localctx).f!=null?((For_statContext)_localctx).f.getLine():0), (((For_statContext)_localctx).f!=null?((For_statContext)_localctx).f.getCharPositionInLine():0), ErrorMessage.forEachStep());
 			                }else{
 			                    String s1 = ((For_statContext)_localctx).i.mipsCodeS;
-			                    if(_localctx.idTH.doesExist(((For_statContext)_localctx).i.variableS)){
-			                        Integer positionFromSP = 0, variableLevel = _localctx.idTH.getInfoIdentifiersTable(((For_statContext)_localctx).i.variableS).getLevel(); //we must declare that for textForCondition function, it is needed for the use of variables for functions and also, not including IdentifiersTable into Mips class
+			                    if(_localctx.sT.doesExist(((For_statContext)_localctx).i.variableS)){
+			                        Integer positionFromSP = 0, variableLevel = _localctx.sT.getInfoIdentifier(((For_statContext)_localctx).i.variableS).getLevel(); //we must declare that for textForCondition function, it is needed for the use of variables for functions and also, not including SymbolTable into Mips class
 			                        if(!variableLevel.equals(0)){
-			                            positionFromSP = _localctx.idTH.getValueSP(level, ((For_statContext)_localctx).i.variableS);
+			                            positionFromSP = _localctx.sT.getValueSP(level, ((For_statContext)_localctx).i.variableS);
 			                        }
 			                        Integer positionFromSPArray = 0, arrayLevel = 0;
 			                        if(((For_statContext)_localctx).i.inArray){
-			                            positionFromSPArray = _localctx.idTH.getValueSP(level, ((For_statContext)_localctx).i.arrayS);
-			                            arrayLevel = _localctx.idTH.getInfoIdentifiersTable(((For_statContext)_localctx).i.arrayS).getLevel();
+			                            positionFromSPArray = _localctx.sT.getValueSP(level, ((For_statContext)_localctx).i.arrayS);
+			                            arrayLevel = _localctx.sT.getInfoIdentifier(((For_statContext)_localctx).i.arrayS).getLevel();
 			                        }
 			                        s1 += m.textForCondition(((For_statContext)_localctx).i.inArray,((For_statContext)_localctx).i.variableS,variableLevel,positionFromSP,((For_statContext)_localctx).i.arrayS, arrayLevel,positionFromSPArray, ((For_statContext)_localctx).i.maximumMipsCodeS, ((For_statContext)_localctx).s.stepUp, (((For_statContext)_localctx).f!=null?((For_statContext)_localctx).f.getLine():0), (((For_statContext)_localctx).f!=null?((For_statContext)_localctx).f.getCharPositionInLine():0));
 			                        if(functionState == false){
@@ -5791,7 +5791,7 @@ public class LissParser extends Parser {
 
 			            
 			setState(686);
-			((For_statContext)_localctx).s2 = satisfy(idTH);
+			((For_statContext)_localctx).s2 = satisfy(sT);
 
 
 			                if(((For_statContext)_localctx).i.inArray == true && ((For_statContext)_localctx).s2.satisfyingS == true){
@@ -5809,20 +5809,20 @@ public class LissParser extends Parser {
 			setState(688);
 			match(T__1);
 			setState(689);
-			((For_statContext)_localctx).s3 = statements(idTH);
+			((For_statContext)_localctx).s3 = statements(sT);
 			setState(690);
 			match(T__4);
 
-			                if(_localctx.idTH.doesExist(((For_statContext)_localctx).i.variableS)){
+			                if(_localctx.sT.doesExist(((For_statContext)_localctx).i.variableS)){
 			                    String  l = null;
 			                    if(((For_statContext)_localctx).s2.mipsCodeS!=null){
 			                        l = m.textForSatisfyingEnd(functionState, ((For_statContext)_localctx).s3.line, ((For_statContext)_localctx).s3.pos);
 			                    }
 			                    //P.C. = inArray, stepBoolean, StepValue
 			                    Integer levelVariable = 0, positionFromSP = 0;
-			                    if(!_localctx.idTH.getInfoIdentifiersTable(((For_statContext)_localctx).i.variableS).getLevel().equals(0)){
-			                        levelVariable = _localctx.idTH.getInfoIdentifiersTable(((For_statContext)_localctx).i.variableS).getLevel();
-			                        positionFromSP = _localctx.idTH.getValueSP(level, ((For_statContext)_localctx).i.variableS);
+			                    if(!_localctx.sT.getInfoIdentifier(((For_statContext)_localctx).i.variableS).getLevel().equals(0)){
+			                        levelVariable = _localctx.sT.getInfoIdentifier(((For_statContext)_localctx).i.variableS).getLevel();
+			                        positionFromSP = _localctx.sT.getValueSP(level, ((For_statContext)_localctx).i.variableS);
 			                    }
 			                    if(l!=null){
 			                        l += m.textForStep(functionState, ((For_statContext)_localctx).i.variableS, levelVariable,positionFromSP, ((For_statContext)_localctx).i.inArray, ((For_statContext)_localctx).s.stepUp, ((For_statContext)_localctx).s.numberS, ((For_statContext)_localctx).s3.line, ((For_statContext)_localctx).s3.pos);
@@ -5851,7 +5851,7 @@ public class LissParser extends Parser {
 	}
 
 	public static class IntervalContext extends ParserRuleContext {
-		public IdentifiersTable idTH;
+		public SymbolTable sT;
 		public String mipsCodeS;
 		public boolean inArray;
 		public String maximumMipsCodeS;
@@ -5866,9 +5866,9 @@ public class LissParser extends Parser {
 			return getRuleContext(Type_intervalContext.class,0);
 		}
 		public IntervalContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public IntervalContext(ParserRuleContext parent, int invokingState, IdentifiersTable idTH) {
+		public IntervalContext(ParserRuleContext parent, int invokingState, SymbolTable sT) {
 			super(parent, invokingState);
-			this.idTH = idTH;
+			this.sT = sT;
 		}
 		@Override public int getRuleIndex() { return RULE_interval; }
 		@Override
@@ -5881,8 +5881,8 @@ public class LissParser extends Parser {
 		}
 	}
 
-	public final IntervalContext interval(IdentifiersTable idTH) throws RecognitionException {
-		IntervalContext _localctx = new IntervalContext(_ctx, getState(), idTH);
+	public final IntervalContext interval(SymbolTable sT) throws RecognitionException {
+		IntervalContext _localctx = new IntervalContext(_ctx, getState(), sT);
 		enterRule(_localctx, 108, RULE_interval);
 
 		            ((IntervalContext)_localctx).mipsCodeS =  null;
@@ -5895,10 +5895,10 @@ public class LissParser extends Parser {
 			setState(693);
 			((IntervalContext)_localctx).i = identifier();
 			setState(694);
-			((IntervalContext)_localctx).t = type_interval(idTH,(((IntervalContext)_localctx).i!=null?_input.getText(((IntervalContext)_localctx).i.start,((IntervalContext)_localctx).i.stop):null));
+			((IntervalContext)_localctx).t = type_interval(sT,(((IntervalContext)_localctx).i!=null?_input.getText(((IntervalContext)_localctx).i.start,((IntervalContext)_localctx).i.stop):null));
 
-			            if(_localctx.idTH.doesExist((((IntervalContext)_localctx).i!=null?_input.getText(((IntervalContext)_localctx).i.start,((IntervalContext)_localctx).i.stop):null))){
-			                Var v = (Var) _localctx.idTH.getInfoIdentifiersTable((((IntervalContext)_localctx).i!=null?_input.getText(((IntervalContext)_localctx).i.start,((IntervalContext)_localctx).i.stop):null));
+			            if(_localctx.sT.doesExist((((IntervalContext)_localctx).i!=null?_input.getText(((IntervalContext)_localctx).i.start,((IntervalContext)_localctx).i.stop):null))){
+			                Var v = (Var) _localctx.sT.getInfoIdentifier((((IntervalContext)_localctx).i!=null?_input.getText(((IntervalContext)_localctx).i.start,((IntervalContext)_localctx).i.stop):null));
 			                if(!(v != null && v.getCategory().equals("VAR") && v.getInfoType().equals("integer"))){   //identifier tem que pertencer a tabela, cat VAR e tipo inteiro
 			                    e.addMessage(((IntervalContext)_localctx).i.line,((IntervalContext)_localctx).i.pos,ErrorMessage.semantic((((IntervalContext)_localctx).i!=null?_input.getText(((IntervalContext)_localctx).i.start,((IntervalContext)_localctx).i.stop):null),ErrorMessage.type(v.getInfoType(),"integer")));
 			                }else{
@@ -5926,7 +5926,7 @@ public class LissParser extends Parser {
 	}
 
 	public static class Type_intervalContext extends ParserRuleContext {
-		public IdentifiersTable idTH;
+		public SymbolTable sT;
 		public String variable;
 		public String minimumMipsCodeS;
 		public String maximumMipsCodeS;
@@ -5941,9 +5941,9 @@ public class LissParser extends Parser {
 			return getRuleContext(IdentifierContext.class,0);
 		}
 		public Type_intervalContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public Type_intervalContext(ParserRuleContext parent, int invokingState, IdentifiersTable idTH, String variable) {
+		public Type_intervalContext(ParserRuleContext parent, int invokingState, SymbolTable sT, String variable) {
 			super(parent, invokingState);
-			this.idTH = idTH;
+			this.sT = sT;
 			this.variable = variable;
 		}
 		@Override public int getRuleIndex() { return RULE_type_interval; }
@@ -5957,8 +5957,8 @@ public class LissParser extends Parser {
 		}
 	}
 
-	public final Type_intervalContext type_interval(IdentifiersTable idTH,String variable) throws RecognitionException {
-		Type_intervalContext _localctx = new Type_intervalContext(_ctx, getState(), idTH, variable);
+	public final Type_intervalContext type_interval(SymbolTable sT,String variable) throws RecognitionException {
+		Type_intervalContext _localctx = new Type_intervalContext(_ctx, getState(), sT, variable);
 		enterRule(_localctx, 110, RULE_type_interval);
 
 		                ((Type_intervalContext)_localctx).inArrayS =  false;
@@ -5973,7 +5973,7 @@ public class LissParser extends Parser {
 				setState(697);
 				match(T__41);
 				setState(698);
-				((Type_intervalContext)_localctx).r = range(idTH,variable,_localctx.inArrayS);
+				((Type_intervalContext)_localctx).r = range(sT,variable,_localctx.inArrayS);
 				((Type_intervalContext)_localctx).minimumMipsCodeS =  ((Type_intervalContext)_localctx).r.minimumMipsCodeS; ((Type_intervalContext)_localctx).maximumMipsCodeS =  ((Type_intervalContext)_localctx).r.maximumMipsCodeS;
 				}
 				break;
@@ -5987,8 +5987,8 @@ public class LissParser extends Parser {
 
 				                                        ((Type_intervalContext)_localctx).inArrayS =  true;
 
-				                                        if(_localctx.idTH.doesExist((((Type_intervalContext)_localctx).i!=null?_input.getText(((Type_intervalContext)_localctx).i.start,((Type_intervalContext)_localctx).i.stop):null))){
-				                                            Var v = (Var) _localctx.idTH.getInfoIdentifiersTable((((Type_intervalContext)_localctx).i!=null?_input.getText(((Type_intervalContext)_localctx).i.start,((Type_intervalContext)_localctx).i.stop):null));
+				                                        if(_localctx.sT.doesExist((((Type_intervalContext)_localctx).i!=null?_input.getText(((Type_intervalContext)_localctx).i.start,((Type_intervalContext)_localctx).i.stop):null))){
+				                                            Var v = (Var) _localctx.sT.getInfoIdentifier((((Type_intervalContext)_localctx).i!=null?_input.getText(((Type_intervalContext)_localctx).i.start,((Type_intervalContext)_localctx).i.stop):null));
 				                                            if(!(v != null && v.getCategory().equals("VAR") && v.getInfoType().equals("array"))){   //identifier => Array e cat VAR
 				                                                e.addMessage(((Type_intervalContext)_localctx).i.line,((Type_intervalContext)_localctx).i.pos,ErrorMessage.semantic((((Type_intervalContext)_localctx).i!=null?_input.getText(((Type_intervalContext)_localctx).i.start,((Type_intervalContext)_localctx).i.stop):null),ErrorMessage.type(v.getInfoType(),"integer")));
 				                                            }else{
@@ -5996,14 +5996,14 @@ public class LissParser extends Parser {
 				                                                    String s = m.loadImmediateWord("0", ((Type_intervalContext)_localctx).i.line, ((Type_intervalContext)_localctx).i.pos); // 0 because "inArray" is a foreach !! So it must pass to every position of the array. That's why we begin by 0 until the maximum of the dimension of the array.
 
 				                                                    Integer levelVariable = 0, positionFromSP = 0;
-				                                                    if(!_localctx.idTH.getInfoIdentifiersTable(_localctx.variable).getLevel().equals(0)){
-				                                                        levelVariable = _localctx.idTH.getInfoIdentifiersTable(_localctx.variable).getLevel();
-				                                                        positionFromSP = _localctx.idTH.getValueSP(level,_localctx.variable);
+				                                                    if(!_localctx.sT.getInfoIdentifier(_localctx.variable).getLevel().equals(0)){
+				                                                        levelVariable = _localctx.sT.getInfoIdentifier(_localctx.variable).getLevel();
+				                                                        positionFromSP = _localctx.sT.getValueSP(level,_localctx.variable);
 				                                                    }
 				                                                    ((Type_intervalContext)_localctx).minimumMipsCodeS =  m.textForInit(functionState, _localctx.inArrayS,_localctx.variable,levelVariable,positionFromSP,s, ((Type_intervalContext)_localctx).i.line, ((Type_intervalContext)_localctx).i.pos);
 
 				                                                    // We need to do the code for maximum ! we need to calculate the size of the array !
-				                                                    Array a = (Array) _localctx.idTH.getInfoIdentifiersTable((((Type_intervalContext)_localctx).i!=null?_input.getText(((Type_intervalContext)_localctx).i.start,((Type_intervalContext)_localctx).i.stop):null));
+				                                                    Array a = (Array) _localctx.sT.getInfoIdentifier((((Type_intervalContext)_localctx).i!=null?_input.getText(((Type_intervalContext)_localctx).i.start,((Type_intervalContext)_localctx).i.stop):null));
 				                                                    Integer res =  new Integer(1);
 				                                                    for(Integer i : a.getLimits()){
 				                                                        res = res * i;
@@ -6037,7 +6037,7 @@ public class LissParser extends Parser {
 	}
 
 	public static class RangeContext extends ParserRuleContext {
-		public IdentifiersTable idTH;
+		public SymbolTable sT;
 		public String variable;
 		public boolean inArray;
 		public String minimumMipsCodeS;
@@ -6051,9 +6051,9 @@ public class LissParser extends Parser {
 			return getRuleContext(MaximumContext.class,0);
 		}
 		public RangeContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public RangeContext(ParserRuleContext parent, int invokingState, IdentifiersTable idTH, String variable, boolean inArray) {
+		public RangeContext(ParserRuleContext parent, int invokingState, SymbolTable sT, String variable, boolean inArray) {
 			super(parent, invokingState);
-			this.idTH = idTH;
+			this.sT = sT;
 			this.variable = variable;
 			this.inArray = inArray;
 		}
@@ -6068,18 +6068,18 @@ public class LissParser extends Parser {
 		}
 	}
 
-	public final RangeContext range(IdentifiersTable idTH,String variable,boolean inArray) throws RecognitionException {
-		RangeContext _localctx = new RangeContext(_ctx, getState(), idTH, variable, inArray);
+	public final RangeContext range(SymbolTable sT,String variable,boolean inArray) throws RecognitionException {
+		RangeContext _localctx = new RangeContext(_ctx, getState(), sT, variable, inArray);
 		enterRule(_localctx, 112, RULE_range);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(707);
-			((RangeContext)_localctx).m1 = minimum(idTH,variable,_localctx.inArray);
+			((RangeContext)_localctx).m1 = minimum(sT,variable,_localctx.inArray);
 			setState(708);
 			match(T__50);
 			setState(709);
-			((RangeContext)_localctx).m2 = maximum(idTH);
+			((RangeContext)_localctx).m2 = maximum(sT);
 			 ((RangeContext)_localctx).minimumMipsCodeS =  ((RangeContext)_localctx).m1.mipsCodeS; ((RangeContext)_localctx).maximumMipsCodeS =  ((RangeContext)_localctx).m2.mipsCodeS;
 			}
 		}
@@ -6095,7 +6095,7 @@ public class LissParser extends Parser {
 	}
 
 	public static class MinimumContext extends ParserRuleContext {
-		public IdentifiersTable idTH;
+		public SymbolTable sT;
 		public String variable;
 		public boolean inArray;
 		public String mipsCodeS;
@@ -6108,9 +6108,9 @@ public class LissParser extends Parser {
 			return getRuleContext(IdentifierContext.class,0);
 		}
 		public MinimumContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public MinimumContext(ParserRuleContext parent, int invokingState, IdentifiersTable idTH, String variable, boolean inArray) {
+		public MinimumContext(ParserRuleContext parent, int invokingState, SymbolTable sT, String variable, boolean inArray) {
 			super(parent, invokingState);
-			this.idTH = idTH;
+			this.sT = sT;
 			this.variable = variable;
 			this.inArray = inArray;
 		}
@@ -6125,8 +6125,8 @@ public class LissParser extends Parser {
 		}
 	}
 
-	public final MinimumContext minimum(IdentifiersTable idTH,String variable,boolean inArray) throws RecognitionException {
-		MinimumContext _localctx = new MinimumContext(_ctx, getState(), idTH, variable, inArray);
+	public final MinimumContext minimum(SymbolTable sT,String variable,boolean inArray) throws RecognitionException {
+		MinimumContext _localctx = new MinimumContext(_ctx, getState(), sT, variable, inArray);
 		enterRule(_localctx, 114, RULE_minimum);
 		try {
 			setState(718);
@@ -6139,9 +6139,9 @@ public class LissParser extends Parser {
 
 				                            String s = m.loadImmediateWord((((MinimumContext)_localctx).n!=null?_input.getText(((MinimumContext)_localctx).n.start,((MinimumContext)_localctx).n.stop):null), ((MinimumContext)_localctx).n.line, ((MinimumContext)_localctx).n.pos);
 				                            Integer variableLevel = 0,  positionFromSP = 0;
-				                            if(_localctx.idTH.doesExist(_localctx.variable)==true && !_localctx.idTH.getInfoIdentifiersTable(_localctx.variable).getLevel().equals(0)){
-				                                variableLevel = _localctx.idTH.getInfoIdentifiersTable(_localctx.variable).getLevel();
-				                                positionFromSP = _localctx.idTH.getValueSP(level,_localctx.variable);
+				                            if(_localctx.sT.doesExist(_localctx.variable)==true && !_localctx.sT.getInfoIdentifier(_localctx.variable).getLevel().equals(0)){
+				                                variableLevel = _localctx.sT.getInfoIdentifier(_localctx.variable).getLevel();
+				                                positionFromSP = _localctx.sT.getValueSP(level,_localctx.variable);
 				                            }
 				                            ((MinimumContext)_localctx).mipsCodeS =  m.textForInit(functionState, _localctx.inArray,_localctx.variable,variableLevel,positionFromSP,s, ((MinimumContext)_localctx).n.line, ((MinimumContext)_localctx).n.pos);
 				                          
@@ -6153,21 +6153,21 @@ public class LissParser extends Parser {
 				setState(715);
 				((MinimumContext)_localctx).i = identifier();
 
-				            if(_localctx.idTH.doesExist((((MinimumContext)_localctx).i!=null?_input.getText(((MinimumContext)_localctx).i.start,((MinimumContext)_localctx).i.stop):null))){
-				                Var v = (Var) _localctx.idTH.getInfoIdentifiersTable((((MinimumContext)_localctx).i!=null?_input.getText(((MinimumContext)_localctx).i.start,((MinimumContext)_localctx).i.stop):null));
+				            if(_localctx.sT.doesExist((((MinimumContext)_localctx).i!=null?_input.getText(((MinimumContext)_localctx).i.start,((MinimumContext)_localctx).i.stop):null))){
+				                Var v = (Var) _localctx.sT.getInfoIdentifier((((MinimumContext)_localctx).i!=null?_input.getText(((MinimumContext)_localctx).i.start,((MinimumContext)_localctx).i.stop):null));
 				                if(!(v != null && v.getCategory().equals("VAR") && v.getInfoType().equals("integer"))){       //tem que existir e tem que ser variavel tipo inteiro , cat VAR
 				                    e.addMessage(((MinimumContext)_localctx).i.line,((MinimumContext)_localctx).i.pos,ErrorMessage.semantic((((MinimumContext)_localctx).i!=null?_input.getText(((MinimumContext)_localctx).i.start,((MinimumContext)_localctx).i.stop):null),ErrorMessage.type(v.getInfoType(),"integer")));
 				                }else{
 				                    String s;
-				                    if(_localctx.idTH.getInfoIdentifiersTable((((MinimumContext)_localctx).i!=null?_input.getText(((MinimumContext)_localctx).i.start,((MinimumContext)_localctx).i.stop):null)).getLevel().equals(0)){
+				                    if(_localctx.sT.getInfoIdentifier((((MinimumContext)_localctx).i!=null?_input.getText(((MinimumContext)_localctx).i.start,((MinimumContext)_localctx).i.stop):null)).getLevel().equals(0)){
 				                        s = m.loadWord((((MinimumContext)_localctx).i!=null?_input.getText(((MinimumContext)_localctx).i.start,((MinimumContext)_localctx).i.stop):null), ((MinimumContext)_localctx).i.line, ((MinimumContext)_localctx).i.pos);
 				                    }else{
-				                        s = m.loadWordSP(_localctx.idTH.getValueSP(level,(((MinimumContext)_localctx).i!=null?_input.getText(((MinimumContext)_localctx).i.start,((MinimumContext)_localctx).i.stop):null)));
+				                        s = m.loadWordSP(_localctx.sT.getValueSP(level,(((MinimumContext)_localctx).i!=null?_input.getText(((MinimumContext)_localctx).i.start,((MinimumContext)_localctx).i.stop):null)));
 				                    }
 				                    Integer variableLevel = 0,  positionFromSP = 0;
-				                    if(!_localctx.idTH.getInfoIdentifiersTable(_localctx.variable).getLevel().equals(0)){
-				                        variableLevel = _localctx.idTH.getInfoIdentifiersTable(_localctx.variable).getLevel();
-				                        positionFromSP = _localctx.idTH.getValueSP(level,_localctx.variable);
+				                    if(!_localctx.sT.getInfoIdentifier(_localctx.variable).getLevel().equals(0)){
+				                        variableLevel = _localctx.sT.getInfoIdentifier(_localctx.variable).getLevel();
+				                        positionFromSP = _localctx.sT.getValueSP(level,_localctx.variable);
 				                    }
 				                    ((MinimumContext)_localctx).mipsCodeS =  m.textForInit(functionState, _localctx.inArray,_localctx.variable,variableLevel,positionFromSP,s, ((MinimumContext)_localctx).i.line, ((MinimumContext)_localctx).i.pos);
 				                }
@@ -6193,7 +6193,7 @@ public class LissParser extends Parser {
 	}
 
 	public static class MaximumContext extends ParserRuleContext {
-		public IdentifiersTable idTH;
+		public SymbolTable sT;
 		public String mipsCodeS;
 		public NumberContext n;
 		public IdentifierContext i;
@@ -6204,9 +6204,9 @@ public class LissParser extends Parser {
 			return getRuleContext(IdentifierContext.class,0);
 		}
 		public MaximumContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public MaximumContext(ParserRuleContext parent, int invokingState, IdentifiersTable idTH) {
+		public MaximumContext(ParserRuleContext parent, int invokingState, SymbolTable sT) {
 			super(parent, invokingState);
-			this.idTH = idTH;
+			this.sT = sT;
 		}
 		@Override public int getRuleIndex() { return RULE_maximum; }
 		@Override
@@ -6219,8 +6219,8 @@ public class LissParser extends Parser {
 		}
 	}
 
-	public final MaximumContext maximum(IdentifiersTable idTH) throws RecognitionException {
-		MaximumContext _localctx = new MaximumContext(_ctx, getState(), idTH);
+	public final MaximumContext maximum(SymbolTable sT) throws RecognitionException {
+		MaximumContext _localctx = new MaximumContext(_ctx, getState(), sT);
 		enterRule(_localctx, 116, RULE_maximum);
 		try {
 			setState(726);
@@ -6243,16 +6243,16 @@ public class LissParser extends Parser {
 				setState(723);
 				((MaximumContext)_localctx).i = identifier();
 
-				            if(_localctx.idTH.doesExist((((MaximumContext)_localctx).i!=null?_input.getText(((MaximumContext)_localctx).i.start,((MaximumContext)_localctx).i.stop):null))){
-				                Var v = (Var) _localctx.idTH.getInfoIdentifiersTable((((MaximumContext)_localctx).i!=null?_input.getText(((MaximumContext)_localctx).i.start,((MaximumContext)_localctx).i.stop):null));
+				            if(_localctx.sT.doesExist((((MaximumContext)_localctx).i!=null?_input.getText(((MaximumContext)_localctx).i.start,((MaximumContext)_localctx).i.stop):null))){
+				                Var v = (Var) _localctx.sT.getInfoIdentifier((((MaximumContext)_localctx).i!=null?_input.getText(((MaximumContext)_localctx).i.start,((MaximumContext)_localctx).i.stop):null));
 				                if(!(v != null && v.getCategory().equals("VAR") && v.getInfoType().equals("integer"))){       //tem que existir e tem que ser variavel tipo inteiro , cat VAR
 				                    e.addMessage(((MaximumContext)_localctx).i.line,((MaximumContext)_localctx).i.pos,ErrorMessage.semantic((((MaximumContext)_localctx).i!=null?_input.getText(((MaximumContext)_localctx).i.start,((MaximumContext)_localctx).i.stop):null),ErrorMessage.type(v.getInfoType(),"integer")));
 				                }else{
 				                    //String s;
-				                    if(_localctx.idTH.getInfoIdentifiersTable((((MaximumContext)_localctx).i!=null?_input.getText(((MaximumContext)_localctx).i.start,((MaximumContext)_localctx).i.stop):null)).getLevel().equals(0)){
+				                    if(_localctx.sT.getInfoIdentifier((((MaximumContext)_localctx).i!=null?_input.getText(((MaximumContext)_localctx).i.start,((MaximumContext)_localctx).i.stop):null)).getLevel().equals(0)){
 				                        ((MaximumContext)_localctx).mipsCodeS =  m.loadWord((((MaximumContext)_localctx).i!=null?_input.getText(((MaximumContext)_localctx).i.start,((MaximumContext)_localctx).i.stop):null), ((MaximumContext)_localctx).i.line, ((MaximumContext)_localctx).i.pos);
 				                    }else{
-				                        ((MaximumContext)_localctx).mipsCodeS =  m.loadWordSP(_localctx.idTH.getValueSP(level,(((MaximumContext)_localctx).i!=null?_input.getText(((MaximumContext)_localctx).i.start,((MaximumContext)_localctx).i.stop):null)));
+				                        ((MaximumContext)_localctx).mipsCodeS =  m.loadWordSP(_localctx.sT.getValueSP(level,(((MaximumContext)_localctx).i!=null?_input.getText(((MaximumContext)_localctx).i.start,((MaximumContext)_localctx).i.stop):null)));
 				                    }
 				                    //((MaximumContext)_localctx).mipsCodeS =  m.loadWord((((MaximumContext)_localctx).i!=null?_input.getText(((MaximumContext)_localctx).i.start,((MaximumContext)_localctx).i.stop):null), ((MaximumContext)_localctx).i.line, ((MaximumContext)_localctx).i.pos);
 				                }
@@ -6400,7 +6400,7 @@ public class LissParser extends Parser {
 	}
 
 	public static class SatisfyContext extends ParserRuleContext {
-		public IdentifiersTable idTH;
+		public SymbolTable sT;
 		public String mipsCodeS;
 		public boolean satisfyingS;
 		public int line;
@@ -6410,9 +6410,9 @@ public class LissParser extends Parser {
 			return getRuleContext(ExpressionContext.class,0);
 		}
 		public SatisfyContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public SatisfyContext(ParserRuleContext parent, int invokingState, IdentifiersTable idTH) {
+		public SatisfyContext(ParserRuleContext parent, int invokingState, SymbolTable sT) {
 			super(parent, invokingState);
-			this.idTH = idTH;
+			this.sT = sT;
 		}
 		@Override public int getRuleIndex() { return RULE_satisfy; }
 		@Override
@@ -6425,8 +6425,8 @@ public class LissParser extends Parser {
 		}
 	}
 
-	public final SatisfyContext satisfy(IdentifiersTable idTH) throws RecognitionException {
-		SatisfyContext _localctx = new SatisfyContext(_ctx, getState(), idTH);
+	public final SatisfyContext satisfy(SymbolTable sT) throws RecognitionException {
+		SatisfyContext _localctx = new SatisfyContext(_ctx, getState(), sT);
 		enterRule(_localctx, 122, RULE_satisfy);
 
 		            Set tree = null;
@@ -6447,7 +6447,7 @@ public class LissParser extends Parser {
 				setState(741);
 				match(T__53);
 				setState(742);
-				((SatisfyContext)_localctx).e = expression(idTH, tree);
+				((SatisfyContext)_localctx).e = expression(sT, tree);
 				   ((SatisfyContext)_localctx).line =  ((SatisfyContext)_localctx).e.line;
 				            ((SatisfyContext)_localctx).pos =  ((SatisfyContext)_localctx).e.pos;
 				            ((SatisfyContext)_localctx).satisfyingS =  true;
@@ -6475,7 +6475,7 @@ public class LissParser extends Parser {
 	}
 
 	public static class While_statContext extends ParserRuleContext {
-		public IdentifiersTable idTH;
+		public SymbolTable sT;
 		public int line;
 		public int pos;
 		public Token w;
@@ -6488,9 +6488,9 @@ public class LissParser extends Parser {
 			return getRuleContext(ExpressionContext.class,0);
 		}
 		public While_statContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public While_statContext(ParserRuleContext parent, int invokingState, IdentifiersTable idTH) {
+		public While_statContext(ParserRuleContext parent, int invokingState, SymbolTable sT) {
 			super(parent, invokingState);
-			this.idTH = idTH;
+			this.sT = sT;
 		}
 		@Override public int getRuleIndex() { return RULE_while_stat; }
 		@Override
@@ -6503,8 +6503,8 @@ public class LissParser extends Parser {
 		}
 	}
 
-	public final While_statContext while_stat(IdentifiersTable idTH) throws RecognitionException {
-		While_statContext _localctx = new While_statContext(_ctx, getState(), idTH);
+	public final While_statContext while_stat(SymbolTable sT) throws RecognitionException {
+		While_statContext _localctx = new While_statContext(_ctx, getState(), sT);
 		enterRule(_localctx, 124, RULE_while_stat);
 
 		              Set tree = null;
@@ -6517,7 +6517,7 @@ public class LissParser extends Parser {
 			setState(748);
 			match(T__25);
 			setState(749);
-			((While_statContext)_localctx).e = expression(idTH, tree);
+			((While_statContext)_localctx).e = expression(sT, tree);
 			setState(750);
 			match(T__26);
 
@@ -6541,7 +6541,7 @@ public class LissParser extends Parser {
 			setState(752);
 			match(T__1);
 			setState(753);
-			statements(idTH);
+			statements(sT);
 			setState(754);
 			((While_statContext)_localctx).l = match(T__4);
 
@@ -6569,7 +6569,7 @@ public class LissParser extends Parser {
 	}
 
 	public static class Succ_or_predContext extends ParserRuleContext {
-		public IdentifiersTable idTH;
+		public SymbolTable sT;
 		public int line;
 		public int pos;
 		public Succ_predContext s;
@@ -6581,9 +6581,9 @@ public class LissParser extends Parser {
 			return getRuleContext(IdentifierContext.class,0);
 		}
 		public Succ_or_predContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public Succ_or_predContext(ParserRuleContext parent, int invokingState, IdentifiersTable idTH) {
+		public Succ_or_predContext(ParserRuleContext parent, int invokingState, SymbolTable sT) {
 			super(parent, invokingState);
-			this.idTH = idTH;
+			this.sT = sT;
 		}
 		@Override public int getRuleIndex() { return RULE_succ_or_pred; }
 		@Override
@@ -6596,8 +6596,8 @@ public class LissParser extends Parser {
 		}
 	}
 
-	public final Succ_or_predContext succ_or_pred(IdentifiersTable idTH) throws RecognitionException {
-		Succ_or_predContext _localctx = new Succ_or_predContext(_ctx, getState(), idTH);
+	public final Succ_or_predContext succ_or_pred(SymbolTable sT) throws RecognitionException {
+		Succ_or_predContext _localctx = new Succ_or_predContext(_ctx, getState(), sT);
 		enterRule(_localctx, 126, RULE_succ_or_pred);
 		try {
 			enterOuterAlt(_localctx, 1);
@@ -6609,8 +6609,8 @@ public class LissParser extends Parser {
 
 			                ((Succ_or_predContext)_localctx).line =  ((Succ_or_predContext)_localctx).s.line;
 			                ((Succ_or_predContext)_localctx).pos =  ((Succ_or_predContext)_localctx).s.pos;
-			                if(_localctx.idTH.doesExist((((Succ_or_predContext)_localctx).i!=null?_input.getText(((Succ_or_predContext)_localctx).i.start,((Succ_or_predContext)_localctx).i.stop):null))){
-			                    Var v = (Var) _localctx.idTH.getInfoIdentifiersTable((((Succ_or_predContext)_localctx).i!=null?_input.getText(((Succ_or_predContext)_localctx).i.start,((Succ_or_predContext)_localctx).i.stop):null));
+			                if(_localctx.sT.doesExist((((Succ_or_predContext)_localctx).i!=null?_input.getText(((Succ_or_predContext)_localctx).i.start,((Succ_or_predContext)_localctx).i.stop):null))){
+			                    Var v = (Var) _localctx.sT.getInfoIdentifier((((Succ_or_predContext)_localctx).i!=null?_input.getText(((Succ_or_predContext)_localctx).i.start,((Succ_or_predContext)_localctx).i.stop):null));
 			                    if( !( (((Succ_or_predContext)_localctx).i!=null?_input.getText(((Succ_or_predContext)_localctx).i.start,((Succ_or_predContext)_localctx).i.stop):null).matches("^[0-9]+$") || (v != null && v.getCategory().equals("VAR") && v.getInfoType().equals("integer")) ) ){
 			                        e.addMessage(((Succ_or_predContext)_localctx).i.line,((Succ_or_predContext)_localctx).i.pos,ErrorMessage.semantic((((Succ_or_predContext)_localctx).i!=null?_input.getText(((Succ_or_predContext)_localctx).i.start,((Succ_or_predContext)_localctx).i.stop):null),ErrorMessage.type("null","integer")));
 			                    }else{
@@ -6618,10 +6618,10 @@ public class LissParser extends Parser {
 			                        //It means that succ is being used
 			                            String s1;
 			                            //we need to know the level of the identifier
-			                            if(_localctx.idTH.getInfoIdentifiersTable((((Succ_or_predContext)_localctx).i!=null?_input.getText(((Succ_or_predContext)_localctx).i.start,((Succ_or_predContext)_localctx).i.stop):null)).getLevel().equals(0)){
+			                            if(_localctx.sT.getInfoIdentifier((((Succ_or_predContext)_localctx).i!=null?_input.getText(((Succ_or_predContext)_localctx).i.start,((Succ_or_predContext)_localctx).i.stop):null)).getLevel().equals(0)){
 			                                s1 = m.textSucc((((Succ_or_predContext)_localctx).i!=null?_input.getText(((Succ_or_predContext)_localctx).i.start,((Succ_or_predContext)_localctx).i.stop):null), ((Succ_or_predContext)_localctx).s.line, ((Succ_or_predContext)_localctx).s.pos);
 			                            }else{
-			                                s1 = m.textSuccSF(_localctx.idTH.getValueSP(level,(((Succ_or_predContext)_localctx).i!=null?_input.getText(((Succ_or_predContext)_localctx).i.start,((Succ_or_predContext)_localctx).i.stop):null)), ((Succ_or_predContext)_localctx).s.line, ((Succ_or_predContext)_localctx).s.pos);
+			                                s1 = m.textSuccSF(_localctx.sT.getValueSP(level,(((Succ_or_predContext)_localctx).i!=null?_input.getText(((Succ_or_predContext)_localctx).i.start,((Succ_or_predContext)_localctx).i.stop):null)), ((Succ_or_predContext)_localctx).s.line, ((Succ_or_predContext)_localctx).s.pos);
 			                            }
 
 			                            //this is needed for knowing where the instruction will be added to the mips assembly code
@@ -6634,10 +6634,10 @@ public class LissParser extends Parser {
 			                        //It means that pred is being used
 			                            String s2;
 			                            //we need to know the level of the identifier
-			                            if(_localctx.idTH.getInfoIdentifiersTable((((Succ_or_predContext)_localctx).i!=null?_input.getText(((Succ_or_predContext)_localctx).i.start,((Succ_or_predContext)_localctx).i.stop):null)).getLevel().equals(0)){
+			                            if(_localctx.sT.getInfoIdentifier((((Succ_or_predContext)_localctx).i!=null?_input.getText(((Succ_or_predContext)_localctx).i.start,((Succ_or_predContext)_localctx).i.stop):null)).getLevel().equals(0)){
 			                                s2 = m.textPred((((Succ_or_predContext)_localctx).i!=null?_input.getText(((Succ_or_predContext)_localctx).i.start,((Succ_or_predContext)_localctx).i.stop):null), ((Succ_or_predContext)_localctx).s.line, ((Succ_or_predContext)_localctx).s.pos);
 			                            }else{
-			                                s2 = m.textPredSF(_localctx.idTH.getValueSP(level,(((Succ_or_predContext)_localctx).i!=null?_input.getText(((Succ_or_predContext)_localctx).i.start,((Succ_or_predContext)_localctx).i.stop):null)),((Succ_or_predContext)_localctx).s.line,((Succ_or_predContext)_localctx).s.pos);
+			                                s2 = m.textPredSF(_localctx.sT.getValueSP(level,(((Succ_or_predContext)_localctx).i!=null?_input.getText(((Succ_or_predContext)_localctx).i.start,((Succ_or_predContext)_localctx).i.stop):null)),((Succ_or_predContext)_localctx).s.line,((Succ_or_predContext)_localctx).s.pos);
 			                            }
 
 			                            if(functionState == false){
@@ -6722,7 +6722,7 @@ public class LissParser extends Parser {
 	}
 
 	public static class TailContext extends ParserRuleContext {
-		public IdentifiersTable idTH;
+		public SymbolTable sT;
 		public Set set;
 		public String typeS;
 		public int line;
@@ -6735,9 +6735,9 @@ public class LissParser extends Parser {
 			return getRuleContext(ExpressionContext.class,0);
 		}
 		public TailContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public TailContext(ParserRuleContext parent, int invokingState, IdentifiersTable idTH, Set set) {
+		public TailContext(ParserRuleContext parent, int invokingState, SymbolTable sT, Set set) {
 			super(parent, invokingState);
-			this.idTH = idTH;
+			this.sT = sT;
 			this.set = set;
 		}
 		@Override public int getRuleIndex() { return RULE_tail; }
@@ -6751,8 +6751,8 @@ public class LissParser extends Parser {
 		}
 	}
 
-	public final TailContext tail(IdentifiersTable idTH,Set set) throws RecognitionException {
-		TailContext _localctx = new TailContext(_ctx, getState(), idTH, set);
+	public final TailContext tail(SymbolTable sT,Set set) throws RecognitionException {
+		TailContext _localctx = new TailContext(_ctx, getState(), sT, set);
 		enterRule(_localctx, 130, RULE_tail);
 		try {
 			enterOuterAlt(_localctx, 1);
@@ -6762,7 +6762,7 @@ public class LissParser extends Parser {
 			setState(768);
 			match(T__25);
 			setState(769);
-			((TailContext)_localctx).e = expression(idTH, set);
+			((TailContext)_localctx).e = expression(sT, set);
 			setState(770);
 			match(T__26);
 
@@ -6802,7 +6802,7 @@ public class LissParser extends Parser {
 	}
 
 	public static class HeadContext extends ParserRuleContext {
-		public IdentifiersTable idTH;
+		public SymbolTable sT;
 		public Set set;
 		public String typeS;
 		public int line;
@@ -6815,9 +6815,9 @@ public class LissParser extends Parser {
 			return getRuleContext(ExpressionContext.class,0);
 		}
 		public HeadContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public HeadContext(ParserRuleContext parent, int invokingState, IdentifiersTable idTH, Set set) {
+		public HeadContext(ParserRuleContext parent, int invokingState, SymbolTable sT, Set set) {
 			super(parent, invokingState);
-			this.idTH = idTH;
+			this.sT = sT;
 			this.set = set;
 		}
 		@Override public int getRuleIndex() { return RULE_head; }
@@ -6831,8 +6831,8 @@ public class LissParser extends Parser {
 		}
 	}
 
-	public final HeadContext head(IdentifiersTable idTH,Set set) throws RecognitionException {
-		HeadContext _localctx = new HeadContext(_ctx, getState(), idTH, set);
+	public final HeadContext head(SymbolTable sT,Set set) throws RecognitionException {
+		HeadContext _localctx = new HeadContext(_ctx, getState(), sT, set);
 		enterRule(_localctx, 132, RULE_head);
 
 		        ((HeadContext)_localctx).mipsCodeS =  null;
@@ -6845,7 +6845,7 @@ public class LissParser extends Parser {
 			setState(774);
 			match(T__25);
 			setState(775);
-			((HeadContext)_localctx).e = expression(idTH, set);
+			((HeadContext)_localctx).e = expression(sT, set);
 			setState(776);
 			match(T__26);
 
@@ -6884,7 +6884,7 @@ public class LissParser extends Parser {
 	}
 
 	public static class ConsContext extends ParserRuleContext {
-		public IdentifiersTable idTH;
+		public SymbolTable sT;
 		public Set set;
 		public String typeS;
 		public int line;
@@ -6901,9 +6901,9 @@ public class LissParser extends Parser {
 			return getRuleContext(ExpressionContext.class,i);
 		}
 		public ConsContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public ConsContext(ParserRuleContext parent, int invokingState, IdentifiersTable idTH, Set set) {
+		public ConsContext(ParserRuleContext parent, int invokingState, SymbolTable sT, Set set) {
 			super(parent, invokingState);
-			this.idTH = idTH;
+			this.sT = sT;
 			this.set = set;
 		}
 		@Override public int getRuleIndex() { return RULE_cons; }
@@ -6917,8 +6917,8 @@ public class LissParser extends Parser {
 		}
 	}
 
-	public final ConsContext cons(IdentifiersTable idTH,Set set) throws RecognitionException {
-		ConsContext _localctx = new ConsContext(_ctx, getState(), idTH, set);
+	public final ConsContext cons(SymbolTable sT,Set set) throws RecognitionException {
+		ConsContext _localctx = new ConsContext(_ctx, getState(), sT, set);
 		enterRule(_localctx, 134, RULE_cons);
 		try {
 			enterOuterAlt(_localctx, 1);
@@ -6928,12 +6928,12 @@ public class LissParser extends Parser {
 			setState(780);
 			match(T__25);
 			setState(781);
-			((ConsContext)_localctx).e1 = expression(idTH, set);
+			((ConsContext)_localctx).e1 = expression(sT, set);
 			setState(782);
 			match(T__7);
 			m.resetRegister();
 			setState(784);
-			((ConsContext)_localctx).e2 = expression(idTH, set);
+			((ConsContext)_localctx).e2 = expression(sT, set);
 			setState(785);
 			match(T__26);
 
@@ -6950,11 +6950,11 @@ public class LissParser extends Parser {
 			                    if(((ConsContext)_localctx).e1.mipsCodeS!=null && ((ConsContext)_localctx).e2.mipsCodeS!=null){
 
 			                        int numberOfUsedRegisters = m.numbersOfRegisteresUsedRightNow();
-			                        _localctx.idTH.pushStateRegistersToSP(numberOfUsedRegisters);
+			                        _localctx.sT.pushStateRegistersToSP(numberOfUsedRegisters);
 			                        ((ConsContext)_localctx).e2.mipsCodeS += m.textSaveStateBeforeCallingFunction(numberOfUsedRegisters);
 
 			                        ((ConsContext)_localctx).mipsCodeS =  m.textCons(((ConsContext)_localctx).e1.mipsCodeS, ((ConsContext)_localctx).e2.mipsCodeS, (((ConsContext)_localctx).c!=null?((ConsContext)_localctx).c.getLine():0),(((ConsContext)_localctx).c!=null?((ConsContext)_localctx).c.getCharPositionInLine():0));
-			                        _localctx.idTH.popSP();
+			                        _localctx.sT.popSP();
 			                    }
 
 			                }else{
@@ -6987,7 +6987,7 @@ public class LissParser extends Parser {
 	}
 
 	public static class DeleteContext extends ParserRuleContext {
-		public IdentifiersTable idTH;
+		public SymbolTable sT;
 		public Set set;
 		public String typeS;
 		public int line;
@@ -7004,9 +7004,9 @@ public class LissParser extends Parser {
 			return getRuleContext(ExpressionContext.class,i);
 		}
 		public DeleteContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public DeleteContext(ParserRuleContext parent, int invokingState, IdentifiersTable idTH, Set set) {
+		public DeleteContext(ParserRuleContext parent, int invokingState, SymbolTable sT, Set set) {
 			super(parent, invokingState);
-			this.idTH = idTH;
+			this.sT = sT;
 			this.set = set;
 		}
 		@Override public int getRuleIndex() { return RULE_delete; }
@@ -7020,8 +7020,8 @@ public class LissParser extends Parser {
 		}
 	}
 
-	public final DeleteContext delete(IdentifiersTable idTH,Set set) throws RecognitionException {
-		DeleteContext _localctx = new DeleteContext(_ctx, getState(), idTH, set);
+	public final DeleteContext delete(SymbolTable sT,Set set) throws RecognitionException {
+		DeleteContext _localctx = new DeleteContext(_ctx, getState(), sT, set);
 		enterRule(_localctx, 136, RULE_delete);
 		try {
 			enterOuterAlt(_localctx, 1);
@@ -7031,12 +7031,12 @@ public class LissParser extends Parser {
 			setState(789);
 			match(T__25);
 			setState(790);
-			((DeleteContext)_localctx).e1 = expression(idTH, set);
+			((DeleteContext)_localctx).e1 = expression(sT, set);
 			setState(791);
 			match(T__7);
 			m.resetRegister();
 			setState(793);
-			((DeleteContext)_localctx).e2 = expression(idTH, set);
+			((DeleteContext)_localctx).e2 = expression(sT, set);
 			setState(794);
 			match(T__26);
 
@@ -7054,11 +7054,11 @@ public class LissParser extends Parser {
 			                    if(((DeleteContext)_localctx).e1.mipsCodeS!=null && ((DeleteContext)_localctx).e2.mipsCodeS!=null){
 
 			                        int numberOfUsedRegisters = m.numbersOfRegisteresUsedRightNow();
-			                        _localctx.idTH.pushStateRegistersToSP(numberOfUsedRegisters);
+			                        _localctx.sT.pushStateRegistersToSP(numberOfUsedRegisters);
 			                        ((DeleteContext)_localctx).e2.mipsCodeS += m.textSaveStateBeforeCallingFunction(numberOfUsedRegisters);
 
 			                        ((DeleteContext)_localctx).mipsCodeS =  m.textDelete(((DeleteContext)_localctx).e1.mipsCodeS, ((DeleteContext)_localctx).e2.mipsCodeS, (((DeleteContext)_localctx).d!=null?((DeleteContext)_localctx).d.getLine():0), (((DeleteContext)_localctx).d!=null?((DeleteContext)_localctx).d.getCharPositionInLine():0));
-			                        _localctx.idTH.popSP();
+			                        _localctx.sT.popSP();
 			                    }
 			                }else{
 			                    e.addMessage(((DeleteContext)_localctx).e2.line,((DeleteContext)_localctx).e2.pos,ErrorMessage.semantic((((DeleteContext)_localctx).e2!=null?_input.getText(((DeleteContext)_localctx).e2.start,((DeleteContext)_localctx).e2.stop):null),ErrorMessage.type(((DeleteContext)_localctx).e2.typeS,"sequence")));
@@ -7090,7 +7090,7 @@ public class LissParser extends Parser {
 	}
 
 	public static class Copy_statementContext extends ParserRuleContext {
-		public IdentifiersTable idTH;
+		public SymbolTable sT;
 		public String typeS;
 		public int line;
 		public int pos;
@@ -7104,9 +7104,9 @@ public class LissParser extends Parser {
 			return getRuleContext(IdentifierContext.class,i);
 		}
 		public Copy_statementContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public Copy_statementContext(ParserRuleContext parent, int invokingState, IdentifiersTable idTH) {
+		public Copy_statementContext(ParserRuleContext parent, int invokingState, SymbolTable sT) {
 			super(parent, invokingState);
-			this.idTH = idTH;
+			this.sT = sT;
 		}
 		@Override public int getRuleIndex() { return RULE_copy_statement; }
 		@Override
@@ -7119,8 +7119,8 @@ public class LissParser extends Parser {
 		}
 	}
 
-	public final Copy_statementContext copy_statement(IdentifiersTable idTH) throws RecognitionException {
-		Copy_statementContext _localctx = new Copy_statementContext(_ctx, getState(), idTH);
+	public final Copy_statementContext copy_statement(SymbolTable sT) throws RecognitionException {
+		Copy_statementContext _localctx = new Copy_statementContext(_ctx, getState(), sT);
 		enterRule(_localctx, 138, RULE_copy_statement);
 		try {
 			enterOuterAlt(_localctx, 1);
@@ -7138,18 +7138,18 @@ public class LissParser extends Parser {
 			setState(802);
 			match(T__26);
 
-			                  if(_localctx.idTH.doesExist((((Copy_statementContext)_localctx).i1!=null?_input.getText(((Copy_statementContext)_localctx).i1.start,((Copy_statementContext)_localctx).i1.stop):null)) && _localctx.idTH.doesExist((((Copy_statementContext)_localctx).i2!=null?_input.getText(((Copy_statementContext)_localctx).i2.start,((Copy_statementContext)_localctx).i2.stop):null))){
-			                      Var v1 = (Var) _localctx.idTH.getInfoIdentifiersTable((((Copy_statementContext)_localctx).i1!=null?_input.getText(((Copy_statementContext)_localctx).i1.start,((Copy_statementContext)_localctx).i1.stop):null));
-			                      Var v2 = (Var) _localctx.idTH.getInfoIdentifiersTable((((Copy_statementContext)_localctx).i2!=null?_input.getText(((Copy_statementContext)_localctx).i2.start,((Copy_statementContext)_localctx).i2.stop):null));
+			                  if(_localctx.sT.doesExist((((Copy_statementContext)_localctx).i1!=null?_input.getText(((Copy_statementContext)_localctx).i1.start,((Copy_statementContext)_localctx).i1.stop):null)) && _localctx.sT.doesExist((((Copy_statementContext)_localctx).i2!=null?_input.getText(((Copy_statementContext)_localctx).i2.start,((Copy_statementContext)_localctx).i2.stop):null))){
+			                      Var v1 = (Var) _localctx.sT.getInfoIdentifier((((Copy_statementContext)_localctx).i1!=null?_input.getText(((Copy_statementContext)_localctx).i1.start,((Copy_statementContext)_localctx).i1.stop):null));
+			                      Var v2 = (Var) _localctx.sT.getInfoIdentifier((((Copy_statementContext)_localctx).i2!=null?_input.getText(((Copy_statementContext)_localctx).i2.start,((Copy_statementContext)_localctx).i2.stop):null));
 
 			                      if(v1 != null && v1.getInfoType().equals("sequence") && v1.getCategory().equals("VAR")){
 			                          if(v2 != null && v2.getInfoType().equals("sequence") && v2.getCategory().equals("VAR")){
-			                              Integer levelIdentifier1 = _localctx.idTH.getInfoIdentifiersTable((((Copy_statementContext)_localctx).i1!=null?_input.getText(((Copy_statementContext)_localctx).i1.start,((Copy_statementContext)_localctx).i1.stop):null)).getLevel();
-			                              Integer levelIdentifier2 = _localctx.idTH.getInfoIdentifiersTable((((Copy_statementContext)_localctx).i2!=null?_input.getText(((Copy_statementContext)_localctx).i2.start,((Copy_statementContext)_localctx).i2.stop):null)).getLevel();
+			                              Integer levelIdentifier1 = _localctx.sT.getInfoIdentifier((((Copy_statementContext)_localctx).i1!=null?_input.getText(((Copy_statementContext)_localctx).i1.start,((Copy_statementContext)_localctx).i1.stop):null)).getLevel();
+			                              Integer levelIdentifier2 = _localctx.sT.getInfoIdentifier((((Copy_statementContext)_localctx).i2!=null?_input.getText(((Copy_statementContext)_localctx).i2.start,((Copy_statementContext)_localctx).i2.stop):null)).getLevel();
 
 			                              String mipsCodeS = "";
 
-			                              mipsCodeS = m.textCopy((((Copy_statementContext)_localctx).i1!=null?_input.getText(((Copy_statementContext)_localctx).i1.start,((Copy_statementContext)_localctx).i1.stop):null), levelIdentifier1, _localctx.idTH.getValueSP(level,(((Copy_statementContext)_localctx).i1!=null?_input.getText(((Copy_statementContext)_localctx).i1.start,((Copy_statementContext)_localctx).i1.stop):null)), (((Copy_statementContext)_localctx).i2!=null?_input.getText(((Copy_statementContext)_localctx).i2.start,((Copy_statementContext)_localctx).i2.stop):null), levelIdentifier2, _localctx.idTH.getValueSP(level,(((Copy_statementContext)_localctx).i2!=null?_input.getText(((Copy_statementContext)_localctx).i2.start,((Copy_statementContext)_localctx).i2.stop):null)), (((Copy_statementContext)_localctx).c!=null?((Copy_statementContext)_localctx).c.getLine():0), (((Copy_statementContext)_localctx).c!=null?((Copy_statementContext)_localctx).c.getCharPositionInLine():0) );
+			                              mipsCodeS = m.textCopy((((Copy_statementContext)_localctx).i1!=null?_input.getText(((Copy_statementContext)_localctx).i1.start,((Copy_statementContext)_localctx).i1.stop):null), levelIdentifier1, _localctx.sT.getValueSP(level,(((Copy_statementContext)_localctx).i1!=null?_input.getText(((Copy_statementContext)_localctx).i1.start,((Copy_statementContext)_localctx).i1.stop):null)), (((Copy_statementContext)_localctx).i2!=null?_input.getText(((Copy_statementContext)_localctx).i2.start,((Copy_statementContext)_localctx).i2.stop):null), levelIdentifier2, _localctx.sT.getValueSP(level,(((Copy_statementContext)_localctx).i2!=null?_input.getText(((Copy_statementContext)_localctx).i2.start,((Copy_statementContext)_localctx).i2.stop):null)), (((Copy_statementContext)_localctx).c!=null?((Copy_statementContext)_localctx).c.getLine():0), (((Copy_statementContext)_localctx).c!=null?((Copy_statementContext)_localctx).c.getCharPositionInLine():0) );
 
 			                              if(functionState == false){
 			                                  m.addTextInstruction(mipsCodeS);
@@ -7163,10 +7163,10 @@ public class LissParser extends Parser {
 			                        e.addMessage(((Copy_statementContext)_localctx).i1.line,((Copy_statementContext)_localctx).i2.pos,ErrorMessage.semantic((((Copy_statementContext)_localctx).i1!=null?_input.getText(((Copy_statementContext)_localctx).i1.start,((Copy_statementContext)_localctx).i1.stop):null),ErrorMessage.type("boolean | sequence | integer","sequence")));
 			                      }
 			                  }else{
-			                      if(!_localctx.idTH.doesExist((((Copy_statementContext)_localctx).i1!=null?_input.getText(((Copy_statementContext)_localctx).i1.start,((Copy_statementContext)_localctx).i1.stop):null))){
+			                      if(!_localctx.sT.doesExist((((Copy_statementContext)_localctx).i1!=null?_input.getText(((Copy_statementContext)_localctx).i1.start,((Copy_statementContext)_localctx).i1.stop):null))){
 			                          e.addMessage(((Copy_statementContext)_localctx).i1.line, ((Copy_statementContext)_localctx).i1.pos, ErrorMessage.semanticVariableMissing((((Copy_statementContext)_localctx).i1!=null?_input.getText(((Copy_statementContext)_localctx).i1.start,((Copy_statementContext)_localctx).i1.stop):null)));
 			                      }
-			                      if(!_localctx.idTH.doesExist((((Copy_statementContext)_localctx).i2!=null?_input.getText(((Copy_statementContext)_localctx).i2.start,((Copy_statementContext)_localctx).i2.stop):null))){
+			                      if(!_localctx.sT.doesExist((((Copy_statementContext)_localctx).i2!=null?_input.getText(((Copy_statementContext)_localctx).i2.start,((Copy_statementContext)_localctx).i2.stop):null))){
 			                          e.addMessage(((Copy_statementContext)_localctx).i2.line, ((Copy_statementContext)_localctx).i2.pos, ErrorMessage.semanticVariableMissing((((Copy_statementContext)_localctx).i2!=null?_input.getText(((Copy_statementContext)_localctx).i2.start,((Copy_statementContext)_localctx).i2.stop):null)));
 			                      }
 			                  }
@@ -7186,7 +7186,7 @@ public class LissParser extends Parser {
 	}
 
 	public static class Cat_statementContext extends ParserRuleContext {
-		public IdentifiersTable idTH;
+		public SymbolTable sT;
 		public String typeS;
 		public int line;
 		public int pos;
@@ -7200,9 +7200,9 @@ public class LissParser extends Parser {
 			return getRuleContext(IdentifierContext.class,i);
 		}
 		public Cat_statementContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public Cat_statementContext(ParserRuleContext parent, int invokingState, IdentifiersTable idTH) {
+		public Cat_statementContext(ParserRuleContext parent, int invokingState, SymbolTable sT) {
 			super(parent, invokingState);
-			this.idTH = idTH;
+			this.sT = sT;
 		}
 		@Override public int getRuleIndex() { return RULE_cat_statement; }
 		@Override
@@ -7215,8 +7215,8 @@ public class LissParser extends Parser {
 		}
 	}
 
-	public final Cat_statementContext cat_statement(IdentifiersTable idTH) throws RecognitionException {
-		Cat_statementContext _localctx = new Cat_statementContext(_ctx, getState(), idTH);
+	public final Cat_statementContext cat_statement(SymbolTable sT) throws RecognitionException {
+		Cat_statementContext _localctx = new Cat_statementContext(_ctx, getState(), sT);
 		enterRule(_localctx, 140, RULE_cat_statement);
 		try {
 			enterOuterAlt(_localctx, 1);
@@ -7234,18 +7234,18 @@ public class LissParser extends Parser {
 			setState(810);
 			match(T__26);
 
-			                if(_localctx.idTH.doesExist((((Cat_statementContext)_localctx).i1!=null?_input.getText(((Cat_statementContext)_localctx).i1.start,((Cat_statementContext)_localctx).i1.stop):null)) && _localctx.idTH.doesExist((((Cat_statementContext)_localctx).i2!=null?_input.getText(((Cat_statementContext)_localctx).i2.start,((Cat_statementContext)_localctx).i2.stop):null))){
-			                    Var v1 = (Var) _localctx.idTH.getInfoIdentifiersTable((((Cat_statementContext)_localctx).i1!=null?_input.getText(((Cat_statementContext)_localctx).i1.start,((Cat_statementContext)_localctx).i1.stop):null));
-			                    Var v2 = (Var) _localctx.idTH.getInfoIdentifiersTable((((Cat_statementContext)_localctx).i2!=null?_input.getText(((Cat_statementContext)_localctx).i2.start,((Cat_statementContext)_localctx).i2.stop):null));
+			                if(_localctx.sT.doesExist((((Cat_statementContext)_localctx).i1!=null?_input.getText(((Cat_statementContext)_localctx).i1.start,((Cat_statementContext)_localctx).i1.stop):null)) && _localctx.sT.doesExist((((Cat_statementContext)_localctx).i2!=null?_input.getText(((Cat_statementContext)_localctx).i2.start,((Cat_statementContext)_localctx).i2.stop):null))){
+			                    Var v1 = (Var) _localctx.sT.getInfoIdentifier((((Cat_statementContext)_localctx).i1!=null?_input.getText(((Cat_statementContext)_localctx).i1.start,((Cat_statementContext)_localctx).i1.stop):null));
+			                    Var v2 = (Var) _localctx.sT.getInfoIdentifier((((Cat_statementContext)_localctx).i2!=null?_input.getText(((Cat_statementContext)_localctx).i2.start,((Cat_statementContext)_localctx).i2.stop):null));
 
 			                    if(v1 != null && v1.getInfoType().equals("sequence") && v1.getCategory().equals("VAR")){
 			                        if(v2 != null && v2.getInfoType().equals("sequence") && v2.getCategory().equals("VAR")){
-			                            Integer levelIdentifier1 = _localctx.idTH.getInfoIdentifiersTable((((Cat_statementContext)_localctx).i1!=null?_input.getText(((Cat_statementContext)_localctx).i1.start,((Cat_statementContext)_localctx).i1.stop):null)).getLevel();
-			                            Integer levelIdentifier2 = _localctx.idTH.getInfoIdentifiersTable((((Cat_statementContext)_localctx).i2!=null?_input.getText(((Cat_statementContext)_localctx).i2.start,((Cat_statementContext)_localctx).i2.stop):null)).getLevel();
+			                            Integer levelIdentifier1 = _localctx.sT.getInfoIdentifier((((Cat_statementContext)_localctx).i1!=null?_input.getText(((Cat_statementContext)_localctx).i1.start,((Cat_statementContext)_localctx).i1.stop):null)).getLevel();
+			                            Integer levelIdentifier2 = _localctx.sT.getInfoIdentifier((((Cat_statementContext)_localctx).i2!=null?_input.getText(((Cat_statementContext)_localctx).i2.start,((Cat_statementContext)_localctx).i2.stop):null)).getLevel();
 
 			                            String mipsCodeS = "";
 
-			                            mipsCodeS = m.textCat((((Cat_statementContext)_localctx).i1!=null?_input.getText(((Cat_statementContext)_localctx).i1.start,((Cat_statementContext)_localctx).i1.stop):null), levelIdentifier1, _localctx.idTH.getValueSP(level,(((Cat_statementContext)_localctx).i1!=null?_input.getText(((Cat_statementContext)_localctx).i1.start,((Cat_statementContext)_localctx).i1.stop):null)), (((Cat_statementContext)_localctx).i2!=null?_input.getText(((Cat_statementContext)_localctx).i2.start,((Cat_statementContext)_localctx).i2.stop):null), levelIdentifier2, _localctx.idTH.getValueSP(level,(((Cat_statementContext)_localctx).i2!=null?_input.getText(((Cat_statementContext)_localctx).i2.start,((Cat_statementContext)_localctx).i2.stop):null)), (((Cat_statementContext)_localctx).c!=null?((Cat_statementContext)_localctx).c.getLine():0), (((Cat_statementContext)_localctx).c!=null?((Cat_statementContext)_localctx).c.getCharPositionInLine():0) );
+			                            mipsCodeS = m.textCat((((Cat_statementContext)_localctx).i1!=null?_input.getText(((Cat_statementContext)_localctx).i1.start,((Cat_statementContext)_localctx).i1.stop):null), levelIdentifier1, _localctx.sT.getValueSP(level,(((Cat_statementContext)_localctx).i1!=null?_input.getText(((Cat_statementContext)_localctx).i1.start,((Cat_statementContext)_localctx).i1.stop):null)), (((Cat_statementContext)_localctx).i2!=null?_input.getText(((Cat_statementContext)_localctx).i2.start,((Cat_statementContext)_localctx).i2.stop):null), levelIdentifier2, _localctx.sT.getValueSP(level,(((Cat_statementContext)_localctx).i2!=null?_input.getText(((Cat_statementContext)_localctx).i2.start,((Cat_statementContext)_localctx).i2.stop):null)), (((Cat_statementContext)_localctx).c!=null?((Cat_statementContext)_localctx).c.getLine():0), (((Cat_statementContext)_localctx).c!=null?((Cat_statementContext)_localctx).c.getCharPositionInLine():0) );
 
 			                            if(functionState == false){
 			                                m.addTextInstruction(mipsCodeS);
@@ -7259,10 +7259,10 @@ public class LissParser extends Parser {
 			                        e.addMessage(((Cat_statementContext)_localctx).i1.line,((Cat_statementContext)_localctx).i2.pos,ErrorMessage.semantic((((Cat_statementContext)_localctx).i1!=null?_input.getText(((Cat_statementContext)_localctx).i1.start,((Cat_statementContext)_localctx).i1.stop):null),ErrorMessage.type("boolean | sequence | integer","sequence")));
 			                    }
 			                }else{
-			                    if(!_localctx.idTH.doesExist((((Cat_statementContext)_localctx).i1!=null?_input.getText(((Cat_statementContext)_localctx).i1.start,((Cat_statementContext)_localctx).i1.stop):null))){
+			                    if(!_localctx.sT.doesExist((((Cat_statementContext)_localctx).i1!=null?_input.getText(((Cat_statementContext)_localctx).i1.start,((Cat_statementContext)_localctx).i1.stop):null))){
 			                       e.addMessage(((Cat_statementContext)_localctx).i1.line, ((Cat_statementContext)_localctx).i1.pos, ErrorMessage.semanticVariableMissing((((Cat_statementContext)_localctx).i1!=null?_input.getText(((Cat_statementContext)_localctx).i1.start,((Cat_statementContext)_localctx).i1.stop):null)));
 			                    }
-			                    if(!_localctx.idTH.doesExist((((Cat_statementContext)_localctx).i2!=null?_input.getText(((Cat_statementContext)_localctx).i2.start,((Cat_statementContext)_localctx).i2.stop):null))){
+			                    if(!_localctx.sT.doesExist((((Cat_statementContext)_localctx).i2!=null?_input.getText(((Cat_statementContext)_localctx).i2.start,((Cat_statementContext)_localctx).i2.stop):null))){
 			                       e.addMessage(((Cat_statementContext)_localctx).i2.line, ((Cat_statementContext)_localctx).i2.pos, ErrorMessage.semanticVariableMissing((((Cat_statementContext)_localctx).i2!=null?_input.getText(((Cat_statementContext)_localctx).i2.start,((Cat_statementContext)_localctx).i2.stop):null)));
 			                    }
 			                }
@@ -7281,7 +7281,7 @@ public class LissParser extends Parser {
 	}
 
 	public static class Is_emptyContext extends ParserRuleContext {
-		public IdentifiersTable idTH;
+		public SymbolTable sT;
 		public Set set;
 		public String typeS;
 		public int line;
@@ -7294,9 +7294,9 @@ public class LissParser extends Parser {
 			return getRuleContext(ExpressionContext.class,0);
 		}
 		public Is_emptyContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public Is_emptyContext(ParserRuleContext parent, int invokingState, IdentifiersTable idTH, Set set) {
+		public Is_emptyContext(ParserRuleContext parent, int invokingState, SymbolTable sT, Set set) {
 			super(parent, invokingState);
-			this.idTH = idTH;
+			this.sT = sT;
 			this.set = set;
 		}
 		@Override public int getRuleIndex() { return RULE_is_empty; }
@@ -7310,8 +7310,8 @@ public class LissParser extends Parser {
 		}
 	}
 
-	public final Is_emptyContext is_empty(IdentifiersTable idTH,Set set) throws RecognitionException {
-		Is_emptyContext _localctx = new Is_emptyContext(_ctx, getState(), idTH, set);
+	public final Is_emptyContext is_empty(SymbolTable sT,Set set) throws RecognitionException {
+		Is_emptyContext _localctx = new Is_emptyContext(_ctx, getState(), sT, set);
 		enterRule(_localctx, 142, RULE_is_empty);
 
 		            ((Is_emptyContext)_localctx).mipsCodeS =  null;
@@ -7324,7 +7324,7 @@ public class LissParser extends Parser {
 			setState(814);
 			match(T__25);
 			setState(815);
-			((Is_emptyContext)_localctx).e1 = expression(idTH, set);
+			((Is_emptyContext)_localctx).e1 = expression(sT, set);
 			setState(816);
 			match(T__26);
 
@@ -7363,7 +7363,7 @@ public class LissParser extends Parser {
 	}
 
 	public static class LengthContext extends ParserRuleContext {
-		public IdentifiersTable idTH;
+		public SymbolTable sT;
 		public Set set;
 		public String typeS;
 		public int line;
@@ -7376,9 +7376,9 @@ public class LissParser extends Parser {
 			return getRuleContext(ExpressionContext.class,0);
 		}
 		public LengthContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public LengthContext(ParserRuleContext parent, int invokingState, IdentifiersTable idTH, Set set) {
+		public LengthContext(ParserRuleContext parent, int invokingState, SymbolTable sT, Set set) {
 			super(parent, invokingState);
-			this.idTH = idTH;
+			this.sT = sT;
 			this.set = set;
 		}
 		@Override public int getRuleIndex() { return RULE_length; }
@@ -7392,8 +7392,8 @@ public class LissParser extends Parser {
 		}
 	}
 
-	public final LengthContext length(IdentifiersTable idTH,Set set) throws RecognitionException {
-		LengthContext _localctx = new LengthContext(_ctx, getState(), idTH, set);
+	public final LengthContext length(SymbolTable sT,Set set) throws RecognitionException {
+		LengthContext _localctx = new LengthContext(_ctx, getState(), sT, set);
 		enterRule(_localctx, 144, RULE_length);
 
 		          ((LengthContext)_localctx).mipsCodeS =  null;
@@ -7406,7 +7406,7 @@ public class LissParser extends Parser {
 			setState(820);
 			match(T__25);
 			setState(821);
-			((LengthContext)_localctx).e1 = expression(idTH, set);
+			((LengthContext)_localctx).e1 = expression(sT, set);
 			setState(822);
 			match(T__26);
 
@@ -7444,7 +7444,7 @@ public class LissParser extends Parser {
 	}
 
 	public static class MemberContext extends ParserRuleContext {
-		public IdentifiersTable idTH;
+		public SymbolTable sT;
 		public Set set;
 		public String typeS;
 		public int line;
@@ -7461,9 +7461,9 @@ public class LissParser extends Parser {
 			return getRuleContext(IdentifierContext.class,0);
 		}
 		public MemberContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public MemberContext(ParserRuleContext parent, int invokingState, IdentifiersTable idTH, Set set) {
+		public MemberContext(ParserRuleContext parent, int invokingState, SymbolTable sT, Set set) {
 			super(parent, invokingState);
-			this.idTH = idTH;
+			this.sT = sT;
 			this.set = set;
 		}
 		@Override public int getRuleIndex() { return RULE_member; }
@@ -7477,8 +7477,8 @@ public class LissParser extends Parser {
 		}
 	}
 
-	public final MemberContext member(IdentifiersTable idTH,Set set) throws RecognitionException {
-		MemberContext _localctx = new MemberContext(_ctx, getState(), idTH, set);
+	public final MemberContext member(SymbolTable sT,Set set) throws RecognitionException {
+		MemberContext _localctx = new MemberContext(_ctx, getState(), sT, set);
 		enterRule(_localctx, 146, RULE_member);
 
 		            ((MemberContext)_localctx).mipsCodeS =  null;
@@ -7491,7 +7491,7 @@ public class LissParser extends Parser {
 			setState(826);
 			match(T__25);
 			setState(827);
-			((MemberContext)_localctx).e = expression(idTH, set);
+			((MemberContext)_localctx).e = expression(sT, set);
 			setState(828);
 			match(T__7);
 			setState(829);
@@ -7505,16 +7505,16 @@ public class LissParser extends Parser {
 			          String type = null;
 
 			          //Pre-Condicao : verificar se existe o identificador na tabela de identificador, caso nao existir significa que é um inteiro ou que nao foi declarado !!!
-			          if(_localctx.idTH.getIdentifiersTable().containsKey((((MemberContext)_localctx).i!=null?_input.getText(((MemberContext)_localctx).i.start,((MemberContext)_localctx).i.stop):null))){
-			            Var v = (Var) _localctx.idTH.getInfoIdentifiersTable((((MemberContext)_localctx).i!=null?_input.getText(((MemberContext)_localctx).i.start,((MemberContext)_localctx).i.stop):null));
+			          if(_localctx.sT.doesExist((((MemberContext)_localctx).i!=null?_input.getText(((MemberContext)_localctx).i.start,((MemberContext)_localctx).i.stop):null))/*_localctx.sT.getIdentifiersTable().containsKey((((MemberContext)_localctx).i!=null?_input.getText(((MemberContext)_localctx).i.start,((MemberContext)_localctx).i.stop):null))*/){
+			            Var v = (Var) _localctx.sT.getInfoIdentifier((((MemberContext)_localctx).i!=null?_input.getText(((MemberContext)_localctx).i.start,((MemberContext)_localctx).i.stop):null));
 			            if( v != null){
 			                type = v.getInfoType();
 			                if((type != null) && type.equals("sequence")){
 			                    if((((MemberContext)_localctx).e.typeS != null) && ((MemberContext)_localctx).e.typeS.equals("integer")){
 			                        ((MemberContext)_localctx).typeS =  "boolean";
 			                        if(((MemberContext)_localctx).e.mipsCodeS!=null){
-			                            Integer levelIdentifier = _localctx.idTH.getInfoIdentifiersTable((((MemberContext)_localctx).i!=null?_input.getText(((MemberContext)_localctx).i.start,((MemberContext)_localctx).i.stop):null)).getLevel();
-			                            ((MemberContext)_localctx).mipsCodeS =  m.textMember(((MemberContext)_localctx).e.mipsCodeS, (((MemberContext)_localctx).i!=null?_input.getText(((MemberContext)_localctx).i.start,((MemberContext)_localctx).i.stop):null), levelIdentifier, _localctx.idTH.getValueSP(level,(((MemberContext)_localctx).i!=null?_input.getText(((MemberContext)_localctx).i.start,((MemberContext)_localctx).i.stop):null)), (((MemberContext)_localctx).im!=null?((MemberContext)_localctx).im.getLine():0), (((MemberContext)_localctx).im!=null?((MemberContext)_localctx).im.getCharPositionInLine():0));
+			                            Integer levelIdentifier = _localctx.sT.getInfoIdentifier((((MemberContext)_localctx).i!=null?_input.getText(((MemberContext)_localctx).i.start,((MemberContext)_localctx).i.stop):null)).getLevel();
+			                            ((MemberContext)_localctx).mipsCodeS =  m.textMember(((MemberContext)_localctx).e.mipsCodeS, (((MemberContext)_localctx).i!=null?_input.getText(((MemberContext)_localctx).i.start,((MemberContext)_localctx).i.stop):null), levelIdentifier, _localctx.sT.getValueSP(level,(((MemberContext)_localctx).i!=null?_input.getText(((MemberContext)_localctx).i.start,((MemberContext)_localctx).i.stop):null)), (((MemberContext)_localctx).im!=null?((MemberContext)_localctx).im.getLine():0), (((MemberContext)_localctx).im!=null?((MemberContext)_localctx).im.getCharPositionInLine():0));
 			                        }
 			                    }else{
 			                        e.addMessage(((MemberContext)_localctx).e.line,((MemberContext)_localctx).e.pos,ErrorMessage.semantic((((MemberContext)_localctx).e!=null?_input.getText(((MemberContext)_localctx).e.start,((MemberContext)_localctx).e.stop):null),ErrorMessage.type(((MemberContext)_localctx).e.typeS,"integer")));

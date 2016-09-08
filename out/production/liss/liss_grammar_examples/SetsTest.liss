@@ -9,7 +9,7 @@ declarations
 	v1=[3,4] -> array size 2;
 	v2 -> array size 2,3;
 
-    subprogram calculate(){
+    subprogram calculate(b->integer,c->boolean){
         declarations
             i = 4 -> integer;
             v3 -> array size 2, 2;
