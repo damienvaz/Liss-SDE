@@ -13,8 +13,8 @@ grammar Liss;
 
 @members{
     int level = 0;
-    //TableError e = new TableError();
-    TableError e;
+    //ErrorTable e = new ErrorTable();
+    ErrorTable e;
     boolean isSet = false;
     int i= 0;
 
@@ -29,9 +29,9 @@ grammar Liss;
 
 /* ****** Program ****** */
 
-liss [SymbolTable sT, TableError tableError,Mips mips]
+liss [SymbolTable sT, ErrorTable errorTable,Mips mips]
       @init{
-        e = tableError;
+        e = errorTable;
         m = mips;
       }
      : 'program' identifier body[sT] { m.addDataInstruction(m.dataTextOriginal()); m.textExitCode(); System.out.println(e.toString()); System.out.println("/***************************************/\n"+m.getAssemblyCode()+"/***************************************/\n"); /*System.out.println(m.areSomeRegistersUsed());if(e.isNull()){ m.write();}*/}

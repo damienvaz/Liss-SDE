@@ -1,6 +1,6 @@
 package Application.SymbolTable;
 
-import Application.TableError;
+import Application.ErrorTable;
 import Application.ErrorMessage;
 
 import java.util.ArrayList;
@@ -310,7 +310,7 @@ public class SymbolTable {
         this.address = address;
     }
 
-    public void add(TableError e, HashMap<String, HashMap<String, Object>> hashmapVar, String type,int level){
+    public void add(ErrorTable e, HashMap<String, HashMap<String, Object>> hashmapVar, String type, int level){
         Type typeSpace;
 
 

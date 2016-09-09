@@ -103,8 +103,8 @@ public class LissLexer extends Lexer {
 
 
 	    int level = 0;
-	    //TableError e = new TableError();
-	    TableError e;
+	    //ErrorTable e = new ErrorTable();
+	    ErrorTable e;
 	    boolean isSet = false;
 	    int i= 0;
 

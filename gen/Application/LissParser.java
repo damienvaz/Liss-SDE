@@ -137,7 +137,7 @@ public class LissParser extends Parser {
 
 
 	    int level = 0;
-	    //TableError e = new TableError();
+	    //ErrorTable e = new ErrorTable();
 	    TableError e;
 	    boolean isSet = false;
 	    int i= 0;

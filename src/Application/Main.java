@@ -16,13 +16,13 @@ import java.io.IOException;
 
 
 public class Main {
-    private TableError tableError;
+    private ErrorTable errorTable;
     private Mips mips;
     private SymbolTable idt;
 
     public Main(){
         this.idt = new SymbolTable();
-        this.tableError = new TableError();
+        this.errorTable = new ErrorTable();
         this.mips = new Mips();
     }
 
@@ -30,8 +30,8 @@ public class Main {
         return idt;
     }
 
-    public TableError getTableError() {
-        return tableError;
+    public ErrorTable getTableError() {
+        return errorTable;
     }
 
     public Mips getMips() {
@@ -64,7 +64,7 @@ public class Main {
         LissLexer lexer = new LissLexer(stream);
         TokenStream token = new CommonTokenStream(lexer);
         LissParser parser = new LissParser(token);
-        parser.liss(this.idt,this.tableError,this.mips);
+        parser.liss(this.idt,this.errorTable,this.mips);
     }
 
     public static void main(String[] args) {
@@ -97,7 +97,7 @@ public class Main {
 
         //create identifier table
         SymbolTable idT = new SymbolTable();
-        TableError e = new TableError();
+        ErrorTable e = new ErrorTable();
         Mips m = new Mips();
         parser.liss(idT, e, m);
 

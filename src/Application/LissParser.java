@@ -137,8 +137,8 @@ public class LissParser extends Parser {
 
 
 	    int level = 0;
-	    //TableError e = new TableError();
-	    TableError e;
+	    //ErrorTable e = new ErrorTable();
+	    ErrorTable e;
 	    boolean isSet = false;
 	    int i= 0;
 
@@ -156,7 +156,7 @@ public class LissParser extends Parser {
 	}
 	public static class LissContext extends ParserRuleContext {
 		public SymbolTable sT;
-		public TableError tableError;
+		public ErrorTable errorTable;
 		public Mips mips;
 		public IdentifierContext identifier() {
 			return getRuleContext(IdentifierContext.class,0);
@@ -165,10 +165,10 @@ public class LissParser extends Parser {
 			return getRuleContext(BodyContext.class,0);
 		}
 		public LissContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public LissContext(ParserRuleContext parent, int invokingState, SymbolTable sT, TableError tableError, Mips mips) {
+		public LissContext(ParserRuleContext parent, int invokingState, SymbolTable sT, ErrorTable errorTable, Mips mips) {
 			super(parent, invokingState);
 			this.sT = sT;
-			this.tableError = tableError;
+			this.errorTable = errorTable;
 			this.mips = mips;
 		}
 		@Override public int getRuleIndex() { return RULE_liss; }
@@ -182,11 +182,11 @@ public class LissParser extends Parser {
 		}
 	}
 
-	public final LissContext liss(SymbolTable sT,TableError tableError,Mips mips) throws RecognitionException {
-		LissContext _localctx = new LissContext(_ctx, getState(), sT, tableError, mips);
+	public final LissContext liss(SymbolTable sT,ErrorTable errorTable,Mips mips) throws RecognitionException {
+		LissContext _localctx = new LissContext(_ctx, getState(), sT, errorTable, mips);
 		enterRule(_localctx, 0, RULE_liss);
 
-		        e = tableError;
+		        e = errorTable;
 		        m = mips;
 		      
 		try {
