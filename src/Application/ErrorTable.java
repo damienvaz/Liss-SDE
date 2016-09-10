@@ -47,7 +47,7 @@ public class ErrorTable {
         StringBuilder s = new StringBuilder();
 
         s.append("\n");
-        s.append("TABLE ERROR:\n");
+        s.append("ERROR TABLE:\n");
         for( Integer line : this.errorTable.keySet()){
             TreeMap<Integer,ArrayList<String>> v = this.errorTable.get(line);
             for(Integer pos : v.keySet()){
