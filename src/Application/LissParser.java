@@ -1885,7 +1885,7 @@ public class LissParser extends Parser {
 				setState(338);
 				((Set_initializationContext)_localctx).e = expression(sT,s);
 
-				                    if( !(((Set_initializationContext)_localctx).e.typeS != null && ((Set_initializationContext)_localctx).e.typeS.equals("boolean")) ){
+				                    if( ((Set_initializationContext)_localctx).e.typeS == null || !( ((Set_initializationContext)_localctx).e.typeS.equals("boolean")) ){
 				                        e.addMessage(((Set_initializationContext)_localctx).e.line,((Set_initializationContext)_localctx).e.pos,ErrorMessage.semantic((((Set_initializationContext)_localctx).e!=null?_input.getText(((Set_initializationContext)_localctx).e.start,((Set_initializationContext)_localctx).e.stop):null),ErrorMessage.type(((Set_initializationContext)_localctx).e.typeS,"boolean")));
 				                    }
 
@@ -2012,10 +2012,10 @@ public class LissParser extends Parser {
 			                                e.addMessage(((Subprogram_definitionContext)_localctx).i.line,((Subprogram_definitionContext)_localctx).i.pos,ErrorMessage.semanticSubProgram((((Subprogram_definitionContext)_localctx).i!=null?_input.getText(((Subprogram_definitionContext)_localctx).i.start,((Subprogram_definitionContext)_localctx).i.stop):null),ErrorMessage.returnType(((Subprogram_definitionContext)_localctx).f2.typeS,((Subprogram_definitionContext)_localctx).r.typeS)));
 			                            }
 			                            //Note that the regular expression is done for looking some text to (((Subprogram_definitionContext)_localctx).r!=null?_input.getText(((Subprogram_definitionContext)_localctx).r.start,((Subprogram_definitionContext)_localctx).r.stop):null)!
-			                            if((((Subprogram_definitionContext)_localctx).r!=null?_input.getText(((Subprogram_definitionContext)_localctx).r.start,((Subprogram_definitionContext)_localctx).r.stop):null).matches(".+") && ((Subprogram_definitionContext)_localctx).r.typeS==null){
+			                            /*if((((Subprogram_definitionContext)_localctx).r!=null?_input.getText(((Subprogram_definitionContext)_localctx).r.start,((Subprogram_definitionContext)_localctx).r.stop):null).matches(".+") && ((Subprogram_definitionContext)_localctx).r.typeS==null){
 			                                e.addMessage(((Subprogram_definitionContext)_localctx).i.line,((Subprogram_definitionContext)_localctx).i.pos,ErrorMessage.semanticSubProgram((((Subprogram_definitionContext)_localctx).i!=null?_input.getText(((Subprogram_definitionContext)_localctx).i.start,((Subprogram_definitionContext)_localctx).i.stop):null),ErrorMessage.returnTypePossibleSubProgram()));
 			                                System.out.println("RETURN TEXT: "+(((Subprogram_definitionContext)_localctx).r!=null?_input.getText(((Subprogram_definitionContext)_localctx).r.start,((Subprogram_definitionContext)_localctx).r.stop):null)+" LINE: "+((Subprogram_definitionContext)_localctx).i.line+" REGEX RES: "+(((Subprogram_definitionContext)_localctx).r!=null?_input.getText(((Subprogram_definitionContext)_localctx).r.start,((Subprogram_definitionContext)_localctx).r.stop):null).matches(".+"));
-			                            }
+			                            }*/
 
 
 

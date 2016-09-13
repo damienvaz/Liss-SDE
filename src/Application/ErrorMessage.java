@@ -43,9 +43,9 @@ public class ErrorMessage {
         return " has return type '"+chosenType+"',when It should be '"+expectedType+"'.";
     }
 
-    public static String returnTypePossibleSubProgram(){
+    /*public static String returnTypePossibleSubProgram(){
         return " return type must be 'integer' || 'boolean'.";
-    }
+    }*/
 
     public static String warningRecursivityFunction(){
         return "has an infinite cycle.";

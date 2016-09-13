@@ -567,7 +567,7 @@ set_initialization [SymbolTable sT]
                     '|'
                     e=expression[sT,s]
                    {
-                    if( !($e.typeS != null && $e.typeS.equals("boolean")) ){
+                    if( $e.typeS == null || !( $e.typeS.equals("boolean")) ){
                         e.addMessage($e.line,$e.pos,ErrorMessage.semantic($e.text,ErrorMessage.type($e.typeS,"boolean")));
                     }
 
@@ -633,10 +633,10 @@ subprogram_definition[SymbolTable sT]
                                 e.addMessage($i.line,$i.pos,ErrorMessage.semanticSubProgram($i.text,ErrorMessage.returnType($f2.typeS,$r.typeS)));
                             }
                             //Note that the regular expression is done for looking some text to $r.text!
-                            if($r.text.matches(".+") && $r.typeS==null){
+                            /*if($r.text.matches(".+") && $r.typeS==null){
                                 e.addMessage($i.line,$i.pos,ErrorMessage.semanticSubProgram($i.text,ErrorMessage.returnTypePossibleSubProgram()));
                                 System.out.println("RETURN TEXT: "+$r.text+" LINE: "+$i.line+" REGEX RES: "+$r.text.matches(".+"));
-                            }
+                            }*/
 
 
 
