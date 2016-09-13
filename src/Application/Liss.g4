@@ -140,7 +140,7 @@ variable_declaration [SymbolTable sT]
                                                     }
                                                     res = res + calc;
                                                 }else{
-                                                    e.addMessage((int)varsH.get(i).get("line"),(int)varsH.get(i).get("pos"),ErrorMessage.semantic($vars.text,ErrorMessage.LimitsArray));
+                                                    e.addMessage((int)varsH.get(i).get("line"),(int)varsH.get(i).get("pos"),ErrorMessage.semanticVariable(i,ErrorMessage.LimitsArray));
                                                 }
                                             }
                                             res = res*m.numberOfBytesForEachAddress();
@@ -276,7 +276,7 @@ variable_declaration [SymbolTable sT]
                                 for(String j : varInfo.keySet()){
                                     String type = (String) varInfo.get("type");
                                     if(type!=null && !type.equals($type.typeS) && s==false){
-                                        e.addMessage((int)varInfo.get("line"),(int)varInfo.get("pos"),ErrorMessage.semantic(i,ErrorMessage.type((String)varInfo.get("type"),$type.typeS)));
+                                        e.addMessage((int)varInfo.get("line"),(int)varInfo.get("pos"),ErrorMessage.semanticVariable(i,ErrorMessage.type((String)varInfo.get("type"),$type.typeS)));
                                         s=true;
                                     }
                                 }
@@ -311,19 +311,19 @@ vars [SymbolTable sT]
      }
      : v1=var[sT]
             {
-                if(!info.containsKey($var.text)){
+                if(!info.containsKey($var.idS)){
                     info.put($var.idS,$var.infoVarS);
                 }else{
-                    e.addMessage((int)$var.infoVarS.get("line"),(int)$var.infoVarS.get("pos"),ErrorMessage.semantic($var.text,ErrorMessage.Declarations));
+                    e.addMessage((int)$var.infoVarS.get("line"),(int)$var.infoVarS.get("pos"),ErrorMessage.semanticVariable($var.idS,ErrorMessage.Declarations));
                 }
 
             }
        (',' v2=var[sT]
                 {
-                    if(!info.containsKey($var.text)){
+                    if(!info.containsKey($var.idS)){
                         info.put($var.idS,$var.infoVarS);
                     }else{
-                        e.addMessage((int)$var.infoVarS.get("line"),(int)$var.infoVarS.get("pos"),ErrorMessage.semantic($var.text,ErrorMessage.Declarations));
+                        e.addMessage((int)$var.infoVarS.get("line"),(int)$var.infoVarS.get("pos"),ErrorMessage.semanticVariable($var.idS,ErrorMessage.Declarations));
                     }
                 }
        )*
@@ -634,7 +634,7 @@ subprogram_definition[SymbolTable sT]
                             }
                             //Note that the regular expression is done for looking some text to $r.text!
                             if($r.text.matches(".+") && $r.typeS==null){
-                                e.addMessage($i.line,$i.pos,ErrorMessage.semanticSubProgram($i.text,ErrorMessage.returnTypePossible()));
+                                e.addMessage($i.line,$i.pos,ErrorMessage.semanticSubProgram($i.text,ErrorMessage.returnTypePossibleSubProgram()));
                                 System.out.println("RETURN TEXT: "+$r.text+" LINE: "+$i.line+" REGEX RES: "+$r.text.matches(".+"));
                             }
 
@@ -1070,7 +1070,7 @@ designator [SymbolTable sT, Set set, String side]
                                     if(!isSet && !$sT.doesExist($identifier.text)/*!$sT.getIdentifiersTable().containsKey($identifier.text)*/){
 
                                         //ErrorMessage.errorSemantic($identifier.text,$identifier.line,$identifier.pos,ErrorMessage.errorStatements);
-                                        e.addMessage($identifier.line,$identifier.pos,ErrorMessage.semantic($identifier.text,ErrorMessage.Statements));
+                                        e.addMessage($identifier.line,$identifier.pos,ErrorMessage.semanticVariable($identifier.text,ErrorMessage.Statements));
 
                                     }else{
                                         //Só se pode buscar os elementos que estao na tabela de identificador ! Casos como variaveis livres de um conjunto, nao podem ser pesquisado ! Daí o '!isSet'
@@ -1143,7 +1143,7 @@ designator [SymbolTable sT, Set set, String side]
                                     //Pre-Condicao: se existe na tabela de identificador
                                     if(!sT.doesExist($identifier.text)/*!$sT.getIdentifiersTable().containsKey($identifier.text)*/){
                                         //ErrorMessage.errorSemantic($identifier.text,$identifier.line,$identifier.pos,ErrorMessage.errorStatements);
-                                        e.addMessage($identifier.line,$identifier.pos,ErrorMessage.semantic($identifier.text,ErrorMessage.Statements));
+                                        e.addMessage($identifier.line,$identifier.pos,ErrorMessage.semanticVariable($identifier.text,ErrorMessage.Statements));
 
                                     }else{
                                         if($sT.doesExist($identifier.text)){
@@ -1151,12 +1151,12 @@ designator [SymbolTable sT, Set set, String side]
 
                                             if(v!=null && v.getCategory().equals(new String("TYPE"))){
                                                 //ErrorMessage.errorSemantic($identifier.text,$identifier.line,$identifier.pos,ErrorMessage.errorStatements);
-                                                e.addMessage($identifier.line,$identifier.pos,ErrorMessage.semantic($identifier.text,ErrorMessage.Statements));
+                                                e.addMessage($identifier.line,$identifier.pos,ErrorMessage.semanticVariable($identifier.text,ErrorMessage.Statements));
 
                                             }else{
                                                 if(v!=null && !v.getInfoType().equals(new String("array"))){
                                                     //ErrorMessage.errorSemantic($identifier.text,$identifier.line,$identifier.pos,ErrorMessage.errorArrayType);
-                                                    e.addMessage($identifier.line,$identifier.pos,ErrorMessage.semantic($identifier.text,ErrorMessage.ArrayType));
+                                                    e.addMessage($identifier.line,$identifier.pos,ErrorMessage.semanticVariable($identifier.text,ErrorMessage.ArrayType));
                                                 }else{
                                                     Array a = (Array) v;
                                                     //System.out.println("Dimension: "+a.getDimension());
@@ -2143,7 +2143,7 @@ read_statement [SymbolTable sT]
                   if($sT.doesExist($i.text)){
                       Var v = (Var) $sT.getInfoIdentifier($i.text);
                       if(!(v != null && v.getCategory().equals("VAR") && v.getInfoType().equals("integer"))){       //verificar se existe e é tipo inteiro e class VAR
-                        e.addMessage($i.line,$i.pos,ErrorMessage.semantic($i.text,ErrorMessage.type(v.getInfoType(),"integer")));
+                        e.addMessage($i.line,$i.pos,ErrorMessage.semanticVariable($i.text,ErrorMessage.type(v.getInfoType(),"integer")));
                       }else{
                         String mipsCodeS=null,s=null;
                         /*if($sT.getInfoIdentifier($i.text).getLevel().equals(0)){
@@ -2319,7 +2319,7 @@ interval [SymbolTable sT]
             if($sT.doesExist($i.text)){
                 Var v = (Var) $sT.getInfoIdentifier($i.text);
                 if(!(v != null && v.getCategory().equals("VAR") && v.getInfoType().equals("integer"))){   //identifier tem que pertencer a tabela, cat VAR e tipo inteiro
-                    e.addMessage($i.line,$i.pos,ErrorMessage.semantic($i.text,ErrorMessage.type(v.getInfoType(),"integer")));
+                    e.addMessage($i.line,$i.pos,ErrorMessage.semanticVariable($i.text,ErrorMessage.type(v.getInfoType(),"integer")));
                 }else{
                     $mipsCodeS = $t.minimumMipsCodeS;
                     $inArray = $t.inArrayS;
@@ -2346,7 +2346,7 @@ type_interval [SymbolTable sT, String variable]
                                         if($sT.doesExist($i.text)){
                                             Var v = (Var) $sT.getInfoIdentifier($i.text);
                                             if(!(v != null && v.getCategory().equals("VAR") && v.getInfoType().equals("array"))){   //identifier => Array e cat VAR
-                                                e.addMessage($i.line,$i.pos,ErrorMessage.semantic($i.text,ErrorMessage.type(v.getInfoType(),"integer")));
+                                                e.addMessage($i.line,$i.pos,ErrorMessage.semanticVariable($i.text,ErrorMessage.type(v.getInfoType(),"integer")));
                                             }else{
                                                 if($inArrayS == true){
                                                     String s = m.loadImmediateWord("0", $i.line, $i.pos); // 0 because "inArray" is a foreach !! So it must pass to every position of the array. That's why we begin by 0 until the maximum of the dimension of the array.
@@ -2399,7 +2399,7 @@ minimum [SymbolTable sT, String variable, boolean inArray]
             if($sT.doesExist($i.text)){
                 Var v = (Var) $sT.getInfoIdentifier($i.text);
                 if(!(v != null && v.getCategory().equals("VAR") && v.getInfoType().equals("integer"))){       //tem que existir e tem que ser variavel tipo inteiro , cat VAR
-                    e.addMessage($i.line,$i.pos,ErrorMessage.semantic($i.text,ErrorMessage.type(v.getInfoType(),"integer")));
+                    e.addMessage($i.line,$i.pos,ErrorMessage.semanticVariable($i.text,ErrorMessage.type(v.getInfoType(),"integer")));
                 }else{
                     String s;
                     if($sT.getInfoIdentifier($i.text).getLevel().equals(0)){
@@ -2432,7 +2432,7 @@ maximum [SymbolTable sT]
             if($sT.doesExist($i.text)){
                 Var v = (Var) $sT.getInfoIdentifier($i.text);
                 if(!(v != null && v.getCategory().equals("VAR") && v.getInfoType().equals("integer"))){       //tem que existir e tem que ser variavel tipo inteiro , cat VAR
-                    e.addMessage($i.line,$i.pos,ErrorMessage.semantic($i.text,ErrorMessage.type(v.getInfoType(),"integer")));
+                    e.addMessage($i.line,$i.pos,ErrorMessage.semanticVariable($i.text,ErrorMessage.type(v.getInfoType(),"integer")));
                 }else{
                     //String s;
                     if($sT.getInfoIdentifier($i.text).getLevel().equals(0)){
@@ -2533,7 +2533,7 @@ succ_or_pred [SymbolTable sT]
                 if($sT.doesExist($i.text)){
                     Var v = (Var) $sT.getInfoIdentifier($i.text);
                     if( !( $i.text.matches("^[0-9]+$") || (v != null && v.getCategory().equals("VAR") && v.getInfoType().equals("integer")) ) ){
-                        e.addMessage($i.line,$i.pos,ErrorMessage.semantic($i.text,ErrorMessage.type("null","integer")));
+                        e.addMessage($i.line,$i.pos,ErrorMessage.semanticVariable($i.text,ErrorMessage.type("null","integer")));
                     }else{
                         if($s.succ == true){
                         //It means that succ is being used
@@ -2756,10 +2756,10 @@ copy_statement [SymbolTable sT]
                                   m.addMipsCodeFunction(m.getNameFunction(),mipsCodeS);
                               }
                           }else{
-                            e.addMessage($i2.line,$i2.pos,ErrorMessage.semantic($i2.text,ErrorMessage.type("boolean | sequence | integer","sequence")));
+                            e.addMessage($i2.line,$i2.pos,ErrorMessage.semanticVariable($i2.text,ErrorMessage.type("boolean | sequence | integer","sequence")));
                           }
                       }else{
-                        e.addMessage($i1.line,$i2.pos,ErrorMessage.semantic($i1.text,ErrorMessage.type("boolean | sequence | integer","sequence")));
+                        e.addMessage($i1.line,$i2.pos,ErrorMessage.semanticVariable($i1.text,ErrorMessage.type("boolean | sequence | integer","sequence")));
                       }
                   }else{
                       if(!$sT.doesExist($i1.text)){
@@ -2797,10 +2797,10 @@ cat_statement [SymbolTable sT]
                                 m.addMipsCodeFunction(m.getNameFunction(),mipsCodeS);
                             }
                         }else{
-                            e.addMessage($i2.line,$i2.pos,ErrorMessage.semantic($i2.text,ErrorMessage.type("boolean | sequence | integer","sequence")));
+                            e.addMessage($i2.line,$i2.pos,ErrorMessage.semanticVariable($i2.text,ErrorMessage.type("boolean | sequence | integer","sequence")));
                         }
                     }else{
-                        e.addMessage($i1.line,$i2.pos,ErrorMessage.semantic($i1.text,ErrorMessage.type("boolean | sequence | integer","sequence")));
+                        e.addMessage($i1.line,$i2.pos,ErrorMessage.semanticVariable($i1.text,ErrorMessage.type("boolean | sequence | integer","sequence")));
                     }
                 }else{
                     if(!$sT.doesExist($i1.text)){
@@ -2905,13 +2905,13 @@ member [SymbolTable sT, Set set]
                         e.addMessage($e.line,$e.pos,ErrorMessage.semantic($e.text,ErrorMessage.type($e.typeS,"integer")));
                     }
                 }else{
-                    e.addMessage($i.line,$i.pos,ErrorMessage.semantic($i.text,ErrorMessage.type(type,"sequence")));
+                    e.addMessage($i.line,$i.pos,ErrorMessage.semanticVariable($i.text,ErrorMessage.type(type,"sequence")));
                 }
             }
 
             //Normally doesn't need else statement.
           }else{
-            e.addMessage($i.line,$i.pos,ErrorMessage.semantic($i.text,ErrorMessage.Statements));
+            e.addMessage($i.line,$i.pos,ErrorMessage.semanticVariable($i.text,ErrorMessage.Statements));
           }
           //if($set!=null && isSet){
           if($set!=null){

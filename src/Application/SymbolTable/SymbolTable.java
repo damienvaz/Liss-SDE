@@ -339,7 +339,7 @@ public class SymbolTable {
                                 setAddress(this.address + typeSpace.getSpace());
                                 i.setAddress(this.address);
                             } else {
-                                e.addMessage((int) hashmapVar.get(id).get("line"), (int) hashmapVar.get(id).get("pos"), ErrorMessage.semantic(id, ErrorMessage.Declarations));
+                                e.addMessage((int) hashmapVar.get(id).get("line"), (int) hashmapVar.get(id).get("pos"), ErrorMessage.semanticVariable(id, ErrorMessage.Declarations));
                             }
                         }
                 }
@@ -368,7 +368,7 @@ public class SymbolTable {
                             setAddress(this.address + typeSpace.getSpace());
                             b.setAddress(this.address);
                         } else {
-                            e.addMessage((int) hashmapVar.get(id).get("line"),(int) hashmapVar.get(id).get("pos"),ErrorMessage.semantic(id,ErrorMessage.Declarations));
+                            e.addMessage((int) hashmapVar.get(id).get("line"),(int) hashmapVar.get(id).get("pos"),ErrorMessage.semanticVariable(id,ErrorMessage.Declarations));
                         }
                     }
                 }
@@ -405,7 +405,7 @@ public class SymbolTable {
                             a.setAddress(this.address);
                         } else {
                             //e.addMessage((int) hashmapVar.get(id).get("line"),(int) hashmapVar.get(id).get("pos"),ErrorMessage.semantic(id,ErrorMessage.Declarations));
-                            e.addMessage((int) hashmapVar.get(id).get("line"),(int) hashmapVar.get(id).get("pos"),ErrorMessage.semantic(id,ErrorMessage.Declarations));
+                            e.addMessage((int) hashmapVar.get(id).get("line"),(int) hashmapVar.get(id).get("pos"),ErrorMessage.semanticVariable(id,ErrorMessage.Declarations));
                         }
                     }
                 }
@@ -436,7 +436,7 @@ public class SymbolTable {
                             s.setAddress(this.address);
                         } else {
                             //e.addMessage((int) hashmapVar.get(id).get("line"),(int) hashmapVar.get(id).get("pos"),ErrorMessage.semantic(id,ErrorMessage.Declarations));
-                            e.addMessage((int) hashmapVar.get(id).get("line"),(int) hashmapVar.get(id).get("pos"),ErrorMessage.semantic(id,ErrorMessage.Declarations));
+                            e.addMessage((int) hashmapVar.get(id).get("line"),(int) hashmapVar.get(id).get("pos"),ErrorMessage.semanticVariable(id,ErrorMessage.Declarations));
                         }
                     }
                 }
@@ -472,7 +472,7 @@ public class SymbolTable {
                             setAddress(this.address + typeSpace.getSpace());
                             set.setAddress(this.address);
                         } else {
-                            e.addMessage((int) hashmapVar.get(id).get("line"),(int) hashmapVar.get(id).get("pos"),ErrorMessage.semantic(id,ErrorMessage.Declarations));
+                            e.addMessage((int) hashmapVar.get(id).get("line"),(int) hashmapVar.get(id).get("pos"),ErrorMessage.semanticVariable(id,ErrorMessage.Declarations));
                         }
                     }
                 }
@@ -513,7 +513,7 @@ public class SymbolTable {
                             //LinkedList<InfoIdentifiersTable> l = new LinkedList<InfoIdentifiersTable>();
                             //l.add(f.clone());
                             //this.symbolTable.put("error"+id, l);
-                            e.addMessage((int) hashmapVar.get(id).get("line"),(int) hashmapVar.get(id).get("pos"),ErrorMessage.semantic(id,ErrorMessage.Declarations));
+                            e.addMessage((int) hashmapVar.get(id).get("line"),(int) hashmapVar.get(id).get("pos"),ErrorMessage.semanticVariable(id,ErrorMessage.Declarations));
                         }
                     }
                 }

@@ -4,6 +4,7 @@ declarations
 
     a = 4, a = 5, b = true -> integer;
 	d = true, flag = 5   -> boolean;
+	a -> integer;
 	array1 = [[1,2],[2,3,4,5]], vector -> array size 4,3;
 	vector -> array size 4,3;
  	seq1 =<<1,2,3,4>> -> sequence;

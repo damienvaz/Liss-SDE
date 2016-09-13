@@ -5,18 +5,19 @@ package Application;
  */
 public class ErrorMessage {
 
-    //Remover esta função derivado ao sistema novo de linguagem natural feito através desta classe
-    public static final String errorDeclarations = "already exists.";
-    public static final String errorStatements = "isn't declared.";
-    public static final String errorArrayType = "must be an 'array'.";
-
     public static final String Declarations = "already exists.";
     public static final String Statements = "isn't declared.";
     public static final String ArrayType = "must be an 'array'.";
     public static final String LimitsArray = "has a problem with his limits.";
 
+    /*******************************************************************************************************/
+
     public static String semantic(String var, String message){
         return new String("Expression '"+var.toString()+"' "+message.toString());
+    }
+
+    public static String semanticVariable(String var, String message){
+        return new String("Variable '"+var.toString()+"' "+message.toString());
     }
 
     public static String semanticSubProgram(String var, String message){
@@ -32,6 +33,8 @@ public class ErrorMessage {
         return new String("Incompatible types in an Assignment.");
     }
 
+    /*******************************************************************************************************/
+
     public static String type(String chosenType, String expectedType){
         return " has type '"+chosenType+"',when It should be '"+expectedType+"'.";
     }
@@ -40,7 +43,7 @@ public class ErrorMessage {
         return " has return type '"+chosenType+"',when It should be '"+expectedType+"'.";
     }
 
-    public static String returnTypePossible(){
+    public static String returnTypePossibleSubProgram(){
         return " return type must be 'integer' || 'boolean'.";
     }
 

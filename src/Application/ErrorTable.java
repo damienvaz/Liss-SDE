@@ -12,7 +12,7 @@ import java.util.TreeMap;
  */
 public class ErrorTable {
     //         |  line    |  pos  |  error message |
-    //private TreeMap<Integer,TreeMap<Integer,String>> errorTable;
+
     private TreeMap<Integer,TreeMap<Integer,ArrayList<String>>> errorTable;
 
     public ErrorTable(){
