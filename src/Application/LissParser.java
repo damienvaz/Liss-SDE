@@ -3116,6 +3116,8 @@ public class LissParser extends Parser {
 
 			                                                }
 
+			                                            }else{
+			                                                e.addMessage(((DesignatorContext)_localctx).identifier.line,((DesignatorContext)_localctx).identifier.pos,ErrorMessage.semanticVariable((((DesignatorContext)_localctx).identifier!=null?_input.getText(((DesignatorContext)_localctx).identifier.start,((DesignatorContext)_localctx).identifier.stop):null),ErrorMessage.Statements));
 			                                            }
 			                                        }
 			                                    }

@@ -1111,6 +1111,8 @@ designator [SymbolTable sT, Set set, String side]
 
                                                 }
 
+                                            }else{
+                                                e.addMessage($identifier.line,$identifier.pos,ErrorMessage.semanticVariable($identifier.text,ErrorMessage.Statements));
                                             }
                                         }
                                     }
