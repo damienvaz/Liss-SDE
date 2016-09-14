@@ -3550,9 +3550,9 @@ public class LissParser extends Parser {
 			                    ((Function_callContext)_localctx).line =  ((Function_callContext)_localctx).i.line;
 			                    ((Function_callContext)_localctx).pos =  ((Function_callContext)_localctx).i.pos;
 			                    if(_localctx.sT.doesExist((((Function_callContext)_localctx).identifier!=null?_input.getText(((Function_callContext)_localctx).identifier.start,((Function_callContext)_localctx).identifier.stop):null)) /*&& _localctx.sT.getIdentifiersTable().containsKey((((Function_callContext)_localctx).i!=null?_input.getText(((Function_callContext)_localctx).i.start,((Function_callContext)_localctx).i.stop):null))*/){ //TODO: Don't know if it sure to do that...
-			                        System.out.println("IDENTIFIER: "+(((Function_callContext)_localctx).identifier!=null?_input.getText(((Function_callContext)_localctx).identifier.start,((Function_callContext)_localctx).identifier.stop):null));
-			                        System.out.println("GLOBAL LEVEL: "+level);
-			                        System.out.println("LEVEL OF FUNCTION: "+((Function)_localctx.sT.getInfoIdentifier((((Function_callContext)_localctx).i!=null?_input.getText(((Function_callContext)_localctx).i.start,((Function_callContext)_localctx).i.stop):null))).getLevel());
+			                        //System.out.println("IDENTIFIER: "+(((Function_callContext)_localctx).identifier!=null?_input.getText(((Function_callContext)_localctx).identifier.start,((Function_callContext)_localctx).identifier.stop):null));
+			                        //System.out.println("GLOBAL LEVEL: "+level);
+			                        //System.out.println("LEVEL OF FUNCTION: "+((Function)_localctx.sT.getInfoIdentifier((((Function_callContext)_localctx).i!=null?_input.getText(((Function_callContext)_localctx).i.start,((Function_callContext)_localctx).i.stop):null))).getLevel());
 			                        /*!(((Function)_localctx.sT.getInfoIdentifier((((Function_callContext)_localctx).i!=null?_input.getText(((Function_callContext)_localctx).i.start,((Function_callContext)_localctx).i.stop):null))).getLevel()<level)
 			                        *This is a test for testing the level of the function and the global level for cycle redundacy (infinite cycle)
 			                        */
@@ -3579,7 +3579,8 @@ public class LissParser extends Parser {
 			                            System.out.println(_localctx.mipsCodeS);
 			                            System.out.println("FUNCTION CALL END : ");
 			                        }else{
-			                            e.addMessage(((Function_callContext)_localctx).i.line,((Function_callContext)_localctx).i.pos,ErrorMessage.semanticSubProgram((((Function_callContext)_localctx).i!=null?_input.getText(((Function_callContext)_localctx).i.start,((Function_callContext)_localctx).i.stop):null),ErrorMessage.warningRecursivityFunction()));
+			                            //e.addMessage(((Function_callContext)_localctx).i.line,((Function_callContext)_localctx).i.pos,ErrorMessage.semanticSubProgram((((Function_callContext)_localctx).i!=null?_input.getText(((Function_callContext)_localctx).i.start,((Function_callContext)_localctx).i.stop):null),ErrorMessage.warningRecursivityFunction()));
+			                            e.addMessage(((Function_callContext)_localctx).i.line,((Function_callContext)_localctx).i.pos,ErrorMessage.semanticVariable((((Function_callContext)_localctx).i!=null?_input.getText(((Function_callContext)_localctx).i.start,((Function_callContext)_localctx).i.stop):null),ErrorMessage.NotAFunction));
 			                        }
 			                    }else{
 			                        ((Function_callContext)_localctx).typeS =  null;

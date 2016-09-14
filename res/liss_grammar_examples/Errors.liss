@@ -29,8 +29,8 @@ declarations
     u -> integer;
     subprogram f(amen->boolean)->integer{
         declarations
-            b->boolean;
             b->integer;
+            b->boolean;
             d->boolean;
             d->integer;
             vector -> array size 4,3;
@@ -116,5 +116,6 @@ statements
 
     a = 2 + true + c;
 
+    a = f(d);
     //d = 3 in woot;
 }

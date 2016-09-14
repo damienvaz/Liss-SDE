@@ -9,6 +9,7 @@ public class ErrorMessage {
     public static final String Statements = "isn't declared.";
     public static final String ArrayType = "must be an 'array'.";
     public static final String LimitsArray = "has a problem with his limits.";
+    public static final String NotAFunction = "is not a function.";
 
     /*******************************************************************************************************/
 
@@ -47,9 +48,9 @@ public class ErrorMessage {
         return " return type must be 'integer' || 'boolean'.";
     }*/
 
-    public static String warningRecursivityFunction(){
+    /*public static String warningRecursivityFunction(){
         return "has an infinite cycle.";
-    }
+    }*/
 
     public static String typeExpression(String leftChosenType,String operator, String rightChosenType, String leftExpectedType, String rightExpectedType){
         return " has type '"+leftChosenType+" "+operator+" "+rightChosenType+"',required type '"+leftExpectedType+" "+operator+" "+rightExpectedType+"'.";

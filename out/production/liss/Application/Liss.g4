@@ -1355,9 +1355,9 @@ function_call [SymbolTable sT, Set set]
                     $line = $i.line;
                     $pos = $i.pos;
                     if($sT.doesExist($identifier.text) /*&& $sT.getIdentifiersTable().containsKey($i.text)*/){ //TODO: Don't know if it sure to do that...
-                        System.out.println("IDENTIFIER: "+$identifier.text);
-                        System.out.println("GLOBAL LEVEL: "+level);
-                        System.out.println("LEVEL OF FUNCTION: "+((Function)$sT.getInfoIdentifier($i.text)).getLevel());
+                        //System.out.println("IDENTIFIER: "+$identifier.text);
+                        //System.out.println("GLOBAL LEVEL: "+level);
+                        //System.out.println("LEVEL OF FUNCTION: "+((Function)$sT.getInfoIdentifier($i.text)).getLevel());
                         /*!(((Function)$sT.getInfoIdentifier($i.text)).getLevel()<level)
                         *This is a test for testing the level of the function and the global level for cycle redundacy (infinite cycle)
                         */
@@ -1384,7 +1384,8 @@ function_call [SymbolTable sT, Set set]
                             System.out.println($mipsCodeS);
                             System.out.println("FUNCTION CALL END : ");
                         }else{
-                            e.addMessage($i.line,$i.pos,ErrorMessage.semanticSubProgram($i.text,ErrorMessage.warningRecursivityFunction()));
+                            //e.addMessage($i.line,$i.pos,ErrorMessage.semanticSubProgram($i.text,ErrorMessage.warningRecursivityFunction()));
+                            e.addMessage($i.line,$i.pos,ErrorMessage.semanticVariable($i.text,ErrorMessage.NotAFunction));
                         }
                     }else{
                         $typeS = null;
