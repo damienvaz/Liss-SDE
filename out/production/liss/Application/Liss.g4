@@ -2759,10 +2759,12 @@ copy_statement [SymbolTable sT]
                                   m.addMipsCodeFunction(m.getNameFunction(),mipsCodeS);
                               }
                           }else{
-                            e.addMessage($i2.line,$i2.pos,ErrorMessage.semanticVariable($i2.text,ErrorMessage.type("boolean | sequence | integer","sequence")));
+                            //e.addMessage($i2.line,$i2.pos,ErrorMessage.semanticVariable($i2.text,ErrorMessage.type("boolean | sequence | integer","sequence")));
+                            e.addMessage($i2.line,$i2.pos,ErrorMessage.semanticVariable($i2.text,ErrorMessage.type(v2.getInfoType(),"sequence")));
                           }
                       }else{
-                        e.addMessage($i1.line,$i2.pos,ErrorMessage.semanticVariable($i1.text,ErrorMessage.type("boolean | sequence | integer","sequence")));
+                        //e.addMessage($i1.line,$i2.pos,ErrorMessage.semanticVariable($i1.text,ErrorMessage.type("boolean | sequence | integer","sequence")));
+                        e.addMessage($i1.line,$i2.pos,ErrorMessage.semanticVariable($i1.text,ErrorMessage.type(v1.getInfoType(),"sequence")));
                       }
                   }else{
                       if(!$sT.doesExist($i1.text)){
@@ -2800,10 +2802,12 @@ cat_statement [SymbolTable sT]
                                 m.addMipsCodeFunction(m.getNameFunction(),mipsCodeS);
                             }
                         }else{
-                            e.addMessage($i2.line,$i2.pos,ErrorMessage.semanticVariable($i2.text,ErrorMessage.type("boolean | sequence | integer","sequence")));
+                            //e.addMessage($i2.line,$i2.pos,ErrorMessage.semanticVariable($i2.text,ErrorMessage.type("boolean | sequence | integer","sequence")));
+                            e.addMessage($i2.line,$i2.pos,ErrorMessage.semanticVariable($i2.text,ErrorMessage.type(v2.getInfoType(),"sequence")));
                         }
                     }else{
-                        e.addMessage($i1.line,$i2.pos,ErrorMessage.semanticVariable($i1.text,ErrorMessage.type("boolean | sequence | integer","sequence")));
+                        //e.addMessage($i1.line,$i2.pos,ErrorMessage.semanticVariable($i1.text,ErrorMessage.type("boolean | sequence | integer","sequence")));
+                        e.addMessage($i1.line,$i2.pos,ErrorMessage.semanticVariable($i1.text,ErrorMessage.type(v1.getInfoType(),"sequence")));
                     }
                 }else{
                     if(!$sT.doesExist($i1.text)){
