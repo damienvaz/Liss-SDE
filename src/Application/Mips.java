@@ -19,14 +19,14 @@ public class Mips {
     private String[] registerSavedTemporaryName;
     private static int numberOfRegisters = 8;
     private static Integer eachAddressOccupies = 4; // 4 Bytes
-    private LinkedList<Integer> counterJumpStack;   //A stack which will handle the IF/WHILE statement behavior
-    private Integer counterJump;                    //A counter for the IF/WHILE statement behavior
+    private LinkedList<Integer> counterJumpStack;   //A stack which will handle the IF/WHILE/FOR statement behavior (handling the behaviour of having multiple if statements inside of each if statement)
+    private Integer counterJump;                    //A counter for the IF/WHILE/FOR statement behavior
     private LinkedList<String> functionName;        //It concatenates all the function name, this is due to generate the correct name for the MIPS code.
     private HashMap<String,String> mipsCodeFunctionCache;    //It is a stack which will help the program in producing the mipscode of functions.
     private String functionMipsCode;                //All the code of mipscode Function available here !!!
-    private HashMap<String, Integer> mipsCodeSpecialFunctionState; // Structure which explains if a certain function was called by the assembly code. (1) means yes, (0) means no. if it was called at least once time, then it will add to the mips assembly code.
+    private HashMap<String, Integer> functionStateUsedOrNot; // Structure which explains if a certain function was called by the assembly code. (1) means yes, (0) means no. if it was called at least once time, then it will add to the mips assembly code.
     private HashMap<String, Integer> howManyArgumentsDoesHavespecialFunctions;
-    private LinkedList<String> stackOfSpecialFunctionsCalledRecursively;
+    //private LinkedList<String> stackOfSpecialFunctionsCalledRecursively;
 
 
     public Mips(){
@@ -60,21 +60,21 @@ public class Mips {
         this.functionName = new LinkedList<String>();
         this.mipsCodeFunctionCache = new HashMap<String,String>();
 
-        this.mipsCodeSpecialFunctionState = new HashMap<String,Integer>();
-        this.mipsCodeSpecialFunctionState.put("read",0);
-        this.mipsCodeSpecialFunctionState.put("indexoutofboundError",0);
-        this.mipsCodeSpecialFunctionState.put("write",0);
-        this.mipsCodeSpecialFunctionState.put("writeln",0);
-        this.mipsCodeSpecialFunctionState.put("cons_sequence",0);
-        this.mipsCodeSpecialFunctionState.put("tail_sequence",0);
-        this.mipsCodeSpecialFunctionState.put("head_sequence",0);
-        this.mipsCodeSpecialFunctionState.put("delete_sequence",0);
-        this.mipsCodeSpecialFunctionState.put("is_empty_sequence",0);
-        this.mipsCodeSpecialFunctionState.put("length_sequence",0);
-        this.mipsCodeSpecialFunctionState.put("member_sequence",0);
-        this.mipsCodeSpecialFunctionState.put("copy_sequence",0);
-        this.mipsCodeSpecialFunctionState.put("cat_sequence",0);
-        this.mipsCodeSpecialFunctionState.put("print_sequence",0);
+        this.functionStateUsedOrNot = new HashMap<String,Integer>();
+        this.functionStateUsedOrNot.put("read",0);
+        this.functionStateUsedOrNot.put("indexoutofboundError",0);
+        this.functionStateUsedOrNot.put("write",0);
+        this.functionStateUsedOrNot.put("writeln",0);
+        this.functionStateUsedOrNot.put("cons_sequence",0);
+        this.functionStateUsedOrNot.put("tail_sequence",0);
+        this.functionStateUsedOrNot.put("head_sequence",0);
+        this.functionStateUsedOrNot.put("delete_sequence",0);
+        this.functionStateUsedOrNot.put("is_empty_sequence",0);
+        this.functionStateUsedOrNot.put("length_sequence",0);
+        this.functionStateUsedOrNot.put("member_sequence",0);
+        this.functionStateUsedOrNot.put("copy_sequence",0);
+        this.functionStateUsedOrNot.put("cat_sequence",0);
+        this.functionStateUsedOrNot.put("print_sequence",0);
 
         this.howManyArgumentsDoesHavespecialFunctions = new HashMap<String,Integer>();
         this.howManyArgumentsDoesHavespecialFunctions.put("tail_sequence",1);
@@ -291,7 +291,7 @@ public class Mips {
     public String dataTextOriginal(){
         StringBuilder s = new StringBuilder();
 
-        if(this.mipsCodeSpecialFunctionState.get("indexoutofboundError").equals(1)) {
+        if(this.functionStateUsedOrNot.get("indexoutofboundError").equals(1)) {
             s.append("\tindexoutofbound: .asciiz \"Index out of bound. \" \n");
         }
         s.append("\tline: .asciiz \"line: \" \n");
@@ -300,13 +300,13 @@ public class Mips {
         s.append("\tbrackets_closed: .asciiz \" ]\"\n");
         s.append("\tpipe: .asciiz \" | \"\n");
 
-        if(this.mipsCodeSpecialFunctionState.get("read").equals(1)) {
+        if(this.functionStateUsedOrNot.get("read").equals(1)) {
             s.append("\tmessagereadvalue: .asciiz \"Enter integer value:\\n\" \n");
         }
-        if(this.mipsCodeSpecialFunctionState.get("tail_sequence").equals(1)) {
+        if(this.functionStateUsedOrNot.get("tail_sequence").equals(1)) {
             s.append("\talert_tail: .asciiz \"Tail function - Sequence length is inferior of 1.\"\n");
         }
-        if(this.mipsCodeSpecialFunctionState.get("head_sequence").equals(1)) {
+        if(this.functionStateUsedOrNot.get("head_sequence").equals(1)) {
             s.append("\talert_head: .asciiz \"Head function - Sequence length is inferior of 1.\"\n");
         }
 
@@ -497,7 +497,7 @@ public class Mips {
 
     public String textLimitsArray(int limit,int line, int pos){
         StringBuilder s = new StringBuilder();
-        this.mipsCodeSpecialFunctionState.put("indexoutofboundError",1);
+        this.functionStateUsedOrNot.put("indexoutofboundError",1);
 
         s.append("\t####Verify limits of the array####\n");
         s.append(loadImmediateWord("0",line,pos));
@@ -710,17 +710,17 @@ public class Mips {
 
                 s.append("\tmove $a0, " + r0 + "\t\t# " + line + ":" + pos + "\n");
                 s.append("\tli $v0, 1\n");
-                this.mipsCodeSpecialFunctionState.put("write",1);
+                this.functionStateUsedOrNot.put("write",1);
                 s.append("\tjal write\t\t# " + line + ":" + pos + "\n");
             }else{
                 //Otherwise it is a string and we must output it !
                 s.append("\tli $v0, 4\n");
-                this.mipsCodeSpecialFunctionState.put("write",1);
+                this.functionStateUsedOrNot.put("write",1);
                 s.append("\tjal write\t\t# " + line + ":" + pos + "\n");
             }
             //If we have a writeln, we must activate it !
             if(write == false){
-                this.mipsCodeSpecialFunctionState.put("writeln",1);
+                this.functionStateUsedOrNot.put("writeln",1);
                 s.append("\tjal writeln\t\t# " + line + ":" + pos + "\n");
             }
         }
@@ -748,7 +748,7 @@ public class Mips {
     }
 
     public String textJumpWriteln(){
-        this.mipsCodeSpecialFunctionState.put("writeln",1);
+        this.functionStateUsedOrNot.put("writeln",1);
         return "\tjal writeln\n";
     }
 
@@ -960,7 +960,7 @@ public class Mips {
 
     public String textRead(String variable, int line, int pos){
         StringBuilder s = new StringBuilder();
-        this.mipsCodeSpecialFunctionState.put("read",1);
+        this.functionStateUsedOrNot.put("read",1);
 
         s.append("\tjal read\t\t# " + line + ":" + pos + "\n");
         String r0 = nextFreeRegister();
@@ -1271,7 +1271,7 @@ public class Mips {
 
     public String textInitSequence(String nameOfSequence, LinkedList<Integer> sequenceElements,boolean functionState, int addressInSP, int line, int pos){
         StringBuilder s = new StringBuilder();
-        this.mipsCodeSpecialFunctionState.put("cons_sequence",1);
+        this.functionStateUsedOrNot.put("cons_sequence",1);
 
         if(functionState==true){
             //String register = nextFreeRegister();
@@ -1364,7 +1364,7 @@ public class Mips {
 
     public String textCons(String valueToInsert, String sequence2, int line, int pos){
         StringBuilder s = new StringBuilder();
-        this.mipsCodeSpecialFunctionState.put("cons_sequence",1);
+        this.functionStateUsedOrNot.put("cons_sequence",1);
 
         //String[] res = lastTwoRegisterOccupied();
         String res = nextFreeRegister();
@@ -1389,7 +1389,7 @@ public class Mips {
 
     public String textTail(String sequence, int line, int pos){
         StringBuilder s = new StringBuilder();
-        this.mipsCodeSpecialFunctionState.put("tail_sequence",1);
+        this.functionStateUsedOrNot.put("tail_sequence",1);
 
         String[] res =lastRegisterOccupied();
         s.append(sequence);
@@ -1403,7 +1403,7 @@ public class Mips {
 
     public String textHead(String sequence, int line, int pos){
         StringBuilder s = new StringBuilder();
-        this.mipsCodeSpecialFunctionState.put("head_sequence",1);
+        this.functionStateUsedOrNot.put("head_sequence",1);
 
         String[] res =lastRegisterOccupied();
         s.append(sequence);
@@ -1416,7 +1416,7 @@ public class Mips {
 
     public String textDelete(String valueToDelete,String sequence, int line, int pos){
         StringBuilder s = new StringBuilder();
-        this.mipsCodeSpecialFunctionState.put("delete_sequence",1);
+        this.functionStateUsedOrNot.put("delete_sequence",1);
 
         /*String[] res = lastTwoRegisterOccupied();
 
@@ -1452,7 +1452,7 @@ public class Mips {
 
     public String textIsEmpty(String sequence, int line, int pos){
         StringBuilder s = new StringBuilder();
-        this.mipsCodeSpecialFunctionState.put("is_empty_sequence",1);
+        this.functionStateUsedOrNot.put("is_empty_sequence",1);
 
         String[] res = lastRegisterOccupied();
         s.append(sequence);
@@ -1466,7 +1466,7 @@ public class Mips {
 
     public String textLength(String sequence, int line, int pos){
         StringBuilder s = new StringBuilder();
-        this.mipsCodeSpecialFunctionState.put("length_sequence",1);
+        this.functionStateUsedOrNot.put("length_sequence",1);
 
         String[] res = lastRegisterOccupied();
         s.append(sequence);
@@ -1479,7 +1479,7 @@ public class Mips {
 
     public String textMember(String integerToSearchMipsCodeS, String nameOfSequence, Integer levelOfSequenceInIdentifierTable, int positionOfSequenceInSF, int line, int pos){
         StringBuilder s = new StringBuilder();
-        this.mipsCodeSpecialFunctionState.put("member_sequence",1);
+        this.functionStateUsedOrNot.put("member_sequence",1);
 
         s.append(integerToSearchMipsCodeS);
         String[] register = lastRegisterOccupied();
@@ -1514,7 +1514,7 @@ public class Mips {
 
     public String textCopy(String nameOfSequence1, Integer levelOfSequence1InIdTH, int positionInSFOfSequence1,String nameOfSequence2, Integer levelOfSequence2InIdTH, int positionInSFOfSequence2, int line, int pos){
         StringBuilder s = new StringBuilder();
-        this.mipsCodeSpecialFunctionState.put("copy_sequence",1);
+        this.functionStateUsedOrNot.put("copy_sequence",1);
 
         if(levelOfSequence1InIdTH.equals(0)){
             s.append("\tlw $s0, "+nameOfSequence1+"\t\t# " + line + ":" + pos + "\n");
@@ -1536,7 +1536,7 @@ public class Mips {
 
     public String textCat(String nameOfSequence1, Integer levelOfSequence1InIdTH, int positionInSFOfSequence1,String nameOfSequence2, Integer levelOfSequence2InIdTH, int positionInSFOfSequence2, int line, int pos){
         StringBuilder s = new StringBuilder();
-        this.mipsCodeSpecialFunctionState.put("cat_sequence",1);
+        this.functionStateUsedOrNot.put("cat_sequence",1);
 
         if(levelOfSequence1InIdTH.equals(0)){
             s.append("\tlw $s0, "+nameOfSequence1+"\t\t# " + line + ":" + pos + "\n");
@@ -1579,7 +1579,7 @@ public class Mips {
     public String textPrintSequence(String nameOfSequence, boolean functionState, int positionInSFOfSequence, boolean writePrint, int line, int pos){
         StringBuilder s = new StringBuilder();
 
-        this.mipsCodeSpecialFunctionState.put("print_sequence",1);
+        this.functionStateUsedOrNot.put("print_sequence",1);
 
         if(!functionState){
             s.append("\tlw $s0, "+nameOfSequence+"\t\t# " + line + ":" + pos + "\n");
@@ -1589,7 +1589,7 @@ public class Mips {
         s.append("\tjal print_sequence\n");
 
         if(!writePrint){
-            this.mipsCodeSpecialFunctionState.put("writeln",1);
+            this.functionStateUsedOrNot.put("writeln",1);
             s.append("\tjal writeln\n");
         }
 
@@ -1941,46 +1941,46 @@ public class Mips {
         if(this.functionMipsCode!=null){
             addTextInstruction(this.functionMipsCode);
         }
-        if(this.mipsCodeSpecialFunctionState.get("indexoutofboundError").equals(1)) {
+        if(this.functionStateUsedOrNot.get("indexoutofboundError").equals(1)) {
             addLineInstruction("indexoutofboundError", indexOutOfBoundError());
         }
-        if(this.mipsCodeSpecialFunctionState.get("write").equals(1)) {
+        if(this.functionStateUsedOrNot.get("write").equals(1)) {
             addLineInstruction("write", textWriteMessage(true));
         }
-        if(this.mipsCodeSpecialFunctionState.get("writeln").equals(1)) {
+        if(this.functionStateUsedOrNot.get("writeln").equals(1)) {
             addLineInstruction("writeln", textWriteMessage(false));
         }
-        if(this.mipsCodeSpecialFunctionState.get("read").equals(1)) {
+        if(this.functionStateUsedOrNot.get("read").equals(1)) {
             addLineInstruction("read", textReadFunction());
         }
-        if(this.mipsCodeSpecialFunctionState.get("cons_sequence").equals(1)) {
+        if(this.functionStateUsedOrNot.get("cons_sequence").equals(1)) {
             addLineInstruction("cons_sequence", textConsFunction());
         }
-        if(this.mipsCodeSpecialFunctionState.get("tail_sequence").equals(1)) {
+        if(this.functionStateUsedOrNot.get("tail_sequence").equals(1)) {
             addLineInstruction("tail_sequence", textTailFunction());
         }
-        if(this.mipsCodeSpecialFunctionState.get("head_sequence").equals(1)) {
+        if(this.functionStateUsedOrNot.get("head_sequence").equals(1)) {
             addLineInstruction("head_sequence", textHeadFunction());
         }
-        if(this.mipsCodeSpecialFunctionState.get("delete_sequence").equals(1)) {
+        if(this.functionStateUsedOrNot.get("delete_sequence").equals(1)) {
             addLineInstruction("delete_sequence", textDeleteFunction());
         }
-        if(this.mipsCodeSpecialFunctionState.get("is_empty_sequence").equals(1)) {
+        if(this.functionStateUsedOrNot.get("is_empty_sequence").equals(1)) {
             addLineInstruction("is_empty_sequence", textIsEmptyFunction());
         }
-        if(this.mipsCodeSpecialFunctionState.get("length_sequence").equals(1)) {
+        if(this.functionStateUsedOrNot.get("length_sequence").equals(1)) {
             addLineInstruction("length_sequence", textLengthFunction());
         }
-        if(this.mipsCodeSpecialFunctionState.get("member_sequence").equals(1)) {
+        if(this.functionStateUsedOrNot.get("member_sequence").equals(1)) {
             addLineInstruction("member_sequence", textMemberFunction());
         }
-        if(this.mipsCodeSpecialFunctionState.get("cat_sequence").equals(1)) {
+        if(this.functionStateUsedOrNot.get("cat_sequence").equals(1)) {
             addLineInstruction("cat_sequence", textCatFunction());
         }
-        if(this.mipsCodeSpecialFunctionState.get("copy_sequence").equals(1)) {
+        if(this.functionStateUsedOrNot.get("copy_sequence").equals(1)) {
             addLineInstruction("copy_sequence", textCopyFunction());
         }
-        if(this.mipsCodeSpecialFunctionState.get("print_sequence").equals(1)){
+        if(this.functionStateUsedOrNot.get("print_sequence").equals(1)){
             addLineInstruction("print_sequence",textPrintFunction());
         }
     }
