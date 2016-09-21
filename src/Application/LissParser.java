@@ -3572,9 +3572,12 @@ public class LissParser extends Parser {
 			                            System.out.println("FUNCTION: "+ (((Function_callContext)_localctx).i!=null?_input.getText(((Function_callContext)_localctx).i.start,((Function_callContext)_localctx).i.stop):null)+" Line: "+((Function_callContext)_localctx).i.line+" Pos: "+((Function_callContext)_localctx).i.pos);
 
 			                            if(!areRegistersBeingUsed){((Function_callContext)_localctx).mipsCodeS =  "";}
-			                            _localctx.mipsCodeS += m.textFunctionCall(m.getNameFunction()+(((Function_callContext)_localctx).i!=null?_input.getText(((Function_callContext)_localctx).i.start,((Function_callContext)_localctx).i.stop):null), ((Function_callContext)_localctx).i.line, ((Function_callContext)_localctx).i.pos, returnBoolean,((Function_callContext)_localctx).s.argumentsMipsCodeS, true); // TODO: we need to change the 'true' value to a variable for checking if the register was called or not!
-
-
+			                            //_localctx.mipsCodeS += m.textFunctionCall(m.getNameFunction()+(((Function_callContext)_localctx).i!=null?_input.getText(((Function_callContext)_localctx).i.start,((Function_callContext)_localctx).i.stop):null), ((Function_callContext)_localctx).i.line, ((Function_callContext)_localctx).i.pos, returnBoolean,((Function_callContext)_localctx).s.argumentsMipsCodeS, true); // TODO: we need to change the 'true' value to a variable for checking if the register was called or not!
+			                            if(!f.getLevel().equals(0)){
+			                                _localctx.mipsCodeS += m.textFunctionCall(m.getNameFunction(), ((Function_callContext)_localctx).i.line, ((Function_callContext)_localctx).i.pos, returnBoolean,((Function_callContext)_localctx).s.argumentsMipsCodeS, true); // TODO: we need to change the 'true' value to a variable for checking if the register was called or not!
+			                            }else{
+			                                _localctx.mipsCodeS += m.textFunctionCall(m.getNameFunction()+(((Function_callContext)_localctx).i!=null?_input.getText(((Function_callContext)_localctx).i.start,((Function_callContext)_localctx).i.stop):null), ((Function_callContext)_localctx).i.line, ((Function_callContext)_localctx).i.pos, returnBoolean,((Function_callContext)_localctx).s.argumentsMipsCodeS, true); // TODO: we need to change the 'true' value to a variable for checking if the register was called or not!
+			                            }
 			                            System.out.println("FUNCTION CALL HERE : ");
 			                            System.out.println(_localctx.mipsCodeS);
 			                            System.out.println("FUNCTION CALL END : ");

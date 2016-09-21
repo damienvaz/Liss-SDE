@@ -1377,9 +1377,12 @@ function_call [SymbolTable sT, Set set]
                             System.out.println("FUNCTION: "+ $i.text+" Line: "+$i.line+" Pos: "+$i.pos);
 
                             if(!areRegistersBeingUsed){$mipsCodeS = "";}
-                            $mipsCodeS += m.textFunctionCall(m.getNameFunction()+$i.text, $i.line, $i.pos, returnBoolean,$s.argumentsMipsCodeS, true); // TODO: we need to change the 'true' value to a variable for checking if the register was called or not!
-
-
+                            //$mipsCodeS += m.textFunctionCall(m.getNameFunction()+$i.text, $i.line, $i.pos, returnBoolean,$s.argumentsMipsCodeS, true); // TODO: we need to change the 'true' value to a variable for checking if the register was called or not!
+                            if(!f.getLevel().equals(0)){
+                                $mipsCodeS += m.textFunctionCall(m.getNameFunction(), $i.line, $i.pos, returnBoolean,$s.argumentsMipsCodeS, true); // TODO: we need to change the 'true' value to a variable for checking if the register was called or not!
+                            }else{
+                                $mipsCodeS += m.textFunctionCall(m.getNameFunction()+$i.text, $i.line, $i.pos, returnBoolean,$s.argumentsMipsCodeS, true); // TODO: we need to change the 'true' value to a variable for checking if the register was called or not!
+                            }
                             System.out.println("FUNCTION CALL HERE : ");
                             System.out.println($mipsCodeS);
                             System.out.println("FUNCTION CALL END : ");

@@ -16,7 +16,7 @@ public class Mips {
     private String text;
     private boolean[] register;
     private String[] registerName;
-    private String[] registerSavedTemporaryName;
+    //private String[] registerSavedTemporaryName;
     private static int numberOfRegisters = 8;
     private static Integer eachAddressOccupies = 4; // 4 Bytes
     private LinkedList<Integer> counterJumpStack;   //A stack which will handle the IF/WHILE/FOR statement behavior (handling the behaviour of having multiple if statements inside of each if statement)
@@ -25,7 +25,7 @@ public class Mips {
     private HashMap<String,String> mipsCodeFunctionCache;    //It is a stack which will help the program in producing the mipscode of functions.
     private String functionMipsCode;                //All the code of mipscode Function available here !!!
     private HashMap<String, Integer> functionStateUsedOrNot; // Structure which explains if a certain function was called by the assembly code. (1) means yes, (0) means no. if it was called at least once time, then it will add to the mips assembly code.
-    private HashMap<String, Integer> howManyArgumentsDoesHavespecialFunctions;
+    //private HashMap<String, Integer> howManyArgumentsDoesHavespecialFunctions;
     //private LinkedList<String> stackOfSpecialFunctionsCalledRecursively;
 
 
@@ -50,10 +50,10 @@ public class Mips {
         }
         //Normally it should have 10 "t" registers !! But MIPS has only 8 registers (s0-s7) which are preserved across call ! So we decided to only have, for consistency, 8 "t" registers (which aren't preserved across call !
 
-        this.registerSavedTemporaryName = new String[numberOfRegisters];
+        /*this.registerSavedTemporaryName = new String[numberOfRegisters];
         for(int i = 0; i< numberOfRegisters; i++){
             this.registerSavedTemporaryName[i] = "$s"+i;
-        }
+        }*/
 
         this.counterJump = new Integer(0);
         this.counterJumpStack = new LinkedList<>();
@@ -76,14 +76,14 @@ public class Mips {
         this.functionStateUsedOrNot.put("cat_sequence",0);
         this.functionStateUsedOrNot.put("print_sequence",0);
 
-        this.howManyArgumentsDoesHavespecialFunctions = new HashMap<String,Integer>();
+        /*this.howManyArgumentsDoesHavespecialFunctions = new HashMap<String,Integer>();
         this.howManyArgumentsDoesHavespecialFunctions.put("tail_sequence",1);
         this.howManyArgumentsDoesHavespecialFunctions.put("head_sequence",1);
         this.howManyArgumentsDoesHavespecialFunctions.put("cons_sequence",2);
         this.howManyArgumentsDoesHavespecialFunctions.put("delete_sequence",2);
         this.howManyArgumentsDoesHavespecialFunctions.put("is_empty_sequence",1);
         this.howManyArgumentsDoesHavespecialFunctions.put("length_sequence",1);
-        this.howManyArgumentsDoesHavespecialFunctions.put("member_sequence",2);
+        this.howManyArgumentsDoesHavespecialFunctions.put("member_sequence",2);*/
 
     }
 

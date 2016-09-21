@@ -5,7 +5,7 @@ declarations
 	a = 4, b= 5, c= 5 -> integer;
 	array1 = [10,20,30,40], array2, array3 -> array size 4;
 
-	subprogram calculate(l -> integer, m -> array size 4) -> array size 4  //return can only be a scalar value (int or bool)
+	subprogram calculate(l -> integer, m -> array size 4) -> integer //-> array size 4  //return can only be a scalar value (int or bool)
 	{
 	  declarations
 		fac = 6 -> integer;
@@ -89,7 +89,7 @@ declarations
 statements
 
     //pred a;
-	array2 = calculate(a,array1);  // Wth do we must to do with that ?? Copying array (each elements ?)
+	b = calculate(a,array1);  // Wth do we must to do with that ?? Copying array (each elements ?)
 	array2 = array1;
 	//a = factorial2(3);
 	//writeArray(array2);
