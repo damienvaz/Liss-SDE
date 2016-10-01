@@ -1,0 +1,10 @@
+program test{
+    declarations
+    statements
+    if()
+    then{
+
+    }else{
+
+    }
+}

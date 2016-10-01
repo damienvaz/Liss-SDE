@@ -4,7 +4,20 @@ program liss{
     flag, flag1 = false, flag2 = true -> boolean;
     array1, array2 = [2,1,1], array3 = [1] -> array size 3;
     array4 = [[1,2],[3]] -> array size 3,3;
+    array5 = [[[12]],[[5,6],[7]]] -> array size 2,2,3;
     set1, set2 = { y | y+1 < y+4} -> set;
+    seq1, seq2 = <<1,2>> -> sequence;
+    subprogram test(){
+        declarations
+            a, b = 4, c = -1, d = +2 -> integer;
+            flag, flag1 = false, flag2 = true -> boolean;
+            array1, array2 = [2,1,1], array3 = [1] -> array size 3;
+            array4 = [[1,2],[3]] -> array size 3,3;
+            array5 = [[[12]],[[5,6],[7]]] -> array size 2,2,3;
+            set1, set2 = { y | y+1 < y+4}, seq3={} -> set;
+            seq1, seq2 = <<1,2>> -> sequence;
+        statements
+    }
   statements
-
+    flag = 1 in set2;
 }

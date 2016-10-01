@@ -1,0 +1,12 @@
+program test{
+    declarations
+        a=1 -> integer;
+    statements
+        write();
+        write(a);
+        write("hello");
+        writeln();
+        writeln(a);
+        writeln("hello");
+        input(a);
+}
