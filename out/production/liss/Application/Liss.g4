@@ -781,6 +781,7 @@ assignment [SymbolTable sT]
                             //System.out.println("####################### ASSIGNMENT SEQUENCE #######################");
                             //System.out.println(mipsCodeS);
                             //System.out.println("###################################################################");
+                            System.out.println("WOOT ARRAY");
                             if($sT.getInfoIdentifier($designator.text).getLevel().equals(0)){
                                 if($designator.typeS.equals("sequence")){
                                     mipsCodeS += m.textStoreSequence($designator.text, functionState, $sT.getValueSP(level,$designator.text), $designator.line, $designator.pos);
@@ -899,6 +900,7 @@ assignment [SymbolTable sT]
                             m.addMipsCodeFunction(m.getNameFunction(),mipsCodeS);
                         }
                     }else{
+                        System.out.println("WOOT ARRAY DE MERDA2");
                         //This means that it is a set (For this particular case: f= f++g)
                         if($d.typeS.equals("set")){
                             if($e.setS!=null){
@@ -908,7 +910,7 @@ assignment [SymbolTable sT]
                                     s.setSet(s1);
                                 }
                             }
-                        }else if($designator.typeS.equals("array") && $e.accessArrayS!=null){
+                        }else if($designator.typeS.equals("array") && $e.accessArrayS!=null){        // array = [1,2,3,4]
                             if($sT.doesExist($designator.text)){
                                 Array array = (Array) $sT.getInfoIdentifier($designator.text);
                                 ArrayList<ArrayList<Integer>> accessArrayS = $e.accessArrayS;
@@ -1036,7 +1038,93 @@ assignment [SymbolTable sT]
                                     }
                                 }
                             }
-                        }
+                        }else if($designator.typeS.equals("array") && $e.accessArrayS==null){
+                            String mipsCodeS = "";
+                            if($sT.getInfoIdentifier($designator.text).getLevel().equals(0)){
+                                 Array designator = (Array) $sT.getInfoIdentifier($designator.text);
+                                 Array expression = (Array) $sT.getInfoIdentifier($expression.text);
+
+                                 //designator variable is level 0, we need to check the level of variable expression. It might be level 0 or any others level
+                                 if(designator!=null && expression!=null){
+                                     if($sT.limitsAndDimensionOfArraysEquals(designator, expression)){
+                                         if(expression.getLevel().equals(0)){
+                                             Integer numberOfPositionToCopy = 1;
+                                             for(Integer limit : expression.getLimits()){
+                                                 numberOfPositionToCopy*=limit;
+                                             }
+                                             //System.out.println("Number Of Position to copy for the array: "+numberOfPositionToCopy);
+
+                                             for(int i=0; i<numberOfPositionToCopy;i++){
+                                                 mipsCodeS += m.loadImmediateWord(Integer.toString(i*4),$e.line,$e.pos); //this load the position of the array to the register
+                                                 mipsCodeS += m.loadWordValueArrayWithName($e.text, $e.line, $e.pos);//need to load the value of the position of the array
+                                                 mipsCodeS += m.copyWordArray($d.text, $d.line, $d.pos);
+                                             }
+
+                                         }else{
+                                             Integer numberOfPositionToCopy = 1;
+                                             for(Integer limit : expression.getLimits()){
+                                                 numberOfPositionToCopy*=limit;
+                                             }
+                                             //System.out.println("Number Of Position to copy for the array: "+numberOfPositionToCopy);
+
+                                             for(int i=0; i<numberOfPositionToCopy*4;i+=4){
+                                                 mipsCodeS += m.loadImmediateWord(""+i,$e.line,$e.pos); //this load the position of the array to the register
+                                                 mipsCodeS += m.loadWordSP($sT.getValueSP(level, $e.text)+i);
+                                                 mipsCodeS += m.copyWordArray($d.text, $d.line, $d.pos);
+                                             }
+                                         }
+                                     }else{
+                                         //Throw error of dimension and limits
+                                         e.addMessage($designator.line,-1,ErrorMessage.semantic($d.text+" "+$r.text+" "+$e.text,ErrorMessage.limitsAndDimensionsNotEqualForBothArrays()));
+                                     }
+                                 }
+
+                            }else{
+                                Array designator = (Array) $sT.getInfoIdentifier($designator.text);
+                                Array expression = (Array) $sT.getInfoIdentifier($expression.text);
+
+                                if(designator!=null && expression!=null){
+                                    if($sT.limitsAndDimensionOfArraysEquals(designator, expression)){
+                                        if(expression.getLevel().equals(0)){
+                                            System.out.println("WOOT3");
+                                            Integer numberOfPositionToCopy = 1;
+                                            for(Integer limit : expression.getLimits()){
+                                                numberOfPositionToCopy*=limit;
+                                            }
+                                            //System.out.println("Number Of Position to copy for the array: "+numberOfPositionToCopy);
+
+                                            for(int i=0; i<numberOfPositionToCopy*4;i+=4){
+                                                mipsCodeS += m.loadImmediateWord(""+i, $e.line, $e.pos);
+                                                mipsCodeS += m.loadWordValueArrayWithName($e.text, $e.line, $e.pos);
+                                                mipsCodeS += m.copyWordValueArraySP($sT.getValueSP(level, $d.text)+i);
+                                            }
+
+                                        }else{
+                                            Integer numberOfPositionToCopy = 1;
+                                            for(Integer limit : expression.getLimits()){
+                                                numberOfPositionToCopy*=limit;
+                                            }
+                                            //System.out.println("Number Of Position to copy for the array: "+numberOfPositionToCopy);
+
+                                            for(int i=0; i<numberOfPositionToCopy*4;i+=4){
+                                                mipsCodeS += m.loadWordSP(i+$sT.getValueSP(level, $e.text));
+                                                mipsCodeS += m.storeWordSP(i+$sT.getValueSP(level, $d.text));
+
+                                            }
+                                        }
+                                    }else{
+                                        //Throw error of dimension and limits
+                                        e.addMessage($designator.line,-1,ErrorMessage.semantic($d.text+" "+$r.text+" "+$e.text,ErrorMessage.limitsAndDimensionsNotEqualForBothArrays()));
+                                    }
+                                }
+                            }
+                            if(functionState == false){
+                                System.out.println("ENTREI AQUI: "+$d.text+"\nMIPSCODE: "+mipsCodeS);
+                                m.addTextInstruction(mipsCodeS);
+                            }else if(functionState == true){
+                                m.addMipsCodeFunction(m.getNameFunction(),mipsCodeS);
+                            }
+                         }
                     }
                   }else{
                     e.addMessage($designator.line,-1,ErrorMessage.semanticAssignment($designator.line)); //-1 => assignemen error => there is no pos.
@@ -2289,6 +2377,7 @@ for_stat [SymbolTable sT]
             {
                 if($sT.doesExist($i.variableS)){
                     String  l = null;
+
                     if($s2.mipsCodeS!=null){
                         l = m.textForSatisfyingEnd(functionState, $s3.line, $s3.pos);
                     }

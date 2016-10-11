@@ -4,6 +4,7 @@ program SubPrg {
 declarations
 
 	a = 4, b= 5, c= 5 -> integer;
+	flag -> boolean;
 	d = [10,20,30,40], ev -> array size 4;
 	seq = <<1,2,3>> -> sequence;
 
@@ -34,6 +35,7 @@ declarations
 					return res;
 			}
 	  statements
+	        fac = res;
 			res = factorial(fac,d);
 			return res/2;
 	}
@@ -41,6 +43,8 @@ declarations
 
 statements
 
+    a = 1;
+    flag = true;
 	a = calculate();
 	writeln(a);
 	writeln(d);

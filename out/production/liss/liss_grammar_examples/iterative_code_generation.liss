@@ -1,0 +1,22 @@
+program test{
+    declarations
+        a=1 -> integer;
+        flag=true -> boolean;
+        array1=[3,4] -> array size 5;
+    statements
+        for(a in 1..5) stepUp 1 satisfying flag==true{
+            writeln(a);
+        }
+        for(a in 1..5) stepUp 1{
+            writeln(a);
+        }
+        for(a in 1..5){
+            writeln(a);
+        }
+        for(a inArray array1){
+            writeln(a);
+        }
+        while(flag){
+            writeln("Hello");
+        }
+}

@@ -1,0 +1,7 @@
+program test{
+    declarations
+        i = 3 -> integer;
+    statements
+        succ i;
+        pred i;
+}

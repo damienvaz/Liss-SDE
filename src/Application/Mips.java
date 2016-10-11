@@ -854,6 +854,7 @@ public class Mips {
 
         if(this.counterJumpStack.size()>0) {
             Integer i = this.counterJumpStack.getFirst();
+
             if(functionState == false) {
                 s.append(" satisfying_exit" + i.toString() + ":\n");
             }else{

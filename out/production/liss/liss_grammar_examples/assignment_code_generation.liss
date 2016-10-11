@@ -1,0 +1,19 @@
+program test{
+    declarations
+        i -> integer;
+        flag, flag1 -> boolean;
+        array1, array2=[4,3,2,1] -> array size 4;
+    statements
+        flag1 = 1 == 3;
+        flag1 = 1 != 3;
+        flag1 = 1 < 3;
+        flag1 = 1 > 3;
+        flag1 = 1 <= 3;
+        flag1 = 1 >= 3;
+        flag1 = (1 >= 3) || (4 > 5);
+        flag = true;
+        i = 1 + 2 - 3 / 3 * 4;
+        array1[1] = 10;
+        array1 = array2;
+        array1 = [2,4,6,8];
+}
